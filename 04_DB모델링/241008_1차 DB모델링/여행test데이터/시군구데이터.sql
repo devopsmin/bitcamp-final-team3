@@ -1,4 +1,70 @@
--- 시도(city) 테이블 더미 데이터
+-- 시도
+DROP TABLE IF EXISTS city RESTRICT;
+
+-- 시군구
+DROP TABLE IF EXISTS state RESTRICT;
+
+-- 시도
+CREATE TABLE city (
+  city_no   INTEGER     NOT NULL COMMENT '시도번호', -- 시도번호
+  city_code VARCHAR(50) NOT NULL COMMENT '시도코드', -- 시도코드
+  city_name VARCHAR(50) NOT NULL COMMENT '시도명' -- 시도명
+)
+COMMENT '시도';
+
+-- 시도
+ALTER TABLE city
+  ADD CONSTRAINT PK_city -- 시도 기본키
+  PRIMARY KEY (
+  city_no -- 시도번호
+  );
+
+-- 시도 유니크 인덱스
+CREATE UNIQUE INDEX UIX_city
+  ON city ( -- 시도
+    city_code ASC -- 시도코드
+  );
+
+ALTER TABLE city
+  MODIFY COLUMN city_no INTEGER NOT NULL AUTO_INCREMENT COMMENT '시도번호';
+
+-- 시군구
+CREATE TABLE state (
+  state_no    INTEGER      NOT NULL COMMENT '시군구번호', -- 시군구번호
+  city_no     INTEGER      NULL     COMMENT '시도번호', -- 시도번호
+  state_code  VARCHAR(50)  NOT NULL COMMENT '시군구코드', -- 시군구코드
+  state_name  VARCHAR(50)  NOT NULL COMMENT '시군구명', -- 시군구명
+  state_photo VARCHAR(255) NULL     COMMENT '썸네일사진' -- 썸네일사진
+)
+COMMENT '시군구';
+
+-- 시군구
+ALTER TABLE state
+  ADD CONSTRAINT PK_state -- 시군구 기본키
+  PRIMARY KEY (
+  state_no -- 시군구번호
+  );
+
+-- 시군구 유니크 인덱스
+CREATE UNIQUE INDEX UIX_state
+  ON state ( -- 시군구
+    state_code ASC -- 시군구코드
+  );
+
+ALTER TABLE state
+  MODIFY COLUMN state_no INTEGER NOT NULL AUTO_INCREMENT COMMENT '시군구번호';
+
+-- 시군구
+ALTER TABLE state
+  ADD CONSTRAINT FK_city_TO_state -- 시도 -> 시군구
+  FOREIGN KEY (
+  city_no -- 시도번호
+  )
+  REFERENCES city ( -- 시도
+  city_no -- 시도번호
+  );
+  
+  -- 시도(city) 테이블 더미 데이터
 INSERT INTO city (city_code, city_name) VALUES
 ('11', '서울시'),
 ('26', '부산시'),
@@ -70,7 +136,7 @@ INSERT INTO state (city_no, state_code, state_name) VALUES
 (3, '27170', '서구'),
 (3, '27200', '남구'),
 (3, '27230', '북구'),
-(3, '27290', '수성구'),
+(3, '27260', '수성구'),
 (3, '27290', '달서구'),
 (3, '27710', '달성군'),
 
@@ -309,3 +375,5 @@ INSERT INTO state (city_no, state_code, state_name) VALUES
 -- 제주도
 (16, '50110', '제주시'),
 (16, '50130', '서귀포시');
+  
+  
