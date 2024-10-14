@@ -11,7 +11,6 @@
 <head>
     <meta charset='UTF-8'>
     <title>Title</title>
-    <link href='/css/common.css' rel='stylesheet'>
 </head>
 <body>
 

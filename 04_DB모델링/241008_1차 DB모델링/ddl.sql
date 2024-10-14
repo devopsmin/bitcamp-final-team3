@@ -70,8 +70,8 @@ CREATE TABLE trip (
 	user_no           INTEGER      NULL,     -- 유저번호
 	thema_no          INTEGER      NULL,     -- 여행테마번호
 	trip_title        VARCHAR(150) NOT NULL, -- 여행제목
-	COL               DATE         NOT NULL, -- 여행시작일
-	COL2              DATE         NOT NULL, -- 여행종료일
+	start_date        DATE         NOT NULL, -- 여행시작일
+	end_date          DATE         NOT NULL, -- 여행종료일
 	trip_created_date DATETIME     NOT NULL DEFAULT now() -- 생성날짜
 );
 
@@ -165,7 +165,8 @@ ALTER TABLE comment
 -- 여행지유형대분류
 CREATE TABLE firstclass (
 	firstclass_no   INTEGER     NOT NULL, -- 대분류번호
-	firstclass_name VARCHAR(50) NULL      -- 분류명
+	firstclass_code VARCHAR(50) NULL,     -- 분류코드
+	firstclass_name VARCHAR(50) NOT NULL  -- 분류명
 );
 
 -- 여행지유형대분류
@@ -178,7 +179,7 @@ ALTER TABLE firstclass
 -- 여행지유형대분류 유니크 인덱스
 CREATE UNIQUE INDEX UIX_firstclass
 	ON firstclass ( -- 여행지유형대분류
-		firstclass_name ASC -- 분류명
+		firstclass_code ASC -- 분류코드
 	);
 
 ALTER TABLE firstclass
@@ -311,6 +312,7 @@ ALTER TABLE ben
 -- 시도
 CREATE TABLE city (
 	city_no   INTEGER     NOT NULL, -- 시도번호
+	city_code VARCHAR(50) NOT NULL, -- 시도코드
 	city_name VARCHAR(50) NOT NULL  -- 시도명
 );
 
@@ -324,7 +326,7 @@ ALTER TABLE city
 -- 시도 유니크 인덱스
 CREATE UNIQUE INDEX UIX_city
 	ON city ( -- 시도
-		city_name ASC -- 시도명
+		city_code ASC -- 시도코드
 	);
 
 ALTER TABLE city
@@ -334,6 +336,7 @@ ALTER TABLE city
 CREATE TABLE state (
 	state_no    INTEGER      NOT NULL, -- 시군구번호
 	city_no     INTEGER      NULL,     -- 시도번호
+	state_code  VARCHAR(50)  NOT NULL, -- 시군구코드
 	state_name  VARCHAR(50)  NOT NULL, -- 시군구명
 	state_photo VARCHAR(255) NULL      -- 썸네일사진
 );
@@ -348,7 +351,7 @@ ALTER TABLE state
 -- 시군구 유니크 인덱스
 CREATE UNIQUE INDEX UIX_state
 	ON state ( -- 시군구
-		state_name ASC -- 시군구명
+		state_code ASC -- 시군구코드
 	);
 
 ALTER TABLE state
@@ -379,10 +382,10 @@ ALTER TABLE thema
 -- 여행일정
 CREATE TABLE schedule (
 	schedule_no    INTEGER NOT NULL, -- 여행일정번호
+	location_no    INTEGER NULL,     -- 여행지정보
 	trip_no        INTEGER NULL,     -- 여행번호
 	schedule_day   INTEGER NOT NULL DEFAULT 0, -- 여행일차
-	schedule_route INTEGER NOT NULL DEFAULT 0, -- 여행순서
-	location_no    INTEGER NULL      -- 여행지정보
+	schedule_route INTEGER NOT NULL DEFAULT 0 -- 여행순서
 );
 
 -- 여행일정
@@ -392,6 +395,18 @@ ALTER TABLE schedule
 	schedule_no -- 여행일정번호
 	);
 
+-- 여행일정 인덱스
+CREATE INDEX IX_schedule
+	ON schedule( -- 여행일정
+		schedule_day ASC -- 여행일차
+	);
+
+-- 여행일정 인덱스2
+CREATE INDEX IX_schedule2
+	ON schedule( -- 여행일정
+		schedule_route ASC -- 여행순서
+	);
+
 ALTER TABLE schedule
 	MODIFY COLUMN schedule_no INTEGER NOT NULL AUTO_INCREMENT;
 
@@ -399,6 +414,7 @@ ALTER TABLE schedule
 CREATE TABLE secondclass (
 	secondclass_no   INTEGER     NOT NULL, -- 중분류번호
 	firstclass_no    INTEGER     NULL,     -- 대분류번호
+	secondclass_code VARCHAR(50) NOT NULL, -- 분류코드
 	secondclass_name VARCHAR(50) NOT NULL  -- 분류명
 );
 
@@ -412,7 +428,7 @@ ALTER TABLE secondclass
 -- 여행지유형중분류 유니크 인덱스
 CREATE UNIQUE INDEX UIX_secondclass
 	ON secondclass ( -- 여행지유형중분류
-		secondclass_name ASC -- 분류명
+		secondclass_code ASC -- 분류코드
 	);
 
 ALTER TABLE secondclass
@@ -422,6 +438,7 @@ ALTER TABLE secondclass
 CREATE TABLE thirdclass (
 	thirdclass_no   INTEGER     NOT NULL, -- 소분류번호
 	secondclass_no  INTEGER     NULL,     -- 중분류번호
+	thirdclass_code VARCHAR(50) NOT NULL, -- 분류코드
 	thirdclass_name VARCHAR(50) NOT NULL  -- 분류명
 );
 
@@ -435,7 +452,7 @@ ALTER TABLE thirdclass
 -- 여행지유형소분류 유니크 인덱스
 CREATE UNIQUE INDEX UIX_thirdclass
 	ON thirdclass ( -- 여행지유형소분류
-		thirdclass_name ASC -- 분류명
+		thirdclass_code ASC -- 분류코드
 	);
 
 ALTER TABLE thirdclass
