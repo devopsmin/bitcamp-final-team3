@@ -189,10 +189,3 @@ INSERT INTO thirdclass (secondclass_no, thirdclass_code, thirdclass_name) VALUES
 (22, 'C01150001', '도보코스'),
 (23, 'C01160001', '캠핑코스'),
 (24, 'C01170001', '맛코스');
-
-
-
-
-
-
-
