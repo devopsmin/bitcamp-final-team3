@@ -28,6 +28,7 @@
         조회수: <input readonly type='text' value='${board.boardCount}'><br>
         작성자: <input readonly type='text' value=3><br>
     <button type="button" onclick="location.href='list'">목록</button>
+    <button type="button" onclick="location.href='modify'">수정</button>
     <button type='button' onclick='location.href="delete?boardNo=${board.boardNo}"'>삭제</button>
 </c:if>
 

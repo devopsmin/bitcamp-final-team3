@@ -26,8 +26,8 @@ import javax.sql.DataSource;
 )
 
 @PropertySource({
-    "classpath:config/jdbc-local.properties",
-    "file:${user.home}/config/ncp.properties"})
+    "classpath:config/jdbc-local.properties"})
+    //, "file:${user.home}/config/ncp.properties"})
 @EnableTransactionManagement // 스프링 프렘워크야, @Transactional 메서드가 붙은 클래스를 만나면 Proxy 클래스를 자동 생성하라!
 @MapperScan("project.tripMaker.dao")
 public class RootConfig {
