@@ -1,0 +1,4 @@
+insert into boardtype(boardtype_no, boardtype_name) values
+  (1, '여행질문'),
+  (2, '여행동행'),
+  (3, '여행후기');
