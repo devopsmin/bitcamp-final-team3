@@ -13,15 +13,13 @@
     <title>Title</title>
 </head>
 <body>
-<h1>시도 선택</h1>
-
-<form action="form2" method="post">
-    <select name="cityCode">
-        <option value="">시도 선택</option>
-        <c:forEach items="${cityList}" var="city">
-            <option value="${city.cityCode}">${city.cityName}</option>
+<h1>여행지 선택</h1>
+<form action="form5" method="post">
+    <ul>
+        <c:forEach items="${locationList}" var="location">
+            <li><input name='locationName' value='${location.locationNo}' type='checkbox'>${location.locationName}</li>
         </c:forEach>
-    </select>
+    </ul>
     <button type="submit">다음</button>
 </form>
 </body>

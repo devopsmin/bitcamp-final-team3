@@ -13,16 +13,11 @@
     <title>Title</title>
 </head>
 <body>
-<h1>시도 선택</h1>
-
-<form action="form2" method="post">
-    <select name="cityCode">
-        <option value="">시도 선택</option>
-        <c:forEach items="${cityList}" var="city">
-            <option value="${city.cityCode}">${city.cityName}</option>
-        </c:forEach>
-    </select>
-    <button type="submit">다음</button>
+<h1>날짜 선택</h1>
+<form action="form4" method="post">
+    기간: <input name='startDate' type='date'> ~
+    <input name='endDate' type='date'><br>
+    <button>다음</button>
 </form>
 </body>
 </html>
