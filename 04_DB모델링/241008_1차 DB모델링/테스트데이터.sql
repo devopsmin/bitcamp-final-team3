@@ -1,12 +1,12 @@
 -- SNS 테이블 더미 데이터
-INSERT INTO sns (sns_name) VALUES 
-('Google'), ('Naver'), ('KakaoTalk');
+-- INSERT INTO sns (sns_name) VALUES 
+-- ('Google'), ('Naver'), ('KakaoTalk');
 
 -- 유저 테이블 더미 데이터
-INSERT INTO user (user_photo, user_lastest_login, user_email, user_password, user_tel, user_nickname, user_autherlize, user_block, sns_no) VALUES 
-('profile1.jpg', NOW(), 'user1@example.com', 'password1', '010-1234-5678', '여행자1', 1, 0, 1),
-('profile2.jpg', NOW(), 'user2@example.com', 'password2', '010-2345-6789', '모험가2', 1, 0, 2),
-('profile3.jpg', NOW(), 'user3@example.com', 'password3', '010-3456-7890', '배낭족3', 1, 0, 3);
+-- INSERT INTO user (user_photo, user_lastest_login, user_email, user_password, user_tel, user_nickname, user_autherlize, user_block, sns_no) VALUES 
+-- ('profile1.jpg', NOW(), 'user1@example.com', 'password1', '010-1234-5678', '여행자1', 1, 0, 1),
+-- ('profile2.jpg', NOW(), 'user2@example.com', 'password2', '010-2345-6789', '모험가2', 1, 0, 2),
+-- ('profile3.jpg', NOW(), 'user3@example.com', 'password3', '010-3456-7890', '배낭족3', 1, 0, 3);
 
 -- 여행테마 테이블 더미 데이터
 INSERT INTO thema (thema_name) VALUES 
