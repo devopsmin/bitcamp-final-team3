@@ -38,4 +38,17 @@ public class BoardController {
     }
     model.addAttribute("list", list);
   }
+
+  @GetMapping("form")
+  public void form(){
+  }
+
+  @PostMapping("add")
+  public String add(
+      Board board,
+      HttpSession session) throws Exception {
+
+    boardService.add(board);
+    return "redirect:list";
+  }
 }

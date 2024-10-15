@@ -9,4 +9,6 @@ import java.util.List;
 @Repository
 public interface BoardDao {
   List<Board> list() throws Exception;
+
+  boolean insert(Board board) throws Exception;
 }

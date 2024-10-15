@@ -28,8 +28,34 @@
 <!--    board_tag as boardTag-->
     <!-- Get all board records -->
     <select id="list" resultMap="BoardMap">
-        SELECT board_no
-        FROM board
+        SELECT
+            board_no,
+            board_title,
+            user_no,
+            board_created_date,
+            board_tag
+        FROM
+            board
+        WHERE
+            boardtype_no=3
     </select>
+
+    <insert id="insert" parameterType="board"
+      useGeneratedKeys="true" keyColumn="board_no" keyProperty="boardNo">
+        insert into board(
+                          boardtype_no,
+                          board_title,
+                          user_no,
+                          trip_no,
+                          board_content,
+                          board_tag)
+        values (
+                3,
+                #{boardTitle},
+                2,
+                2,
+                #{boardContent},
+                #{boardTag})
+    </insert>
 
 </mapper>

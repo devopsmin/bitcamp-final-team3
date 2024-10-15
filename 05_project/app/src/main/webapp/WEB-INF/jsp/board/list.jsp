@@ -6,6 +6,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 
+<!-- Header 자리 -->
 <!DOCTYPE html>
 <html>
 <head>
@@ -13,16 +14,23 @@
     <title>Title</title>
 </head>
 <body>
+<!-- Header 자리여기까지 -->
 
 <h1>게시글 목록</h1>
+<p><a href='form'>글쓰기</a></p>
+
 <table>
   <thead>
-      <tr><th>번호</th></tr>
+    <tr><th>번호</th><th>제목</th><th>작성자번호</th><th>작성일</th><th>태그</th></tr>
   </thead>
   <tbody>
 <c:forEach items="${list}" var="board">
     <tr>
-      <td>${board.boardNo}</td>
+        <td>${board.boardNo}</td>
+        <td>${board.boardTitle}</td>
+        <td>${board.userNo}</td>
+        <td>${board.boardCreatedDate}</td>
+        <td>${board.boardTag}</td>
     </tr>
 </c:forEach>
   </tbody>
