@@ -33,6 +33,7 @@
             board_title,
             user_no,
             board_created_date,
+            board_count,
             board_tag
         FROM
             board
@@ -58,4 +59,34 @@
                 #{boardTag})
     </insert>
 
+  <select id="findBy" resultMap="BoardMap" parameterType="int">
+    select
+        board_no,
+	      boardtype_no,
+	      board_title,
+	      board_count,
+	      board_created_date,
+	      user_no,
+	      trip_no,
+	      board_content,
+	      board_tag
+    from
+        board
+    where
+        board_no=#{boardNo}
+  </select>
+
+  <update id="updateViewCount">
+    update
+        board
+    set
+        board_count=#{boardCount}
+    where
+        board_no=#{boardNo}
+  </update>
+
+  <delete id="delete" parameterType="int">
+    delete from board
+    where board_no=#{boardNo}
+  </delete>
 </mapper>

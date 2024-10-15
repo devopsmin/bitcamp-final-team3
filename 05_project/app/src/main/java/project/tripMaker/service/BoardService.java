@@ -23,4 +23,21 @@ public class BoardService {
   public void add(Board board) throws Exception {
     boardDao.insert(board);
   }
+
+  @Transactional
+  public void increaseViewCount(int boardNo) throws Exception {
+    Board board = boardDao.findBy(boardNo);
+    if (board != null) {
+      boardDao.updateViewCount(board.getBoardNo(), board.getBoardCount() + 1);
+    }
+  }
+
+  public Board get(int boardNo) throws Exception {
+    return boardDao.findBy(boardNo);
+  }
+
+  @Transactional
+  public void delete(int boardNo) throws Exception {
+    boardDao.delete(boardNo);
+  }
 }

@@ -11,4 +11,10 @@ public interface BoardDao {
   List<Board> list() throws Exception;
 
   boolean insert(Board board) throws Exception;
+
+  Board findBy(int boardNo) throws Exception;
+
+  void updateViewCount(@Param("boardNo")int boardNo, @Param("boardCount")int boardCount) throws Exception;
+
+  boolean delete(@Param("boardNo")int boardNo) throws Exception;
 }

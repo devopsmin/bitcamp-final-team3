@@ -44,11 +44,33 @@ public class BoardController {
   }
 
   @PostMapping("add")
-  public String add(
-      Board board,
-      HttpSession session) throws Exception {
+  public String add(Board board) throws Exception {
 
     boardService.add(board);
+    return "redirect:list";
+  }
+
+  @GetMapping("view")
+  public void view(int boardNo, Model model) throws Exception {
+    Board board = boardService.get(boardNo);
+    if (board == null) {
+      throw new Exception("게시글이 존재하지 않습니다.");
+    }
+
+    boardService.increaseViewCount(board.getBoardNo());
+
+    model.addAttribute("board", board);
+  }
+
+  @GetMapping("delete")
+  public String delete(int boardNo) throws Exception {
+    Board board = boardService.get(boardNo);
+
+    if (board == null) {
+      throw new Exception("없는 게시글입니다.");
+    }
+
+    boardService.delete(boardNo);
     return "redirect:list";
   }
 }
