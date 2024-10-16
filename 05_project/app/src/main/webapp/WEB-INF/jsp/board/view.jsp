@@ -26,10 +26,23 @@
         작성일: <input readonly type='text'
                     value='<fmt:formatDate value="${board.boardCreatedDate}" pattern="yyyy-MM-dd"/>'><br>
         조회수: <input readonly type='text' value='${board.boardCount}'><br>
-        작성자: <input readonly type='text' value=3><br>
+        작성자: <input readonly type='text' value='${board.writer.userNickname}'><br>
     <button type="button" onclick="location.href='list'">목록</button>
-    <button type="button" onclick="location.href='modify'">수정</button>
+    <button type="button" onclick="location.href='modify?boardNo=${board.boardNo}'">수정</button>
     <button type='button' onclick='location.href="delete?boardNo=${board.boardNo}"'>삭제</button>
+    <br> 댓글 : <br>
+    <c:if test="${board.comments.size() > 0}">
+        <ul>
+            <c:forEach items="${board.comments}" var="comments">
+                <li>
+                    <input readonly type='text' value='${comments.commentContent}'>
+                    <input readonly type='text' value='${comments.userNo}'>
+                    <input readonly type='text' value='${comments.commentCreatedDate}'>
+                    <br>
+                </li>
+            </c:forEach>
+        </ul>
+    </c:if>
 </c:if>
 
 </body>

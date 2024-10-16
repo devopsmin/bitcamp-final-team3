@@ -1,6 +1,7 @@
 package project.tripMaker.vo;
 
 import java.sql.Date;
+import java.util.List;
 
 public class Board {
 
@@ -9,10 +10,13 @@ public class Board {
   private String boardTitle;     // 제목
   private int boardCount;        // 조회수
   private Date boardCreatedDate; // 작성일
-  private Integer userNo;        // 유저번호
+  // private Integer userNo;        // 유저번호
   private Integer tripNo;        // 여행번호
   private String boardContent;   // 내용
   private String boardTag;       // 태그
+
+  private User writer; // 작성자
+  private List<Comment> comments; // 댓글
 
   // 기본 생성자
   public Board() {}
@@ -58,14 +62,6 @@ public class Board {
     this.boardCreatedDate = boardCreatedDate;
   }
 
-  public Integer getUserNo() {
-    return userNo;
-  }
-
-  public void setUserNo(Integer userNo) {
-    this.userNo = userNo;
-  }
-
   public Integer getTripNo() {
     return tripNo;
   }
@@ -90,7 +86,22 @@ public class Board {
     this.boardTag = boardTag;
   }
 
-  // toString 메서드 (디버깅용)
+  public User getWriter() {
+      return writer;
+  }
+
+  public void setWriter(User writer) {
+      this.writer = writer;
+  }
+
+  public List<Comment> getComments() {
+    return comments;
+  }
+
+  public void setComments(List<Comment> comments) {
+    this.comments = comments;
+  }
+
   @Override
   public String toString() {
     return "Board{" +
@@ -99,10 +110,10 @@ public class Board {
         ", boardTitle='" + boardTitle + '\'' +
         ", boardCount=" + boardCount +
         ", boardCreatedDate=" + boardCreatedDate +
-        ", userNo=" + userNo +
         ", tripNo=" + tripNo +
         ", boardContent='" + boardContent + '\'' +
         ", boardTag='" + boardTag + '\'' +
+        ", writer=" + writer +
         '}';
   }
 }

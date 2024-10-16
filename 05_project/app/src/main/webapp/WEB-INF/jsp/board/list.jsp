@@ -21,14 +21,15 @@
 
 <table>
   <thead>
-    <tr><th>번호</th><th>제목</th><th>작성자번호</th><th>작성일</th><th>조회수</th><th>태그</th></tr>
+    <tr><th>번호</th><th>제목</th><th>작성자번호</th><th>작성자닉네임</th><th>작성일</th><th>조회수</th><th>태그</th></tr>
   </thead>
   <tbody>
 <c:forEach items="${list}" var="board">
     <tr>
         <td>${board.boardNo}</td>
         <td><a href='view?boardNo=${board.boardNo}'>${board.boardTitle}</a></td>
-        <td>${board.userNo}</td>
+        <td>${board.writer.userNo}</td>
+        <td>${board.writer.userNickname}</td>
         <td>${board.boardCreatedDate}</td>
         <td>${board.boardCount}</td>
         <td>${board.boardTag}</td>

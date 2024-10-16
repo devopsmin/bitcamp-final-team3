@@ -1,7 +1,6 @@
 package project.tripMaker.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import project.tripMaker.vo.Board;
@@ -28,7 +27,7 @@ public class BoardService {
   public void increaseViewCount(int boardNo) throws Exception {
     Board board = boardDao.findBy(boardNo);
     if (board != null) {
-      boardDao.updateViewCount(board.getBoardNo(), board.getBoardCount() + 1);
+      boardDao.updateViewCount(board.getBoardNo(), board.getBoardCount());
     }
   }
 
@@ -39,5 +38,13 @@ public class BoardService {
   @Transactional
   public void delete(int boardNo) throws Exception {
     boardDao.delete(boardNo);
+  }
+
+  @Transactional
+  public boolean update(Board board) throws Exception {
+    if (!boardDao.update(board)) {
+      return false;
+    }
+    return true;
   }
 }

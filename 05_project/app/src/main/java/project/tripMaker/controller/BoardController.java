@@ -24,10 +24,8 @@ public class BoardController {
 
   private BoardService boardService;
 
-  public BoardController(
-      BoardService boardService) {
+  public BoardController(BoardService boardService) {
     this.boardService = boardService;
-
   }
 
   @GetMapping("list")
@@ -73,4 +71,19 @@ public class BoardController {
     boardService.delete(boardNo);
     return "redirect:list";
   }
+
+  @PostMapping("update")
+  public String update(
+      int no,
+      String title,
+      String content) throws Exception {
+
+    Board board = boardService.get(no);
+    board.setBoardTitle(title);
+    board.setBoardContent(content);
+
+    boardService.update(board);
+    return "redirect:list";
+  }
+
 }
