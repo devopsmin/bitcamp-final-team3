@@ -24,18 +24,58 @@ public class BoardController {
 
   private BoardService boardService;
 
-  public BoardController(
-      BoardService boardService) {
+  public BoardController(BoardService boardService) {
     this.boardService = boardService;
+  }
 
+  @GetMapping("form")
+  public void form() {
+  }
+
+  @PostMapping("add")
+  public String add(
+          Board board) throws Exception {
+
+    boardService.add(board);
+
+    return "redirect:list";
   }
 
   @GetMapping("list")
   public void list(Model model) throws Exception {
+
     List<Board> list = boardService.list();
-    for ( Board board : list ) {
-      System.out.println(board.toString());
-    }
+
     model.addAttribute("list", list);
   }
+
+  @GetMapping("view")
+  public void view(int boardNo, Model model) throws Exception {
+
+    Board board = boardService.get(boardNo);
+
+    boardService.increaseBoardCount(board.getBoardNo());
+
+    model.addAttribute("board", board);
+  }
+
+  @PostMapping("update")
+  public String update(int boardNo, String boardTitle, String boardContent) throws Exception {
+
+    Board board = boardService.get(boardNo);
+
+    board.setBoardTitle(boardTitle);
+    board.setBoardContent(boardContent);
+
+    boardService.update(board);
+    return "redirect:list";
+  }
+
+  @GetMapping("delete")
+  public String delete(int boardNo) throws Exception {
+
+    boardService.delete(boardNo);
+    return "redirect:list";
+  }
+
 }
