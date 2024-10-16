@@ -13,14 +13,18 @@
     <title>Title</title>
 </head>
 <body>
-<h1>숙소 선택</h1>
-<form action="form6" method="post">
+<h1>일정 편집</h1>
     <ul>
-        <c:forEach items="${hotelList}" var="hotel">
-            <li><input name='hotelNos' value='${hotel.locationNo}' type='checkbox'>${hotel.locationName}</li>
+        <c:forEach items="${selectedLocation}" var="location">
+            <li>${location.locationName}</li>
+        </c:forEach>
+    </ul>
+    <p>-----------------------</p>
+    <ul>
+        <c:forEach items="${selectedHotels}" var="hotel">
+            <li>${hotel.locationName}</li>
         </c:forEach>
     </ul>
     <button type="submit">다음</button>
-</form>
 </body>
 </html>

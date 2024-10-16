@@ -16,10 +16,10 @@
 <h1>시도 선택</h1>
 
 <form action="form2" method="post">
-    <select name="cityCode">
+    <select name="stateCode">
         <option value="">시도 선택</option>
-        <c:forEach items="${cityList}" var="city">
-            <option value="${city.cityCode}">${city.cityName}</option>
+        <c:forEach items="${stateList}" var="state">
+            <option value="${state.stateCode}">${state.stateName}</option>
         </c:forEach>
     </select>
     <button type="submit">다음</button>

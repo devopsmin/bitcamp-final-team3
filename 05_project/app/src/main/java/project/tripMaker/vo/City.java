@@ -1,16 +1,17 @@
 package project.tripMaker.vo;
 
 public class City {
-  private int cityNo;
-  private String cityCode;
-  private String cityName;
+    private String stateCode;
+    private String cityCode;
+    private String cityName;
+    private String cityPhoto;
 
-  public int getCityNo() {
-    return cityNo;
+  public String getStateCode() {
+    return stateCode;
   }
 
-  public void setCityNo(int cityNo) {
-    this.cityNo = cityNo;
+  public void setStateCode(String stateCode) {
+    this.stateCode = stateCode;
   }
 
   public String getCityCode() {
@@ -27,5 +28,13 @@ public class City {
 
   public void setCityName(String cityName) {
     this.cityName = cityName;
+  }
+
+  public String getCityPhoto() {
+    return cityPhoto;
+  }
+
+  public void setCityPhoto(String cityPhoto) {
+    this.cityPhoto = cityPhoto;
   }
 }

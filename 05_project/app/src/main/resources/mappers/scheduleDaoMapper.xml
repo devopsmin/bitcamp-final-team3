@@ -3,23 +3,22 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="project.tripMaker.dao.ScheduleDao">
-    <resultMap id="CityResultMap" type="project.tripMaker.vo.City">
-        <id column="city_no" property="cityNo"/>
-        <result column="city_code" property="cityCode"/>
-        <result column="city_name" property="cityName"/>
+    <resultMap id="StateResultMap" type="project.tripMaker.vo.State">
+        <id column="state_code" property="stateCode"/>
+        <result column="state_name" property="stateName"/>
     </resultMap>
 
-    <resultMap id="StateResultMap" type="project.tripMaker.vo.State">
-        <id column="state_no" property="stateNo"/>
-        <result column="city_no" property="cityNo"/>
+    <resultMap id="CityResultMap" type="project.tripMaker.vo.City">
+        <id column="city_code" property="cityCode"/>
         <result column="state_code" property="stateCode"/>
-        <result column="state_name" property="stateName"/>
-        <result column="state_photo" property="statePhoto"/>
+        <result column="city_name" property="cityName"/>
+        <result column="city_photo" property="cityPhoto"/>
     </resultMap>
 
     <resultMap id="LocationResultMap" type="project.tripMaker.vo.Location">
         <id column="location_no" property="locationNo"/>
-        <result column="thirdclass_no" property="thirdclassNo"/>
+        <result column="city_code" property="cityCode"/>
+        <result column="thirdclass_code" property="thirdclassCode"/>
         <result column="location_name" property="locationName"/>
         <result column="location_desc" property="locationDesc"/>
         <result column="location_photo" property="locationPhoto"/>
@@ -27,69 +26,96 @@
         <result column="location_addr" property="locationAddr"/>
         <result column="location_x" property="locationX"/>
         <result column="location_y" property="locationY"/>
-        <result column="city_code" property="cityCode"/>
-        <result column="state_code" property="stateCode"/>
-
+        <result column="locationclass_no" property="locationclassNo"/>
     </resultMap>
 
-    <select id="cityList" resultMap="CityResultMap">
+    <select id="stateList" resultMap="StateResultMap">
         select
-            city_no,
-            city_code,
-            city_name
+            state_code,
+            state_name
         from
-            city
+            state
     </select>
 
-    <select id="stateList" resultMap="StateResultMap">
+    <select id="cityList" resultMap="CityResultMap">
         SELECT
-            s.state_no,
-            s.state_code,
-            s.state_name
+            c.state_code,
+            c.city_code,
+            c.city_name,
+            c.city_photo
         FROM
-            state s
+            city c
         right JOIN
-            city c ON s.city_no = c.city_no
+            state s ON s.state_code = c.state_code
         where
-            c.city_code=#{cityCode}
+            s.state_code=#{stateCode}
     </select>
 
     <select id="locationList" resultMap="LocationResultMap">
         SELECT
             l.location_no,
-            l.thirdclass_no,
+            l.city_code,
+            l.thirdclass_code,
             l.location_name,
             l.location_desc,
             l.location_photo,
             l.location_tel,
             l.location_addr,
             l.location_x,
-            l.location_y
+            l.location_y,
+            l.locationclass_no
         from
             location l
-        right outer join
-            state s on l.state_no = s.state_no
+                right outer join city c on l.city_code = c.city_code
+                inner join thirdclass t on l.thirdclass_code = t.thirdclass_code
         where
-            s.state_code=#{stateCode};
+            c.city_code=#{cityCode} and t.secondclass_code != "B0201";
     </select>
 
     <select id="hotelList" resultMap="LocationResultMap">
         SELECT
             l.location_no,
-            l.state_no,
-            l.thirdclass_no,
+            l.city_code,
+            l.thirdclass_code,
             l.location_name,
             l.location_desc,
             l.location_photo,
             l.location_tel,
             l.location_addr,
             l.location_x,
-            l.location_y
+            l.location_y,
+            l.locationclass_no
         from
             location l
-                right outer join
-            state s on l.state_no = s.state_no
+        right outer join city c on l.city_code = c.city_code
+        inner join thirdclass t on l.thirdclass_code = t.thirdclass_code
         where
-            s.state_name=#{stateName};
+            c.city_code=#{cityCode} and t.secondclass_code = "B0201";
     </select>
+
+    <insert id="addSchedule" parameterType="schedule"
+            useGeneratedKeys="true" keyColumn="schedule_no" keyProperty="scheduleNo">
+        insert into schedule(location_no)
+        values (#{locationNo})
+    </insert>
+
+    <select id="findLocation" resultMap="LocationResultMap" parameterType="int">
+        select
+            l.location_no,
+            l.city_code,
+            l.thirdclass_code,
+            l.location_name,
+            l.location_desc,
+            l.location_photo,
+            l.location_tel,
+            l.location_addr,
+            l.location_x,
+            l.location_y,
+            l.locationclass_no
+        from
+            location l
+        where
+            l.location_no = #{locationNo}
+    </select>
+
 </mapper>

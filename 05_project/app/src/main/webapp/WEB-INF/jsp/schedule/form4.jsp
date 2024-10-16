@@ -17,7 +17,7 @@
 <form action="form5" method="post">
     <ul>
         <c:forEach items="${locationList}" var="location">
-            <li><input name='locationName' value='${location.locationNo}' type='checkbox'>${location.locationName}</li>
+            <li><input name='locationNos' value='${location.locationNo}' type='checkbox'>${location.locationName}</li>
         </c:forEach>
     </ul>
     <button type="submit">다음</button>
