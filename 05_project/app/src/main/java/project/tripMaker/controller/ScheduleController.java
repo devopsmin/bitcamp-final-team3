@@ -2,20 +2,21 @@ package project.tripMaker.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import project.tripMaker.service.ScheduleService;
-import project.tripMaker.vo.City;
-import project.tripMaker.vo.Location;
-import project.tripMaker.vo.Schedule;
-import project.tripMaker.vo.State;
+import project.tripMaker.vo.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.beans.PropertyEditorSupport;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Controller
 @RequestMapping("/schedule")
-@SessionAttributes({"location", "scheduleList"})
+@SessionAttributes({"location", "locationNos", "trip"})
 
 public class ScheduleController {
 
@@ -33,9 +34,11 @@ public class ScheduleController {
   }
 
   @GetMapping("form1")
-  public String form1(Model model) throws Exception {
+  public String form1(Model model, Trip trip) throws Exception {
     List<State> stateList = scheduleService.stateList();
+    scheduleService.makeTrip(trip);
     model.addAttribute("stateList", stateList);
+    model.addAttribute("trip", trip);
     return "schedule/form1";
   }
 
@@ -54,51 +57,56 @@ public class ScheduleController {
   }
 
   @PostMapping("form4")
-  public String form4(@ModelAttribute Location location, Model model) throws Exception {
+  public String form4(@ModelAttribute Location location, Model model,@ModelAttribute Trip trip) throws Exception {
     String cityCode = location.getCityCode();
     List<Location> locationList = scheduleService.locationList(cityCode);
     model.addAttribute("locationList", locationList);
+
+    scheduleService.updateTrip(trip);
     return "schedule/form4";
   }
 
   @PostMapping("form5")
   public String form5(@ModelAttribute Location location, int[] locationNos, Model model) throws Exception {
-    List<Schedule> scheduleList = new ArrayList<>();
-    for(int locationNo : locationNos) {
-      Schedule schedule = new Schedule();
-      schedule.setLocationNo(locationNo);
-      scheduleService.addSchedule(schedule);
-      scheduleList.add(schedule);
-    }
-    model.addAttribute("scheduleList", scheduleList);
+    model.addAttribute("locationNos", locationNos);
+
     String cityCode = location.getCityCode();
     List<Location> hotelList = scheduleService.hotelList(cityCode);
     model.addAttribute("hotelList", hotelList);
+
     return "schedule/form5";
   }
 
   @PostMapping("form6")
-  public String form6(@ModelAttribute List<Schedule> scheduleList, int[] hotelNos, Model model) throws Exception {
-    for(int hotelNo : hotelNos) {
-      Schedule schedule = new Schedule();
-      schedule.setLocationNo(hotelNo);
-      scheduleService.addSchedule(schedule);
-    }
-    model.addAttribute("hotelNos", hotelNos);
+  public String form6(@ModelAttribute("locationNos") List<Integer> locationNos, int[] hotelNos, Model model) throws Exception {
 
     List<Location> selectedLocation = new ArrayList<>();
-    for (Schedule schedule : scheduleList) {
-      int locationNo = schedule.getLocationNo();
+    for (int locationNo : locationNos) {
       Location location = scheduleService.findLocation(locationNo);
       selectedLocation.add(location);
     }
-    List<Location> selectedHotels = new ArrayList<>();
+
+    List<Location> selectedHotel = new ArrayList<>();
     for (int hotelNo : hotelNos) {
       Location location = scheduleService.findLocation(hotelNo);
-      selectedHotels.add(location);
+      selectedHotel.add(location);
     }
     model.addAttribute("selectedLocation", selectedLocation);
-    model.addAttribute("selectedHotels", selectedHotels);
+    model.addAttribute("selectedHotels", selectedHotel);
     return "schedule/form6";
   }
+
+  @PostMapping("form7")
+  public String form7(@ModelAttribute Trip trip, Model model) throws Exception {
+    List<Schedule> scheduleList = trip.getScheduleList();
+    scheduleService.addScheduleList(trip);
+
+    trip.setScheduleList(scheduleList);
+    model.addAttribute("trip", trip);
+    return "schedule/form7";
+  }
 }
+//
+//    request.getParameterMap().forEach((key, value) -> {
+//      System.out.println("Key: " + key + ", Value: " + Arrays.toString(value));
+//    });

@@ -3,6 +3,16 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="project.tripMaker.dao.ScheduleDao">
+    <resultMap id="TripResultMap" type="project.tripMaker.vo.Trip">
+        <id property="tripNo" column="trip_no" />
+        <result property="userNo" column="user_no" />
+        <result property="themaNo" column="thema_no" />
+        <result property="tripTitle" column="trip_title" />
+        <result property="startDate" column="start_date" />
+        <result property="endDate" column="end_date" />
+        <result property="tripCreatedDate" column="trip_created_date" />
+    </resultMap>
+
     <resultMap id="StateResultMap" type="project.tripMaker.vo.State">
         <id column="state_code" property="stateCode"/>
         <result column="state_name" property="stateName"/>
@@ -29,6 +39,19 @@
         <result column="locationclass_no" property="locationclassNo"/>
     </resultMap>
 
+    <insert id="makeTrip" parameterType="project.tripMaker.vo.Trip"
+            useGeneratedKeys="true" keyColumn="trip_no" keyProperty="tripNo">
+        INSERT INTO trip (trip_created_date)
+        VALUES (NOW())
+    </insert>
+
+    <update id="updateTrip" parameterType="project.tripMaker.vo.Trip">
+        UPDATE trip SET
+            start_date=#{startDate},
+            end_date=#{endDate}
+        WHERE
+            trip_no=#{tripNo}
+    </update>
     <select id="stateList" resultMap="StateResultMap">
         select
             state_code,
@@ -93,10 +116,19 @@
             c.city_code=#{cityCode} and t.secondclass_code = "B0201";
     </select>
 
-    <insert id="addSchedule" parameterType="schedule"
-            useGeneratedKeys="true" keyColumn="schedule_no" keyProperty="scheduleNo">
-        insert into schedule(location_no)
-        values (#{locationNo})
+<!--    <insert id="addSchedule" parameterType="schedule"-->
+<!--            useGeneratedKeys="true" keyColumn="schedule_no" keyProperty="scheduleNo">-->
+<!--        insert into schedule(location_no,schedule_day, schedule_route)-->
+<!--        values (#{locationNo}, #{scheduleDay}, #{scheduleRoute})-->
+<!--    </insert>-->
+
+    <insert id="addScheduleList" parameterType="Trip"
+            useGeneratedKeys="true" keyColumn="schedule_no" keyProperty="scheduleList.scheduleNo">
+        insert into schedule(trip_no, location_no, schedule_day, schedule_route)
+        values
+        <foreach collection="scheduleList" item="schedule" separator=",">
+            (#{tripNo}, #{schedule.locationNo}, #{schedule.scheduleDay}, #{schedule.scheduleRoute})
+        </foreach>
     </insert>
 
     <select id="findLocation" resultMap="LocationResultMap" parameterType="int">

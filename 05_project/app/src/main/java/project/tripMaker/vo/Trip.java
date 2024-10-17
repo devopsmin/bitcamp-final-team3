@@ -1,6 +1,7 @@
 package project.tripMaker.vo;
 
 import java.sql.Date;
+import java.util.List;
 
 public class Trip {
   private Integer tripNo;          // 여행번호
@@ -10,6 +11,8 @@ public class Trip {
   private Date startDate;          // 여행시작일
   private Date endDate;            // 여행종료일
   private Date tripCreatedDate;    // 생성날짜
+  private List<Schedule> scheduleList;
+
 
   @Override
   public String toString() {
@@ -78,5 +81,13 @@ public class Trip {
 
   public void setTripCreatedDate(Date tripCreatedDate) {
     this.tripCreatedDate = tripCreatedDate;
+  }
+
+  public List<Schedule> getScheduleList() {
+    return scheduleList;
+  }
+
+  public void setScheduleList(List<Schedule> scheduleList) {
+    this.scheduleList = scheduleList;
   }
 }

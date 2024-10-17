@@ -3,10 +3,7 @@ package project.tripMaker.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import project.tripMaker.dao.ScheduleDao;
-import project.tripMaker.vo.City;
-import project.tripMaker.vo.Location;
-import project.tripMaker.vo.Schedule;
-import project.tripMaker.vo.State;
+import project.tripMaker.vo.*;
 
 import java.util.List;
 
@@ -15,6 +12,13 @@ public class ScheduleService {
 
   @Autowired
   ScheduleDao scheduleDao;
+
+  public void makeTrip(Trip trip) throws Exception{
+    scheduleDao.makeTrip(trip);
+  }
+
+  public void updateTrip(Trip trip) throws Exception{
+  }
 
   public List<State> stateList() throws Exception {
     return scheduleDao.stateList();
@@ -32,11 +36,12 @@ public class ScheduleService {
     return scheduleDao.hotelList(cityCode);
   }
 
-  public void addSchedule(Schedule schedule) throws Exception {
-    scheduleDao.addSchedule(schedule);
+  public void addScheduleList(Trip trip) throws Exception {
+    scheduleDao.addScheduleList(trip);
   }
 
   public Location findLocation(int locationNo) throws Exception {
     return scheduleDao.findLocation(locationNo);
   }
+
 }

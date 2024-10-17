@@ -1,15 +1,16 @@
 package project.tripMaker.dao;
 
 import org.springframework.stereotype.Repository;
-import project.tripMaker.vo.City;
-import project.tripMaker.vo.Location;
-import project.tripMaker.vo.Schedule;
-import project.tripMaker.vo.State;
+import project.tripMaker.vo.*;
 
 import java.util.List;
 
 @Repository
 public interface ScheduleDao {
+  void makeTrip(Trip trip);
+
+  void updateTrip(Trip trip);
+
   List<State> stateList();
 
   List<City> cityList(String stateCode);
@@ -18,7 +19,7 @@ public interface ScheduleDao {
 
   List<Location> hotelList(String cityCode);
 
-  void addSchedule(Schedule schedule);
+  void addScheduleList(Trip trip);
 
   Location findLocation(int locationNo);
 }

@@ -13,7 +13,7 @@
     <title>Title</title>
 </head>
 <body>
-<h1>일정 편집</h1>
+<h1>일정 확정</h1>
 <form action="form7" method="post">
     <ul>
         <c:forEach items="${selectedLocation}" var="location" varStatus="status">
