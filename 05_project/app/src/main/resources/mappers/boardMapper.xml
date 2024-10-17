@@ -95,7 +95,6 @@
       b.trip_no,
       b.board_content,
       b.board_tag,
-      u.user_no,
       u.user_photo,
       u.user_nickname,
       c.user_no,
