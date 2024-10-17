@@ -8,13 +8,12 @@ import project.tripMaker.dao.BoardDao;
 
 import java.util.List;
 
-@Service
-public class BoardService {
+public interface BoardService {
 
-  @Autowired
-  BoardDao boardDao;
+  void add(Board board) throws Exception;
 
-  public List<Board> list() throws Exception {
-    return boardDao.list();
-  }
+  List<Board> list() throws Exception;
+
+  void increaseViewCount(int boardNo) throws Exception;
+
 }

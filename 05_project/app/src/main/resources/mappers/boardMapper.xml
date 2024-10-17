@@ -27,9 +27,34 @@
 <!--    board_content as boardContent,-->
 <!--    board_tag as boardTag-->
     <!-- Get all board records -->
+
+    <!-- 동행게시판 - 게시판글 추가 -->
+    <insert id="insert" parameterType="board"
+            useGeneratedKeys="true" keyColumn="board_id" keyProperty="no">
+        insert into board(boardtype_no, board_title, board_created_date, user_no, trip_no, board_content, board_tag)
+        values (#{boardtypeNo}, #{boardTitle}, #{boardCreatedDate}, #{userNo}, #{tripNo}, #{boardContent}, #{boardTag})
+    </insert>
+
+    <!-- 동행게시판 - 게시판글 전체 목록 -->
     <select id="list" resultMap="BoardMap">
-        SELECT board_no
-        FROM board
+        select * from board where boardtype_no=2
+    </select>
+
+    <!-- 동행게시판 - 게시글 상세 페이지 -->
+    <select id="findBy" resultMap="BoardMap" parameterType="int">
+        select
+        b.board_id,
+        b.bord_title,
+        b.bord_content,
+        b.board_created_date,
+        b.board_count,
+        u.user_no,
+        u.user_nickname,
+        from
+            boards b
+            inner join users u on b.user_id=u.user_id
+        where
+            b.board_id=#{boardNo}
     </select>
 
 </mapper>

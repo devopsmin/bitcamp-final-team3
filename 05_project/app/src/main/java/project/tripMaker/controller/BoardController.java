@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.multipart.MultipartFile;
 import project.tripMaker.service.BoardService;
 import project.tripMaker.vo.Board;
+import project.tripMaker.vo.User;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -30,6 +31,17 @@ public class BoardController {
 
   }
 
+  public String add(
+          Board board, HttpSession session) throws Exception {
+    User loginUser = (User) session.getAttribute("loginUser");
+    if (loginUser == null) {
+      throw new Exception("로그인 하지 않았습니다.");
+    }
+
+    //board.setWriter(loginUser);
+    return "redirect:list";
+  }
+
   @GetMapping("list")
   public void list(Model model) throws Exception {
     List<Board> list = boardService.list();
@@ -38,4 +50,5 @@ public class BoardController {
     }
     model.addAttribute("list", list);
   }
+
 }
