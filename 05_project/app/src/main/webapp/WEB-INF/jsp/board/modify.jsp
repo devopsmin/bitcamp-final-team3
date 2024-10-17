@@ -21,15 +21,15 @@
 
 <c:if test="${not empty board}">
     <form action="update" method="post">
-        번호: <input readonly name='no' type='text' value='${board.boardNo}'><br>
+        번호: <input name='no' readonly type='text' value='${board.boardNo}'><br>
         제목: <input name='title' type='text' value='${board.boardTitle}'><br>
         내용: <textarea name='content'>${board.boardContent}</textarea><br>
         작성일: <input readonly type='text'
                     value='<fmt:formatDate value="${board.boardCreatedDate}" pattern="yyyy-MM-dd"/>'><br>
 
         작성자: <input readonly type='text' value='${board.writer.userNickname}'><br>
-    <button type="button" onclick="location.href='list'">취소</button>
-    <button>변경</button>
+    <button type="button" onclick="location.href='list'">목록</button>
+    <button type="submit">변경</button>
     </form>
 </c:if>
 

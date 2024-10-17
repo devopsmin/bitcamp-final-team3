@@ -20,6 +20,9 @@
 </c:if>
 
 <c:if test="${not empty board}">
+    <button type="button" onclick="location.href='list'">좋아요</button>
+    <button type="button" onclick="location.href='list'">즐겨찾기</button>
+    <form action="modify" method="post">
         번호: <input readonly name='no' type='text' value='${board.boardNo}'><br>
         제목: <input readonly name='title' type='text' value='${board.boardTitle}'><br>
         내용: <textarea readonly name='content'>${board.boardContent}</textarea><br>
@@ -28,8 +31,9 @@
         조회수: <input readonly type='text' value='${board.boardCount}'><br>
         작성자: <input readonly type='text' value='${board.writer.userNickname}'><br>
     <button type="button" onclick="location.href='list'">목록</button>
-    <button type="button" onclick="location.href='modify?boardNo=${board.boardNo}'">수정</button>
+    <button type="submit">수정</button>
     <button type='button' onclick='location.href="delete?boardNo=${board.boardNo}"'>삭제</button>
+    </form>
     <br> 댓글 : <br>
     <c:if test="${board.comments.size() > 0}">
         <ul>

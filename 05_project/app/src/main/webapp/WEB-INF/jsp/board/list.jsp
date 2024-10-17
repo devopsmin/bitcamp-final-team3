@@ -17,11 +17,22 @@
 <!-- Header 자리여기까지 -->
 
 <h1>게시글 목록</h1>
+<label>정렬</label>
+<select>
+    <option selected>최신순</option>
+    <option>좋아요</option>
+    <option>즐겨찾기</option>
+    <option>조회수</option>
+</select>
+
 <p><a href='form'>글쓰기</a></p>
 
 <table>
   <thead>
-    <tr><th>번호</th><th>제목</th><th>작성자번호</th><th>작성자닉네임</th><th>작성일</th><th>조회수</th><th>태그</th></tr>
+    <tr><th>번호</th><th>제목</th>
+        <th>작성자번호</th><th>작성자닉네임</th><th>작성일</th>
+        <th>좋아요</th><th>즐겨찾기</th>
+        <th>조회수</th><th>태그</th></tr>
   </thead>
   <tbody>
 <c:forEach items="${list}" var="board">
@@ -31,6 +42,8 @@
         <td>${board.writer.userNo}</td>
         <td>${board.writer.userNickname}</td>
         <td>${board.boardCreatedDate}</td>
+        <td>${board.boardLike}</td>
+        <td>${board.boardFavor}</td>
         <td>${board.boardCount}</td>
         <td>${board.boardTag}</td>
     </tr>

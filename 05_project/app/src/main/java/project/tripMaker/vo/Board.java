@@ -18,6 +18,9 @@ public class Board {
   private User writer; // 작성자
   private List<Comment> comments; // 댓글
 
+  private int boardLike;
+  private int boardFavor;
+
   // 기본 생성자
   public Board() {}
 
@@ -100,6 +103,22 @@ public class Board {
 
   public void setComments(List<Comment> comments) {
     this.comments = comments;
+  }
+
+  public int getBoardLike() {
+    return boardLike;
+  }
+
+  public void setBoardLike(int boardLike) {
+    this.boardLike = boardLike;
+  }
+
+  public int getBoardFavor() {
+    return boardFavor;
+  }
+
+  public void setBoardFavor(int boardFavor) {
+    this.boardFavor = boardFavor;
   }
 
   @Override

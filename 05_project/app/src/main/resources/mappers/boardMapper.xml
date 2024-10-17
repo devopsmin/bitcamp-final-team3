@@ -15,6 +15,8 @@
         <result property="tripNo" column="trip_no"/>
         <result property="boardContent" column="board_content"/>
         <result property="boardTag" column="board_tag"/>
+        <result property="boardLike" column="like_count"/>
+        <result property="boardFavor" column="favor_count"/>
 
         <association property="writer" javaType="project.tripMaker.vo.User">
           <id property="userNo" column="user_no" />
@@ -32,22 +34,37 @@
     </resultMap>
 
     <select id="list" resultMap="BoardMap">
-        SELECT
-            b.board_no,
-            b.board_title,
-            b.board_created_date,
-            b.board_count,
-            b.board_tag,
-            u.user_no,
-            u.user_nickname
-        FROM
-            board b
-            inner join user u on b.user_no=u.user_no
-
-        WHERE
-            b.boardtype_no=3
-        ORDER BY
-            b.board_no asc
+      SELECT
+        b.board_no,
+        b.board_title,
+        b.board_created_date,
+        b.board_count,
+        b.board_tag,
+        u.user_no,
+        u.user_nickname,
+        COALESCE(f_count.favor_count, 0) as favor_count,
+        COALESCE(l_count.like_count, 0) as like_count
+      FROM
+        board b
+      INNER JOIN
+            user u
+      ON b.user_no = u.user_no
+      LEFT JOIN (
+                  SELECT board_no, COUNT(*) as favor_count
+                  FROM favor
+                  GROUP BY board_no
+                )
+          f_count ON b.board_no = f_count.board_no
+      LEFT JOIN (
+                  SELECT board_no, COUNT(*) as like_count
+                  FROM boardlike
+                  GROUP BY board_no
+                )
+          l_count ON b.board_no = l_count.board_no
+      WHERE
+        b.boardtype_no = 3
+      ORDER BY
+        b.board_no asc;
     </select>
 
     <insert id="insert" parameterType="board"
@@ -117,17 +134,4 @@
         board_no=#{boardNo}
   </update>
 
-<!--  <select id="findByComment" resultMap="CommentMap" parameterType="int">-->
-<!--    SELECT-->
-<!--      c.comment_no,-->
-<!--      c.comment_content,-->
-<!--      c.comment_created_date,-->
-<!--      c.user_no-->
-<!--    FROM-->
-<!--      comment c-->
-<!--    WHERE-->
-<!--      c.board_no = #{boardNo}-->
-<!--    ORDER BY-->
-<!--      c.comment_created_date ASC-->
-<!--  </select>-->
 </mapper>
