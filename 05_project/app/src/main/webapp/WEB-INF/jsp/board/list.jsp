@@ -18,12 +18,19 @@
 
 <h1>게시글 목록</h1>
 <label>정렬</label>
-<select>
-    <option selected>최신순</option>
-    <option>좋아요</option>
-    <option>즐겨찾기</option>
-    <option>조회수</option>
+<select name="sort" onchange="changeSort(this.value)">
+    <option value="latest" ${param.sort == 'latest' || param.sort == null ? 'selected' : ''}>최신순</option>
+    <option value="likes" ${param.sort == 'likes' ? 'selected' : ''}>좋아요</option>
+    <option value="favorites" ${param.sort == 'favorites' ? 'selected' : ''}>즐겨찾기</option>
+    <option value="views" ${param.sort == 'views' ? 'selected' : ''}>조회수</option>
 </select>
+
+<script>
+    function changeSort(sortType){
+      window.location.href = 'list?sort=' + sortType;
+    }
+</script>
+
 
 <p><a href='form'>글쓰기</a></p>
 

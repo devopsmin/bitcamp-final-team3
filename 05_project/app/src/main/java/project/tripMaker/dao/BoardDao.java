@@ -10,6 +10,9 @@ import project.tripMaker.vo.Comment;
 @Repository
 public interface BoardDao {
   List<Board> list() throws Exception;
+  List<Board> findAllOrderByBoardLikeDesc();
+  List<Board> findAllOrderByBoardFavorDesc();
+  List<Board> findAllOrderByBoardCountDesc();
 
   boolean insert(Board board) throws Exception;
 

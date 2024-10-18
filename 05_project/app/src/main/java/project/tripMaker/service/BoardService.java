@@ -18,6 +18,19 @@ public class BoardService {
     return boardDao.list();
   }
 
+  public List<Board> listByLikes() {
+    return boardDao.findAllOrderByBoardLikeDesc();
+  }
+
+  public List<Board> listByFavorites() {
+    return boardDao.findAllOrderByBoardFavorDesc();
+  }
+
+  public List<Board> listByViews() {
+    return boardDao.findAllOrderByBoardCountDesc();
+  }
+
+
   @Transactional
   public void add(Board board) throws Exception {
     boardDao.insert(board);
@@ -47,4 +60,5 @@ public class BoardService {
     }
     return true;
   }
+
 }

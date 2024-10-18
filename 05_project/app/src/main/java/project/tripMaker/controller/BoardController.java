@@ -22,12 +22,40 @@ public class BoardController {
   }
 
   @GetMapping("list")
-  public void list(Model model) throws Exception {
-    List<Board> list = boardService.list();
-    for ( Board board : list ) {
-      System.out.println(board.toString());
+  public String list(
+      Model model,
+      @RequestParam(required = false, defaultValue = "latest") String sort
+  ) throws Exception {
+
+    List<Board> boardList;
+
+    switch (sort){
+
+      case "likes":
+        boardList = boardService.listByLikes();
+        break;
+      case "favorites":
+        boardList = boardService.listByFavorites();
+        break;
+      case "views":
+        boardList = boardService.listByViews();
+        break;
+      default: //"latest"
+        boardList = boardService.list();
+        break;
     }
-    model.addAttribute("list", list);
+
+    // List<Board> list = boardService.list();
+    //
+    //
+    // for ( Board board : list ) {
+    //   System.out.println(board.toString());
+    // }
+
+
+
+    model.addAttribute("list", boardList);
+    return "board/list";
   }
 
   @GetMapping("form")
