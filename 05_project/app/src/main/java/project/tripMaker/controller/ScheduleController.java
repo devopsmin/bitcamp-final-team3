@@ -10,9 +10,7 @@ import project.tripMaker.vo.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.beans.PropertyEditorSupport;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 @Controller
 @RequestMapping("/schedule")
@@ -51,17 +49,17 @@ public class ScheduleController {
 
   @PostMapping("form3")
   public String form3(Model model, Location location, String cityCode) throws Exception {
-    location.setCityCode(cityCode);
+    City city = scheduleService.firndCity(cityCode);
+    location.setCity(city);
     model.addAttribute("location", location);
     return "schedule/form3";
   }
 
   @PostMapping("form4")
   public String form4(@ModelAttribute Location location, Model model,@ModelAttribute Trip trip) throws Exception {
-    String cityCode = location.getCityCode();
+    String cityCode = location.getCity().getCityCode();
     List<Location> locationList = scheduleService.locationList(cityCode);
     model.addAttribute("locationList", locationList);
-
     scheduleService.updateTrip(trip);
     return "schedule/form4";
   }
@@ -70,7 +68,7 @@ public class ScheduleController {
   public String form5(@ModelAttribute Location location, int[] locationNos, Model model) throws Exception {
     model.addAttribute("locationNos", locationNos);
 
-    String cityCode = location.getCityCode();
+    String cityCode = location.getCity().getCityCode();
     List<Location> hotelList = scheduleService.hotelList(cityCode);
     model.addAttribute("hotelList", hotelList);
 
@@ -98,11 +96,14 @@ public class ScheduleController {
 
   @PostMapping("form7")
   public String form7(@ModelAttribute Trip trip, Model model) throws Exception {
-    List<Schedule> scheduleList = trip.getScheduleList();
-    scheduleService.addScheduleList(trip);
-
+    for(Schedule schedule : trip.getScheduleList()) {
+      schedule.setTripNo(trip.getTripNo());
+      scheduleService.addSchedule(schedule);
+    }
+    List<Schedule> scheduleList = scheduleService.viewSchedule(trip.getTripNo());
     trip.setScheduleList(scheduleList);
-    model.addAttribute("trip", trip);
+
+    model.addAttribute("scheduleList", scheduleList);
     return "schedule/form7";
   }
 }

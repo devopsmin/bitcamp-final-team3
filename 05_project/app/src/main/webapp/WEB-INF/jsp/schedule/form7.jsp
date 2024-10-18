@@ -14,23 +14,22 @@
 </head>
 <body>
 <h1>일정 확정</h1>
-<form action="form7" method="post">
-    <ul>
-        <c:forEach items="${selectedLocation}" var="location" varStatus="status">
-            <li>
-                <label>
-                        ${location.locationName}
-                    <!-- locationNo를 숨겨진 필드로 전송 -->
-                    <input type="hidden" name="scheduleList[${status.index}].locationNo" value="${location.locationNo}" />
-                    <!-- scheduleDay를 숫자 입력으로 전송 -->
-                    <input name="scheduleList[${status.index}].scheduleDay" type="number" min="1" placeholder="Enter day" required />
-                    <!-- scheduleRoute를 숫자 입력으로 전송 -->
-                    <input name="scheduleList[${status.index}].scheduleRoute" type="number" min="1" placeholder="Enter route" required />
-                </label>
-            </li>
-        </c:forEach>
-    </ul>
-    <button type="submit">다음</button>
-</form>
+<table>
+    <thead>
+    <tr><th>번호</th><th>여행지</th><th>여행일차</th><th>여행순서</th></tr>
+    </thead>
+
+    <tbody>
+    <c:forEach items="${scheduleList}" var="schedule">
+        <tr>
+            <td>${schedule.location.locationNo}</td>
+            <td>${schedule.location.locationName}</td>
+            <td>${schedule.scheduleDay}</td>
+            <td>${schedule.scheduleRoute}</td>
+        </tr>
+    </c:forEach>
+    </tbody>
+</table>
+
 </body>
 </html>

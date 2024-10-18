@@ -19,7 +19,11 @@ public interface ScheduleDao {
 
   List<Location> hotelList(String cityCode);
 
-  void addScheduleList(Trip trip);
+  void addSchedule(Schedule schedule);
 
   Location findLocation(int locationNo);
+
+  City findCity(String cityCode);
+
+  List<Schedule> viewSchedule(Integer tripNo);
 }

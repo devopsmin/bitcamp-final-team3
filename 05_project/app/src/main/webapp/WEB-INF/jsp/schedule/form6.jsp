@@ -21,7 +21,7 @@
                 <label>
                         ${location.locationName}
                     <!-- locationNo를 숨겨진 필드로 전송 -->
-                    <input type="hidden" name="scheduleList[${status.index}].locationNo" value="${location.locationNo}" />
+                    <input type="hidden" name="scheduleList[${status.index}].location.locationNo" value="${location.locationNo}" />
                     <!-- scheduleDay를 숫자 입력으로 전송 -->
                     <input name="scheduleList[${status.index}].scheduleDay" type="number" min="1" placeholder="Enter day" required />
                     <!-- scheduleRoute를 숫자 입력으로 전송 -->

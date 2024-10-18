@@ -2,7 +2,7 @@ package project.tripMaker.vo;
 
 public class Location {
   private Integer locationNo;      // 여행지정보 번호
-  private String cityCode;
+  private City city;
   private String thirdclassCode;    // 소분류번호
   private String locationName;     // 여행지이름
   private String locationDesc;     // 여행지설명
@@ -21,12 +21,12 @@ public class Location {
     this.locationNo = locationNo;
   }
 
-  public String getCityCode() {
-    return cityCode;
+  public City getCity() {
+    return city;
   }
 
-  public void setCityCode(String cityCode) {
-    this.cityCode = cityCode;
+  public void setCity(City city) {
+    this.city = city;
   }
 
   public String getThirdclassCode() {

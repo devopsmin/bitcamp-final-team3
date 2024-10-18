@@ -3,31 +3,70 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="project.tripMaker.dao.ScheduleDao">
-    <resultMap id="TripResultMap" type="project.tripMaker.vo.Trip">
-        <id property="tripNo" column="trip_no" />
-        <result property="userNo" column="user_no" />
-        <result property="themaNo" column="thema_no" />
-        <result property="tripTitle" column="trip_title" />
-        <result property="startDate" column="start_date" />
-        <result property="endDate" column="end_date" />
-        <result property="tripCreatedDate" column="trip_created_date" />
+
+    <resultMap id="TripResultMap" type="Trip">
+        <id column="trip_no" property="tripNo"/>
+        <result column="user_no" property="userNo"/>
+        <result column="thema_no" property="themaNo"/>
+        <result column="trip_title" property="tripTitle"/>
+        <result column="start_date" property="startDate"/>
+        <result column="end_date" property="endDate"/>
+        <result column="trip_created_date" property="tripCreatedDate"/>
+
+        <!-- Schedule 리스트 매핑 -->
+        <collection property="scheduleList" ofType="Schedule">
+            <id column="schedule_no" property="scheduleNo"/>
+            <result column="trip_no" property="tripNo"/>
+            <result column="schedule_day" property="scheduleDay"/>
+            <result column="schedule_route" property="scheduleRoute"/>
+
+            <!-- Location 객체와 1:1 매핑 -->
+            <association property="location" javaType="Location">
+                <id column="location_no" property="locationNo"/>
+                <result column="city_code" property="city.cityCode"/>
+                <result column="location_name" property="locationName"/>
+                <result column="location_desc" property="locationDesc"/>
+                <result column="location_photo" property="locationPhoto"/>
+                <result column="location_tel" property="locationTel"/>
+                <result column="location_addr" property="locationAddr"/>
+                <result column="location_x" property="locationX"/>
+                <result column="location_y" property="locationY"/>
+                <result column="locationclass_no" property="locationclassNo"/>
+                <result column="thirdclass_code" property="thirdclassCode"/>
+            </association>
+        </collection>
     </resultMap>
 
-    <resultMap id="StateResultMap" type="project.tripMaker.vo.State">
+    <resultMap id="SchedulResultMap" type="Schedule">
+        <id column="schedule_no" property="scheduleNo"/>
+        <result column="trip_no" property="tripNo"/>
+        <result column="schedule_day" property="scheduleDay"/>
+        <result column="schedule_route" property="scheduleRoute"/>
+
+        <!-- Location 객체와 1:1 매핑 -->
+        <association property="location" javaType="Location">
+            <id column="location_no" property="locationNo"/>
+            <result column="location_name" property="locationName"/>
+        </association>
+    </resultMap>
+
+    <resultMap id="StateResultMap" type="State">
         <id column="state_code" property="stateCode"/>
         <result column="state_name" property="stateName"/>
     </resultMap>
 
-    <resultMap id="CityResultMap" type="project.tripMaker.vo.City">
+    <resultMap id="CityResultMap" type="City">
         <id column="city_code" property="cityCode"/>
-        <result column="state_code" property="stateCode"/>
         <result column="city_name" property="cityName"/>
         <result column="city_photo" property="cityPhoto"/>
+            <association property="state" javaType="state">
+                <id column="state_code" property="stateCode"/>
+                <result column="state_name" property="stateName"/>
+            </association>
     </resultMap>
 
-    <resultMap id="LocationResultMap" type="project.tripMaker.vo.Location">
+    <resultMap id="LocationResultMap" type="Location">
         <id column="location_no" property="locationNo"/>
-        <result column="city_code" property="cityCode"/>
         <result column="thirdclass_code" property="thirdclassCode"/>
         <result column="location_name" property="locationName"/>
         <result column="location_desc" property="locationDesc"/>
@@ -37,21 +76,28 @@
         <result column="location_x" property="locationX"/>
         <result column="location_y" property="locationY"/>
         <result column="locationclass_no" property="locationclassNo"/>
+
+        <association column="city_code" property="city" javaType="City">
+            <id column="city_code" property="cityCode"/>
+            <result column="city_name" property="cityName"/>
+        </association>
+
     </resultMap>
 
-    <insert id="makeTrip" parameterType="project.tripMaker.vo.Trip"
+    <insert id="makeTrip" parameterType="Trip"
             useGeneratedKeys="true" keyColumn="trip_no" keyProperty="tripNo">
         INSERT INTO trip (trip_created_date)
         VALUES (NOW())
     </insert>
 
-    <update id="updateTrip" parameterType="project.tripMaker.vo.Trip">
+    <update id="updateTrip" parameterType="Trip">
         UPDATE trip SET
             start_date=#{startDate},
             end_date=#{endDate}
         WHERE
             trip_no=#{tripNo}
     </update>
+
     <select id="stateList" resultMap="StateResultMap">
         select
             state_code,
@@ -62,22 +108,37 @@
 
     <select id="cityList" resultMap="CityResultMap">
         SELECT
-            c.state_code,
             c.city_code,
             c.city_name,
-            c.city_photo
+            c.city_photo,
+            s.state_code,
+            s.state_name
         FROM
             city c
-        right JOIN
-            state s ON s.state_code = c.state_code
+        right JOIN state s
+        ON s.state_code = c.state_code
         where
             s.state_code=#{stateCode}
+    </select>
+
+    <select id="findCity" resultMap="CityResultMap">
+        SELECT
+            c.city_code,
+            c.city_name,
+            c.city_photo,
+            s.state_code,
+            s.state_name
+        FROM
+            city c
+        right JOIN state s
+        ON s.state_code = c.state_code
+        where
+            c.city_code=#{cityCode}
     </select>
 
     <select id="locationList" resultMap="LocationResultMap">
         SELECT
             l.location_no,
-            l.city_code,
             l.thirdclass_code,
             l.location_name,
             l.location_desc,
@@ -86,11 +147,15 @@
             l.location_addr,
             l.location_x,
             l.location_y,
-            l.locationclass_no
+            l.locationclass_no,
+            c.city_code,
+            c.city_name
         from
             location l
-                right outer join city c on l.city_code = c.city_code
-                inner join thirdclass t on l.thirdclass_code = t.thirdclass_code
+        right outer join city c
+            on l.city_code = c.city_code
+        inner join thirdclass t
+            on l.thirdclass_code = t.thirdclass_code
         where
             c.city_code=#{cityCode} and t.secondclass_code != "B0201";
     </select>
@@ -116,19 +181,10 @@
             c.city_code=#{cityCode} and t.secondclass_code = "B0201";
     </select>
 
-<!--    <insert id="addSchedule" parameterType="schedule"-->
-<!--            useGeneratedKeys="true" keyColumn="schedule_no" keyProperty="scheduleNo">-->
-<!--        insert into schedule(location_no,schedule_day, schedule_route)-->
-<!--        values (#{locationNo}, #{scheduleDay}, #{scheduleRoute})-->
-<!--    </insert>-->
-
-    <insert id="addScheduleList" parameterType="Trip"
-            useGeneratedKeys="true" keyColumn="schedule_no" keyProperty="scheduleList.scheduleNo">
-        insert into schedule(trip_no, location_no, schedule_day, schedule_route)
-        values
-        <foreach collection="scheduleList" item="schedule" separator=",">
-            (#{tripNo}, #{schedule.locationNo}, #{schedule.scheduleDay}, #{schedule.scheduleRoute})
-        </foreach>
+    <insert id="addSchedule" parameterType="schedule"
+            useGeneratedKeys="true" keyColumn="schedule_no" keyProperty="scheduleNo">
+        insert into schedule (trip_no, location_no, schedule_day, schedule_route)
+        values (#{tripNo}, #{location.locationNo}, #{scheduleDay}, #{scheduleRoute})
     </insert>
 
     <select id="findLocation" resultMap="LocationResultMap" parameterType="int">
@@ -148,6 +204,23 @@
             location l
         where
             l.location_no = #{locationNo}
+    </select>
+
+    <select id="viewSchedule" resultMap="SchedulResultMap" parameterType="int">
+        SELECT
+            s.schedule_no,
+            s.trip_no,
+            s.schedule_day,
+            s.schedule_route,
+            l.location_no,
+            l.location_name
+        FROM
+            schedule s
+        left outer join location l
+        ON s.location_no = l.location_no
+        WHERE s.trip_no = #{tripNo}
+        ORDER BY s.schedule_day, s.schedule_route
+
     </select>
 
 </mapper>

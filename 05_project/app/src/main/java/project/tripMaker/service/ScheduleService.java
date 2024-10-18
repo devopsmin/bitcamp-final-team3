@@ -18,6 +18,7 @@ public class ScheduleService {
   }
 
   public void updateTrip(Trip trip) throws Exception{
+    scheduleDao.updateTrip(trip);
   }
 
   public List<State> stateList() throws Exception {
@@ -36,12 +37,20 @@ public class ScheduleService {
     return scheduleDao.hotelList(cityCode);
   }
 
-  public void addScheduleList(Trip trip) throws Exception {
-    scheduleDao.addScheduleList(trip);
+  public void addSchedule(Schedule schedule) throws Exception {
+    scheduleDao.addSchedule(schedule);
   }
 
   public Location findLocation(int locationNo) throws Exception {
     return scheduleDao.findLocation(locationNo);
   }
 
+  public City firndCity(String cityCode) {
+    return scheduleDao.findCity(cityCode);
+  }
+
+  public List<Schedule> viewSchedule(Integer tripNo) {
+    return scheduleDao.viewSchedule(tripNo);
+
+  }
 }
