@@ -17,15 +17,18 @@
 <h1>게시글 목록</h1>
 <table>
   <thead>
-      <tr><th>번호</th></tr>
+      <tr><th>번호</th><th>제목</th></tr>
   </thead>
   <tbody>
-<c:forEach items="${list}" var="board">
+<c:forEach items="${mainList}" var="board">
     <tr>
       <td>${board.boardNo}</td>
+      <td><a href='view?no=${board.boardNo}'>${board.boardTitle}</a></td>
     </tr>
 </c:forEach>
   </tbody>
+
+
 </table>
 
 

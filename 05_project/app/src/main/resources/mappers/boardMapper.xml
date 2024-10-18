@@ -4,18 +4,13 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="project.tripMaker.dao.BoardDao">
-    <!-- ResultMap for Board -->
-    <resultMap id="BoardMap" type="project.tripMaker.vo.Board">
-        <id property="boardNo" column="board_no"/>
-        <result property="boardtypeNo" column="boardtype_no"/>
-        <result property="boardTitle" column="board_title"/>
-        <result property="boardCount" column="board_count"/>
-        <result property="boardCreatedDate" column="board_created_date"/>
-        <result property="userNo" column="user_no"/>
-        <result property="tripNo" column="trip_no"/>
-        <result property="boardContent" column="board_content"/>
-        <result property="boardTag" column="board_tag"/>
+
+    <resultMap id="CompanionBoardMainResultMap" type="project.tripMaker.vo.Board">
+        <id property="boardNo" column="board_no"/>                          <!-- 게시판 - 게시판번호 -->
+        <result property="boardtypeNo" column="boardtype_no"/>              <!-- 게시판 - 게시판 유형번호 -->
+        <result property="boardTitle" column="board_title"/>                <!-- 게시판 - 게시판 제목 -->
     </resultMap>
+
 
 <!--    board_no as boardNo,-->
 <!--    boardtype_no as boardtypeNo,-->
@@ -28,33 +23,34 @@
 <!--    board_tag as boardTag-->
     <!-- Get all board records -->
 
-    <!-- 동행게시판 - 게시판글 추가 -->
-    <insert id="insert" parameterType="board"
-            useGeneratedKeys="true" keyColumn="board_id" keyProperty="no">
-        insert into board(boardtype_no, board_title, board_created_date, user_no, trip_no, board_content, board_tag)
-        values (#{boardtypeNo}, #{boardTitle}, #{boardCreatedDate}, #{userNo}, #{tripNo}, #{boardContent}, #{boardTag})
-    </insert>
 
-    <!-- 동행게시판 - 게시판글 전체 목록 -->
-    <select id="list" resultMap="BoardMap">
-        select * from board where boardtype_no=2
-    </select>
-
-    <!-- 동행게시판 - 게시글 상세 페이지 -->
-    <select id="findBy" resultMap="BoardMap" parameterType="int">
+    <!-- 동행게시판 - 메인페이지 목록 -->
+    <select id="mainList" resultMap="CompanionBoardMainResultMap">
         select
-        b.board_id,
-        b.bord_title,
-        b.bord_content,
-        b.board_created_date,
-        b.board_count,
-        u.user_no,
-        u.user_nickname,
+              board_no, board_title
         from
-            boards b
-            inner join users u on b.user_id=u.user_id
+              board
         where
-            b.board_id=#{boardNo}
+              boardtype_no=2
     </select>
 
+    <select id="findBy" resultMap="CompanionBoardMainResultMap" parameterType="int">
+        select
+               b.board_no,
+               b.board_title,
+               b.board_content,
+               b.board_count,
+               b.board_created_date,
+               b.user_no,
+               b.trip_no,
+               u.user_nickname
+        from
+               board b, user u
+        where
+               b.boardtype_no=2
+               and
+               b.board_no=#{boardNo}
+               and
+               b.user_no = u.user_no
+    </select>
 </mapper>

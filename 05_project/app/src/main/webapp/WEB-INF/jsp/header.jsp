@@ -20,8 +20,7 @@
   <nav>
     <ul>
       <li class='btn btn-default'><a href='/app/user/list'>회원</a></li>
-      <li class='btn btn-default'><a href='/app/project/list'>프로젝트</a></li>
-      <li class='btn btn-default'><a href='/app/board/list'>게시글</a></li>
+      <li class='btn btn-default'><a href='/app/companion/mainList'>동행구하기</a></li>
     </ul>
   </nav>
   <div class='login-state pos-right'>
