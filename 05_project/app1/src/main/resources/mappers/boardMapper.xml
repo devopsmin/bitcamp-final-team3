@@ -17,6 +17,7 @@
         <result property="boardTag" column="board_tag"/>
     </resultMap>
 
+
     <select id="list" resultMap="BoardMap">
         select
             board_no,
@@ -37,8 +38,7 @@
         board_title,
         board_created_date,
         board_content,
-        board_count,
-        board_tag
+        board_count
         from board
         where
         board_no=#{boardNo}

@@ -5,7 +5,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import project.tripMaker.vo.Board;
 import project.tripMaker.dao.BoardDao;
-import project.tripMaker.vo.Comment;
 
 import java.util.List;
 
