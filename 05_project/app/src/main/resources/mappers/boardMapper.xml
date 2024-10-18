@@ -33,6 +33,27 @@
         </collection>
     </resultMap>
 
+    <resultMap id="CommentMap" type="project.tripMaker.vo.Comment">
+      <id property="commentNo" column="comment_no"/>
+      <result property="boardNo" column="board_no"/>
+      <result property="userNo" column="user_no"/>
+      <result property="commentContent" column="comment_content"/>
+      <result property="commentCreatedDate" column="comment_created_date"/>
+    </resultMap>
+
+  <select id="listComment" resultMap="CommentMap" parameterType="int">
+        SELECT
+            comment_no,
+            board_no,
+            user_no,
+            comment_content,
+            comment_created_date
+        FROM
+            comment
+        WHERE
+            board_no=#{boardNo}
+  </select>
+
     <select id="list" resultMap="BoardMap">
       SELECT
         b.board_no,

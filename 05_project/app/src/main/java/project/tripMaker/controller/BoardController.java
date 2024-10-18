@@ -67,7 +67,7 @@ public class BoardController {
 
   @PostMapping("update")
   public String update(
-      @RequestParam("no") int boardNo,
+      @RequestParam("no") Integer boardNo,
       @RequestParam("title") String title,
       @RequestParam("content") String content) throws Exception {
 
@@ -76,7 +76,7 @@ public class BoardController {
     board.setBoardContent(content);
 
     boardService.update(board);
-    return "redirect:list";
+    return "redirect:view?boardNo=" + boardNo;
   }
 
   @PostMapping("modify")
