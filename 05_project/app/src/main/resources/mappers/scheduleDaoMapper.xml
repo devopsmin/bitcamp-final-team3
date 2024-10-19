@@ -13,6 +13,11 @@
         <result column="end_date" property="endDate"/>
         <result column="trip_created_date" property="tripCreatedDate"/>
 
+        <association property="city" javaType="City">
+            <id column="city_code" property="cityCode"/>
+            <result column="city_name" property="cityName"/>
+        </association>
+
         <!-- Schedule 리스트 매핑 -->
         <collection property="scheduleList" ofType="Schedule">
             <id column="schedule_no" property="scheduleNo"/>
@@ -31,7 +36,7 @@
                 <result column="location_addr" property="locationAddr"/>
                 <result column="location_x" property="locationX"/>
                 <result column="location_y" property="locationY"/>
-                <result column="locationclass_no" property="locationclassNo"/>
+                <result column="locationclass_no" property="locationtypeNo"/>
                 <result column="thirdclass_code" property="thirdclassCode"/>
             </association>
         </collection>
@@ -50,24 +55,10 @@
         </association>
     </resultMap>
 
-    <resultMap id="StateResultMap" type="State">
-        <id column="state_code" property="stateCode"/>
-        <result column="state_name" property="stateName"/>
-    </resultMap>
-
-    <resultMap id="CityResultMap" type="City">
-        <id column="city_code" property="cityCode"/>
-        <result column="city_name" property="cityName"/>
-        <result column="city_photo" property="cityPhoto"/>
-            <association property="state" javaType="state">
-                <id column="state_code" property="stateCode"/>
-                <result column="state_name" property="stateName"/>
-            </association>
-    </resultMap>
-
     <resultMap id="LocationResultMap" type="Location">
         <id column="location_no" property="locationNo"/>
         <result column="thirdclass_code" property="thirdclassCode"/>
+        <result column="city_code" property="cityCode"/>
         <result column="location_name" property="locationName"/>
         <result column="location_desc" property="locationDesc"/>
         <result column="location_photo" property="locationPhoto"/>
@@ -75,13 +66,7 @@
         <result column="location_addr" property="locationAddr"/>
         <result column="location_x" property="locationX"/>
         <result column="location_y" property="locationY"/>
-        <result column="locationclass_no" property="locationclassNo"/>
-
-        <association column="city_code" property="city" javaType="City">
-            <id column="city_code" property="cityCode"/>
-            <result column="city_name" property="cityName"/>
-        </association>
-
+        <result column="locationtype_no" property="locationtypeNo"/>
     </resultMap>
 
     <insert id="makeTrip" parameterType="Trip"
@@ -93,48 +78,11 @@
     <update id="updateTrip" parameterType="Trip">
         UPDATE trip SET
             start_date=#{startDate},
-            end_date=#{endDate}
+            end_date=#{endDate},
+            city_code=#{city.cityCode}
         WHERE
             trip_no=#{tripNo}
     </update>
-
-    <select id="stateList" resultMap="StateResultMap">
-        select
-            state_code,
-            state_name
-        from
-            state
-    </select>
-
-    <select id="cityList" resultMap="CityResultMap">
-        SELECT
-            c.city_code,
-            c.city_name,
-            c.city_photo,
-            s.state_code,
-            s.state_name
-        FROM
-            city c
-        right JOIN state s
-        ON s.state_code = c.state_code
-        where
-            s.state_code=#{stateCode}
-    </select>
-
-    <select id="findCity" resultMap="CityResultMap">
-        SELECT
-            c.city_code,
-            c.city_name,
-            c.city_photo,
-            s.state_code,
-            s.state_name
-        FROM
-            city c
-        right JOIN state s
-        ON s.state_code = c.state_code
-        where
-            c.city_code=#{cityCode}
-    </select>
 
     <select id="locationList" resultMap="LocationResultMap">
         SELECT
@@ -147,9 +95,8 @@
             l.location_addr,
             l.location_x,
             l.location_y,
-            l.locationclass_no,
-            c.city_code,
-            c.city_name
+            l.locationtype_no,
+            c.city_code
         from
             location l
         right outer join city c
@@ -163,7 +110,6 @@
     <select id="hotelList" resultMap="LocationResultMap">
         SELECT
             l.location_no,
-            l.city_code,
             l.thirdclass_code,
             l.location_name,
             l.location_desc,
@@ -172,7 +118,8 @@
             l.location_addr,
             l.location_x,
             l.location_y,
-            l.locationclass_no
+            l.locationtype_no,
+            c.city_code
         from
             location l
         right outer join city c on l.city_code = c.city_code
@@ -199,7 +146,7 @@
             l.location_addr,
             l.location_x,
             l.location_y,
-            l.locationclass_no
+            l.locationtype_no
         from
             location l
         where
@@ -223,4 +170,16 @@
 
     </select>
 
+    <resultMap id="themaMap" type="map">
+        <result column="thema_no" property="key"/>
+        <result column="thema_name" property="value"/>
+    </resultMap>
+
+    <select id="selectThema" resultType="map">
+        SELECT
+            thema_no,
+            thema_name
+        FROM thema
+
+    </select>
 </mapper>

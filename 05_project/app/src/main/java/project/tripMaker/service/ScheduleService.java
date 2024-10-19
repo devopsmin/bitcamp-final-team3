@@ -6,6 +6,7 @@ import project.tripMaker.dao.ScheduleDao;
 import project.tripMaker.vo.*;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class ScheduleService {
@@ -21,13 +22,8 @@ public class ScheduleService {
     scheduleDao.updateTrip(trip);
   }
 
-  public List<State> stateList() throws Exception {
-    return scheduleDao.stateList();
-  }
 
-  public List<City> cityList(String stateCode) throws Exception {
-    return scheduleDao.cityList(stateCode);
-  }
+
 
   public List<Location> locationList(String cityCode) throws Exception {
     return scheduleDao.locationList(cityCode);
@@ -45,12 +41,14 @@ public class ScheduleService {
     return scheduleDao.findLocation(locationNo);
   }
 
-  public City firndCity(String cityCode) {
-    return scheduleDao.findCity(cityCode);
-  }
+
 
   public List<Schedule> viewSchedule(Integer tripNo) {
     return scheduleDao.viewSchedule(tripNo);
 
+  }
+
+  public Map<Integer, String> selectThema() {
+    return scheduleDao.selectThema();
   }
 }

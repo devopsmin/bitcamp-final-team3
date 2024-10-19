@@ -18,25 +18,6 @@
             </association>
     </resultMap>
 
-    <resultMap id="LocationResultMap" type="Location">
-        <id column="location_no" property="locationNo"/>
-        <result column="thirdclass_code" property="thirdclassCode"/>
-        <result column="location_name" property="locationName"/>
-        <result column="location_desc" property="locationDesc"/>
-        <result column="location_photo" property="locationPhoto"/>
-        <result column="location_tel" property="locationTel"/>
-        <result column="location_addr" property="locationAddr"/>
-        <result column="location_x" property="locationX"/>
-        <result column="location_y" property="locationY"/>
-        <result column="locationclass_no" property="locationclassNo"/>
-
-        <association column="city_code" property="city" javaType="City">
-            <id column="city_code" property="cityCode"/>
-            <result column="city_name" property="cityName"/>
-        </association>
-
-    </resultMap>
-
     <select id="stateList" resultMap="StateResultMap">
         select
             state_code,
@@ -74,4 +55,17 @@
         where
             c.city_code=#{cityCode}
     </select>
+
+    <select id="findState" resultMap="StateResultMap">
+        SELECT
+            s.state_code,
+            s.state_name
+        FROM
+            state s
+        right JOIN city c
+           ON s.state_code = c.state_code
+        where
+            c.city_code=#{cityCode}
+    </select>
+
 </mapper>

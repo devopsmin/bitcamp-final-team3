@@ -4,16 +4,13 @@ import org.springframework.stereotype.Repository;
 import project.tripMaker.vo.*;
 
 import java.util.List;
+import java.util.Map;
 
 @Repository
 public interface ScheduleDao {
   void makeTrip(Trip trip);
 
   void updateTrip(Trip trip);
-
-  List<State> stateList();
-
-  List<City> cityList(String stateCode);
 
   List<Location> locationList(String cityCode);
 
@@ -23,7 +20,7 @@ public interface ScheduleDao {
 
   Location findLocation(int locationNo);
 
-  City findCity(String cityCode);
-
   List<Schedule> viewSchedule(Integer tripNo);
+
+  Map<Integer, String> selectThema();
 }

@@ -2,8 +2,8 @@ package project.tripMaker.vo;
 
 public class Location {
   private Integer locationNo;      // 여행지정보 번호
-  private City city;
   private String thirdclassCode;    // 소분류번호
+  private String cityCode;
   private String locationName;     // 여행지이름
   private String locationDesc;     // 여행지설명
   private String locationPhoto;    // 여행지사진
@@ -11,7 +11,7 @@ public class Location {
   private String locationAddr;     // 주소
   private Double locationX;        // 위도
   private Double locationY;        // 경도
-  private Integer locationclassNo;
+  private Integer locationtypeNo;
 
   public Integer getLocationNo() {
     return locationNo;
@@ -21,20 +21,20 @@ public class Location {
     this.locationNo = locationNo;
   }
 
-  public City getCity() {
-    return city;
-  }
-
-  public void setCity(City city) {
-    this.city = city;
-  }
-
   public String getThirdclassCode() {
     return thirdclassCode;
   }
 
   public void setThirdclassCode(String thirdclassCode) {
     this.thirdclassCode = thirdclassCode;
+  }
+
+  public String getCityCode() {
+    return cityCode;
+  }
+
+  public void setCityCode(String cityCode) {
+    this.cityCode = cityCode;
   }
 
   public String getLocationName() {
@@ -93,11 +93,11 @@ public class Location {
     this.locationY = locationY;
   }
 
-  public Integer getLocationclassNo() {
-    return locationclassNo;
+  public Integer getLocationtypeNo() {
+    return locationtypeNo;
   }
 
-  public void setLocationclassNo(Integer locationclassNo) {
-    this.locationclassNo = locationclassNo;
+  public void setLocationtypeNo(Integer locationtypeNo) {
+    this.locationtypeNo = locationtypeNo;
   }
 }
