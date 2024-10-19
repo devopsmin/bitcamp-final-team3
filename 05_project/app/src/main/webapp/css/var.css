@@ -1,0 +1,87 @@
+/* Figma Styles of your File */
+:root {
+    /* Colors */
+    --main-main01: #979a9e;
+    --main-main02: #48cfcb;
+    --main-main03: #229799;
+    --main-main04: #424242;
+    --true-true01: #b6fffa;
+    --true-true02: #98e4ff;
+    --true-true03: #80b3ff;
+    --true-true04: #4660f4;
+    --false-false01: #f3feb8;
+    --false-false02: #ffde4d;
+    --false-false03: #ffb22c;
+    --false-false04: #ff4c4c;
+    --black-and-white-black: #000000;
+    --black-and-white-white: #ffffff;
+
+    /* Fonts */
+    --h0-font-family: NanumGothic-ExtraBold, sans-serif;
+    --h0-font-size: 48px;
+    --h0-line-height: normal;
+    --h0-font-weight: 800;
+    --h0-font-style: normal;
+    --h1-font-family: NanumGothic-ExtraBold, sans-serif;
+    --h1-font-size: 32px;
+    --h1-line-height: normal;
+    --h1-font-weight: 800;
+    --h1-font-style: normal;
+    --h2-font-family: NanumGothic-ExtraBold, sans-serif;
+    --h2-font-size: 24px;
+    --h2-line-height: normal;
+    --h2-font-weight: 800;
+    --h2-font-style: normal;
+    --h3-font-family: NanumGothic-Bold, sans-serif;
+    --h3-font-size: 19px;
+    --h3-line-height: normal;
+    --h3-font-weight: 700;
+    --h3-font-style: normal;
+    --h4-font-family: Inter-Bold, sans-serif;
+    --h4-font-size: 16px;
+    --h4-line-height: normal;
+    --h4-font-weight: 700;
+    --h4-font-style: normal;
+    --h5-font-family: NanumGothic-Bold, sans-serif;
+    --h5-font-size: 12px;
+    --h5-line-height: normal;
+    --h5-font-weight: 700;
+    --h5-font-style: normal;
+    --h00-font-family: NanumGothic-ExtraBold, sans-serif;
+    --h00-font-size: 64px;
+    --h00-line-height: 100px;
+    --h00-font-weight: 800;
+    --h00-font-style: normal;
+    --h2-font-family: NanumGothic-Regular, sans-serif;
+    --h2-font-size: 24px;
+    --h2-line-height: normal;
+    --h2-font-weight: 400;
+    --h2-font-style: normal;
+    --h3-font-family: NanumGothic-Regular, sans-serif;
+    --h3-font-size: 19px;
+    --h3-line-height: normal;
+    --h3-font-weight: 400;
+    --h3-font-style: normal;
+    --h4-font-family: NanumGothic-Regular, sans-serif;
+    --h4-font-size: 16px;
+    --h4-line-height: 25px;
+    --h4-font-weight: 400;
+    --h4-font-style: normal;
+    --h5-font-family: NanumGothic-Regular, sans-serif;
+    --h5-font-size: 12px;
+    --h5-line-height: normal;
+    --h5-font-weight: 400;
+    --h5-font-style: normal;
+    --h6-font-family: Inter-Regular, sans-serif;
+    --h6-font-size: 10px;
+    --h6-line-height: normal;
+    --h6-font-weight: 400;
+    --h6-font-style: normal;
+    --h7-font-family: NanumGothic-Regular, sans-serif;
+    --h7-font-size: 8px;
+    --h7-line-height: normal;
+    --h7-font-weight: 400;
+    --h7-font-style: normal;
+
+    /* Effects */
+}
