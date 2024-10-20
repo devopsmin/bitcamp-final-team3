@@ -14,6 +14,10 @@ public class ScheduleService {
   @Autowired
   ScheduleDao scheduleDao;
 
+  public ScheduleService(ScheduleDao scheduleDao) {
+    this.scheduleDao = scheduleDao;
+  }
+
   public void makeTrip(Trip trip) throws Exception{
     scheduleDao.makeTrip(trip);
   }

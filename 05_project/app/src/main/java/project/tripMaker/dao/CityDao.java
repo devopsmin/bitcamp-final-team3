@@ -1,5 +1,6 @@
 package project.tripMaker.dao;
 
+import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Repository;
 import project.tripMaker.vo.City;
 import project.tripMaker.vo.State;
@@ -7,7 +8,7 @@ import project.tripMaker.vo.State;
 import java.util.List;
 
 
-@Repository
+@Mapper
 public interface CityDao {
 
   List<State> stateList();
