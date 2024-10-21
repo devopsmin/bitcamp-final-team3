@@ -30,17 +30,19 @@ public class SecurityConfig {
     return new BCryptPasswordEncoder();
   }
 
-  @Bean
-  public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-    http
-        .csrf().disable() // CSRF 보호 비활성화 (개발 시에만 권장)
-        .authorizeRequests()
-        .antMatchers("/", "/user/signup", "/user/login", "/css/**", "/js/**", "/images/**", "/app/**").permitAll()
-        // 허용된 경로
-        .antMatchers("/admin/**").hasRole(UserRole.ADMIN.name()) // ADMIN 역할을 가진 사용자만 접근 가능
-        .anyRequest().authenticated() // 인증이 필요한 요청
-        .and()
-        .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class); // JWT 필터 추가
-    return http.build();
-  }
+//  @Bean
+//  public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+//    http
+//        .csrf().disable() // CSRF 보호 비활성화 (개발 시에만 권장)
+//        .authorizeRequests()
+//        .antMatchers("/", "/user/signup", "/user/login", "/css/**", "/js/**", "/images/**", "/app/**").permitAll()
+//        // 허용된 경로
+//        .antMatchers("/admin/**").hasRole(UserRole.ADMIN.name()) // ADMIN 역할을 가진 사용자만 접근 가능
+//        .anyRequest().authenticated() // 인증이 필요한 요청
+//        .and()
+//        .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class); // JWT 필터 추가
+//    return http.build();
+//  }
+
+
 }

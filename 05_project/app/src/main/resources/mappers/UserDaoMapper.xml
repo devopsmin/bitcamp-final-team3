@@ -53,7 +53,7 @@
     <select id="existsUsersByEmail" resultType="boolean">
         SELECT COUNT(*) > 0
         FROM user
-        WHERE userEmail = #{email}
+        WHERE user_email = #{email}
     </select>
 
     <update id="update" parameterType="User">

@@ -1,9 +1,10 @@
 package project.tripMaker.dao;
 
-import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import project.tripMaker.vo.User;
+
+import java.util.List;
 
 @Mapper
 public interface UserDao {
@@ -26,5 +27,4 @@ public interface UserDao {
   boolean update(User user) throws Exception;
 
   boolean delete(long userNo) throws Exception;
-
 }

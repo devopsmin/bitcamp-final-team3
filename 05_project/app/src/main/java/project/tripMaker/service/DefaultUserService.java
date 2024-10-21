@@ -1,7 +1,5 @@
 package project.tripMaker.service;
 
-import java.sql.Timestamp;
-import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -12,6 +10,9 @@ import org.springframework.transaction.annotation.Transactional;
 import project.tripMaker.dao.UserDao;
 import project.tripMaker.jwt.JwtTokenProvider;
 import project.tripMaker.vo.User;
+
+import java.sql.Timestamp;
+import java.util.List;
 
 @Service
 public class DefaultUserService implements UserService {
@@ -31,17 +32,20 @@ public class DefaultUserService implements UserService {
     this.jwtTokenProvider = jwtTokenProvider;
   }
 
-  public String login(String email, String password) throws Exception{
+  public String login(String email, String password) throws Exception {
+    User user = userDao.findByEmailAndPassword(email, password);
+
+    if (user == null || !encoder.matches(password, user.getUserPassword())) {
+      throw new IllegalArgumentException("이메일 또는 비밀번호가 올바르지 않습니다.");
+    }
+
     UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(email, password);
-
-    // 검증
     Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
-
-    // 검증된 인증 정보로 JWT 토큰 생성
     String token = jwtTokenProvider.generateToken(authentication);
 
     return token;
   }
+
   public Long signup(User user) throws Exception {
     String email = user.getUserEmail();
     String password = user.getUserPassword();

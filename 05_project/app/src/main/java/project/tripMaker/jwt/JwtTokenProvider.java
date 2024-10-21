@@ -23,8 +23,9 @@ public class JwtTokenProvider {
 
   private final Key key;
 
+  // application.properties에서 비밀 키를 읽어온다.
   public JwtTokenProvider(@Value("${jwt.secret}") String secretKey) {
-    byte[] secretByteKey = Base64.getDecoder().decode(secretKey); // 수정된 부분
+    byte[] secretByteKey = Base64.getDecoder().decode(secretKey); // 비밀 키를 Base64 디코딩
     this.key = Keys.hmacShaKeyFor(secretByteKey);
   }
 
@@ -33,17 +34,17 @@ public class JwtTokenProvider {
         .map(GrantedAuthority::getAuthority)
         .collect(Collectors.joining(","));
 
-    //Access Token 생성
+    // Access Token 생성
     return Jwts.builder()
         .setSubject(authentication.getName())
         .claim("auth", authorities)
-        .setExpiration(new Date(System.currentTimeMillis()+ 1000 * 60 * 30))
-        .signWith(key, SignatureAlgorithm.HS256)
+        .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 30)) // 30분 후 만료
+        .signWith(key, SignatureAlgorithm.HS256) // 서명
         .compact();
   }
 
   public Authentication getAuthentication(String accessToken) {
-    //토큰 복호화
+    // 토큰 복호화
     Claims claims = parseClaims(accessToken);
 
     if (claims.get("auth") == null) {
@@ -63,7 +64,7 @@ public class JwtTokenProvider {
     try {
       Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
       return true;
-    }catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
+    } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
       log.info("Invalid JWT Token", e);
     } catch (ExpiredJwtException e) {
       log.info("Expired JWT Token", e);
