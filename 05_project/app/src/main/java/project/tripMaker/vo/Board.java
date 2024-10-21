@@ -1,6 +1,7 @@
 package project.tripMaker.vo;
 
 import java.util.Date;
+import java.util.List;
 
 public class Board {
 
@@ -13,6 +14,9 @@ public class Board {
   private Integer tripNo;        // 여행번호
   private String boardContent;   // 내용
   private String boardTag;       // 태그
+  private User writer; // 게시글 댓글 작성자 정보 저장
+  private List<Comment> comments;
+
 
   // 기본 생성자
   public Board() {}
@@ -90,6 +94,23 @@ public class Board {
     this.boardTag = boardTag;
   }
 
+  public User getWriter() {
+    return writer;
+  }
+
+  public void setWriter(User writer) {
+    this.writer = writer;
+  }
+
+  public List<Comment> getComments() {
+    return comments;
+  }
+
+  public void setComments(List<Comment> comments) {
+    this.comments = comments;
+  }
+
+
   // toString 메서드 (디버깅용)
   @Override
   public String toString() {
@@ -103,6 +124,8 @@ public class Board {
         ", tripNo=" + tripNo +
         ", boardContent='" + boardContent + '\'' +
         ", boardTag='" + boardTag + '\'' +
+        ", writer=" + writer +
+        ", comments=" + comments +
         '}';
   }
 }

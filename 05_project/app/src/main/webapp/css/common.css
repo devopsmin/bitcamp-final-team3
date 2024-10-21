@@ -1,0 +1,108 @@
+header {
+    border-bottom: 1px solid gray;
+    position: relative;
+}
+
+header img {
+    height: 20px;
+    vertical-align: middle;
+}
+
+table {
+    border-collapse: separate;
+    /* 테두리 사이에 여백을 허용 */
+    border-spacing: 2px;
+    /* 셀 사이의 여백을 설정 */
+}
+
+/* 테이블 경계선 스타일 */
+table,
+th,
+td {
+    border: 1px solid black;
+    /* 테두리 두께와 색상 설정 */
+}
+
+th {
+    background-color: #c2c2c2;
+    /* 헤더 배경색 설정 (선택적) */
+    padding: 5px;
+    /* 셀 안의 여백 설정 */
+}
+
+td {
+    padding: 5px;
+}
+
+header {
+    border2: 1px solid red;
+}
+
+header>h1 {
+    border2: 1px solid red;
+    display: inline;
+    font-size: 14px;
+}
+
+header>nav {
+    border2: 1px solid red;
+    display: inline;
+}
+
+header>nav>ul {
+    border2: 1px solid black;
+    display: inline;
+    list-style-type: none;
+}
+
+header li {
+    border2: 1px solid blue;
+}
+
+header a {
+    border2: 1px solid blue;
+}
+
+.btn {
+    display: inline-block;
+    width: 70px;
+    height: 14px;
+    text-align: center;
+    padding-top: 3px;
+    text-decoration: none;
+    color: black;
+    font-weight: bold;
+    font-size: 10px;
+}
+
+.btn a {
+    text-decoration: none;
+    color: black;
+}
+
+.btn-default {
+    background-color: DarkGray;
+}
+
+.btn-light {
+    background-color: white;
+}
+
+.btn-primary {
+    background-color: navy;
+    color: white;
+}
+
+.btn-secondary {
+    background-color: darkgreen;
+    color: white;
+}
+
+.pos-right {
+    position: absolute;
+    right: 0px;
+}
+
+.login-state {
+    display: inline;
+}

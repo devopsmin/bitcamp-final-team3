@@ -1,35 +1,134 @@
 package project.tripMaker.vo;
 
 import java.io.Serializable;
+import java.sql.Date;
 import java.util.Objects;
 
 public class User implements Serializable {
 
   private static final long serialVersionUID = 1L;
 
-  private int no;
-  private String name;
-  private String email;
-  private String password;
-  private String tel;
-  private String photo;
+  private int userNo;                         // 유저번호
+  private String userPhoto;                   // 프로필사진
+  private java.sql.Date userLastestLogin;     // 마지막로그인날짜
+  private String userEmail;                   // 이메일
+  private String userPassword;                // 비밀번호
+  private String userTel;                     // 연락처
+  private Date userCreatedDate;               // 가입일
+  private String userNickname;                // 닉네임
+  private boolean userAutherlize;             // 권한여부 (TINYINT -> boolean)
+  private boolean userBlock;                  // 차단여부 (TINYINT -> boolean)
+  private Integer snsNo;                      // SNS Login 유형번호 (nullable, hence Integer)
 
   public User() {
   }
 
-  public User(int no) {
-    this.no = no;
+  public User(int userNo) {
+    this.userNo = userNo;
+  }
+
+  public int getUserNo() {
+    return userNo;
+  }
+
+  public void setUserNo(int userNo) {
+    this.userNo = userNo;
+  }
+
+  public String getUserPhoto() {
+    return userPhoto;
+  }
+
+  public void setUserPhoto(String userPhoto) {
+    this.userPhoto = userPhoto;
+  }
+
+  public Date getUserLastestLogin() {
+    return userLastestLogin;
+  }
+
+  public void setUserLastestLogin(Date userLastestLogin) {
+    this.userLastestLogin = userLastestLogin;
+  }
+
+  public String getUserEmail() {
+    return userEmail;
+  }
+
+  public void setUserEmail(String userEmail) {
+    this.userEmail = userEmail;
+  }
+
+  public String getUserPassword() {
+    return userPassword;
+  }
+
+  public void setUserPassword(String userPassword) {
+    this.userPassword = userPassword;
+  }
+
+  public String getUserTel() {
+    return userTel;
+  }
+
+  public void setUserTel(String userTel) {
+    this.userTel = userTel;
+  }
+
+  public Date getUserCreatedDate() {
+    return userCreatedDate;
+  }
+
+  public void setUserCreatedDate(Date userCreatedDate) {
+    this.userCreatedDate = userCreatedDate;
+  }
+
+  public String getUserNickname() {
+    return userNickname;
+  }
+
+  public void setUserNickname(String userNickname) {
+    this.userNickname = userNickname;
+  }
+
+  public boolean isUserAutherlize() {
+    return userAutherlize;
+  }
+
+  public void setUserAutherlize(boolean userAutherlize) {
+    this.userAutherlize = userAutherlize;
+  }
+
+  public boolean isUserBlock() {
+    return userBlock;
+  }
+
+  public void setUserBlock(boolean userBlock) {
+    this.userBlock = userBlock;
+  }
+
+  public Integer getSnsNo() {
+    return snsNo;
+  }
+
+  public void setSnsNo(Integer snsNo) {
+    this.snsNo = snsNo;
   }
 
   @Override
   public String toString() {
     return "User{" +
-            "no=" + no +
-            ", name='" + name + '\'' +
-            ", email='" + email + '\'' +
-            ", password='" + password + '\'' +
-            ", tel='" + tel + '\'' +
-            ", photo='" + photo + '\'' +
+            "userNo=" + userNo +
+            ", userPhoto='" + userPhoto + '\'' +
+            ", userLastestLogin=" + userLastestLogin +
+            ", userEmail='" + userEmail + '\'' +
+            ", userPassword='" + userPassword + '\'' +
+            ", userTel='" + userTel + '\'' +
+            ", userCreatedDate=" + userCreatedDate +
+            ", userNickname='" + userNickname + '\'' +
+            ", userAutherlize=" + userAutherlize +
+            ", userBlock=" + userBlock +
+            ", snsNo=" + snsNo +
             '}';
   }
 
@@ -42,59 +141,11 @@ public class User implements Serializable {
       return false;
     }
     User user = (User) o;
-    return no == user.no;
+    return userNo == user.userNo;
   }
 
   @Override
   public int hashCode() {
-    return Objects.hashCode(no);
-  }
-
-  public int getNo() {
-    return no;
-  }
-
-  public void setNo(int no) {
-    this.no = no;
-  }
-
-  public String getName() {
-    return name;
-  }
-
-  public void setName(String name) {
-    this.name = name;
-  }
-
-  public String getEmail() {
-    return email;
-  }
-
-  public void setEmail(String email) {
-    this.email = email;
-  }
-
-  public String getPassword() {
-    return password;
-  }
-
-  public void setPassword(String password) {
-    this.password = password;
-  }
-
-  public String getTel() {
-    return tel;
-  }
-
-  public void setTel(String tel) {
-    this.tel = tel;
-  }
-
-  public String getPhoto() {
-    return photo;
-  }
-
-  public void setPhoto(String photo) {
-    this.photo = photo;
+    return Objects.hashCode(userNo);
   }
 }
