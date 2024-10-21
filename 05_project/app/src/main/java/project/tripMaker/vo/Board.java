@@ -20,7 +20,7 @@ public class Board {
   private User writer; // 작성자
   private List<Comment> comments; // 댓글
 
-  private int boardLike;
-  private int boardFavor;
+  private int boardLike;  // 좋아요
+  private int boardFavor; // 즐겨찾기
 
 }

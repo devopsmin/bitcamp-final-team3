@@ -27,18 +27,18 @@ public class BoardController {
       @RequestParam(required = false, defaultValue = "latest") String sort
   ) throws Exception {
 
-    List<Board> boardList = boardService.list(pageNo, pageSize);
+    List<Board> boardList;
 
     switch (sort){
 
       case "likes":
-        boardList = boardService.listByLikes();
+        boardList = boardService.listByLikes(pageNo, pageSize);
         break;
       case "favorites":
-        boardList = boardService.listByFavorites();
+        boardList = boardService.listByFavorites(pageNo, pageSize);
         break;
       case "views":
-        boardList = boardService.listByViews();
+        boardList = boardService.listByViews(pageNo, pageSize);
         break;
       default: //"latest"
         boardList = boardService.list(pageNo, pageSize);

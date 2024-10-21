@@ -3,6 +3,7 @@ package project.tripMaker.dao;
 import java.util.Map;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 import org.springframework.stereotype.Repository;
 import project.tripMaker.vo.Board;
 
@@ -12,9 +13,9 @@ import project.tripMaker.vo.Comment;
 @Mapper
 public interface BoardDao {
   List<Board> list(Map<String, Object> options) throws Exception;
-  List<Board> listLike();
-  List<Board> listFavor();
-  List<Board> listView();
+  List<Board> listLike(Map<String, Object> options) throws Exception;
+  List<Board> listFavor(Map<String, Object> options) throws Exception;
+  List<Board> listView(Map<String, Object> options) throws Exception;
 
   boolean insert(Board board) throws Exception;
 

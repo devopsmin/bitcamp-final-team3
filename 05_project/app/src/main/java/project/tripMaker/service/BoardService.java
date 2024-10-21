@@ -24,22 +24,36 @@ public class BoardService {
     return boardDao.list(options);
   }
 
+  public List<Board> listByLikes(int pageNo, int pageSize) throws Exception {
+
+    HashMap<String, Object> options = new HashMap<>();
+    options.put("rowNo", (pageNo - 1) * pageSize);
+    options.put("length", pageSize);
+
+    return boardDao.listLike(options);
+  }
+
+  public List<Board> listByFavorites(int pageNo, int pageSize) throws Exception {
+
+    HashMap<String, Object> options = new HashMap<>();
+    options.put("rowNo", (pageNo - 1) * pageSize);
+    options.put("length", pageSize);
+
+    return boardDao.listFavor(options);
+  }
+
+  public List<Board> listByViews(int pageNo, int pageSize) throws Exception {
+
+    HashMap<String, Object> options = new HashMap<>();
+    options.put("rowNo", (pageNo - 1) * pageSize);
+    options.put("length", pageSize);
+
+    return boardDao.listView(options);
+  }
+
   public int countAll() throws Exception {
     return boardDao.countAll();
   }
-
-  public List<Board> listByLikes() {
-    return boardDao.listLike();
-  }
-
-  public List<Board> listByFavorites() {
-    return boardDao.listFavor();
-  }
-
-  public List<Board> listByViews() {
-    return boardDao.listView();
-  }
-
 
   @Transactional
   public void add(Board board) throws Exception {

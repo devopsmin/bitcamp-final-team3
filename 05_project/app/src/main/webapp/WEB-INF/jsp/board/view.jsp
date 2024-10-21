@@ -20,8 +20,8 @@
 </c:if>
 
 <c:if test="${not empty board}">
-    <button type="button" onclick="location.href='list'">좋아요</button>
-    <button type="button" onclick="location.href='list'">즐겨찾기</button>
+    <button type="button" onclick="location.href='list'">좋아요</button> <input readonly name="boardLike" type="text" value="${board.boardLike}"><br>
+    <button type="button" onclick="location.href='list'">즐겨찾기</button> <input readonly name="boardLike" type="text" value="${board.boardFavor}"><br>
     <form action="modify" method="post">
         번호: <input readonly name='no' type='text' value='${board.boardNo}'><br>
         제목: <input readonly name='title' type='text' value='${board.boardTitle}'><br>
