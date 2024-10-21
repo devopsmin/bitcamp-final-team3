@@ -8,7 +8,7 @@
 
 <jsp:include page="../header.jsp"/>
 <h1>일정 편집</h1>
-<form action="form7" method="post">
+<form action="checkSchedule" method="post">
     <ul>
         <c:forEach items="${selectedLocation}" var="location" varStatus="status">
             <li>

@@ -7,14 +7,12 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 
 <jsp:include page="../header.jsp"/>
-<h1>여행지 선택</h1>
-<form action="form5" method="post">
-    <ul>
-        <c:forEach items="${locationList}" var="location">
-            <li><input name='locationNos' value='${location.locationNo}' type='checkbox'>${location.locationName}</li>
-        </c:forEach>
-    </ul>
-    <button type="submit">다음</button>
+<h1>날짜 선택</h1>
+
+<form action="selectLocation" method="post">
+    기간: <input name='startDate' type='date'> ~
+    <input name='endDate' type='date'><br>
+    <button>다음</button>
 </form>
 </body>
 </html>

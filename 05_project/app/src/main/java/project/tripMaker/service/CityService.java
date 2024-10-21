@@ -1,5 +1,6 @@
 package project.tripMaker.service;
 
+import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import project.tripMaker.dao.CityDao;
@@ -8,15 +9,11 @@ import project.tripMaker.vo.State;
 
 import java.util.List;
 
+@Data
 @Service
 public class CityService {
 
-  @Autowired
-  CityDao cityDao;
-
-  public CityService(CityDao cityDao) {
-    this.cityDao = cityDao;
-  }
+  private final CityDao cityDao;
 
   public List<State> stateList() throws Exception {
     return cityDao.stateList();

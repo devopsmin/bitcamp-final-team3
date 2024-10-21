@@ -6,14 +6,22 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 
-<jsp:include page="../header.jsp"/>
+<jsp:include page="../header.jsp"/>a
 <h1>숙소 선택</h1>
-<form action="form6" method="post">
+<form action="editSchedule" method="post">
     <ul>
         <c:forEach items="${hotelList}" var="hotel">
             <li><input name='hotelNos' value='${hotel.locationNo}' type='checkbox'>${hotel.locationName}</li>
         </c:forEach>
     </ul>
+
+    <p>---내가추가한 숙소 </p>
+    <ul>
+        <c:forEach items="${myHotels}" var="hotel">
+            <li><input checked name='hotelNos' value='${hotel.locationNo}' type='checkbox'> ${hotel.locationName}</li>
+        </c:forEach>
+    </ul>
+    <button type="submit"><a href="addHotel">숙소추가하기</a></button>
     <button type="submit">다음</button>
 </form>
 </body>

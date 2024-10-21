@@ -7,11 +7,11 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 
 <jsp:include page="../header.jsp"/>
-<h1>날짜 선택</h1>
-<form action="form4" method="post">
-    기간: <input name='startDate' type='date'> ~
-    <input name='endDate' type='date'><br>
-    <button>다음</button>
+
+<form action='selectLocation' method="post">
+    여행지: <input name='locationName' type='text'><br>
+    여행지설명 : <textarea name='locationDesc'></textarea><br>
+    <button type="submit">저장</button>
 </form>
 </body>
 </html>

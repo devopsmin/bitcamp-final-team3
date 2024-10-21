@@ -23,5 +23,9 @@ public interface ScheduleDao {
 
   List<Schedule> viewSchedule(Integer tripNo);
 
-  Map<Integer, String> selectThema();
+  List<Thema> getThema();
+
+  void saveTrip(Trip trip);
+
+  void addLocation(Location myLocation);
 }

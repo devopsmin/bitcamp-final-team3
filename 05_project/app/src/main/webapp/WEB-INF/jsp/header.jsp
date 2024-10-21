@@ -16,7 +16,7 @@
 <header>
 <div class="fram-topbanner">
     <div class="button-03-s6">
-        <div class="div2"><a href="/app/schedule/form1">여행시작</a></div>
+        <div class="div2"><a href="/app/schedule/main">여행시작</a></div>
     </div>
     <div class="button-03-s">
         <div class="div2">여행추천</div>

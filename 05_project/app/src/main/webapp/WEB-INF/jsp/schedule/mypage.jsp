@@ -7,11 +7,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 
 <jsp:include page="../header.jsp"/>
-
-<h1>여행일정만들기</h1>
-<button><a href="createTrip"/> 일정생성 </button>
-<button><a href="getTrip"/> 일정가져오기 </button>
-
+<p>마이페이지입니다.</p>
 
 </body>
 </html>

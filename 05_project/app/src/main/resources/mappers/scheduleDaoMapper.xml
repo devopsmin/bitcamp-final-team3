@@ -84,6 +84,21 @@
             trip_no=#{tripNo}
     </update>
 
+    <update id="saveTrip" parameterType="Trip">
+        UPDATE trip SET
+            user_no=#{userNo},
+            trip_title=#{tripTitle},
+            thema_no=#{themaNo}
+        WHERE
+            trip_no=#{tripNo}
+    </update>
+
+    <insert id="addLocation" parameterType="Location"
+            useGeneratedKeys="true" keyColumn="location_no" keyProperty="locationNo">
+        INSERT INTO location(location.city_code, location_name, location_desc, locationtype_no)
+        VALUES (#{cityCode}, #{locationName}, #{locationDesc}, 2)
+    </insert>
+
     <select id="locationList" resultMap="LocationResultMap">
         SELECT
             l.location_no,
@@ -175,10 +190,10 @@
         <result column="thema_name" property="value"/>
     </resultMap>
 
-    <select id="selectThema" resultType="map">
+    <select id="getThema" resultType="thema">
         SELECT
-            thema_no,
-            thema_name
+            thema_no as themaNo,
+            thema_name as themaName
         FROM thema
 
     </select>

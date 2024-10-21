@@ -25,7 +25,7 @@
     </tbody>
 </table>
 
-<button><a href="form8"/> 저장하기 </button>
+<button><a href="saveTrip"/> 저장하기 </button>
 
 </body>
 </html>

@@ -8,10 +8,10 @@
 
 <jsp:include page="../header.jsp"/>
 
-<h1>여행일정만들기</h1>
-<button><a href="createTrip"/> 일정생성 </button>
-<button><a href="getTrip"/> 일정가져오기 </button>
-
-
+<form action='selectHotel' method="post">
+    숙소: <input name='locationName' type='text'><br>
+    숙소설명 : <textarea name='locationDesc'></textarea><br>
+    <button type="submit">저장</button>
+</form>
 </body>
 </html>

@@ -8,10 +8,8 @@
 
 <jsp:include page="../header.jsp"/>
 
-<h1>여행일정만들기</h1>
-<button><a href="createTrip"/> 일정생성 </button>
-<button><a href="getTrip"/> 일정가져오기 </button>
-
+<button><a href="main"/> 홈으로 </button>
+<button><a href="mypage.jsp"/> 마이페이지 </button>
 
 </body>
 </html>
