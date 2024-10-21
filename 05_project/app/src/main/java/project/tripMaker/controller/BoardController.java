@@ -8,9 +8,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import project.tripMaker.service.BoardService;
+import project.tripMaker.service.CommentService;
 import project.tripMaker.vo.Board;
 
 import java.util.List;
+import project.tripMaker.vo.Comment;
 
 @Controller
 @RequestMapping("/board")
@@ -18,6 +20,7 @@ import java.util.List;
 public class BoardController {
 
   private final BoardService boardService;
+  private final CommentService commentService;
 
   @GetMapping("list")
   public String list(
@@ -88,7 +91,10 @@ public class BoardController {
 
     boardService.increaseViewCount(board.getBoardNo());
 
+    List<Comment> comments = commentService.list(boardNo);
+
     model.addAttribute("board", board);
+    model.addAttribute("comments", comments);
   }
 
   @GetMapping("delete")

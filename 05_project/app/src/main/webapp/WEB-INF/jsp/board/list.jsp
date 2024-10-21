@@ -67,7 +67,9 @@
 </c:if>
 ]
 
-${pageNo}
+    <c:forEach var="i" begin="1" end="${pageCount}">
+    <a href="list?pageNo=${i}"> ${i} </a>
+    </c:forEach>
 
 [
 <c:if test="${pageNo < pageCount}">

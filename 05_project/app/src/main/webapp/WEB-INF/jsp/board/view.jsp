@@ -35,19 +35,40 @@
     <button type='button' onclick='location.href="delete?boardNo=${board.boardNo}"'>삭제</button>
     </form>
     <br> 댓글 : <br>
-    <c:if test="${board.comments.size() > 0}">
+    <c:if test="${empty comment}">
+        <p>댓글이 없습니다.</p>
+    </c:if>
+
+    <c:if test="${not empty comment}">
         <ul>
-            <c:forEach items="${board.comments}" var="comments">
+            <c:forEach items="${comment}" var="comment">
                 <li>
-                    <input readonly type='text' value='${comments.commentContent}'>
-                    <input readonly type='text' value='${comments.userNo}'>
-                    <input readonly type='text' value='${comments.commentCreatedDate}'>
-                    <br>
+                    작성자 번호 : <input readonly type='text' value='${comment.userNo}'>
+                    작성일 : <input readonly type='text' value='${comment.commentCreatedDate}'> <br>
+                    댓글 : <input readonly type='text' value='${comment.commentContent}' size=50><br>
+                    <button type='button' onclick='deleteComment(${comment.commentNo})'>삭제</button>
                 </li>
             </c:forEach>
         </ul>
     </c:if>
 </c:if>
+
+<script>
+  function deleteComment(commentNo) {
+    if (confirm('댓글을 삭제하시겠습니까?')) {
+      location.href = 'deleteComment?commentNo=' + commentNo + '&boardNo=${board.boardNo}';
+    }
+  }
+</script>
+
+<hr />
+
+<form id="commentForm" action="../list/add" method="post">
+    게시글 번호 <input type="text" readonly name="boardNo" value="${board.boardNo}">
+    작성자 번호 <input type="text" readonly name="userNo" value="5"> <br>
+    댓글 내용 작성 <textarea name="commentContent" placeholder="댓글을 입력하세요"></textarea>
+    <button type="submit">댓글 작성</button>
+</form>
 
 </body>
 </html>
