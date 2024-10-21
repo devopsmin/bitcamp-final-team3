@@ -14,10 +14,10 @@ INSERT INTO user (user_lastest_login, user_email, user_password, user_tel, user_
 -- 일반유저 [2~6]
 INSERT INTO user (user_lastest_login, user_email, user_password, user_tel, user_nickname, user_autherlize, user_block) VALUES
 (NOW(), 'user1@example.com', '1111', '010-1111-1111', '회원1', 1, 0),
-(NOW(), 'user2@example.com', '1111', '010-1212-1212', '회원2', 1, 0),
+(NOW(), 'user2@example.com', '1111', '010-1212-1212', '회원2', 1, 1),
 (NOW(), 'user3@example.com', '1111', '010-1313-1313', '회원3', 1, 0),
-(NOW(), 'user4@example.com', '1111', '010-1414-1414', '회원4', 1, 0),
-(NOW(), 'user5@example.com', '1111', '010-1515-1515', '회원5', 1, 1);
+(NOW(), 'user4@example.com', '1111', '010-1414-1414', '회원4', 1, 1),
+(NOW(), 'user5@example.com', '1111', '010-1515-1515', '회원5', 1, 0);
 -- 소셜유저 [7~12]
 INSERT INTO user (user_lastest_login, user_email, user_password, user_tel, user_nickname, user_autherlize, user_block, sns_no) VALUES
 (NOW(), 'google1@google.com', '1111', '010-1234-5678', '구글1', 1, 0, 1),
