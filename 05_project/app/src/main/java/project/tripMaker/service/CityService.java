@@ -14,6 +14,10 @@ public class CityService {
   @Autowired
   CityDao cityDao;
 
+  public CityService(CityDao cityDao) {
+    this.cityDao = cityDao;
+  }
+
   public List<State> stateList() throws Exception {
     return cityDao.stateList();
   }

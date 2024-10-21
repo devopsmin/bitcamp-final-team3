@@ -14,6 +14,10 @@ public class BoardService {
   @Autowired
   BoardDao boardDao;
 
+  public BoardService(BoardDao boardDao) {
+    this.boardDao = boardDao;
+  }
+
   public List<Board> list() throws Exception {
     return boardDao.list();
   }

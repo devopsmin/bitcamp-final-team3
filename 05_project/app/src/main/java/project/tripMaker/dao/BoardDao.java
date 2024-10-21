@@ -8,7 +8,6 @@ import project.tripMaker.vo.Board;
 import java.util.List;
 
 @Mapper
-@Repository
 public interface BoardDao {
   List<Board> list() throws Exception;
 }
