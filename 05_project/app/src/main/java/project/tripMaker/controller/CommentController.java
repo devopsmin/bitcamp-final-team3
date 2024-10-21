@@ -25,8 +25,9 @@ public class CommentController {
       @PathVariable int boardNo,
       Model model) throws Exception {
 
-    List<Comment> list = commentService.list(boardNo);
-    model.addAttribute("list", list);
+    List<Comment> commentList = commentService.list(boardNo);
+    System.out.println("댓글 목록 크기: " + commentList.size());
+    model.addAttribute("commentList", commentList);
 
     return "redirect:/board/view?boardNo=" + boardNo;
   }

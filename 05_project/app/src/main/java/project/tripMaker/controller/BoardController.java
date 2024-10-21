@@ -91,10 +91,10 @@ public class BoardController {
 
     boardService.increaseViewCount(board.getBoardNo());
 
-    List<Comment> comments = commentService.list(boardNo);
+    List<Comment> commentList = commentService.list(boardNo);
 
     model.addAttribute("board", board);
-    model.addAttribute("comments", comments);
+    model.addAttribute("commentList", commentList);
   }
 
   @GetMapping("delete")

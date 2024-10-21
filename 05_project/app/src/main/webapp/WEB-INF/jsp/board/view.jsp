@@ -35,13 +35,13 @@
     <button type='button' onclick='location.href="delete?boardNo=${board.boardNo}"'>삭제</button>
     </form>
     <br> 댓글 : <br>
-    <c:if test="${empty comment}">
+    <c:if test="${empty commentList}">
         <p>댓글이 없습니다.</p>
     </c:if>
 
-    <c:if test="${not empty comment}">
+    <c:if test="${not empty commentList}">
         <ul>
-            <c:forEach items="${comment}" var="comment">
+            <c:forEach items="${commentList}" var="comment">
                 <li>
                     작성자 번호 : <input readonly type='text' value='${comment.userNo}'>
                     작성일 : <input readonly type='text' value='${comment.commentCreatedDate}'> <br>
