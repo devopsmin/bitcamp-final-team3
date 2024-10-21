@@ -1,5 +1,7 @@
 package project.tripMaker.dao;
 
+import java.util.Map;
+import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 import project.tripMaker.vo.Board;
@@ -7,18 +9,20 @@ import project.tripMaker.vo.Board;
 import java.util.List;
 import project.tripMaker.vo.Comment;
 
-@Repository
+@Mapper
 public interface BoardDao {
-  List<Board> list() throws Exception;
-  List<Board> findAllOrderByBoardLikeDesc();
-  List<Board> findAllOrderByBoardFavorDesc();
-  List<Board> findAllOrderByBoardCountDesc();
+  List<Board> list(Map<String, Object> options) throws Exception;
+  List<Board> listLike();
+  List<Board> listFavor();
+  List<Board> listView();
 
   boolean insert(Board board) throws Exception;
 
   Board findBy(int boardNo) throws Exception;
 
   void updateViewCount(@Param("boardNo")int boardNo, @Param("boardCount")int boardCount) throws Exception;
+
+  int countAll() throws Exception;
 
   boolean delete(@Param("boardNo")int boardNo) throws Exception;
 

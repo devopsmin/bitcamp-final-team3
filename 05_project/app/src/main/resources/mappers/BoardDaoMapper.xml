@@ -63,29 +63,22 @@
         b.board_tag,
         u.user_no,
         u.user_nickname,
-        COALESCE(f_count.favor_count, 0) as favor_count,
-        COALESCE(l_count.like_count, 0) as like_count
+        COALESCE(fv.favor_count, 0) AS favor_count,
+        COALESCE(bl.like_count, 0) AS like_count
       FROM
         board b
-      INNER JOIN
-            user u
-      ON b.user_no = u.user_no
-      LEFT JOIN (
-                  SELECT board_no, COUNT(*) as favor_count
-                  FROM favor
-                  GROUP BY board_no
-                )
-          f_count ON b.board_no = f_count.board_no
-      LEFT JOIN (
-                  SELECT board_no, COUNT(*) as like_count
-                  FROM boardlike
-                  GROUP BY board_no
-                )
-          l_count ON b.board_no = l_count.board_no
+          INNER JOIN
+        user u ON b.user_no = u.user_no
+          LEFT JOIN
+        favor_count_view fv ON b.board_no = fv.board_no
+          LEFT JOIN
+        boardlike_count_view bl ON b.board_no = bl.board_no
       WHERE
         b.boardtype_no = 3
       ORDER BY
-        b.board_no asc;
+        b.board_no ASC
+      LIMIT
+        #{rowNo}, #{length}
     </select>
 
     <insert id="insert" parameterType="board"
@@ -154,7 +147,7 @@
         board_no=#{boardNo}
   </update>
 
-  <select id="findAllOrderByBoardLikeDesc" resultMap="BoardMap">
+  <select id="listLike" resultMap="BoardMap">
     SELECT
       b.board_no,
       b.board_title,
@@ -163,32 +156,23 @@
       b.board_tag,
       u.user_no,
       u.user_nickname,
-      COALESCE(f_count.favor_count, 0) as favor_count,
-      COALESCE(l_count.like_count, 0) as like_count
+      COALESCE(fv.favor_count, 0) AS favor_count,
+      COALESCE(bl.like_count, 0) AS like_count
     FROM
       board b
         INNER JOIN
-      user u
-      ON b.user_no = u.user_no
-        LEFT JOIN (
-        SELECT board_no, COUNT(*) as favor_count
-        FROM favor
-        GROUP BY board_no
-      )
-        f_count ON b.board_no = f_count.board_no
-        LEFT JOIN (
-        SELECT board_no, COUNT(*) as like_count
-        FROM boardlike
-        GROUP BY board_no
-      )
-        l_count ON b.board_no = l_count.board_no
+      user u ON b.user_no = u.user_no
+        LEFT JOIN
+      favor_count_view fv ON b.board_no = fv.board_no
+        LEFT JOIN
+      boardlike_count_view bl ON b.board_no = bl.board_no
     WHERE
       b.boardtype_no = 3
     ORDER BY
-      l_count.like_count DESC, b.board_no DESC;
+      like_count DESC, b.board_no ASC
   </select>
 
-  <select id="findAllOrderByBoardFavorDesc" resultMap="BoardMap">
+  <select id="listFavor" resultMap="BoardMap">
     SELECT
       b.board_no,
       b.board_title,
@@ -197,32 +181,23 @@
       b.board_tag,
       u.user_no,
       u.user_nickname,
-      COALESCE(f_count.favor_count, 0) as favor_count,
-      COALESCE(l_count.like_count, 0) as like_count
+      COALESCE(fv.favor_count, 0) AS favor_count,
+      COALESCE(bl.like_count, 0) AS like_count
     FROM
       board b
         INNER JOIN
-      user u
-      ON b.user_no = u.user_no
-        LEFT JOIN (
-        SELECT board_no, COUNT(*) as favor_count
-        FROM favor
-        GROUP BY board_no
-      )
-        f_count ON b.board_no = f_count.board_no
-        LEFT JOIN (
-        SELECT board_no, COUNT(*) as like_count
-        FROM boardlike
-        GROUP BY board_no
-      )
-        l_count ON b.board_no = l_count.board_no
+      user u ON b.user_no = u.user_no
+        LEFT JOIN
+      favor_count_view fv ON b.board_no = fv.board_no
+        LEFT JOIN
+      boardlike_count_view bl ON b.board_no = bl.board_no
     WHERE
       b.boardtype_no = 3
     ORDER BY
-      f_count.favor_count DESC, b.board_no DESC;
+      favor_count DESC, b.board_no ASC
   </select>
 
-  <select id="findAllOrderByBoardCountDesc" resultMap="BoardMap">
+  <select id="listView" resultMap="BoardMap">
     SELECT
       b.board_no,
       b.board_title,
@@ -231,29 +206,57 @@
       b.board_tag,
       u.user_no,
       u.user_nickname,
-      COALESCE(f_count.favor_count, 0) as favor_count,
-      COALESCE(l_count.like_count, 0) as like_count
+      COALESCE(fv.favor_count, 0) AS favor_count,
+      COALESCE(bl.like_count, 0) AS like_count
     FROM
       board b
         INNER JOIN
-      user u
-      ON b.user_no = u.user_no
-        LEFT JOIN (
-        SELECT board_no, COUNT(*) as favor_count
-        FROM favor
-        GROUP BY board_no
-      )
-        f_count ON b.board_no = f_count.board_no
-        LEFT JOIN (
-        SELECT board_no, COUNT(*) as like_count
-        FROM boardlike
-        GROUP BY board_no
-      )
-        l_count ON b.board_no = l_count.board_no
+      user u ON b.user_no = u.user_no
+        LEFT JOIN
+      favor_count_view fv ON b.board_no = fv.board_no
+        LEFT JOIN
+      boardlike_count_view bl ON b.board_no = bl.board_no
     WHERE
       b.boardtype_no = 3
     ORDER BY
-      b.board_count DESC, b.board_no DESC;
+      b.board_count DESC, b.board_no ASC
+  </select>
+
+  <select id="countAll" resultType="int">
+    select count(*)
+    from board
+    where boardtype_no=3;
   </select>
 
 </mapper>
+<!--  SELECT-->
+<!--  b.board_no,-->
+<!--  b.board_title,-->
+<!--  b.board_created_date,-->
+<!--  b.board_count,-->
+<!--  b.board_tag,-->
+<!--  u.user_no,-->
+<!--  u.user_nickname,-->
+<!--  COALESCE(f_count.favor_count, 0) as favor_count,-->
+<!--  COALESCE(l_count.like_count, 0) as like_count-->
+<!--  FROM-->
+<!--  board b-->
+<!--  INNER JOIN-->
+<!--  user u-->
+<!--  ON b.user_no = u.user_no-->
+<!--  LEFT JOIN (-->
+<!--  SELECT board_no, COUNT(*) as favor_count-->
+<!--  FROM favor-->
+<!--  GROUP BY board_no-->
+<!--  )-->
+<!--  f_count ON b.board_no = f_count.board_no-->
+<!--  LEFT JOIN (-->
+<!--  SELECT board_no, COUNT(*) as like_count-->
+<!--  FROM boardlike-->
+<!--  GROUP BY board_no-->
+<!--  )-->
+<!--  l_count ON b.board_no = l_count.board_no-->
+<!--  WHERE-->
+<!--  b.boardtype_no = 3-->
+<!--  ORDER BY-->
+<!--  b.board_count DESC, b.board_no DESC;-->

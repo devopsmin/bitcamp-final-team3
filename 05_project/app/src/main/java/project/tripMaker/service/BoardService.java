@@ -1,6 +1,7 @@
 package project.tripMaker.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import java.util.HashMap;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import project.tripMaker.vo.Board;
@@ -9,25 +10,34 @@ import project.tripMaker.dao.BoardDao;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class BoardService {
 
-  @Autowired
-  BoardDao boardDao;
+  private final BoardDao boardDao;
 
-  public List<Board> list() throws Exception {
-    return boardDao.list();
+  public List<Board> list(int pageNo, int pageSize) throws Exception {
+
+    HashMap<String, Object> options = new HashMap<>();
+    options.put("rowNo", (pageNo - 1) * pageSize);
+    options.put("length", pageSize);
+
+    return boardDao.list(options);
+  }
+
+  public int countAll() throws Exception {
+    return boardDao.countAll();
   }
 
   public List<Board> listByLikes() {
-    return boardDao.findAllOrderByBoardLikeDesc();
+    return boardDao.listLike();
   }
 
   public List<Board> listByFavorites() {
-    return boardDao.findAllOrderByBoardFavorDesc();
+    return boardDao.listFavor();
   }
 
   public List<Board> listByViews() {
-    return boardDao.findAllOrderByBoardCountDesc();
+    return boardDao.listView();
   }
 
 

@@ -1,5 +1,6 @@
 package project.tripMaker.controller;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,21 +14,20 @@ import java.util.List;
 
 @Controller
 @RequestMapping("/board")
+@RequiredArgsConstructor
 public class BoardController {
 
-  private BoardService boardService;
-
-  public BoardController(BoardService boardService) {
-    this.boardService = boardService;
-  }
+  private final BoardService boardService;
 
   @GetMapping("list")
   public String list(
+      @RequestParam(defaultValue = "1") int pageNo,
+      @RequestParam(defaultValue = "5") int pageSize,
       Model model,
       @RequestParam(required = false, defaultValue = "latest") String sort
   ) throws Exception {
 
-    List<Board> boardList;
+    List<Board> boardList = boardService.list(pageNo, pageSize);
 
     switch (sort){
 
@@ -41,20 +41,30 @@ public class BoardController {
         boardList = boardService.listByViews();
         break;
       default: //"latest"
-        boardList = boardService.list();
+        boardList = boardService.list(pageNo, pageSize);
         break;
     }
 
-    // List<Board> list = boardService.list();
-    //
-    //
-    // for ( Board board : list ) {
-    //   System.out.println(board.toString());
-    // }
+    if (pageNo < 1) {
+      pageNo = 1;
+    }
 
+    int length = boardService.countAll();
 
+    int pageCount = length / pageSize;
+    if (length % pageSize > 0) {
+      pageCount++;
+    }
+
+    if (pageNo > pageCount) {
+      pageNo = pageCount;
+    }
 
     model.addAttribute("list", boardList);
+    model.addAttribute("pageNo", pageNo);
+    model.addAttribute("pageSize", pageSize);
+    model.addAttribute("pageCount", pageCount);
+
     return "board/list";
   }
 
