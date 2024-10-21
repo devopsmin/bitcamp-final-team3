@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="project.tripMaker.dao.UserDao">
+
+    <resultMap id="UserMap" type="project.tripMaker.vo.User">
+        <id property="userNo" column="user_no"/>
+        <result property="userPhoto" column="user_photo"/>
+        <result property="userLastestLogin" column="user_lastest_login"/>
+        <result property="userEmail" column="user_email"/>
+        <result property="userPassword" column="user_password"/>
+        <result property="userTel" column="user_tel"/>
+        <result property="userCreatedDate" column="user_created_date"/>
+        <result property="userNickname" column="user_nickname"/>
+        <result property="userRole" column="user_role"/>
+        <result property="userBlock" column="user_block"/>
+        <result property="snsNo" column="sns_no"/>
+    </resultMap>
+
+    <insert id="insert" parameterType="User">
+        INSERT INTO user (
+        user_photo, user_email, user_password,
+        user_tel, user_nickname, user_role,
+        user_lastest_login, user_created_date,
+        user_block, sns_no
+        ) VALUES (
+        #{userPhoto}, #{userEmail}, #{userPassword},
+        #{userTel}, #{userNickname}, #{userRole},
+        #{userLastestLogin}, #{userCreatedDate},
+        #{userBlock}, #{snsNo}
+        )
+    </insert>
+
+    <select id="list" resultType="User">
+        SELECT * FROM user ORDER BY user_no DESC
+    </select>
+
+    <select id="findBy" resultType="User">
+        SELECT * FROM user WHERE user_no = #{userNo}
+    </select>
+
+    <select id="findByEmail" resultType="User">
+        SELECT * FROM user WHERE user_email = #{email}
+    </select>
+
+    <select id="findByEmailAndPassword" resultType="User">
+        SELECT * FROM user
+        WHERE user_email = #{userEmail}
+        AND user_password = #{userPassword}
+    </select>
+
+    <select id="existsUsersByEmail" resultType="boolean">
+        SELECT COUNT(*) > 0
+        FROM user
+        WHERE userEmail = #{email}
+    </select>
+
+    <update id="update" parameterType="User">
+        UPDATE user SET
+        user_photo = #{userPhoto},
+        user_tel = #{userTel},
+        user_nickname = #{userNickname},
+        user_lastest_login = #{userLastestLogin}
+        WHERE user_no = #{userNo}
+    </update>
+
+    <delete id="delete">
+        DELETE FROM user WHERE user_no = #{userNo}
+    </delete>
+
+</mapper>

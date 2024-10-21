@@ -1,0 +1,36 @@
+package project.tripMaker.controller;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import project.tripMaker.service.UserService;
+
+import java.util.Map;
+import project.tripMaker.user.SignupForm;
+import project.tripMaker.vo.User;
+
+@RestController
+@RequestMapping("/user")
+public class UserController {
+
+  private final UserService userService;
+
+  public UserController(UserService userService) {
+    this.userService = userService;
+  }
+
+  @PostMapping("/login") // 로그인 요청 처리
+  public ResponseEntity<String> login(@RequestBody Map<String, String> loginForm) throws Exception {
+    String email = loginForm.get("email");
+    String password = loginForm.get("password");
+
+    String token = userService.login(email, password);
+    return ResponseEntity.ok(token);
+  }
+
+  @PostMapping("/signup") // 회원가입 요청 처리
+  public ResponseEntity<Long> signup(@RequestBody SignupForm signupForm) throws Exception {
+    User user = signupForm.toEntity();
+    Long userId = userService.signup(user);
+    return ResponseEntity.ok(userId);
+  }
+}

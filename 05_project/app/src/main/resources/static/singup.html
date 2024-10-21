@@ -1,0 +1,50 @@
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<html>
+<head>
+  <title>회원가입</title>
+  <script>
+    async function signup(event) {
+        event.preventDefault(); // 폼 제출 기본 동작 방지
+        const formData = {
+            name: document.getElementById("name").value,
+            email: document.getElementById("email").value,
+            password: document.getElementById("password").value
+        };
+
+        try {
+            const response = await fetch("/user/signup", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(formData)
+            });
+
+            if (response.ok) {
+                const userId = await response.json();
+                alert(`가입 성공! 사용자 ID: ${userId}`);
+            } else {
+                alert("가입 실패!");
+            }
+        } catch (error) {
+            console.error("Error during signup:", error);
+        }
+    }
+  </script>
+</head>
+<body>
+<h1>회원가입</h1>
+<form onsubmit="signup(event)">
+  <label for="name">이름:</label>
+  <input type="text" id="name" name="name" required><br><br>
+
+  <label for="email">이메일:</label>
+  <input type="email" id="email" name="email" required><br><br>
+
+  <label for="password">비밀번호:</label>
+  <input type="password" id="password" name="password" required><br><br>
+
+  <input type="submit" value="가입하기">
+</form>
+</body>
+</html>
