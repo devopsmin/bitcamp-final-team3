@@ -29,7 +29,6 @@ import org.springframework.web.servlet.view.InternalResourceViewResolver;
 @SpringBootApplication
 @PropertySource("file:${user.home}/config/ncp.properties")
 @EnableTransactionManagement
-@Controller
 public class ServerApp implements WebMvcConfigurer {
 
     @Autowired
@@ -42,19 +41,6 @@ public class ServerApp implements WebMvcConfigurer {
 
     public static void main(String[] args) {
         SpringApplication.run(ServerApp.class, args);
-    }
-
-    @Bean
-    public ViewResolver viewResolver() {
-        InternalResourceViewResolver vr = new InternalResourceViewResolver();
-        vr.setPrefix("/WEB-INF/jsp/");
-        vr.setSuffix(".jsp");
-        return vr;
-    }
-
-    @Bean
-    public MultipartResolver multipartResolver() {
-        return new StandardServletMultipartResolver();
     }
 
 //    @Override

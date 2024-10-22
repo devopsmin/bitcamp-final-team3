@@ -90,6 +90,8 @@ ALTER TABLE trip
 ALTER TABLE trip
   MODIFY COLUMN trip_no INTEGER NOT NULL AUTO_INCREMENT COMMENT '여행번호';
 
+
+
 -- 유저
 CREATE TABLE user (
   user_no            INTEGER      NOT NULL COMMENT '유저번호', -- 유저번호
@@ -97,11 +99,11 @@ CREATE TABLE user (
   user_lastest_login DATETIME     NOT NULL COMMENT '마지막로그인날짜', -- 마지막로그인날짜
   user_email         VARCHAR(40)  NOT NULL COMMENT '이메일', -- 이메일
   user_password      VARCHAR(255) NOT NULL COMMENT '비밀번호', -- 비밀번호
-  user_tel           VARCHAR(30)  NOT NULL COMMENT '연락처', -- 연락처
+  user_tel           VARCHAR(255) NOT NULL COMMENT '연락처', -- 연락처
   user_created_date  DATETIME     NULL     DEFAULT now() COMMENT '가입일', -- 가입일
   user_nickname      VARCHAR(50)  NOT NULL COMMENT '닉네임', -- 닉네임
-  user_autherlize    VARCHAR(20)  NOT NULL DEFAULT 'ROLE_USER'  COMMENT '권한여부', -- 권한여부
-  user_block         TINYINT      NOT NULL COMMENT '차단여부', -- 차단여부
+  user_role          VARCHAR(20)  NOT NULL DEFAULT 'USER'  COMMENT '권한여부', -- 권한여부
+  user_block         TINYINT      NOT NULL DEFAULT 0 COMMENT '차단여부', -- 차단여부
   sns_no             INTEGER      NULL     COMMENT 'SNS번호' -- SNS번호
 )
 COMMENT '유저';
@@ -128,6 +130,16 @@ CREATE UNIQUE INDEX UIX_user2
 ALTER TABLE user
   MODIFY COLUMN user_no INTEGER NOT NULL AUTO_INCREMENT COMMENT '유저번호';
 
+-- 유저
+ALTER TABLE user
+  ADD CONSTRAINT FK_sns_TO_user -- SNS -> 유저
+  FOREIGN KEY (
+  sns_no -- SNS번호
+  )
+  REFERENCES sns ( -- SNS
+  sns_no -- SNS번호
+  );
+  
 -- 쪽지
 CREATE TABLE letter (
   letter_no        INTEGER      NOT NULL COMMENT '쪽지번호', -- 쪽지번호

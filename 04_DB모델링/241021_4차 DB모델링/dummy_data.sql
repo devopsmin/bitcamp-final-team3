@@ -9,23 +9,25 @@ INSERT INTO sns (sns_name) VALUES
 -- 비밀번호 전부 1111 / 각 유저 마지막번호(6,8,10,12) 차단되어있음
 -- 생성일/마지막 로그인 날짜 NOW() 통일
 -- 관리자 [1]
-INSERT INTO user (user_lastest_login, user_email, user_password, user_tel, user_nickname, user_autherlize, user_block) VALUES
-(NOW(), 'admin@example.com', '1111', '010-1234-5678', '관리자', 0, 0);
+INSERT INTO user (user_lastest_login, user_email, user_password, user_tel, user_nickname, user_role, user_block) VALUES
+(NOW(), 'admin@example.com', '1111', '010-1234-5678', '관리자', 'ADMIN', 0);
+
 -- 일반유저 [2~6]
-INSERT INTO user (user_lastest_login, user_email, user_password, user_tel, user_nickname, user_autherlize, user_block) VALUES
-(NOW(), 'user1@example.com', '1111', '010-1111-1111', '회원1', 1, 0),
-(NOW(), 'user2@example.com', '1111', '010-1212-1212', '회원2', 1, 1),
-(NOW(), 'user3@example.com', '1111', '010-1313-1313', '회원3', 1, 0),
-(NOW(), 'user4@example.com', '1111', '010-1414-1414', '회원4', 1, 1),
-(NOW(), 'user5@example.com', '1111', '010-1515-1515', '회원5', 1, 0);
+INSERT INTO user (user_lastest_login, user_email, user_password, user_tel, user_nickname, user_role, user_block) VALUES
+(NOW(), 'user1@example.com', '1111', '010-1111-1111', '회원1', 'USER', 0),
+(NOW(), 'user2@example.com', '1111', '010-1212-1212', '회원2', 'USER', 1),
+(NOW(), 'user3@example.com', '1111', '010-1313-1313', '회원3', 'USER', 0),
+(NOW(), 'user4@example.com', '1111', '010-1414-1414', '회원4', 'USER', 1),
+(NOW(), 'user5@example.com', '1111', '010-1515-1515', '회원5', 'USER', 0);
+
 -- 소셜유저 [7~12]
-INSERT INTO user (user_lastest_login, user_email, user_password, user_tel, user_nickname, user_autherlize, user_block, sns_no) VALUES
-(NOW(), 'google1@google.com', '1111', '010-1234-5678', '구글1', 1, 0, 1),
-(NOW(), 'google2@google.com', '1111', '010-2345-6789', '구글2', 1, 1, 1),
-(NOW(), 'naver1@naver.com', '1111', '010-1234-1234', '네이버1', 1, 0, 2),
-(NOW(), 'naver2@naver.com', '1111', '010-2345-2345', '네이버2', 1, 1, 2),
-(NOW(), 'kakao1@kakao.com', '1111', '010-3456-3456', '카카오1', 1, 0, 3),
-(NOW(), 'kakao2@kakao.com', '1111', '010-4567-4567', '카카오2', 1, 1, 3);
+INSERT INTO user (user_lastest_login, user_email, user_password, user_tel, user_nickname, user_role, user_block, sns_no) VALUES
+(NOW(), 'google1@google.com', '1111', '010-1234-5678', '구글1', 'USER', 0, 1),
+(NOW(), 'google2@google.com', '1111', '010-2345-6789', '구글2', 'USER', 1, 1),
+(NOW(), 'naver1@naver.com', '1111', '010-1234-1234', '네이버1', 'USER', 0, 2),
+(NOW(), 'naver2@naver.com', '1111', '010-2345-2345', '네이버2', 'USER', 1, 2),
+(NOW(), 'kakao1@kakao.com', '1111', '010-3456-3456', '카카오1', 'USER', 0, 3),
+(NOW(), 'kakao2@kakao.com', '1111', '010-4567-4567', '카카오2', 'USER', 1, 3);
 
 -- 차단분류 테이블 더미 데이터
 -- 추가가능
