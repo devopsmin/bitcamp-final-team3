@@ -10,12 +10,12 @@
 <h1>일정 편집</h1>
 <form action="checkSchedule" method="post">
     <ul>
-        <c:forEach items="${scheduleList}" var="schedule" varStatus="status">
+        <c:forEach items="${selectedLocation}" var="location" varStatus="status">
             <li>
                 <label>
-                        ${schedule.location.locationName}
+                        ${location.locationName}
                     <!-- locationNo를 숨겨진 필드로 전송 -->
-                    <input type="hidden" name="scheduleList[${status.index}].location.locationNo" value="${schedule.location.locationNo}" />
+                    <input type="hidden" name="scheduleList[${status.index}].location.locationNo" value="${location.locationNo}" />
                     <!-- scheduleDay를 숫자 입력으로 전송 -->
                     <input name="scheduleList[${status.index}].scheduleDay" type="number" min="1" placeholder="Enter day" required />
                     <!-- scheduleRoute를 숫자 입력으로 전송 -->

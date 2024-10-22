@@ -3,10 +3,12 @@ package project.tripMaker.service;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import project.tripMaker.dao.ScheduleDao;
 import project.tripMaker.vo.*;
 
+import java.sql.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -16,12 +18,9 @@ public class ScheduleService {
 
   private final ScheduleDao scheduleDao;
 
+  @Transactional
   public void makeTrip(Trip trip) throws Exception{
     scheduleDao.makeTrip(trip);
-  }
-
-  public void updateTrip(Trip trip) throws Exception{
-    scheduleDao.updateTrip(trip);
   }
 
   public List<Location> locationList(String cityCode) throws Exception {
@@ -48,12 +47,28 @@ public class ScheduleService {
     return scheduleDao.getThema();
   }
 
+  @Transactional
   public void saveTrip(Trip trip) {
-    scheduleDao.saveTrip(trip);
+    try {
+      scheduleDao.saveTrip(trip);
+    } catch (Exception e) {
+      deleteTrip(trip.getTripNo());
+      throw e;
+    }
+  }
+
+  @Transactional(propagation = Propagation.REQUIRES_NEW)
+  public void deleteTrip(int tripNo) {
+    scheduleDao.deleteSchedule(tripNo);
+    scheduleDao.deleteTrip(tripNo);
   }
 
   @Transactional
   public void addLocation(Location myLocation) {
     scheduleDao.addLocation(myLocation);
+  }
+
+  public List<Trip> getTripList(Trip trip) {
+    return scheduleDao.getTripList(trip);
   }
 }

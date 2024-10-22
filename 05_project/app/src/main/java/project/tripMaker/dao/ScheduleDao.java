@@ -28,4 +28,10 @@ public interface ScheduleDao {
   void saveTrip(Trip trip);
 
   void addLocation(Location myLocation);
+
+  void deleteTrip(int tripNo);
+
+  void deleteSchedule(int tripNo);
+
+  List<Trip> getTripList(Trip trip);
 }

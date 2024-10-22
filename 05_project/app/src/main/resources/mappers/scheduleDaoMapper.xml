@@ -7,28 +7,36 @@
     <resultMap id="TripResultMap" type="Trip">
         <id column="trip_no" property="tripNo"/>
         <result column="user_no" property="userNo"/>
-        <result column="thema_no" property="themaNo"/>
         <result column="trip_title" property="tripTitle"/>
         <result column="start_date" property="startDate"/>
         <result column="end_date" property="endDate"/>
         <result column="trip_created_date" property="tripCreatedDate"/>
 
+        <association property="thema" javaType="Thema">
+            <id column="thema_no" property="themaNo"/>
+            <result column="thema_name" property="themaName"/>
+        </association>
+
         <association property="city" javaType="City">
             <id column="city_code" property="cityCode"/>
             <result column="city_name" property="cityName"/>
+            <result column="city_photo" property="cityPhoto"/>
+                <association property="state" javaType="State">
+                    <id column="state_code" property="stateCode"/>
+                    <result column="state_name" property="stateName"/>
+                </association>
         </association>
 
-        <!-- Schedule 리스트 매핑 -->
         <collection property="scheduleList" ofType="Schedule">
             <id column="schedule_no" property="scheduleNo"/>
             <result column="trip_no" property="tripNo"/>
             <result column="schedule_day" property="scheduleDay"/>
             <result column="schedule_route" property="scheduleRoute"/>
 
-            <!-- Location 객체와 1:1 매핑 -->
             <association property="location" javaType="Location">
                 <id column="location_no" property="locationNo"/>
-                <result column="city_code" property="city.cityCode"/>
+                <result column="thirdclass_code" property="thirdclassCode"/>
+                <result column="city_code" property="cityCode"/>
                 <result column="location_name" property="locationName"/>
                 <result column="location_desc" property="locationDesc"/>
                 <result column="location_photo" property="locationPhoto"/>
@@ -36,8 +44,7 @@
                 <result column="location_addr" property="locationAddr"/>
                 <result column="location_x" property="locationX"/>
                 <result column="location_y" property="locationY"/>
-                <result column="locationclass_no" property="locationtypeNo"/>
-                <result column="thirdclass_code" property="thirdclassCode"/>
+                <result column="locationtype_no" property="locationtypeNo"/>
             </association>
         </collection>
     </resultMap>
@@ -71,18 +78,9 @@
 
     <insert id="makeTrip" parameterType="Trip"
             useGeneratedKeys="true" keyColumn="trip_no" keyProperty="tripNo">
-        INSERT INTO trip (trip_created_date)
-        VALUES (NOW())
+        INSERT INTO trip (trip_created_date, start_date, end_date, city_code)
+        VALUES (NOW(), #{startDate}, #{endDate}, #{city.cityCode})
     </insert>
-
-    <update id="updateTrip" parameterType="Trip">
-        UPDATE trip SET
-            start_date=#{startDate},
-            end_date=#{endDate},
-            city_code=#{city.cityCode}
-        WHERE
-            trip_no=#{tripNo}
-    </update>
 
     <update id="saveTrip" parameterType="Trip">
         UPDATE trip SET
@@ -92,6 +90,10 @@
         WHERE
             trip_no=#{tripNo}
     </update>
+
+    <delete id="deleteTrip" parameterType="int">
+        DELETE FROM trip WHERE trip_no= #{tripNo}
+    </delete>
 
     <insert id="addLocation" parameterType="Location"
             useGeneratedKeys="true" keyColumn="location_no" keyProperty="locationNo">
@@ -149,6 +151,10 @@
         values (#{tripNo}, #{location.locationNo}, #{scheduleDay}, #{scheduleRoute})
     </insert>
 
+    <delete id="deleteSchedule" parameterType="int">
+        DELETE FROM schedule WHERE trip_no= #{tripNo}
+    </delete>
+
     <select id="findLocation" resultMap="LocationResultMap" parameterType="int">
         select
             l.location_no,
@@ -185,16 +191,51 @@
 
     </select>
 
-    <resultMap id="themaMap" type="map">
-        <result column="thema_no" property="key"/>
-        <result column="thema_name" property="value"/>
-    </resultMap>
-
     <select id="getThema" resultType="thema">
         SELECT
             thema_no as themaNo,
             thema_name as themaName
         FROM thema
+    </select>
+
+    <select id="getTripList" resultMap="TripResultMap">
+        SELECT
+            t.trip_no,
+            t.user_no,
+            th.thema_no,
+            th.thema_name,
+            t.trip_title,
+            t.start_date,
+            t.end_date,
+            t.trip_created_date,
+            st.state_code,
+            st.state_name,
+            c.city_code,
+            c.city_name,
+            s.schedule_no,
+            s.trip_no,
+            s.schedule_day,
+            s.schedule_route,
+            l.thirdclass_code,
+            l.city_code,
+            l.location_name,
+            l.location_desc,
+            l.location_photo,
+            l.location_tel,
+            l.location_addr,
+            l.location_x,
+            l.location_y,
+            l.locationtype_no
+        From
+            trip t
+        left outer join thema th on t.thema_no = th.thema_no
+        left outer join city c on t.city_code = c.city_code
+        left outer join state st on st.state_code = c.state_code
+        join schedule s on t.trip_no = s.trip_no
+        left outer join location l on s.location_no = l.location_no
+        where
+            t.city_code = #{city.cityCode}
+          and DATEDIFF( t.end_date, t.start_date) > DATEDIFF(#{endDate},#{startDate})
 
     </select>
 </mapper>

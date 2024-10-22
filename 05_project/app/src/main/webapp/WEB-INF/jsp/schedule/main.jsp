@@ -9,9 +9,14 @@
 <jsp:include page="../header.jsp"/>
 
 <h1>여행일정만들기</h1>
-<button><a href="createTrip"/> 일정생성 </button>
-<button><a href="getTrip"/> 일정가져오기 </button>
+<form action="createTrip" method="post" style="display:inline;">
+    <input type="hidden" name="tripType" value="selectLocation" />
+    <button type="submit">일정생성</button>
+</form>
 
-
+<form action="createTrip" method="post" style="display:inline;">
+    <input type="hidden" name="tripType" value="selectTripList" />
+    <button type="submit">일정가져오기</button>
+</form>
 </body>
 </html>

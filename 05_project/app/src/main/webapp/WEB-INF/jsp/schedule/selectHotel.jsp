@@ -8,7 +8,7 @@
 
 <jsp:include page="../header.jsp"/>a
 <h1>숙소 선택</h1>
-<form action="editSchedule" method="post">
+    <form action="createSchedule" method="post">
     <ul>
         <c:forEach items="${hotelList}" var="hotel">
             <li><input name='hotelNos' value='${hotel.locationNo}' type='checkbox'>${hotel.locationName}</li>
@@ -21,8 +21,9 @@
             <li><input checked name='hotelNos' value='${hotel.locationNo}' type='checkbox'> ${hotel.locationName}</li>
         </c:forEach>
     </ul>
-    <button type="submit"><a href="addHotel">숙소추가하기</a></button>
+    <button type="button" onclick="location.href='addHotel';">숙소추가하기</button>
+
     <button type="submit">다음</button>
-</form>
+    </form>
 </body>
 </html>

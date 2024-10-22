@@ -9,7 +9,7 @@
 <jsp:include page="../header.jsp"/>
 <h1>날짜 선택</h1>
 
-<form action="selectLocation" method="post">
+<form action="${tripType}" method="post">
     기간: <input name='startDate' type='date'> ~
     <input name='endDate' type='date'><br>
     <button>다음</button>

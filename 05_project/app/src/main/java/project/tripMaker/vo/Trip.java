@@ -9,7 +9,7 @@ import java.util.List;
 public class Trip {
   private Integer tripNo;          // 여행번호
   private Integer userNo;          // 유저번호
-  private Integer themaNo;         // 여행테마번호
+  private Thema thema;
   private City city;
   private String tripTitle;        // 여행제목
   private Date startDate;          // 여행시작일
