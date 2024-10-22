@@ -47,10 +47,6 @@ public class CommentController {
 
     Comment comment = commentService.get(commentNo);
 
-    if (comment == null) {
-      throw new Exception("존재하지 않는 댓글입니다.");
-    }
-
     commentService.delete(commentNo);
     return "redirect:/board/view?boardNo=" + boardNo;
   }

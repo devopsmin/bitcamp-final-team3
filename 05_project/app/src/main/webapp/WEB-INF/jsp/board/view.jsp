@@ -43,6 +43,7 @@
         <ul>
             <c:forEach items="${commentList}" var="comment">
                 <li>
+                    댓글 번호 : <input readonly type='text' value='${comment.commentNo}' size=3>
                     작성자 번호 : <input readonly type='text' value='${comment.userNo}'>
                     작성일 : <input readonly type='text' value='${comment.commentCreatedDate}'> <br>
                     댓글 : <input readonly type='text' value='${comment.commentContent}' size=50><br>
@@ -56,14 +57,14 @@
 <script>
   function deleteComment(commentNo) {
     if (confirm('댓글을 삭제하시겠습니까?')) {
-      location.href = 'deleteComment?commentNo=' + commentNo + '&boardNo=${board.boardNo}';
+      location.href = '/app/comment/delete?commentNo=' + commentNo + '&boardNo=${board.boardNo}';
     }
   }
 </script>
 
 <hr />
 
-<form id="commentForm" action="../list/add" method="post">
+<form id="commentForm" action="../comment/add" method="post">
     게시글 번호 <input type="text" readonly name="boardNo" value="${board.boardNo}">
     작성자 번호 <input type="text" readonly name="userNo" value="5"> <br>
     댓글 내용 작성 <textarea name="commentContent" placeholder="댓글을 입력하세요"></textarea>
