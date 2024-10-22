@@ -6,7 +6,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 
-<jsp:include page="../header.jsp"/>a
+<jsp:include page="../header.jsp"/>
 <h1>숙소 선택</h1>
     <form action="createSchedule" method="post">
     <ul>

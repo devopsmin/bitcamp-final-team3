@@ -11,8 +11,6 @@ import java.util.Map;
 public interface ScheduleDao {
   void makeTrip(Trip trip);
 
-  void updateTrip(Trip trip);
-
   List<Location> locationList(String cityCode);
 
   List<Location> hotelList(String cityCode);
@@ -23,7 +21,7 @@ public interface ScheduleDao {
 
   List<Schedule> viewSchedule(Integer tripNo);
 
-  List<Thema> getThema();
+  List<Thema> themaList();
 
   void saveTrip(Trip trip);
 
@@ -34,4 +32,6 @@ public interface ScheduleDao {
   void deleteSchedule(int tripNo);
 
   List<Trip> getTripList(Trip trip);
+
+  Thema getThema(int themaNo);
 }

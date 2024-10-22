@@ -4,6 +4,6 @@ import lombok.Data;
 
 @Data
 public class Thema {
-  int themaNo;
+  Integer themaNo;
   String themaName;
 }

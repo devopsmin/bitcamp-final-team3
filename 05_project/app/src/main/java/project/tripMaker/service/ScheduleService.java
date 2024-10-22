@@ -18,10 +18,6 @@ public class ScheduleService {
 
   private final ScheduleDao scheduleDao;
 
-  @Transactional
-  public void makeTrip(Trip trip) throws Exception{
-    scheduleDao.makeTrip(trip);
-  }
 
   public List<Location> locationList(String cityCode) throws Exception {
     return scheduleDao.locationList(cityCode);
@@ -43,8 +39,13 @@ public class ScheduleService {
     return scheduleDao.viewSchedule(tripNo);
   }
 
-  public List<Thema> getThema() {
-    return scheduleDao.getThema();
+  public List<Thema> themaList() {
+    return scheduleDao.themaList();
+  }
+
+  @Transactional
+  public void makeTrip(Trip trip) throws Exception{
+    scheduleDao.makeTrip(trip);
   }
 
   @Transactional
@@ -70,5 +71,9 @@ public class ScheduleService {
 
   public List<Trip> getTripList(Trip trip) {
     return scheduleDao.getTripList(trip);
+  }
+
+  public Thema getThema(int themaNo) {
+    return scheduleDao.getThema(themaNo);
   }
 }

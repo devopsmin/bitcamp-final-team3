@@ -4,6 +4,7 @@ import lombok.Data;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.support.SessionStatus;
 import project.tripMaker.service.CityService;
 import project.tripMaker.service.ScheduleService;
 import project.tripMaker.vo.*;
@@ -100,7 +101,7 @@ public class ScheduleController {
 
   @PostMapping("createSchedule")
   public void createSchedule(
-      @ModelAttribute List<Integer> locationNos,
+      @ModelAttribute("locationNos") List<Integer> locationNos,
       int[] hotelNos,
       Model model) throws Exception {
 
@@ -117,6 +118,12 @@ public class ScheduleController {
     }
     model.addAttribute("selectedLocation", selectedLocation);
     model.addAttribute("selectedHotels", selectedHotel);
+  }
+
+  @PostMapping("selectTripList")
+  public void getTripList(@ModelAttribute Trip trip, Model model) throws Exception {
+    List<Trip> tripList = scheduleService.getTripList(trip);
+    model.addAttribute("tripList", tripList);
   }
 
   @PostMapping("editSchedule")
@@ -146,7 +153,7 @@ public class ScheduleController {
 
   @GetMapping("saveTrip")
   public void saveTrip(Model model) throws Exception {
-    List<Thema> themas = scheduleService.getThema();
+    List<Thema> themas = scheduleService.themaList();
     for(Thema thema : themas) {
       System.out.println(thema);
     }
@@ -154,41 +161,14 @@ public class ScheduleController {
   }
 
   @PostMapping("save")
-  public void save(@ModelAttribute Trip trip, Model model) throws Exception {
+  public void save(
+      @ModelAttribute Trip trip,
+      int themaNo,
+      SessionStatus sessionStatus) throws Exception {
     trip.setUserNo(1);
+    Thema thema = scheduleService.getThema(themaNo);
+    trip.setThema(thema);
     scheduleService.saveTrip(trip);
+    sessionStatus.setComplete();
   }
-
-  @GetMapping("getTrip")
-  public void getTrip(Model model, Trip trip) throws Exception {
-    List<State> stateList = cityService.stateList();
-    model.addAttribute("stateList", stateList);
-    model.addAttribute("trip", trip);
-  }
-
-  @PostMapping("getCity")
-  public void getCity(String stateCode, Model model) throws Exception {
-    List<City> cityList = cityService.cityList(stateCode);
-    model.addAttribute("cityList", cityList);
-  }
-
-  @PostMapping("getDate")
-  public void getDate(@ModelAttribute Trip trip, String cityCode, Model model) throws Exception {
-    trip.setCity(cityService.firndCity(cityCode));
-    List<Location> myLocations = new ArrayList<>();
-    List<Location> myHotels = new ArrayList<>();
-    model.addAttribute("myLocations", myLocations);
-    model.addAttribute("myHotels", myHotels);
-  }
-
-  @PostMapping("selectTripList")
-  public void getTripList(@ModelAttribute Trip trip, Model model) throws Exception {
-    List<Trip> tripList = scheduleService.getTripList(trip);
-    model.addAttribute("tripList", tripList);
-  }
-
 }
-//
-//    request.getParameterMap().forEach((key, value) -> {
-//      System.out.println("Key: " + key + ", Value: " + Arrays.toString(value));
-//    });

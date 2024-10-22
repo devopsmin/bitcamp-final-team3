@@ -9,6 +9,7 @@
 <jsp:include page="../header.jsp"/>
 <h1>일정 편집</h1>
 <form action="checkSchedule" method="post">
+    <h2>여행지 편집</h2>
     <ul>
         <c:forEach items="${selectedLocation}" var="location" varStatus="status">
             <li>
@@ -20,6 +21,22 @@
                     <input name="scheduleList[${status.index}].scheduleDay" type="number" min="1" placeholder="Enter day" required />
                     <!-- scheduleRoute를 숫자 입력으로 전송 -->
                     <input name="scheduleList[${status.index}].scheduleRoute" type="number" min="1" placeholder="Enter route" required />
+                </label>
+            </li>
+        </c:forEach>
+    </ul>
+    <h2>숙소 편집</h2>
+    <ul>
+        <c:forEach items="${selectedHotels}" var="hotel" varStatus="status">
+            <li>
+                <label>
+                        ${hotel.locationName}
+                    <!-- locationNo를 숨겨진 필드로 전송 -->
+                    <input type="hidden" name="scheduleList[${status.index}].location.locationNo" value="${hotel.locationNo}" />
+                    <!-- scheduleDay를 숫자 입력으로 전송 -->
+                    <input name="scheduleList[${status.index}].scheduleDay" type="number" min="1" placeholder="Enter day" required />
+                    <!-- scheduleRoute를 숫자 입력으로 전송 -->
+                    <input name="scheduleList[${status.index}].scheduleRoute" type="hidden" value="99"/>
                 </label>
             </li>
         </c:forEach>
