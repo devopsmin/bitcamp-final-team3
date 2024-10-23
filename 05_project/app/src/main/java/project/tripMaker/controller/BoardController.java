@@ -9,10 +9,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import project.tripMaker.service.BoardService;
 import project.tripMaker.service.CommentService;
+import project.tripMaker.service.ScheduleService;
 import project.tripMaker.vo.Board;
 
 import java.util.List;
 import project.tripMaker.vo.Comment;
+import project.tripMaker.vo.Trip;
 
 @Controller
 @RequestMapping("/board")
@@ -21,6 +23,7 @@ public class BoardController {
 
   private final BoardService boardService;
   private final CommentService commentService;
+  private final ScheduleService scheduleService;
 
   @GetMapping("list")
   public String list(
@@ -72,7 +75,16 @@ public class BoardController {
   }
 
   @GetMapping("form")
-  public void form(){
+  public void form(Model model){
+    int userNo = 2;
+    List<Trip> tripList = scheduleService.getTripsByUserNo(userNo);
+    // 디버깅용 코드
+    System.out.println("Trip List Size: " + tripList.size());
+    for (Trip trip : tripList) {
+      System.out.println("Trip: " + trip.getTripNo() + ", " + trip.getTripTitle());
+    }
+
+    model.addAttribute("trips", tripList);
   }
 
   @PostMapping("add")

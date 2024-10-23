@@ -2,6 +2,7 @@ package project.tripMaker.service;
 
 import java.util.List;
 import lombok.Data;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,7 +17,6 @@ import project.tripMaker.vo.Trip;
 public class ScheduleService {
 
   private final ScheduleDao scheduleDao;
-
 
   public List<Location> locationList(String cityCode) throws Exception {
     return scheduleDao.locationList(cityCode);
@@ -74,5 +74,9 @@ public class ScheduleService {
 
   public Thema getThema(int themaNo) {
     return scheduleDao.getThema(themaNo);
+  }
+
+  public List<Trip> getTripsByUserNo(int userNo) {
+    return scheduleDao.findTripsByUserNo(userNo);
   }
 }

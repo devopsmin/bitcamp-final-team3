@@ -3,6 +3,7 @@ package project.tripMaker.controller;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,6 +25,7 @@ import project.tripMaker.vo.Trip;
 @Controller
 @RequestMapping("/schedule")
 @SessionAttributes({"locationNos", "trip", "myLocations", "myHotels", "tripType"})
+@RequiredArgsConstructor
 public class ScheduleController {
 
   private final CityService cityService;

@@ -34,4 +34,6 @@ public interface ScheduleDao {
   List<Trip> getTripList(Trip trip);
 
   Thema getThema(int themaNo);
+
+  List<Trip> findTripsByUserNo(int userNo);
 }
