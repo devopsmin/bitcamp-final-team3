@@ -25,9 +25,6 @@ public class ScheduleService {
     scheduleDao.updateTrip(trip);
   }
 
-
-
-
   public List<Location> locationList(String cityCode) throws Exception {
     return scheduleDao.locationList(cityCode);
   }

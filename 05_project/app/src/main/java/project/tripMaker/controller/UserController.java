@@ -1,9 +1,6 @@
 package project.tripMaker.controller;
 
-
-import java.util.HashMap;
 import java.util.List;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,17 +42,17 @@ public class UserController {
 
   @GetMapping("{userNo}")
   public String view(
-          @PathVariable int userNo,
-          Model model) throws Exception {
+      @PathVariable
+      int userNo, Model model) throws Exception {
     User user = userService.get(userNo);
     model.addAttribute("user", user);
     return "user/view";
   }
 
   @PostMapping("{userNo}")
-  public String update(
-          @PathVariable int userNo,
-          User user) throws Exception {
+  public String update(@
+      PathVariable int userNo,
+      User user) throws Exception {
     user.setUserNo(userNo);
     if (userService.update(user)) {
       return "redirect:../users";

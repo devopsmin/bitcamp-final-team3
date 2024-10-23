@@ -1,18 +1,16 @@
 package project.tripMaker.controller;
 
-
-
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import project.tripMaker.service.UserService;
 import project.tripMaker.vo.User;
-
 
 @RequiredArgsConstructor
 @Controller
@@ -26,16 +24,11 @@ public class AuthController {
   }
 
   @PostMapping("login")
-  public String login(
-          String userEmail,
-          String userPassword,
-          boolean saveEmail,
-          HttpServletResponse res,
-          HttpSession session) throws Exception {
+  public String login(String userEmail, String userPassword, boolean saveEmail,
+      HttpServletResponse res, HttpSession session) throws Exception {
 
     User user = userService.exists(userEmail, userPassword);
     if (user == null) {
-      res.setHeader("Refresh", "2; url=form");
       return "auth/fail";
     }
 
@@ -44,7 +37,7 @@ public class AuthController {
       cookie.setMaxAge(60 * 60 * 24 * 7);
       res.addCookie(cookie);
     } else {
-      Cookie cookie = new Cookie("email", "test@test.com");
+      Cookie cookie = new Cookie("email", "");
       cookie.setMaxAge(0);
       res.addCookie(cookie);
     }
@@ -59,4 +52,20 @@ public class AuthController {
     return "redirect:/";
   }
 
+
+  @GetMapping("register")
+  public String registerForm() {
+    return "auth/register";
+  }
+
+  @PostMapping("register")
+  public String register(User user) {
+    try {
+      userService.add(user);
+      return "redirect:/";
+    } catch (Exception e) {
+      e.printStackTrace();
+      return "auth/error";
+    }
+  }
 }

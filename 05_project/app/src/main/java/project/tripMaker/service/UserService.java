@@ -18,4 +18,10 @@ public interface UserService {
   boolean update(User user) throws Exception;
 
   boolean delete(int userNo) throws Exception;
+
+  User getByEmail(String userEmail) throws Exception;
+
+  boolean existsByEmail(String userEmail) throws Exception;
+
+  void updateLastLogin(long userNo) throws Exception;
 }
