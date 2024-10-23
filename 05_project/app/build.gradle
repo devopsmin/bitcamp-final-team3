@@ -25,7 +25,7 @@ repositories {
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-jdbc'
-//    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:2.3.2'
     compileOnly 'org.projectlombok:lombok'
@@ -37,13 +37,6 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter-test:2.3.2'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-
-
-    // Tomcat Embedded Server용 JSP 엔진 라이브러리
-    implementation 'org.apache.tomcat.embed:tomcat-embed-jasper:9.0.83'
-
-    // JSTL API 및 구현체 라이브러리
-    implementation 'javax.servlet:jstl:1.2'
 
     // Amazon S3 라이브러리
     implementation 'com.amazonaws:aws-java-sdk-s3:1.12.772'

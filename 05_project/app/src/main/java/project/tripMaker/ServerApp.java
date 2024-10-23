@@ -29,7 +29,6 @@ import org.springframework.web.servlet.view.InternalResourceViewResolver;
 @SpringBootApplication
 @PropertySource("file:${user.home}/config/ncp.properties")
 @EnableTransactionManagement
-@Controller
 public class ServerApp implements WebMvcConfigurer {
 
     @Autowired

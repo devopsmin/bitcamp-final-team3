@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head data-th-replace="~{header :: head}"></head>
+<header data-th-replace="~{header :: #page-header}"></header>
+
+<body>
+<h1>게시글 목록</h1>
+<label>정렬</label>
+<select name="sort" onchange="changeSort(this.value)">
+    <option value="latest"
+            th:selected="${param.sort == 'latest' || param.sort == null}">최신순</option>
+    <option value="likes"
+            th:selected="${param.sort == 'likes'}">좋아요</option>
+    <option value="favorites"
+            th:selected="${param.sort == 'favorites'}">즐겨찾기</option>
+    <option value="views"
+            th:selected="${param.sort == 'views'}">조회수</option>
+</select>
+
+<script>
+  function changeSort(sortType) {
+    window.location.href = 'list?sort=' + sortType;
+  }
+</script>
+
+<p><a th:href="@{form}">글쓰기</a></p>
+
+<table>
+    <thead>
+    <tr>
+        <th>번호</th>
+        <th>제목</th>
+        <th>작성자번호</th>
+        <th>작성자닉네임</th>
+        <th>작성일</th>
+        <th>좋아요</th>
+        <th>즐겨찾기</th>
+        <th>조회수</th>
+        <th>태그</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="board : ${list}">
+        <td th:text="${board.boardNo}">번호</td>
+        <td>
+            <a th:href="@{view(boardNo=${board.boardNo})}"
+               th:text="${board.boardTitle}">제목</a>
+        </td>
+        <td th:text="${board.writer.userNo}">작성자번호</td>
+        <td th:text="${board.writer.userNickname}">작성자닉네임</td>
+        <td th:text="${board.boardCreatedDate}">작성일</td>
+        <td th:text="${board.boardLike}">좋아요</td>
+        <td th:text="${board.boardFavor}">즐겨찾기</td>
+        <td th:text="${board.boardCount}">조회수</td>
+        <td th:text="${board.boardTag}">태그</td>
+    </tr>
+    </tbody>
+</table>
+
+<div>
+    <span th:if="${pageNo > 1}">
+        <a th:href="@{'/list'(sort=${param.sort}, pageNo=${pageNo - 1}, pageSize=${pageSize})}">
+            이전
+        </a>
+    </span>
+    <span th:unless="${pageNo > 1}">이전</span>
+
+    <span th:each="i : ${#numbers.sequence(1, pageCount)}">
+        <a th:href="@{'/list'(pageNo=${i})}" th:text="${i}">1</a>
+    </span>
+
+    <span th:if="${pageNo < pageCount}">
+        <a th:href="@{'/list'(sort=${param.sort}, pageNo=${pageNo + 1}, pageSize=${pageSize})}">
+            다음
+        </a>
+    </span>
+    <span th:unless="${pageNo < pageCount}">다음</span>
+</div>
+
+</body>
+</html>
