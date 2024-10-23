@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+
+<head data-th-replace="~{header :: head}"></head>
+<header data-th-replace="~{header :: #page-header}"></header>
+
+<body>
+<h1>게시글 조회</h1>
+
+<!-- 게시글이 없는 경우 -->
+<p data-th-unless="${board}">없는 게시글입니다.</p>
+
+<!-- 게시글이 있는 경우 -->
+<div data-th-if="${board}">
+    <button type="button" onclick="location.href='list'">좋아요</button>
+    <input readonly name="boardLike" type="text" data-th-value="${board.boardLike}"><br>
+
+    <button type="button" onclick="location.href='list'">즐겨찾기</button>
+    <input readonly name="boardFavor" type="text" data-th-value="${board.boardFavor}"><br>
+
+    <form data-th-action="@{modify}" method="post">
+        번호: <input readonly name="no" type="text" data-th-value="${board.boardNo}"><br>
+        제목: <input readonly name="title" type="text" data-th-value="${board.boardTitle}"><br>
+        내용: <textarea readonly name="content" data-th-text="${board.boardContent}"></textarea><br>
+        작성일: <input readonly type="text"
+                    data-th-value="${#dates.format(board.boardCreatedDate, 'yyyy-MM-dd')}"><br>
+        조회수: <input readonly type="text" data-th-value="${board.boardCount}"><br>
+        작성자: <input readonly type="text" data-th-value="${board.writer.userNickname}"><br>
+
+        <button type="button" onclick="location.href='list'">목록</button>
+        <button type="submit">수정</button>
+        <button type="button"
+                data-th-onclick="|deleteBoard(${board.boardNo})|">삭제</button>
+    </form>
+
+    <script>
+        function deleteBoard(no) {
+            location.href = "delete?boardNo=" + no
+        }
+    </script>
+
+    <br> 댓글: <br>
+
+    <!-- 댓글이 없는 경우 -->
+    <p data-th-unless="${commentList}">댓글이 없습니다.</p>
+
+    <!-- 댓글이 있는 경우 -->
+    <ul data-th-if="${commentList}">
+        <li data-th-each="comment : ${commentList}">
+            댓글 번호: <input readonly type="text" data-th-value="${comment.commentNo}" size="3">
+            작성자 번호: <input readonly type="text" data-th-value="${comment.userNo}">
+            작성일: <input readonly type="text" data-th-value="${comment.commentCreatedDate}"><br>
+            댓글: <input readonly type="text" data-th-value="${comment.commentContent}" size="50"><br>
+            <button type="button" data-th-onclick="'deleteComment(' + ${comment.commentNo} + ')'">삭제</button>
+        </li>
+    </ul>
+</div>
+
+<script>
+  function deleteComment(commentNo) {
+    if (confirm('댓글을 삭제하시겠습니까?')) {
+      location.href = '../comment/delete?commentNo=' + commentNo + '&boardNo=[[${board.boardNo}]]';
+    }
+  }
+</script>
+
+<hr />
+
+<form id="commentForm" data-th-action="@{/comment/add}" method="post">
+    게시글 번호: <input type="text" readonly name="boardNo" data-th-value="${board.boardNo}"><br>
+    작성자 번호: <input type="text" readonly name="userNo" value="5"><br>
+    댓글 내용 작성: <textarea name="commentContent" placeholder="댓글을 입력하세요"></textarea><br>
+    <button type="submit">댓글 작성</button>
+</form>
+
+</body>
+</html>

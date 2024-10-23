@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html>
 
 <head data-th-replace="~{header :: head}"></head>
 <header data-th-replace="~{header :: #page-header}"></header>
@@ -8,10 +8,10 @@
 <h1>게시글 조회</h1>
 
 <!-- 게시글이 없을 경우 -->
-<p th:if="${#objects.isEmpty(board)}">없는 게시글입니다.</p>
+<p data-th-unless="${board}">없는 게시글입니다.</p>
 
 <!-- 게시글이 있을 경우 -->
-<form th:if="${#objects.nonEmpty(board)}" th:action="@{/update}" method="post">
+<form data-th-if="${board}" th:action="@{update}" method="post">
     번호: <input name="no" readonly type="text" th:value="${board.boardNo}"><br>
     제목: <input name="title" type="text" th:value="${board.boardTitle}"><br>
     내용: <textarea name="content" th:text="${board.boardContent}"></textarea><br>

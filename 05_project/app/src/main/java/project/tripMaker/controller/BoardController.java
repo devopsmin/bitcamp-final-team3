@@ -91,7 +91,7 @@ public class BoardController {
   public String add(Board board) throws Exception {
 
     boardService.add(board);
-    return "redirect:board/list";
+    return "redirect:list";
   }
 
   @GetMapping("view")
@@ -118,7 +118,7 @@ public class BoardController {
     }
 
     boardService.delete(boardNo);
-    return "redirect:board/list";
+    return "redirect:list";
   }
 
   @PostMapping("update")
@@ -132,7 +132,7 @@ public class BoardController {
     board.setBoardContent(content);
 
     boardService.update(board);
-    return "redirect:board/view?boardNo=" + boardNo;
+    return "redirect:view?boardNo=" + boardNo;
   }
 
   @PostMapping("modify")
