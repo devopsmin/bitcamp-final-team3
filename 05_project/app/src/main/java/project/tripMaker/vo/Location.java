@@ -4,7 +4,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @Data
-
+@EqualsAndHashCode(of ={"locationName","locationDesc"})
 public class Location {
   private Integer locationNo;      // 여행지정보 번호
   private String thirdclassCode;    // 소분류번호

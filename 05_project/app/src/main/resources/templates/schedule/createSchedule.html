@@ -10,15 +10,15 @@
 <form action='checkSchedule' method="post">
     <h2>여행지 편집</h2>
     <ul>
-        <li th:each="location, status : ${selectedLocation}">
+        <li data-th-each="location, status : ${selectedLocation}">
             <label>
-                <span th:text="${location.locationName}"></span>
-                <input type="hidden" th:name="|scheduleList[${status.index}].location.locationNo|"
-                       th:value="${location.locationNo}" />
-                <input th:name="|scheduleList[${status.index}].scheduleDay|"
+                <span data-th-text="${location.locationName}"></span>
+                <input type="hidden" data-th-name="|scheduleList[${status.index}].location.locationNo|"
+                       data-th-value="${location.locationNo}" />
+                <input data-th-name="|scheduleList[${status.index}].scheduleDay|"
                        type="number"
                        min="1" placeholder="Enter day" required />
-                <input th:name="|scheduleList[${status.index}].scheduleRoute|"
+                <input data-th-name="|scheduleList[${status.index}].scheduleRoute|"
                        type="number"
                        min="1" placeholder="Enter route" required />
             </label>
@@ -27,17 +27,17 @@
 
     <h2>숙소 편집</h2>
     <ul>
-        <li th:each="hotel, status : ${selectedHotels}">
+        <li data-th-each="hotel, status : ${selectedHotels}">
             <label>
-                <span th:text="${hotel.locationName}"></span>
+                <span data-th-text="${hotel.locationName}"></span>
                 <input type="hidden"
-                       th:name="|scheduleList[${status.index + selectedLocation.size()}].location.locationNo|"
-                       th:value="${hotel.locationNo}" />
-                <input th:name="|scheduleList[${status.index + selectedLocation.size()}].scheduleDay|"
+                       data-th-name="|scheduleList[${status.index + selectedLocation.size()}].location.locationNo|"
+                       data-th-value="${hotel.locationNo}" />
+                <input data-th-name="|scheduleList[${status.index + selectedLocation.size()}].scheduleDay|"
                        type="number" min="1" placeholder="Enter day" required />
                 <input type="hidden"
-                       th:name="|scheduleList[${status.index + selectedLocation.size()}].scheduleRoute|"
-                       th:value="99"/>
+                       data-th-name="|scheduleList[${status.index + selectedLocation.size()}].scheduleRoute|"
+                       data-th-value="99"/>
             </label>
         </li>
     </ul>

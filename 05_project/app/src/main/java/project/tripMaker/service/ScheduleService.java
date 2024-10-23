@@ -9,6 +9,8 @@ import project.tripMaker.dao.ScheduleDao;
 import project.tripMaker.vo.*;
 
 import java.sql.Date;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -86,4 +88,28 @@ public class ScheduleService {
     );
     return scheduleList;
   }
+
+  public void calculateDay(Trip trip) {
+    LocalDate start = trip.getStartDate().toLocalDate();
+    LocalDate end = trip.getEndDate().toLocalDate();
+    trip.setDays(ChronoUnit.DAYS.between(start, end));
+  }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

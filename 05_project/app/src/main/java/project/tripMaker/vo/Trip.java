@@ -14,6 +14,7 @@ public class Trip {
   private String tripTitle;        // 여행제목
   private Date startDate;          // 여행시작일
   private Date endDate;            // 여행종료일
+  private long days;
   private Date tripCreatedDate;    // 생성날짜
   private List<Schedule> scheduleList;
 }

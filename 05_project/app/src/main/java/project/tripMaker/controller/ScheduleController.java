@@ -52,6 +52,8 @@ public class ScheduleController {
       @ModelAttribute("myLocations") List<Location> myLocations,
       @ModelAttribute("myLocation") Location myLocation,
       Model model) throws Exception {
+
+    scheduleService.calculateDay(trip);
     String cityCode = trip.getCity().getCityCode();
 
     if (myLocation.getLocationName() != null && !myLocations.contains(myLocation)) {
@@ -60,7 +62,6 @@ public class ScheduleController {
       scheduleService.addLocation(myLocation);
       for (Location location : myLocations) {
       System.out.println(location.getLocationName());
-
       }
     }
 
@@ -162,5 +163,6 @@ public class ScheduleController {
     Thema thema = scheduleService.getThema(themaNo);
     trip.setThema(thema);
     scheduleService.saveTrip(trip);
+    sessionStatus.setComplete();
   }
 }

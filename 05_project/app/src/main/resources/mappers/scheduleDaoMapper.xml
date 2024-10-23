@@ -11,6 +11,7 @@
         <result column="start_date" property="startDate"/>
         <result column="end_date" property="endDate"/>
         <result column="trip_created_date" property="tripCreatedDate"/>
+        <result column="days" property="days"/>
 
         <association property="thema" javaType="Thema">
             <id column="thema_no" property="themaNo"/>
@@ -78,8 +79,8 @@
 
     <insert id="makeTrip" parameterType="Trip"
             useGeneratedKeys="true" keyColumn="trip_no" keyProperty="tripNo">
-        INSERT INTO trip (trip_created_date, start_date, end_date, city_code, user_no, trip_title, thema_no)
-        VALUES (NOW(), #{startDate}, #{endDate}, #{city.cityCode}, #{userNo}, #{tripTitle},#{thema.themaNo})
+        INSERT INTO trip (trip_created_date, start_date, end_date, city_code, user_no, trip_title, thema_no, days)
+        VALUES (NOW(), #{startDate}, #{endDate}, #{city.cityCode}, #{userNo}, #{tripTitle},#{thema.themaNo}, #{days})
     </insert>
 
     <delete id="deleteTrip" parameterType="int">
@@ -207,6 +208,7 @@
             t.start_date,
             t.end_date,
             t.trip_created_date,
+            t.days,
             st.state_code,
             st.state_name,
             c.city_code,
@@ -235,6 +237,5 @@
         where
             t.city_code = #{city.cityCode}
           and DATEDIFF(t.end_date, t.start_date) > DATEDIFF(#{endDate},#{startDate})
-
     </select>
 </mapper>

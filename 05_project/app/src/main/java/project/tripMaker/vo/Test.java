@@ -11,7 +11,7 @@ public class Test {
   public static void main(String[] args) {
     // java.sql.Date로부터 LocalDate로 변환
     Date startDate = Date.valueOf("2024-01-01");
-    Date endDate = Date.valueOf("2024-03-01");
+    Date endDate = Date.valueOf("2024-01-02");
 
     // java.sql.Date에서 java.time.LocalDate로 변환
     LocalDate start = startDate.toLocalDate();
