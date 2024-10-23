@@ -20,49 +20,50 @@
 
     <select id="list" resultMap="UserMap">
         select
-        user_no,
-        user_photo,
-        user_created_date,
-        user_lastest_login,
-        user_email,
-        user_password,
-        user_tel,
-        user_nickname,
-        user_role,
-        user_block,
-        sns_no
+          user_no,
+          user_photo,
+          user_created_date,
+          user_lastest_login,
+          user_email,
+          user_password,
+          user_tel,
+          user_nickname,
+          user_role,
+          user_block,
+          sns_no
         from
-        user
+          user
         order by
-        user_no asc
+          user_no asc
     </select>
 
     <insert id="insert" parameterType="User">
         insert into user (
-        user_created_date,
-        user_email,
-        user_password,
-        user_tel,
-        user_nickname,
-        user_lastest_login)
-        values (NOW(), #{userEmail}, #{userPassword}, #{userTel}, #{userNickname}, NOW())
+            user_created_date,
+            user_email,
+            user_password,
+            user_tel,
+            user_nickname,
+            user_lastest_login)
+        values
+        (NOW(), #{userEmail}, #{userPassword}, #{userTel}, #{userNickname}, NOW())
     </insert>
 
     <select id="findBy" resultMap="UserMap" parameterType="int">
         select
-        user_No,
-        user_Email,
-        user_Tel,
-        user_NickName,
-        user_Created_Date,
-        user_Lastest_Login,
-        user_role,
-        user_Block,
-        sns_No
+          user_No,
+          user_Email,
+          user_Tel,
+          user_NickName,
+          user_Created_Date,
+          user_Lastest_Login,
+          user_role,
+          user_Block,
+          sns_No
         from
-        user
+          user
         where
-        user_no=#{userNo}
+          user_no=#{userNo}
     </select>
 
     <select id="findByEmail" resultMap="UserMap" parameterType="string">
@@ -71,12 +72,12 @@
 
     <select id="findByEmailAndPassword" resultMap="UserMap" parameterType="map">
         select
-        user_No,
-        user_Email
+            user_No,
+            user_Email
         from
-        user
+            user
         where
-        user_Email=#{userEmail} and user_password = #{userPassword}
+            user_Email=#{userEmail} and user_password = #{userPassword}
     </select>
 
     <select id="existsByEmail" resultType="boolean" parameterType="string">
@@ -85,11 +86,11 @@
 
     <update id="update" parameterType="User">
         update user set
-        user_nickname = #{userNickname},
-        user_tel = #{userTel},
-        user_password = #{userPassword}
+            user_nickname = #{userNickname},
+            user_tel = #{userTel},
+            user_password = #{userPassword}
         where
-        user_no=#{userNo}
+            user_no=#{userNo}
     </update>
 
     <update id="updateLastLogin" parameterType="long">

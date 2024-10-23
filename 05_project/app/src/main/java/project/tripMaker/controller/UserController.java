@@ -17,7 +17,7 @@ import project.tripMaker.vo.User;
 
 @RequiredArgsConstructor
 @Controller
-@RequestMapping("/users")
+@RequestMapping("/user")
 public class UserController {
 
   private final UserService userService;
@@ -30,7 +30,7 @@ public class UserController {
   @PostMapping
   public String add(User user, MultipartFile file) throws Exception {
     userService.add(user);
-    return "redirect:../users";
+    return "redirect:../user";
   }
 
   @GetMapping
@@ -55,7 +55,7 @@ public class UserController {
       User user) throws Exception {
     user.setUserNo(userNo);
     if (userService.update(user)) {
-      return "redirect:../users";
+      return "redirect:../user";
     } else {
       throw new Exception("없는 회원입니다!");
     }

@@ -22,7 +22,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     try {
       User user = userDao.findByEmail(userEmail);
       if (user == null) {
-        throw new UsernameNotFoundException("User not found with email: " + userEmail);
+        throw new UsernameNotFoundException("이메일을 통해 사용자를 찾을 수 없습니다.: " + userEmail);
       }
 
       return org.springframework.security.core.userdetails.User.builder()
@@ -31,7 +31,7 @@ public class CustomUserDetailsService implements UserDetailsService {
           .authorities(Collections.singleton(new SimpleGrantedAuthority(user.getUserRole().name())))
           .build();
     } catch (Exception e) {
-      throw new UsernameNotFoundException("Error loading user", e);
+      throw new UsernameNotFoundException("사용자 로드 중 오류 발생", e);
     }
   }
 }
