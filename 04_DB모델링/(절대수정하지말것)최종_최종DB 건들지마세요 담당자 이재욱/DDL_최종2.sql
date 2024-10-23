@@ -1,5 +1,6 @@
 -- 수정 내용
 -- version 09 : 댓글, 좋아요, 즐겨찾기, 동행, 첨부 CASCADE 추가 (기존 FK drop 후 CASCADE를 통한 DELETE 가능하도록 제약사항 변경) 맨 아래 추가 됨
+-- version 10 : user에 비밀번호 크기 varchar 32 -> 255
 
 -- 여행
 DROP TABLE IF EXISTS trip RESTRICT;
@@ -119,7 +120,7 @@ CREATE TABLE user (
                       user_photo         VARCHAR(255) NULL,     -- 프로필사진
                       user_lastest_login DATETIME     NOT NULL, -- 마지막로그인날짜
                       user_email         VARCHAR(40)  NOT NULL, -- 이메일
-                      user_password      VARCHAR(32)  NOT NULL, -- 비밀번호
+                      user_password      VARCHAR(255)  NOT NULL, -- 비밀번호
                       user_tel           VARCHAR(30)  NOT NULL, -- 연락처
                       user_created_date  DATETIME     NULL DEFAULT NOW(), -- 가입일
                       user_nickname      VARCHAR(50)  NOT NULL, -- 닉네임
