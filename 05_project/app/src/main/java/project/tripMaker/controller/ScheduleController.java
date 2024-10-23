@@ -42,16 +42,14 @@ public class ScheduleController {
   @PostMapping("selectDate")
   public void selectDate(@ModelAttribute Trip trip, String cityCode, Model model) throws Exception {
     trip.setCity(cityService.firndCity(cityCode));
-    List<Location> myLocations = new ArrayList<>();
-    List<Location> myHotels = new ArrayList<>();
-    model.addAttribute("myLocations", myLocations);
-    model.addAttribute("myHotels", myHotels);
+    model.addAttribute("myLocations",  new ArrayList<>());
+    model.addAttribute("myHotels", new ArrayList<>());
   }
 
   @PostMapping("selectLocation")
   public void selectLocation(
       @ModelAttribute Trip trip,
-      @ModelAttribute("myLocations") ArrayList<Location> myLocations,
+      @ModelAttribute("myLocations") List<Location> myLocations,
       @ModelAttribute("myLocation") Location myLocation,
       Model model) throws Exception {
     String cityCode = trip.getCity().getCityCode();
@@ -139,24 +137,17 @@ public class ScheduleController {
   public void checkSchedule(
       @ModelAttribute Trip trip,
       Model model) throws Exception {
-
-    scheduleService.makeTrip(trip);
-    for(Schedule schedule : trip.getScheduleList()) {
-      schedule.setTripNo(trip.getTripNo());
-      scheduleService.addSchedule(schedule);
+    // order하기
+    List<Schedule> scheduleList = scheduleService.orderSchedule(trip.getScheduleList());
+    for(Schedule schedule : scheduleList){
+      schedule.setLocation(scheduleService.findLocation(schedule.getLocation().getLocationNo()));
     }
-    List<Schedule> scheduleList = scheduleService.viewSchedule(trip.getTripNo());
-    trip.setScheduleList(scheduleList);
-
     model.addAttribute("scheduleList", scheduleList);
   }
 
   @GetMapping("saveTrip")
   public void saveTrip(Model model) throws Exception {
     List<Thema> themas = scheduleService.themaList();
-    for(Thema thema : themas) {
-      System.out.println(thema);
-    }
     model.addAttribute("themas", themas);
   }
 
@@ -169,6 +160,5 @@ public class ScheduleController {
     Thema thema = scheduleService.getThema(themaNo);
     trip.setThema(thema);
     scheduleService.saveTrip(trip);
-    sessionStatus.setComplete();
   }
 }

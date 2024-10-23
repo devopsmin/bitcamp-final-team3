@@ -9,6 +9,7 @@ import project.tripMaker.dao.ScheduleDao;
 import project.tripMaker.vo.*;
 
 import java.sql.Date;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -17,7 +18,6 @@ import java.util.Map;
 public class ScheduleService {
 
   private final ScheduleDao scheduleDao;
-
 
   public List<Location> locationList(String cityCode) throws Exception {
     return scheduleDao.locationList(cityCode);
@@ -50,11 +50,10 @@ public class ScheduleService {
 
   @Transactional
   public void saveTrip(Trip trip) {
-    try {
-      scheduleDao.saveTrip(trip);
-    } catch (Exception e) {
-      deleteTrip(trip.getTripNo());
-      throw e;
+    scheduleDao.makeTrip(trip);
+    for(Schedule schedule : trip.getScheduleList()) {
+      schedule.setTripNo(trip.getTripNo());
+      scheduleDao.addSchedule(schedule);
     }
   }
 
@@ -75,5 +74,16 @@ public class ScheduleService {
 
   public Thema getThema(int themaNo) {
     return scheduleDao.getThema(themaNo);
+  }
+
+  public List<Schedule> orderSchedule(List<Schedule> scheduleList) {
+    if (scheduleList == null || scheduleList.size() == 0) {
+      return null;
+    }
+    scheduleList.sort(Comparator
+        .comparing(Schedule::getScheduleDay)
+        .thenComparing(Schedule::getScheduleRoute)
+    );
+    return scheduleList;
   }
 }

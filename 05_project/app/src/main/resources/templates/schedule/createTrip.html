@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+
+<html>
+<head data-th-replace="~{header :: head}">
+    <title>PMS</title>
+</head>
+<body>
+<header data-th-replace="~{header :: #page-header}"></header>
+
+<h1>여행지역 선택</h1>
+
+<form action="selectCity" method="post">
+    <select name="stateCode">
+        <option value="">시도 선택</option>
+        <option data-th-each="state : ${stateList}"
+                data-th-value="${state.stateCode}"
+                data-th-text="${state.stateName}"
+        >제주도
+        </option>
+    </select>
+    <button type="submit">다음</button>
+</form>
+</body>
+</html>

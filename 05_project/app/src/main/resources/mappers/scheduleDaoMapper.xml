@@ -78,18 +78,9 @@
 
     <insert id="makeTrip" parameterType="Trip"
             useGeneratedKeys="true" keyColumn="trip_no" keyProperty="tripNo">
-        INSERT INTO trip (trip_created_date, start_date, end_date, city_code)
-        VALUES (NOW(), #{startDate}, #{endDate}, #{city.cityCode})
+        INSERT INTO trip (trip_created_date, start_date, end_date, city_code, user_no, trip_title, thema_no)
+        VALUES (NOW(), #{startDate}, #{endDate}, #{city.cityCode}, #{userNo}, #{tripTitle},#{thema.themaNo})
     </insert>
-
-    <update id="saveTrip" parameterType="Trip">
-        UPDATE trip SET
-            user_no=#{userNo},
-            trip_title=#{tripTitle},
-            thema_no=#{thema.themaNo}
-        WHERE
-            trip_no=#{tripNo}
-    </update>
 
     <delete id="deleteTrip" parameterType="int">
         DELETE FROM trip WHERE trip_no= #{tripNo}

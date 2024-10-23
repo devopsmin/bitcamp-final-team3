@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+
+<html>
+<head data-th-replace="~{header :: head}">
+    <title>PMS</title>
+</head>
+<body>
+<header data-th-replace="~{header :: #page-header}"></header>
+<h1>일정 편집</h1>
+<form action="checkSchedule" method="post">
+    <h2>여행지 편집</h2>
+    <ul><c:set var="index" value="0"/>
+        <c:forEach items="${selectedLocation}" var="location" varStatus="status">
+            <li>
+                <label>
+                        ${location.locationName}
+                    <input type="hidden" name="scheduleList[${index}].location.locationNo" value="${location.locationNo}" />
+                    <input name="scheduleList[${index}].scheduleDay" type="number" min="1" placeholder="Enter day" required />
+                    <input name="scheduleList[${index}].scheduleRoute" type="number" min="1" placeholder="Enter route" required />
+                </label>
+            </li>
+            <c:set var="index" value="${index + 1}"/>
+        </c:forEach>
+    </ul>
+
+    <h2>숙소 편집</h2>
+    <ul>
+        <c:forEach items="${selectedHotels}" var="hotel" varStatus="status">
+            <li>
+                <label>
+                        ${hotel.locationName}
+                    <input type="hidden" name="scheduleList[${index}].location.locationNo" value="${hotel.locationNo}" />
+                    <input name="scheduleList[${index}].scheduleDay" type="number" min="1" placeholder="Enter day" required />
+                    <input name="scheduleList[${index}].scheduleRoute" type="hidden" value="99"/>
+                </label>
+            </li>
+            <c:set var="index" value="${index + 1}"/>
+        </c:forEach>
+    </ul>
+    <button type="submit">다음</button>
+</form>
+</body>
+</html>
+
+
+

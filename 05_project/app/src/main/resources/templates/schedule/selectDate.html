@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+
+<html>
+<head data-th-replace="~{header :: head}">
+    <title>PMS</title>
+</head>
+<body>
+<header data-th-replace="~{header :: #page-header}"></header>
+<h1>날짜 선택</h1>
+
+<form action="${tripType}" method="post">
+    기간: <input name='startDate' type='date'> ~
+    <input name='endDate' type='date'><br>
+    <button>다음</button>
+</form>
+</body>
+</html>

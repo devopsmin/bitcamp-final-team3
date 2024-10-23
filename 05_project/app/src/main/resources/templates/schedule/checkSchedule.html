@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+
+<html>
+<head data-th-replace="~{header :: head}">
+    <title>PMS</title>
+</head>
+<body>
+<header data-th-replace="~{header :: #page-header}"></header>
+<h1>일정 확정</h1>
+<table border="1">
+    <thead>
+    <tr><th>번호</th><th>여행지</th><th>여행일차</th><th>여행순서</th></tr>
+    </thead>
+    <tbody>
+        <tr data-th-each="schdule : ${scheduleList}" data-th-object="${schedule}">
+            <td data-th-text="*{location.locationName}">여행지1</td>
+            <td data-th-text="*{scheduleDay}">1일차</td>
+            <td data-th-text="*{scheduleRoute}">1번째</td>
+        </tr>
+    </tbody>
+</table>
+
+<button data-th-onclick="saveTrip()">저장하기 </button>
+<script>
+    function saveTrip() {
+        location.href="saveTrip"
+    }
+</script>
+</body>
+</html>
