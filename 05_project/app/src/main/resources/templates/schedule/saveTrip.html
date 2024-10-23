@@ -11,9 +11,10 @@
     제목: <input name='tripTitle' type='text'><br>
     테마: <select name="themaNo">
                 <option value="">테마 선택</option>
-                <c:forEach items="${themas}" var="thema">
-                    <option value="${thema.themaNo}">${thema.themaName}</option>
-                </c:forEach>
+                <option data-th-each="thema : ${themas}"
+                        data-th-value="${thema.themaNo}"
+                        data-th-text="${thema.themaName}">
+                    맛집여행</option>
             </select>
     <button type="submit">저장</button>
 </form>

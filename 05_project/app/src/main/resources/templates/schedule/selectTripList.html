@@ -7,31 +7,30 @@
 <body>
 <header data-th-replace="~{header :: #page-header}"></header>
 <h1>여정 선택</h1>
-    <form action="editSchedule" method="post">
-        <table border="1">
-            <thead>
-            <tr><th>선택</th>
-                <th>작성자</th>
-                <th>테마</th>
-                <th>여행지</th>
-                <th>여행일자</th>
-            </tr>
-            </thead>
 
-            <tbody>
-            <c:forEach items="${tripList}" var="trip">
-                <tr>
-                    <td><input type="checkbox" name="selectedTripNo" value="${trip.tripNo}"></td>
-                    <td>${trip.userNo}</td>
-                    <td>${trip.thema.themaName}</td>
-                    <td>${trip.city.cityName}</td>
-                    <td>${trip.startDate} ~ ${trip.endDate}</td>
-                </tr>
-            </c:forEach>
-            </tbody>
-        </table>
-        <button type="submit">다음</button>
-    </form>
+<form data-th-action="@{/editSchedule}" method="post">
+    <table border="1">
+        <thead>
+        <tr>
+            <th>선택</th>
+            <th>작성자</th>
+            <th>테마</th>
+            <th>여행지</th>
+            <th>여행일자</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr data-th-each="trip : ${tripList}">
+            <td><input type="checkbox" name="selectedTripNo" data-th-value="${trip.tripNo}"></td>
+            <td data-th-text="${trip.userNo}"></td>
+            <td data-th-text="${trip.thema.themaName}"></td>
+            <td data-th-text="${trip.city.cityName}"></td>
+            <td data-th-text="${trip.startDate} + ' ~ ' + ${trip.endDate}"></td>
+        </tr>
+        </tbody>
+    </table>
+    <button type="submit">다음</button>
+</form>
 
 </body>
 </html>

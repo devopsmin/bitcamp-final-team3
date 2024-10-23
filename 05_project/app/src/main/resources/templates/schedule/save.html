@@ -6,8 +6,13 @@
 </head>
 <body>
 <header data-th-replace="~{header :: #page-header}"></header>
-<button><a href="main"/> 홈으로 </button>
-<button><a href="mypage.jsp"/> 마이페이지 </button>
+<button data-th-onclick="goMain()">홈으로 </button>
+<button data-th-onclick="goMypage()">마이페이지 </button>
+
+<script>
+    const goMain = () => {location.href="main"}
+    const goMypage = () => {location.href="mypage.html"}
+</script>
 
 </body>
 </html>

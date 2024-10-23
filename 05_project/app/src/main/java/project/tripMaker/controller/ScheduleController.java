@@ -54,10 +54,14 @@ public class ScheduleController {
       Model model) throws Exception {
     String cityCode = trip.getCity().getCityCode();
 
-    if (myLocation.getLocationName() != null) {
+    if (myLocation.getLocationName() != null && !myLocations.contains(myLocation)) {
       myLocation.setCityCode(trip.getCity().getCityCode());
       myLocations.add(myLocation);
       scheduleService.addLocation(myLocation);
+      for (Location location : myLocations) {
+      System.out.println(location.getLocationName());
+
+      }
     }
 
     List<Location> locationList = scheduleService.locationList(cityCode);
@@ -79,8 +83,7 @@ public class ScheduleController {
       int[] locationNos,
       Model model) throws Exception {
     model.addAttribute("locationNos", locationNos);
-
-    if (myHotel.getLocationName() != null) {
+    if (myHotel.getLocationName() != null && !myHotels.contains(myHotel)) {
       myHotel.setCityCode(trip.getCity().getCityCode());
       myHotels.add(myHotel);
       scheduleService.addLocation(myHotel);
@@ -137,7 +140,6 @@ public class ScheduleController {
   public void checkSchedule(
       @ModelAttribute Trip trip,
       Model model) throws Exception {
-    // order하기
     List<Schedule> scheduleList = scheduleService.orderSchedule(trip.getScheduleList());
     for(Schedule schedule : scheduleList){
       schedule.setLocation(scheduleService.findLocation(schedule.getLocation().getLocationNo()));

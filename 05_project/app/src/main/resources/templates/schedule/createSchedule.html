@@ -1,46 +1,47 @@
 <!DOCTYPE html>
 
-<html>
+<html xmlns:th="http://www.w3.org/1999/xhtml">
 <head data-th-replace="~{header :: head}">
     <title>PMS</title>
 </head>
 <body>
 <header data-th-replace="~{header :: #page-header}"></header>
 <h1>일정 편집</h1>
-<form action="checkSchedule" method="post">
+<form action='checkSchedule' method="post">
     <h2>여행지 편집</h2>
-    <ul><c:set var="index" value="0"/>
-        <c:forEach items="${selectedLocation}" var="location" varStatus="status">
-            <li>
-                <label>
-                        ${location.locationName}
-                    <input type="hidden" name="scheduleList[${index}].location.locationNo" value="${location.locationNo}" />
-                    <input name="scheduleList[${index}].scheduleDay" type="number" min="1" placeholder="Enter day" required />
-                    <input name="scheduleList[${index}].scheduleRoute" type="number" min="1" placeholder="Enter route" required />
-                </label>
-            </li>
-            <c:set var="index" value="${index + 1}"/>
-        </c:forEach>
+    <ul>
+        <li th:each="location, status : ${selectedLocation}">
+            <label>
+                <span th:text="${location.locationName}"></span>
+                <input type="hidden" th:name="|scheduleList[${status.index}].location.locationNo|"
+                       th:value="${location.locationNo}" />
+                <input th:name="|scheduleList[${status.index}].scheduleDay|"
+                       type="number"
+                       min="1" placeholder="Enter day" required />
+                <input th:name="|scheduleList[${status.index}].scheduleRoute|"
+                       type="number"
+                       min="1" placeholder="Enter route" required />
+            </label>
+        </li>
     </ul>
 
     <h2>숙소 편집</h2>
     <ul>
-        <c:forEach items="${selectedHotels}" var="hotel" varStatus="status">
-            <li>
-                <label>
-                        ${hotel.locationName}
-                    <input type="hidden" name="scheduleList[${index}].location.locationNo" value="${hotel.locationNo}" />
-                    <input name="scheduleList[${index}].scheduleDay" type="number" min="1" placeholder="Enter day" required />
-                    <input name="scheduleList[${index}].scheduleRoute" type="hidden" value="99"/>
-                </label>
-            </li>
-            <c:set var="index" value="${index + 1}"/>
-        </c:forEach>
+        <li th:each="hotel, status : ${selectedHotels}">
+            <label>
+                <span th:text="${hotel.locationName}"></span>
+                <input type="hidden"
+                       th:name="|scheduleList[${status.index + selectedLocation.size()}].location.locationNo|"
+                       th:value="${hotel.locationNo}" />
+                <input th:name="|scheduleList[${status.index + selectedLocation.size()}].scheduleDay|"
+                       type="number" min="1" placeholder="Enter day" required />
+                <input type="hidden"
+                       th:name="|scheduleList[${status.index + selectedLocation.size()}].scheduleRoute|"
+                       th:value="99"/>
+            </label>
+        </li>
     </ul>
     <button type="submit">다음</button>
 </form>
 </body>
 </html>
-
-
-

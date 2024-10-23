@@ -1,8 +1,10 @@
 package project.tripMaker.vo;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
+
 public class Location {
   private Integer locationNo;      // 여행지정보 번호
   private String thirdclassCode;    // 소분류번호

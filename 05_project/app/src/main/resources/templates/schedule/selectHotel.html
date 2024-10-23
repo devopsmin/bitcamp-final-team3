@@ -9,20 +9,28 @@
 <h1>숙소 선택</h1>
     <form action="createSchedule" method="post">
     <ul>
-        <c:forEach items="${hotelList}" var="hotel">
-            <li><input name='hotelNos' value='${hotel.locationNo}' type='checkbox'>${hotel.locationName}</li>
-        </c:forEach>
+        <li data-th-each="hotel : ${hotelList}">
+        <input data-th-name='hotelNos'
+               data-th-value='${hotel.locationNo}'
+               data-th-text="${hotel.locationName}"
+               type='checkbox'></li>
     </ul>
 
     <p>---내가추가한 숙소 </p>
-    <ul>
-        <c:forEach items="${myHotels}" var="hotel">
-            <li><input checked name='hotelNos' value='${hotel.locationNo}' type='checkbox'> ${hotel.locationName}</li>
-        </c:forEach>
+    <ul data-th-unless="${myHotels} == null">
+        <li data-th-each="hotel : ${myHotels}" data-th-object="${location}">
+            <input checked data-th-name='hotelNos'
+                   data-th-value='*{locationNo}'
+                   data-th-text="*{locationName}"
+                   type='checkbox'></li>
     </ul>
-    <button type="button" onclick="location.href='addHotel';">숙소추가하기</button>
+    <button type="button" data-th-onclick="addHotel()">숙소추가하기</button>
 
     <button type="submit">다음</button>
     </form>
+
+<script>
+    const addHotel = () => {location.href="addHotel"}
+</script>
 </body>
 </html>

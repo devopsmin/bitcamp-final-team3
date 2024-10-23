@@ -10,9 +10,10 @@
 <form action="selectDate" method="post">
     <select name="cityCode">
         <option value="">시군구 선택</option>
-        <c:forEach items="${cityList}" var="city">
-            <option value='${city.cityCode}'>${city.cityName}</option>
-        </c:forEach>
+        <option data-th-each="city : ${cityList}" data-th-object="${city}"
+                data-th-value="*{cityCode}"
+                data-th-text="*{cityName}">
+            도시명</option>
     </select>
     <button type="submit">다음</button>
 </form>

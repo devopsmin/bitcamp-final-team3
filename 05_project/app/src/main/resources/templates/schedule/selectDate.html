@@ -8,9 +8,10 @@
 <header data-th-replace="~{header :: #page-header}"></header>
 <h1>날짜 선택</h1>
 
-<form action="${tripType}" method="post">
-    기간: <input name='startDate' type='date'> ~
-    <input name='endDate' type='date'><br>
+<form data-th-action="@{${tripType}}" method="post">
+    기간:
+    <label><input name='startDate' type='date'></label> ~
+    <label><input name='endDate' type='date'></label><br>
     <button>다음</button>
 </form>
 </body>
