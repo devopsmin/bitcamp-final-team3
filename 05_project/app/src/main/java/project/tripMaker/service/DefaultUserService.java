@@ -25,6 +25,15 @@ public class DefaultUserService implements UserService {
     userDao.insert(user);
   }
 
+  public void addAdmin(User user) throws Exception {
+    if (userDao.existsByEmail(user.getUserEmail())) {
+      throw new IllegalArgumentException("이미 존재하는 이메일입니다.");
+    }
+
+    user.setUserPassword(passwordEncoder.encode(user.getUserPassword())); // 비밀번호 암호화
+    userDao.adminInsert(user);
+  }
+
   public List<User> list() throws Exception {
     return userDao.list();
   }

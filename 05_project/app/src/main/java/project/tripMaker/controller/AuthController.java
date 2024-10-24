@@ -39,6 +39,8 @@ public class AuthController {
       return "auth/fail";
     }
 
+    userService.updateLastLogin(user.getUserNo());
+
     if (saveEmail) {
       Cookie cookie = new Cookie("email", userEmail);
       cookie.setMaxAge(60 * 60 * 24 * 7);
@@ -60,13 +62,13 @@ public class AuthController {
   }
 
 
-  @GetMapping("register")
-  public String registerForm() {
-    return "auth/register";
+  @GetMapping("registerUser")
+  public String registerUserForm() {
+    return "auth/registerUser";
   }
 
-  @PostMapping("register")
-  public String register(User user) {
+  @PostMapping("registerUser")
+  public String registerUser(User user) {
     try {
       userService.add(user);
       return "redirect:/";
@@ -75,4 +77,21 @@ public class AuthController {
       return "auth/error";
     }
   }
+
+  @GetMapping("registerAdmin")
+  public String registerAdminForm() {
+    return "auth/registerAdmin";
+  }
+
+  @PostMapping("registerAdmin")
+  public String registerAdmin(User user) {
+    try {
+      userService.addAdmin(user);
+      return "redirect:/";
+    } catch (Exception e) {
+      e.printStackTrace();
+      return "auth/error";
+    }
+  }
+
 }

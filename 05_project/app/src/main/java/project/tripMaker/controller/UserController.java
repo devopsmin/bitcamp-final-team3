@@ -28,9 +28,15 @@ public class UserController {
     return "/user/form";
   }
 
-  @PostMapping
+  @PostMapping("add")
   public String add(User user) throws Exception {
     userService.add(user);
+    return "redirect:../user";
+  }
+
+  @PostMapping("addAdmin")
+  public String addAdmin(User user) throws Exception {
+    userService.addAdmin(user);
     return "redirect:../user";
   }
 

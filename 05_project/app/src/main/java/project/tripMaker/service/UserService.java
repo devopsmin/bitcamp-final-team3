@@ -7,6 +7,8 @@ import project.tripMaker.vo.User;
 
 public interface UserService {
 
+  void addAdmin(User user) throws Exception;
+
   void add(User user) throws Exception;
 
   List<User> list() throws Exception;

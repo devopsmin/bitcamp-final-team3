@@ -9,6 +9,8 @@ import java.util.List;
 @Mapper
 public interface UserDao {
 
+  boolean adminInsert(User user) throws Exception;
+
   boolean insert(User user) throws Exception;
 
   List<User> list() throws Exception;
