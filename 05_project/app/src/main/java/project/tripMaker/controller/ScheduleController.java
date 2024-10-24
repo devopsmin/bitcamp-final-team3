@@ -3,14 +3,17 @@ package project.tripMaker.controller;
 import lombok.Data;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.bind.support.SessionStatus;
 import project.tripMaker.service.CityService;
 import project.tripMaker.service.ScheduleService;
 import project.tripMaker.vo.*;
 
-import java.sql.SQLOutput;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @Controller
@@ -21,12 +24,13 @@ public class ScheduleController {
   private final CityService cityService;
   private final ScheduleService scheduleService;
 
-  @GetMapping("main")
-  public void mainSchedule() throws Exception {
+  @RequestMapping("main")
+  public String mainSchedule() throws Exception {
+    return "schedule/main";
   }
 
   @PostMapping("createTrip")
-  public void form1(Model model, Trip trip, String tripType) throws Exception {
+  public void createTrip(Model model, Trip trip, String tripType) throws Exception {
     List<State> stateList = cityService.stateList();
     model.addAttribute("stateList", stateList);
     model.addAttribute("trip", trip);
@@ -42,7 +46,7 @@ public class ScheduleController {
   @PostMapping("selectDate")
   public void selectDate(@ModelAttribute Trip trip, String cityCode, Model model) throws Exception {
     trip.setCity(cityService.firndCity(cityCode));
-    model.addAttribute("myLocations",  new ArrayList<>());
+    model.addAttribute("myLocations", new ArrayList<>());
     model.addAttribute("myHotels", new ArrayList<>());
   }
 
@@ -61,7 +65,7 @@ public class ScheduleController {
       myLocations.add(myLocation);
       scheduleService.addLocation(myLocation);
       for (Location location : myLocations) {
-      System.out.println(location.getLocationName());
+        System.out.println(location.getLocationName());
       }
     }
 
@@ -132,7 +136,7 @@ public class ScheduleController {
   public void editSchedule(
       @ModelAttribute Trip trip,
       Integer selectedTripNo,
-      Model model) throws Exception{
+      Model model) throws Exception {
     List<Schedule> scheduleList = scheduleService.viewSchedule(selectedTripNo);
     model.addAttribute("scheduleList", scheduleList);
   }
@@ -142,13 +146,13 @@ public class ScheduleController {
       @ModelAttribute Trip trip,
       Model model) throws Exception {
     List<Schedule> scheduleList = scheduleService.orderSchedule(trip.getScheduleList());
-    for(Schedule schedule : scheduleList){
+    for (Schedule schedule : scheduleList) {
       schedule.setLocation(scheduleService.findLocation(schedule.getLocation().getLocationNo()));
     }
     model.addAttribute("scheduleList", scheduleList);
   }
 
-  @GetMapping("saveTrip")
+  @PostMapping("saveTrip")
   public void saveTrip(Model model) throws Exception {
     List<Thema> themas = scheduleService.themaList();
     model.addAttribute("themas", themas);

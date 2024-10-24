@@ -7,12 +7,12 @@
 <body>
 <header data-th-replace="~{header :: #page-header}"></header>
 <h1>여행지 선택</h1>
-<form action="selectHotel" method="post">
+<form action="schedule/selectHotel" method="post">
     <ul>
         <li data-th-each="location : ${locationList}" data-th-object="${location}">
             <input data-th-name='locationNos'
-                   data-th-value='*{locationNo}'
                    data-th-text="*{locationName}"
+                   data-th-value='*{locationNo}'
                    type='checkbox'></li>
     </ul>
 
@@ -20,17 +20,12 @@
     <ul data-th-unless="${myLocations} == null">
         <li data-th-each="location : ${myLocations}" data-th-object="${location}">
             <input checked data-th-name='locationNos'
-                   data-th-value='*{locationNo}'
                    data-th-text="*{locationName}"
+                   data-th-value='*{locationNo}'
                    type='checkbox'></li>
     </ul>
-    <button type="button" data-th-onclick="addLocation()">여행지추가하기</button>
+    <button data-url="schedule/addLocation" type="button">여행지추가하기</button>
     <button type="submit">다음</button>
-
-
 </form>
-<script>
-    const addLocation = () => {location.href="addLocation"}
-</script>
 </body>
 </html>

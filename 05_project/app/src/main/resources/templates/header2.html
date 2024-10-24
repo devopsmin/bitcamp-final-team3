@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head data-th-fragment="head">
+  <meta charset='UTF-8'>
+  <title>모두의 여행</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link data-th-href="@{/css/var.css}" rel="stylesheet">
+  <link data-th-href="@{/css/style.css}" rel="stylesheet">
+</head>
+<body>
+<header id="page-header">
+  <div class="fram-topbanner">
+    <div class="button-03-s6">
+      <a href="javascript:void(0);" onclick="openPopup()">여행시작</a>
+<!--      <div class="div2"><a data-th-href="@{/schedule/main}">여행시작</a></div>-->
+    </div>
+    <div class="button-03-s">
+      <div class="div2">여행추천</div>
+    </div>
+    <div class="button-03-s2">
+      <div class="div2">여행일정</div>
+    </div>
+    <div class="button-03-s3">
+      <div class="div2">여행후기</div>
+    </div>
+    <div class="button-03-s4">
+      <div class="div2">동행구하기</div>
+    </div>
+
+    <div class="button-03-s5">
+      <div class="div2"><a data-th-href="@{/users}">마이페이지인데 임시회원관리</a></div>
+    </div>
+
+    <div class="button-02-s3">
+      <div class='login-state pos-right' data-th-if="${session.loginUser == null}">
+        <div class="div"><a data-th-href="@{/auth/form}">로그인</a></div>
+      </div>
+      <div class='login-state pos-right' data-th-unless="${session.loginUser == null}">
+        <div class="div"><a data-th-href="@{/auth/logout}">로그아웃</a></div>
+      </div>
+    </div>
+
+    <div class="frame-427318169">
+      <div class="div3">모두의 여행</div>
+    </div>
+  </div>
+</header>
+
+</body>
+</html>

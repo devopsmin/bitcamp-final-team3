@@ -9,6 +9,6 @@ public class HomeController {
   @GetMapping("/home")
   public String home(Model model) {
     model.addAttribute("welcome", "<b>안녕</b>하세요!");
-    return "test";
+    return "home";
   }
 }

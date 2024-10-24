@@ -8,14 +8,17 @@
 <header data-th-replace="~{header :: #page-header}"></header>
 
 <h1>여행일정만들기</h1>
-<form action="createTrip" method="post" style="display:inline;">
-    <input type="hidden" name="tripType" value="selectLocation" />
+<form action="schedule/createTrip" method="post">
+    <input name="tripType" type="hidden" value="schedule/selectLocation"/>
     <button type="submit">일정생성</button>
 </form>
 
-<form action="createTrip" method="post" style="display:inline;">
-    <input type="hidden" name="tripType" value="selectTripList" />
+<form action="schedule/createTrip" method="post">
+    <input name="tripType" type="hidden" value="schedule/selectTripList"/>
     <button type="submit">일정가져오기</button>
 </form>
+<script>
+    console.log("hihi");
+</script>
 </body>
 </html>

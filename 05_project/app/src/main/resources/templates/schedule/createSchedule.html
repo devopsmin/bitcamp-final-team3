@@ -7,7 +7,7 @@
 <body>
 <header data-th-replace="~{header :: #page-header}"></header>
 <h1>일정 편집</h1>
-<form action='checkSchedule' method="post">
+<form action='schedule/checkSchedule' method="post">
     <h2>여행지 편집</h2>
     <ul>
         <li data-th-each="location, status : ${selectedLocation}">

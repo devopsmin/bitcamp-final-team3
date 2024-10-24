@@ -20,11 +20,8 @@
     </tbody>
 </table>
 
-<button data-th-onclick="saveTrip()">저장하기 </button>
-<script>
-    function saveTrip() {
-        location.href="saveTrip"
-    }
-</script>
+<form action="schedule/saveTrip" method="post">
+    <button type="submit">저장하기</button>
+</form>
 </body>
 </html>

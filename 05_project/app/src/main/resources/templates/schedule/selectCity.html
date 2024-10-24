@@ -7,7 +7,7 @@
 <body>
 <header data-th-replace="~{header :: #page-header}"></header>
 <h1>시군구 선택</h1>
-<form action="selectDate" method="post">
+<form action="schedule/selectDate" method="post">
     <select name="cityCode">
         <option value="">시군구 선택</option>
         <option data-th-each="city : ${cityList}" data-th-object="${city}"
