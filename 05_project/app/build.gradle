@@ -38,6 +38,22 @@ dependencies {
     testImplementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter-test:2.3.2'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
+    // spring 시큐리티
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.security:spring-security-oauth2-client:5.7.12'
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+    implementation 'org.springframework.security:spring-security-oauth2-jose:5.7.12'
+    implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
+    implementation 'io.jsonwebtoken:jjwt-impl:0.11.5'
+    implementation 'io.jsonwebtoken:jjwt-jackson:0.11.5'
+    implementation 'javax.xml.bind:jaxb-api:2.3.1'
+
+    // Tomcat Embedded Server용 JSP 엔진 라이브러리
+    implementation 'org.apache.tomcat.embed:tomcat-embed-jasper:9.0.83'
+
+    // JSTL API 및 구현체 라이브러리
+    implementation 'javax.servlet:jstl:1.2'
+
     // Amazon S3 라이브러리
     implementation 'com.amazonaws:aws-java-sdk-s3:1.12.772'
 

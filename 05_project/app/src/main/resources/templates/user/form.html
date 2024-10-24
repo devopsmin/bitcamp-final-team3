@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head data-th-replace="~{header :: head}"></head>
+<body>
+
+<header data-th-replace="~{header :: #page-header}"></header>
+
+<h1>회원 등록</h1>
+<form action="." method="post">
+    이메일: <input name='userEmail' type='email'><br>
+    닉네임: <input name='userNickname' type='text'><br>
+    암호: <input name='userPassword' type='password'><br>
+    연락처: <input name='userTel' type='tel'><br>
+    <input type='submit' value='등록'>
+</form>
+
+</body>
+</html>
