@@ -175,7 +175,7 @@ public class ScheduleController {
       @ModelAttribute Trip trip,
       int themaNo,
       SessionStatus sessionStatus) throws Exception {
-    trip.setUserNo(1);
+    trip.setUserNo(1L);
     Thema thema = scheduleService.getThema(themaNo);
     trip.setThema(thema);
     scheduleService.saveTrip(trip);

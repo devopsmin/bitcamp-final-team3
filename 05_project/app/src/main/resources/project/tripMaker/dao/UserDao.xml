@@ -63,7 +63,7 @@
     </insert>
 
 
-    <select id="findBy" resultMap="UserMap" parameterType="long">
+    <select id="findBy" resultMap="UserMap" parameterType="Long">
         select
           user_No,
           user_Email,
@@ -107,12 +107,12 @@
             user_no=#{userNo}
     </update>
 
-    <update id="updateLastLogin" parameterType="long">
+    <update id="updateLastLogin" parameterType="Long">
         update user set user_lastest_login = NOW()
         where user_no = #{userNo}
     </update>
 
-    <delete id="delete" parameterType="long">
+    <delete id="delete" parameterType="Long">
         delete from user
         where user_no=#{userNo}
     </delete>

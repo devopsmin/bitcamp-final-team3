@@ -1,5 +1,6 @@
 package project.tripMaker.controller;
 
+import javax.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -10,11 +11,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import project.tripMaker.service.BoardService;
 import project.tripMaker.service.CommentService;
 import project.tripMaker.service.ScheduleService;
+import project.tripMaker.service.UserService;
 import project.tripMaker.vo.Board;
 
 import java.util.List;
 import project.tripMaker.vo.Comment;
 import project.tripMaker.vo.Trip;
+import project.tripMaker.vo.User;
 
 @Controller
 @RequestMapping("/board")
@@ -24,6 +27,7 @@ public class BoardController {
   private final BoardService boardService;
   private final CommentService commentService;
   private final ScheduleService scheduleService;
+  private final UserService userService;
 
   @GetMapping("list")
   public String list(
@@ -75,9 +79,15 @@ public class BoardController {
   }
 
   @GetMapping("form")
-  public void form(Model model){
-    int userNo = 2;
-    List<Trip> tripList = scheduleService.getTripsByUserNo(userNo);
+  public String form(Model model,
+      HttpSession session) throws Exception {
+
+    User loginUser = (User) session.getAttribute("loginUser");
+    if (loginUser == null) {
+      throw new Exception("로그인이 필요합니다.");
+    }
+
+    List<Trip> tripList = scheduleService.getTripsByUserNo(loginUser.getUserNo());
     // 디버깅용 코드
     System.out.println("Trip List Size: " + tripList.size());
     for (Trip trip : tripList) {
@@ -85,11 +95,20 @@ public class BoardController {
     }
 
     model.addAttribute("trips", tripList);
+    return "board/form";
   }
 
   @PostMapping("add")
-  public String add(Board board) throws Exception {
+  public String add(
+      Board board,
+      HttpSession session) throws Exception {
 
+    User loginUser = (User) session.getAttribute("loginUser");
+    if (loginUser == null) {
+      throw new Exception("로그인이 필요합니다.");
+    }
+
+    board.setWriter(loginUser);
     boardService.add(board);
     return "redirect:list";
   }

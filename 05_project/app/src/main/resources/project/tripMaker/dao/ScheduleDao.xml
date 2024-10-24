@@ -248,7 +248,7 @@
     </select>
 
 <!--    유저정보를 통한 Trip 찾기-->
-    <select id="findTripsByUserNo" parameterType="int" resultMap="TripResultMap">
+    <select id="findTripsByUserNo" parameterType="Long" resultMap="TripResultMap">
         SELECT
             t.trip_no,
             t.user_no,

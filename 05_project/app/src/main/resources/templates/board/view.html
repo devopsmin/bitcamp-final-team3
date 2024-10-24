@@ -31,8 +31,10 @@
         작성자: <input readonly type="text" data-th-value="${board.writer.userNickname}"><br>
 
         <button type="button" onclick="location.href='list'">목록</button>
-        <button type="submit">수정</button>
+        <button type="submit"
+                data-th-if="${session.loginUser != null and session.loginUser.userNo == board.writer.userNo}">수정</button>
         <button type="button"
+                data-th-if="${session.loginUser != null and session.loginUser.userNo == board.writer.userNo}"
                 data-th-onclick="|deleteBoard(${board.boardNo})|">삭제</button>
     </form>
 
@@ -45,7 +47,7 @@
     <br> 댓글: <br>
 
     <!-- 댓글이 없는 경우 -->
-    <p data-th-unless="${commentList}">댓글이 없습니다.</p>
+    <p data-th-unless="${commentList}" data-th-text="${'댓글이 없습니다.'}">댓글이 없습니다.</p>
 
     <!-- 댓글이 있는 경우 -->
     <ul data-th-if="${commentList}">
@@ -54,7 +56,10 @@
             작성자 번호: <input readonly type="text" data-th-value="${comment.userNo}">
             작성일: <input readonly type="text" data-th-value="${comment.commentCreatedDate}"><br>
             댓글: <input readonly type="text" data-th-value="${comment.commentContent}" size="50"><br>
-            <button type="button" data-th-onclick="'deleteComment(' + ${comment.commentNo} + ')'">삭제</button>
+<!--            <button type="button" data-th-onclick="'deleteComment(' + ${comment.commentNo} + ')'">삭제</button>-->
+            <button type="button"
+                    data-th-if="${session.loginUser != null and session.loginUser.userNo == comment.userNo}"
+                    data-th-onclick="'deleteComment(' + ${comment.commentNo} + ')'">삭제</button>
         </li>
     </ul>
 </div>
@@ -62,7 +67,7 @@
 <script>
   function deleteComment(commentNo) {
     if (confirm('댓글을 삭제하시겠습니까?')) {
-      location.href = '../comment/delete?commentNo=' + commentNo + '&boardNo=[[${board.boardNo}]]';
+        location.href = '../comment/delete?commentNo=' + commentNo + '&boardNo=[[${board.boardNo}]]';
     }
   }
 </script>
@@ -71,7 +76,7 @@
 
 <form id="commentForm" data-th-action="@{/comment/add}" method="post">
     게시글 번호: <input type="text" readonly name="boardNo" data-th-value="${board.boardNo}"><br>
-    작성자 번호: <input type="text" readonly name="userNo" value="5"><br>
+    작성자 번호: <input type="text" readonly name="userNo" data-th-value="${session.loginUser.getUserNo()}"><br>
     댓글 내용 작성: <textarea name="commentContent" placeholder="댓글을 입력하세요"></textarea><br>
     <button type="submit">댓글 작성</button>
 </form>

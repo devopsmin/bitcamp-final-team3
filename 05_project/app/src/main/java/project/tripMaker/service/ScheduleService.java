@@ -76,7 +76,7 @@ public class ScheduleService {
     return scheduleDao.getThema(themaNo);
   }
 
-  public List<Trip> getTripsByUserNo(int userNo) {
+  public List<Trip> getTripsByUserNo(Long userNo) {
     return scheduleDao.findTripsByUserNo(userNo);
   }
 }

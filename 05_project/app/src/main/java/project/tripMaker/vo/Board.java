@@ -12,7 +12,6 @@ public class Board {
   private String boardTitle;     // 제목
   private int boardCount;        // 조회수
   private Date boardCreatedDate; // 작성일
-  // private Integer userNo;        // 유저번호
   private Integer tripNo;        // 여행번호
   private String boardContent;   // 내용
   private String boardTag;       // 태그

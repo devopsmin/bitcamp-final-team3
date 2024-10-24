@@ -48,7 +48,7 @@ public class UserController {
 
   @GetMapping("{userNo}")
   public String view(
-      @PathVariable long userNo,
+      @PathVariable Long userNo,
       Model model) throws Exception {
     User user = userService.get(userNo);
     model.addAttribute("user", user);
@@ -70,7 +70,7 @@ public class UserController {
 
   @PostMapping("{userNo}")
   public String update(
-      @PathVariable long userNo,
+      @PathVariable Long userNo,
       User user) throws Exception {
     user.setUserNo(userNo);
     if (userService.update(user)) {
@@ -83,7 +83,7 @@ public class UserController {
   @Transactional
   @DeleteMapping("{userNo}")
   @ResponseBody
-  public String delete(@PathVariable long userNo) throws Exception {
+  public String delete(@PathVariable Long userNo) throws Exception {
     if (userService.delete(userNo)) {
       return "success";
     } else {

@@ -12,7 +12,6 @@
         <result property="boardTitle" column="board_title"/>
         <result property="boardCount" column="board_count"/>
         <result property="boardCreatedDate" column="board_created_date"/>
-        <!--<result property="userNo" column="user_no"/>-->
         <result property="tripNo" column="trip_no"/>
         <result property="boardContent" column="board_content"/>
         <result property="boardTag" column="board_tag"/>
@@ -20,7 +19,7 @@
         <result property="boardFavor" column="favor_count"/>
 
         <association property="writer" javaType="project.tripMaker.vo.User">
-          <id property="userNo" column="user_no" />
+          <id property="userNo" column="user_no" javaType="java.lang.Long"/>
           <result property="userNickname" column="user_nickname"/>
           <result property="userPhoto" column="user_photo"/>
         </association>
@@ -28,7 +27,7 @@
         <collection property="comments" ofType="project.tripMaker.vo.Comment">
           <id property="commentNo" column="comment_no"/>
           <result property="boardNo" column="board_no"/>
-          <result property="userNo" column="user_no"/>
+          <result property="userNo" column="user_no" javaType="java.lang.Long"/>
           <result property="commentContent" column="comment_content"/>
           <result property="commentCreatedDate" column="comment_created_date"/>
         </collection>
@@ -75,7 +74,7 @@
         values (
                 3,
                 #{boardTitle},
-                2,
+                #{writer.userNo},
                 2,
                 #{boardContent},
                 #{boardTag})

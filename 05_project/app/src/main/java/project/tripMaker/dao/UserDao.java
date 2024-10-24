@@ -14,7 +14,7 @@ public interface UserDao {
 
   List<User> list() throws Exception;
 
-  User findBy(long userNo) throws Exception;
+  User findBy(Long userNo) throws Exception;
 
   User findByEmail(String userEmail) throws Exception;
 
@@ -25,8 +25,8 @@ public interface UserDao {
 
   boolean update(User user) throws Exception;
 
-  void updateLastLogin(long userNo) throws Exception;
+  void updateLastLogin(Long userNo) throws Exception;
 
-  boolean delete(long userNo) throws Exception;
+  boolean delete(Long userNo) throws Exception;
 }
 

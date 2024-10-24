@@ -1,6 +1,7 @@
 package project.tripMaker.controller;
 
 import java.util.List;
+import javax.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import project.tripMaker.service.CommentService;
 import project.tripMaker.service.CommentService;
 import project.tripMaker.vo.Comment;
+import project.tripMaker.vo.User;
 
 @Controller
 @RequestMapping("/comment")
@@ -29,12 +31,20 @@ public class CommentController {
     System.out.println("댓글 목록 크기: " + commentList.size());
     model.addAttribute("commentList", commentList);
 
-    return "redirect:/board/view?boardNo=" + boardNo;
+    return "board/view?boardNo=" + boardNo;
   }
 
   @PostMapping("add")
-  public String add(Comment comment) throws Exception {
+  public String add(
+      Comment comment,
+      HttpSession session) throws Exception {
 
+    User loginUser = (User) session.getAttribute("loginUser");
+    if (loginUser == null) {
+      throw new Exception("로그인이 필요합니다.");
+    }
+
+    comment.setUserNo(loginUser.getUserNo());
     commentService.add(comment);
 
     return "redirect:/board/view?boardNo=" + comment.getBoardNo();
@@ -43,12 +53,26 @@ public class CommentController {
   @GetMapping("delete")
   public String delete(
       @RequestParam int commentNo,
-      @RequestParam int boardNo) throws Exception {
+      @RequestParam int boardNo,
+      HttpSession session) throws Exception {
+
+    User loginUser = (User) session.getAttribute("loginUser");
+    if (loginUser == null) {
+      throw new Exception("로그인이 필요합니다.");
+    }
 
     Comment comment = commentService.get(commentNo);
+    if (comment == null) {
+      throw new Exception("존재하지 않는 댓글입니다.");
+    }
 
-    commentService.delete(commentNo);
-    return "redirect:/board/view?boardNo=" + boardNo;
+    // 댓글 작성자와 로그인 유저가 같은지 확인
+    if (!comment.getUserNo().equals(loginUser.getUserNo())) {
+      throw new Exception("삭제 권한이 없습니다.");
+    }
+
+      commentService.delete(commentNo);
+      return "redirect:/board/view?boardNo=" + boardNo;
   }
 
   @PostMapping("update")

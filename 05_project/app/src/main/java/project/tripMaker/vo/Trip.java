@@ -7,7 +7,7 @@ import lombok.Data;
 @Data
 public class Trip {
   private Integer tripNo;          // 여행번호
-  private Integer userNo;          // 유저번호
+  private Long userNo;          // 유저번호
   private Thema thema;
   private City city;
   private String tripTitle;        // 여행제목

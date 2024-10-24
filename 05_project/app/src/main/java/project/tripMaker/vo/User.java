@@ -13,7 +13,7 @@ import project.tripMaker.user.UserRole;
 @Setter
 @NoArgsConstructor
 public class User {
-    private long userNo;                // 사용자 번호
+    private Long userNo;                // 사용자 번호
     private String userPhoto;           // 사용자 사진
     private LocalDateTime userLastestLogin; // 마지막 로그인 시간
     private String userEmail;           // 사용자 이메일
@@ -26,7 +26,7 @@ public class User {
     private Integer snsNo;              // SNS 번호 (소셜 로그인 시 사용)
 
     @Builder
-    public User(long userNo, String userPhoto, LocalDateTime userLastestLogin, String userEmail,
+    public User(Long userNo, String userPhoto, LocalDateTime userLastestLogin, String userEmail,
         String userPassword, String userTel, LocalDateTime userCreatedDate, String userNickname,
         UserRole userRole, Integer userBlock, Integer snsNo) {
         this.userNo = userNo;
