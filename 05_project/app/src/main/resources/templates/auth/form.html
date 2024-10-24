@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head data-th-replace="~{header :: head}"></head>
+<body>
+
+<header data-th-replace="~{header :: #page-header}"></header>
+
+
+<h1>로그인</h1>
+<form action="login" method="post">
+  이메일: <input data-th-value="${userEmail}" name="userEmail" type="email" value="hong@test.com"><br>
+  암호: <input name="userPassword" type="password"><br>
+  <input data-th-checked="${userEmail != null}" name="saveEmail" type="checkbox"> 이메일 저장<br>
+  <input type="submit" value="로그인">
+</form>
+
+</body>
+</html>

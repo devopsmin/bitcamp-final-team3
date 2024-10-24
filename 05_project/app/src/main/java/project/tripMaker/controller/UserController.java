@@ -1,6 +1,7 @@
 package project.tripMaker.controller;
 
 import java.util.List;
+import javax.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,11 +25,11 @@ public class UserController {
 
   @GetMapping("form")
   public String form() {
-    return "user/form";
+    return "/user/form";
   }
 
   @PostMapping
-  public String add(User user, MultipartFile file) throws Exception {
+  public String add(User user) throws Exception {
     userService.add(user);
     return "redirect:../user";
   }
@@ -37,21 +38,34 @@ public class UserController {
   public String list(Model model) throws Exception {
     List<User> list = userService.list();
     model.addAttribute("list", list);
-    return "user/list";
+    return "/user/list";
   }
 
   @GetMapping("{userNo}")
   public String view(
-      @PathVariable
-      int userNo, Model model) throws Exception {
+      @PathVariable long userNo,
+      Model model) throws Exception {
     User user = userService.get(userNo);
     model.addAttribute("user", user);
-    return "user/view";
+    return "/user/view";
+  }
+
+  @GetMapping("myInfo")
+  public String myInfo(
+      HttpSession session,
+      Model model) throws Exception {
+    User loginUser = (User) session.getAttribute("loginUser");
+    if (loginUser == null) {
+      throw new Exception("로그인이 필요합니다.");
+    }
+    User user = userService.get(loginUser.getUserNo());
+    model.addAttribute("user", user);
+    return "/user/view";
   }
 
   @PostMapping("{userNo}")
-  public String update(@
-      PathVariable int userNo,
+  public String update(
+      @PathVariable long userNo,
       User user) throws Exception {
     user.setUserNo(userNo);
     if (userService.update(user)) {
@@ -64,7 +78,7 @@ public class UserController {
   @Transactional
   @DeleteMapping("{userNo}")
   @ResponseBody
-  public String delete(@PathVariable int userNo) throws Exception {
+  public String delete(@PathVariable long userNo) throws Exception {
     if (userService.delete(userNo)) {
       return "success";
     } else {

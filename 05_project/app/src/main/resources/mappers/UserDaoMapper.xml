@@ -49,7 +49,7 @@
         (NOW(), #{userEmail}, #{userPassword}, #{userTel}, #{userNickname}, NOW())
     </insert>
 
-    <select id="findBy" resultMap="UserMap" parameterType="int">
+    <select id="findBy" resultMap="UserMap" parameterType="long">
         select
           user_No,
           user_Email,
@@ -98,7 +98,7 @@
         where user_no = #{userNo}
     </update>
 
-    <delete id="delete" parameterType="int">
+    <delete id="delete" parameterType="long">
         delete from user
         where user_no=#{userNo}
     </delete>

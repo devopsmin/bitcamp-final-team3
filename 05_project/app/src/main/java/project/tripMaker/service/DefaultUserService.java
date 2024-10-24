@@ -29,7 +29,7 @@ public class DefaultUserService implements UserService {
     return userDao.list();
   }
 
-  public User get(int userNo) throws Exception {
+  public User get(long userNo) throws Exception {
     return userDao.findBy(userNo);
   }
 
@@ -51,7 +51,7 @@ public class DefaultUserService implements UserService {
   }
 
   @Transactional
-  public boolean delete(int userNo) throws Exception {
+  public boolean delete(long userNo) throws Exception {
     return userDao.delete(userNo);
   }
 

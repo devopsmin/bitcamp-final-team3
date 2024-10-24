@@ -6,6 +6,7 @@ import javax.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,15 +21,21 @@ public class AuthController {
   private final UserService userService;
 
   @GetMapping("form")
-  public void form() {
+  public void form(@CookieValue(required = false) String userEmail, Model model) {
+    model.addAttribute("userEmail", userEmail);
   }
 
   @PostMapping("login")
-  public String login(String userEmail, String userPassword, boolean saveEmail,
-      HttpServletResponse res, HttpSession session) throws Exception {
+  public String login(
+      String userEmail,
+      String userPassword,
+      boolean saveEmail,
+      HttpServletResponse res,
+      HttpSession session) throws Exception {
 
     User user = userService.exists(userEmail, userPassword);
     if (user == null) {
+      res.setHeader("Refresh", "2; url=form");
       return "auth/fail";
     }
 
@@ -37,7 +44,7 @@ public class AuthController {
       cookie.setMaxAge(60 * 60 * 24 * 7);
       res.addCookie(cookie);
     } else {
-      Cookie cookie = new Cookie("email", "");
+      Cookie cookie = new Cookie("email", "test@test.com");
       cookie.setMaxAge(0);
       res.addCookie(cookie);
     }
@@ -55,7 +62,7 @@ public class AuthController {
 
   @GetMapping("register")
   public String registerForm() {
-    return "auth/register";
+    return "  auth/register";
   }
 
   @PostMapping("register")

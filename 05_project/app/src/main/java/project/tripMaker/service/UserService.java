@@ -11,13 +11,13 @@ public interface UserService {
 
   List<User> list() throws Exception;
 
-  User get(int userNo) throws Exception;
+  User get(long userNo) throws Exception;
 
   User exists(String userEmail, String userPassword) throws Exception;
 
   boolean update(User user) throws Exception;
 
-  boolean delete(int userNo) throws Exception;
+  boolean delete(long userNo) throws Exception;
 
   User getByEmail(String userEmail) throws Exception;
 
