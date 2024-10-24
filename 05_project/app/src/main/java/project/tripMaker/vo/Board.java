@@ -23,4 +23,6 @@ public class Board {
   private int boardLike;  // 좋아요
   private int boardFavor; // 즐겨찾기
 
+  private int tmpNo; // 순서대로 번호
+
 }

@@ -42,7 +42,7 @@
     </thead>
     <tbody>
     <tr data-th-each="board : ${list}">
-        <td data-th-text="${board.boardNo}">번호</td>
+        <td data-th-text="${board.tmpNo}">번호</td>
         <td>
             <a data-th-href="@{view(boardNo=${board.boardNo})}"
                data-th-text="${board.boardTitle}">제목</a>
