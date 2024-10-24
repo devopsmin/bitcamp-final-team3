@@ -22,7 +22,7 @@ public class ScheduleController {
   private final ScheduleService scheduleService;
 
   @GetMapping("main")
-  public void list() throws Exception {
+  public void mainSchedule() throws Exception {
   }
 
   @PostMapping("createTrip")
