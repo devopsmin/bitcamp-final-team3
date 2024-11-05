@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="project.tripMaker.dao.BoardDao">
+
+  <!-- 공통 Board ResultMap -->
+  <resultMap id="BoardMap" type="project.tripMaker.vo.Board">
+    <id property="boardNo" column="board_no"/>
+    <result property="tmpNo" column="tmp_no"/>
+    <result property="boardtypeNo" column="boardtype_no"/>
+    <result property="boardTitle" column="board_title"/>
+    <result property="boardCount" column="board_count"/>
+    <result property="boardCreatedDate" column="board_created_date"/>
+    <result property="tripNo" column="trip_no"/>
+    <result property="boardContent" column="board_content"/>
+    <result property="boardTag" column="board_tag"/>
+    <result property="boardLike" column="like_count"/>
+    <result property="boardFavor" column="favor_count"/>
+
+    <association property="writer" javaType="project.tripMaker.vo.User">
+      <id property="userNo" column="user_no" javaType="java.lang.Long"/>
+      <result property="userNickname" column="user_nickname"/>
+      <result property="userPhoto" column="user_photo"/>
+    </association>
+
+    <collection property="comments" ofType="project.tripMaker.vo.Comment">
+      <id property="commentNo" column="comment_no"/>
+      <result property="boardNo" column="board_no"/>
+      <result property="userNo" column="user_no" javaType="java.lang.Long"/>
+      <result property="commentContent" column="comment_content"/>
+      <result property="commentCreatedDate" column="comment_created_date"/>
+    </collection>
+  </resultMap>
+
+  <!-- 공통 쿼리 부분 -->
+  <sql id="selectBoardBase">
+    SELECT
+      @rownum := @rownum + 1 AS tmp_no,  -- 가상 번호 부여
+            b.board_no,
+            b.board_title,
+            b.board_created_date,
+            b.board_count,
+            b.board_tag,
+            u.user_no,
+            u.user_nickname,
+            COALESCE(fv.favor_count, 0) AS favor_count,
+            COALESCE(bl.like_count, 0) AS like_count
+    FROM
+      (SELECT @rownum := 0) r,  -- 변수 초기화
+      board b
+      INNER JOIN user u ON b.user_no = u.user_no
+      LEFT JOIN favor_count_view fv ON b.board_no = fv.board_no
+      LEFT JOIN boardlike_count_view bl ON b.board_no = bl.board_no
+  </sql>
+
+  <!-- 게시물 목록 조회 -->
+  <select id="list" resultMap="BoardMap">
+    <include refid="selectBoardBase"/>
+    WHERE b.boardtype_no = #{boardtypeNo}
+    ORDER BY b.board_no ASC
+    LIMIT #{rowNo}, #{length}
+  </select>
+
+  <select id="listLike" resultMap="BoardMap">
+    <include refid="selectBoardBase"/>
+    WHERE b.boardtype_no = #{boardtypeNo}
+    ORDER BY like_count DESC, b.board_no ASC
+    LIMIT #{rowNo}, #{length}
+  </select>
+
+  <select id="listFavor" resultMap="BoardMap">
+    <include refid="selectBoardBase"/>
+    WHERE b.boardtype_no = #{boardtypeNo}
+    ORDER BY favor_count DESC, b.board_no ASC
+    LIMIT #{rowNo}, #{length}
+  </select>
+
+  <select id="listView" resultMap="BoardMap">
+    <include refid="selectBoardBase"/>
+    WHERE b.boardtype_no = #{boardtypeNo}
+    ORDER BY b.board_count DESC, b.board_no ASC
+    LIMIT #{rowNo}, #{length}
+  </select>
+
+  <!-- 게시물 상세 조회 -->
+  <select id="findBy" resultMap="BoardMap" parameterType="int">
+    SELECT
+      b.board_no,
+      b.boardtype_no,
+      b.board_title,
+      b.board_count,
+      b.board_created_date,
+      b.trip_no,
+      b.board_content,
+      b.board_tag,
+      u.user_photo,
+      u.user_nickname,
+      c.user_no,
+      c.comment_no,
+      c.comment_content,
+      c.comment_created_date,
+      COALESCE(fv.favor_count, 0) AS favor_count,
+      COALESCE(bl.like_count, 0) AS like_count
+    FROM
+      board b
+        INNER JOIN user u ON b.user_no = u.user_no
+        LEFT OUTER JOIN comment c ON c.board_no = b.board_no
+        LEFT JOIN favor_count_view fv ON b.board_no = fv.board_no
+        LEFT JOIN boardlike_count_view bl ON b.board_no = bl.board_no
+    WHERE
+      b.board_no = #{boardNo}
+  </select>
+
+  <!-- 게시물 등록 -->
+  <insert id="insert" parameterType="board"
+    useGeneratedKeys="true" keyColumn="board_no" keyProperty="boardNo">
+    INSERT INTO board (
+      boardtype_no,
+      board_title,
+      user_no,
+      trip_no,
+      board_content,
+      board_tag)
+    VALUES (
+             #{boardtypeNo},
+             #{boardTitle},
+             #{writer.userNo},
+             #{tripNo},
+             #{boardContent},
+             #{boardTag})
+  </insert>
+
+  <!-- 게시물 수정 -->
+  <update id="update" parameterType="board">
+    UPDATE board
+    SET board_title = #{boardTitle},
+        board_content = #{boardContent},
+        board_tag = #{boardTag}
+    WHERE board_no = #{boardNo}
+  </update>
+
+  <update id="updateBoardCount">
+    UPDATE board
+    SET board_count = #{boardCount} + 1
+    WHERE board_no = #{boardNo}
+  </update>
+
+  <!-- 게시물 삭제 -->
+  <delete id="delete" parameterType="int">
+    DELETE FROM board WHERE board_no = #{boardNo}
+  </delete>
+
+  <!-- 전체 게시물 수 조회 -->
+  <select id="countAll" resultType="int">
+    SELECT COUNT(*)
+    FROM board
+    WHERE boardtype_no = #{boardtypeNo}
+  </select>
+
+</mapper>

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+
+<html>
+<head data-th-replace="~{header :: head}">
+    <title>PMS</title>
+</head>
+<body>
+<header data-th-replace="~{header :: #page-header}"></header>
+<h1>여정 선택</h1>
+
+<form action="/schedule/editSchedule" method="post">
+    <table border="1">
+        <thead>
+        <tr>
+            <th>선택</th>
+            <th>작성자</th>
+            <th>테마</th>
+            <th>여행지</th>
+            <th>여행일자</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr data-th-each="trip : ${tripList}">
+            <td><input data-th-value="${trip.tripNo}" name="selectedTripNo" type="checkbox"></td>
+            <td data-th-text="${trip.userNo}"></td>
+            <td data-th-text="${trip.thema.themaName}"></td>
+            <td data-th-text="${trip.city.cityName}"></td>
+            <td data-th-text="${trip.startDate} + ' ~ ' + ${trip.endDate}"></td>
+        </tr>
+        </tbody>
+    </table>
+    <button type="submit">다음</button>
+</form>
+
+</body>
+</html>

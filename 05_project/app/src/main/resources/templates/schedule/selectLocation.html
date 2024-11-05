@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <link data-th-href="@{/css/common.css}" rel="stylesheet">
+    <title>모두의 여행</title>
+</head>
+<body>
+<header>
+</header>
+<h1>여행지 선택</h1>
+<form action="/schedule/selectHotel" method="post">
+    <p>여행지 목록</p>
+
+    <div class="btn  btn-white" id="showLocationListBtn">
+        <button class="custom-btn custom-btn-blue" type="button">장소선택</button>
+    </div>
+
+    <div class="btn  btn-white" id="showAddLocationBtn">
+        <button class="custom-btn custom-btn-blue" type="button">장소추가</button>
+    </div>
+
+    <div id="locationListDiv">
+        <ul>
+            <li data-th-each="location : ${locationList}" data-th-object="${location}">
+                <input data-th-name='locationNos'
+                       data-th-text="*{locationName}"
+                       data-th-value='*{locationNo}'
+                       type='checkbox'></li>
+        </ul>
+    </div>
+
+
+
+    <div id="addLocationDiv" style="display: none;">
+        <ul data-th-unless="${myLocations} == null">
+            <li data-th-each="location : ${myLocations}" data-th-object="${location}">
+                <input checked data-th-name='locationNos'
+                       data-th-text="*{locationName}"
+                       data-th-value='*{locationNo}'
+                       type='checkbox'></li>
+        </ul>
+        <button data-url="/schedule/addLocation" type="button">여행지추가하기</button>
+    </div>
+    <button type="submit">다음</button>
+</form>
+<script>
+    {
+        // DOM 요소들을 변수로 할당
+        let showLocationListBtn = document.getElementById('showLocationListBtn');
+        let showAddLocationBtn = document.getElementById('showAddLocationBtn');
+        let locationListDiv = document.getElementById('locationListDiv');
+        let addLocationDiv = document.getElementById('addLocationDiv');
+
+        // 여행지 목록 버튼 클릭 시 여행지 목록을 보여주고, 추가하기 목록은 숨김
+        showLocationListBtn.addEventListener('click', function () {
+            console.log("클릭발생")
+            locationListDiv.style.display = 'block';
+            addLocationDiv.style.display = 'none';
+        });
+
+        // 여행지 추가 버튼 클릭 시 추가하기 목록을 보여주고, 목록은 숨김
+        showAddLocationBtn.addEventListener('click', function () {
+            addLocationDiv.style.display = 'block';
+            locationListDiv.style.display = 'none';
+        });
+    }
+</script>
+</body>
+</html>

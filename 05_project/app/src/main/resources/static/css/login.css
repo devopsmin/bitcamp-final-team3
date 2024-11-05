@@ -1,0 +1,71 @@
+:root {
+  --bs-primary: #4DCFBD;
+  --bs-primary-rgb: 77, 207, 189;
+}
+
+#loginModalContent .container {
+  width: 100%;
+  max-width: 400px;
+  padding: 1.5rem;
+}
+
+#loginModalContent .form-control {
+  border: 1px solid #dee2e6;
+}
+
+#loginModalContent .form-control:focus {
+  border-color: #4DCFBD;
+  box-shadow: 0 0 0 0.25rem rgba(77, 207, 189, 0.25);
+}
+
+#loginModalContent .btn-google {
+  background-color: #4285F4;
+  color: white;
+}
+
+#loginModalContent .btn-naver {
+  background-color: #1EC800;
+  color: white;
+}
+
+#loginModalContent .btn-kakao {
+  background-color: #FEE500;
+  color: black;
+}
+
+#loginModalContent .btn-primary {
+  background-color: #4DCFBD;
+  border-color: #4DCFBD;
+}
+
+#loginModalContent .btn-primary:hover {
+  background-color: #3db9a9;
+  border-color: #3db9a9;
+}
+
+@media (max-width: 768px) {
+  #loginModalContent .container {
+    padding: 1rem;
+  }
+
+  #loginModalContent .form-control-lg {
+    font-size: 1rem;
+    padding: 0.5rem 1rem;
+  }
+
+  #loginModalContent .btn-lg {
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+  }
+
+  .logo-text {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+  }
+}
+
+@media (max-width: 576px) {
+  #loginModalContent .container {
+    padding: 0.75rem;
+  }
+}

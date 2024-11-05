@@ -1,0 +1,328 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="project.tripMaker.dao.ScheduleDao">
+
+    <resultMap id="TripResultMap" type="Trip">
+        <id column="trip_no" property="tripNo"/>
+        <result column="user_no" property="userNo"/>
+        <result column="trip_title" property="tripTitle"/>
+        <result column="start_date" property="startDate"/>
+        <result column="end_date" property="endDate"/>
+        <result column="trip_created_date" property="tripCreatedDate"/>
+        <result column="total_day" property="totalDay"/>
+
+        <association property="thema" javaType="Thema">
+            <id column="thema_no" property="themaNo"/>
+            <result column="thema_name" property="themaName"/>
+        </association>
+
+        <association property="city" javaType="City">
+            <id column="city_code" property="cityCode"/>
+            <result column="city_name" property="cityName"/>
+            <result column="city_photo" property="cityPhoto"/>
+                <association property="state" javaType="State">
+                    <id column="state_code" property="stateCode"/>
+                    <result column="state_name" property="stateName"/>
+                </association>
+        </association>
+
+        <association property="board" javaType="Board">
+            <id property="boardNo" column="board_no"/>
+            <result property="tmpNo" column="tmp_no"/>
+            <result property="boardtypeNo" column="boardtype_no"/>
+            <result property="boardTitle" column="board_title"/>
+            <result property="boardCount" column="board_count"/>
+            <result property="boardCreatedDate" column="board_created_date"/>
+            <result property="tripNo" column="trip_no"/>
+            <result property="boardContent" column="board_content"/>
+            <result property="boardTag" column="board_tag"/>
+            <result property="boardLike" column="like_count"/>
+            <result property="boardFavor" column="favor_count"/>
+
+            <association property="writer" javaType="project.tripMaker.vo.User">
+                <id property="userNo" column="user_no" javaType="java.lang.Long"/>
+                <result property="userNickname" column="user_nickname"/>
+                <result property="userPhoto" column="user_photo"/>
+            </association>
+        </association>
+
+        <collection property="scheduleList" ofType="Schedule">
+            <id column="schedule_no" property="scheduleNo"/>
+            <result column="trip_no" property="tripNo"/>
+            <result column="schedule_day" property="scheduleDay"/>
+            <result column="schedule_route" property="scheduleRoute"/>
+
+            <association property="location" javaType="Location">
+                <id column="location_no" property="locationNo"/>
+                <result column="thirdclass_code" property="thirdclassCode"/>
+                <result column="city_code" property="cityCode"/>
+                <result column="location_name" property="locationName"/>
+                <result column="location_desc" property="locationDesc"/>
+                <result column="location_photo" property="locationPhoto"/>
+                <result column="location_tel" property="locationTel"/>
+                <result column="location_addr" property="locationAddr"/>
+                <result column="location_x" property="locationX"/>
+                <result column="location_y" property="locationY"/>
+                <result column="locationtype_no" property="locationtypeNo"/>
+            </association>
+        </collection>
+
+    </resultMap>
+
+    <resultMap id="SchedulResultMap" type="Schedule">
+        <id column="schedule_no" property="scheduleNo"/>
+        <result column="trip_no" property="tripNo"/>
+        <result column="schedule_day" property="scheduleDay"/>
+        <result column="schedule_route" property="scheduleRoute"/>
+
+        <!-- Location 객체와 1:1 매핑 -->
+        <association property="location" javaType="Location">
+            <id column="location_no" property="locationNo"/>
+            <result column="location_name" property="locationName"/>
+        </association>
+    </resultMap>
+
+    <resultMap id="LocationResultMap" type="Location">
+        <id column="location_no" property="locationNo"/>
+        <result column="thirdclass_code" property="thirdclassCode"/>
+        <result column="city_code" property="cityCode"/>
+        <result column="location_name" property="locationName"/>
+        <result column="location_desc" property="locationDesc"/>
+        <result column="location_photo" property="locationPhoto"/>
+        <result column="location_tel" property="locationTel"/>
+        <result column="location_addr" property="locationAddr"/>
+        <result column="location_x" property="locationX"/>
+        <result column="location_y" property="locationY"/>
+        <result column="locationtype_no" property="locationtypeNo"/>
+    </resultMap>
+
+    <insert id="makeTrip" parameterType="Trip"
+            useGeneratedKeys="true" keyColumn="trip_no" keyProperty="tripNo">
+        INSERT INTO trip (trip_created_date, start_date, end_date, city_code, user_no, trip_title, thema_no, total_day)
+        VALUES (NOW(), #{startDate}, #{endDate}, #{city.cityCode}, #{userNo}, #{tripTitle},#{thema.themaNo}, #{totalDay})
+    </insert>
+
+    <delete id="deleteTrip" parameterType="int">
+        DELETE FROM trip WHERE trip_no= #{tripNo}
+    </delete>
+
+    <insert id="addLocation" parameterType="Location"
+            useGeneratedKeys="true" keyColumn="location_no" keyProperty="locationNo">
+        INSERT INTO location(location.city_code, location_name, location_desc, locationtype_no)
+        VALUES (#{cityCode}, #{locationName}, #{locationDesc}, 2)
+    </insert>
+
+    <select id="locationList" resultMap="LocationResultMap">
+        SELECT
+            l.location_no,
+            l.thirdclass_code,
+            l.location_name,
+            l.location_desc,
+            l.location_photo,
+            l.location_tel,
+            l.location_addr,
+            l.location_x,
+            l.location_y,
+            l.locationtype_no,
+            c.city_code
+        from
+            location l
+        right outer join city c
+            on l.city_code = c.city_code
+        inner join thirdclass t
+            on l.thirdclass_code = t.thirdclass_code
+        where
+            c.city_code=#{cityCode} and t.secondclass_code != "B0201";
+    </select>
+
+    <select id="hotelList" resultMap="LocationResultMap">
+        SELECT
+            l.location_no,
+            l.thirdclass_code,
+            l.location_name,
+            l.location_desc,
+            l.location_photo,
+            l.location_tel,
+            l.location_addr,
+            l.location_x,
+            l.location_y,
+            l.locationtype_no,
+            c.city_code
+        from
+            location l
+        right outer join city c on l.city_code = c.city_code
+        inner join thirdclass t on l.thirdclass_code = t.thirdclass_code
+        where
+            c.city_code=#{cityCode} and t.secondclass_code = "B0201";
+    </select>
+
+    <insert id="addSchedule" parameterType="schedule"
+            useGeneratedKeys="true" keyColumn="schedule_no" keyProperty="scheduleNo">
+        insert into schedule (trip_no, location_no, schedule_day, schedule_route)
+        values (#{tripNo}, #{location.locationNo}, #{scheduleDay}, #{scheduleRoute})
+    </insert>
+
+    <delete id="deleteSchedule" parameterType="int">
+        DELETE FROM schedule WHERE trip_no= #{tripNo}
+    </delete>
+
+    <select id="findLocation" resultMap="LocationResultMap" parameterType="int">
+        select
+            l.location_no,
+            l.city_code,
+            l.thirdclass_code,
+            l.location_name,
+            l.location_desc,
+            l.location_photo,
+            l.location_tel,
+            l.location_addr,
+            l.location_x,
+            l.location_y,
+            l.locationtype_no
+        from
+            location l
+        where
+            l.location_no = #{locationNo}
+    </select>
+
+    <select id="viewSchedule" resultMap="SchedulResultMap" parameterType="int">
+        SELECT
+            s.schedule_no,
+            s.trip_no,
+            s.schedule_day,
+            s.schedule_route,
+            l.location_no,
+            l.location_name
+        FROM
+            schedule s
+        left outer join location l
+        ON s.location_no = l.location_no
+        WHERE s.trip_no = #{tripNo}
+        ORDER BY s.schedule_day, s.schedule_route
+
+    </select>
+
+    <select id="themaList" resultType="Thema">
+        SELECT
+            thema_no as themaNo,
+            thema_name as themaName
+        FROM thema
+    </select>
+
+    <select id="getThema" resultType="Thema" parameterType="int">
+        SELECT
+            thema_no as themaNo,
+            thema_name as themaName
+        FROM thema
+        WhERE thema_no=#{themaNo}
+    </select>
+
+    <select id="getTripList" resultMap="TripResultMap">
+        SELECT
+            t.trip_no,
+            t.user_no,
+            th.thema_no,
+            th.thema_name,
+            t.trip_title,
+            t.start_date,
+            t.end_date,
+            t.trip_created_date,
+            t.total_day,
+            st.state_code,
+            st.state_name,
+            c.city_code,
+            c.city_name,
+            s.schedule_no,
+            s.trip_no,
+            s.schedule_day,
+            s.schedule_route,
+            l.thirdclass_code,
+            l.city_code,
+            l.location_name,
+            l.location_desc,
+            l.location_photo,
+            l.location_tel,
+            l.location_addr,
+            l.location_x,
+            l.location_y,
+            l.locationtype_no
+        From
+            trip t
+        left outer join thema th on t.thema_no = th.thema_no
+        left outer join city c on t.city_code = c.city_code
+        left outer join state st on st.state_code = c.state_code
+        join schedule s on t.trip_no = s.trip_no
+        left outer join location l on s.location_no = l.location_no
+        where
+            t.city_code = #{city.cityCode}
+          and DATEDIFF(t.end_date, t.start_date) > DATEDIFF(#{endDate},#{startDate})
+
+    </select>
+
+<!--    유저정보를 통한 Trip 찾기-->
+    <select id="findTripsByUserNo" parameterType="Long" resultMap="TripResultMap">
+        SELECT
+            t.trip_no,
+            t.user_no,
+            th.thema_no,
+            th.thema_name,
+            t.trip_title,
+            t.start_date,
+            t.end_date,
+            t.trip_created_date,
+            t.total_day,
+            st.state_code,
+            st.state_name,
+            c.city_code,
+            c.city_name,
+            s.schedule_no,
+            s.trip_no,
+            s.schedule_day,
+            s.schedule_route,
+            l.thirdclass_code,
+            l.city_code,
+            l.location_name,
+            l.location_desc,
+            l.location_photo,
+            l.location_tel,
+            l.location_addr,
+            l.location_x,
+            l.location_y,
+            l.locationtype_no
+        From
+            trip t
+                left outer join thema th on t.thema_no = th.thema_no
+                left outer join city c on t.city_code = c.city_code
+                left outer join state st on st.state_code = c.state_code
+                join schedule s on t.trip_no = s.trip_no
+                left outer join location l on s.location_no = l.location_no
+        where
+            t.user_no = #{userNo}
+    </select>
+
+    <!-- user_no로 trip_no 리스트 찾기 -->
+    <select id="findTripNosByUserNo" resultType="int" parameterType="Long">
+        SELECT trip_no
+        FROM trip
+        WHERE user_no = #{userNo}
+    </select>
+
+    <!--trip_no로 schedule 리스트 찾기-->
+    <select id="findSchedulesByTripNo" resultMap="SchedulResultMap" parameterType="int">
+        SELECT
+            s.schedule_no,
+            s.trip_no,
+            s.schedule_day,
+            s.schedule_route,
+            l.location_no,
+            l.location_name
+        FROM
+            schedule s
+                LEFT JOIN location l ON s.location_no = l.location_no
+        WHERE s.trip_no = #{tripNo}
+        ORDER BY s.schedule_day, s.schedule_route
+    </select>
+
+</mapper>

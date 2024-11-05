@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="project.tripMaker.dao.BoardCompanionDao">
+    <!-- 동행게시판 - 목록 ResultMap(board table : boardtype_no = 2) -->
+    <resultMap id="BoardMap" type="project.tripMaker.vo.Board">
+        <id property="boardNo" column="board_no"/>
+        <result property="boardtypeNo" column="boardtype_no"/>
+        <result property="boardTitle" column="board_title"/>
+        <result property="boardCount" column="board_count"/>
+        <result property="boardCreatedDate" column="board_created_date"/>
+        <result property="userNo" column="user_no"/>
+        <result property="tripNo" column="trip_no"/>
+        <result property="boardContent" column="board_content"/>
+        <result property="boardTag" column="board_tag"/>
+
+        <!-- 동행게시판 - 작성자 정보 association(동행게시판:작성자 = 1:1 관계) -->
+        <association property="writer" javaType="project.tripMaker.vo.User">
+            <id property="userNo" column="user_no" javaType="java.lang.Long"/>
+            <result property="userNickname" column="user_nickname"/>
+            <result property="userPhoto" column="user_photo"/>
+        </association>
+
+        <!--
+        <collection property="comments" ofType="project.tripMaker.vo.Comment">
+            <id property="commentNo" column="comment_no"/>
+            <result property="boardNo" column="board_no"/>
+            <result property="userNo" column="user_no" javaType="java.lang.Long"/>
+            <result property="commentContent" column="comment_content"/>
+            <result property="commentCreatedDate" column="comment_created_date"/>
+        </collection>
+        -->
+    </resultMap>
+
+    <!-- 동행게시판 - 목록 -->
+    <select id="list" resultMap="BoardMap">
+        SELECT
+            b.board_no,
+            b.boardtype_no,
+            b.board_title,
+            b.board_count,
+            b.board_created_date,
+            b.user_no,
+            b.trip_no,
+            b.board_content,
+            b.board_tag
+        FROM
+            board b
+        INNER JOIN user u ON b.user_no = u.user_no
+        WHERE
+            b.boardtype_no=2
+        ORDER BY
+            b.board_no desc
+        LIMIT
+            #{rowNo}, #{length}
+    </select>
+
+    <!-- 동행게시판 - 글쓰기 -->
+    <insert id="insert" parameterType="board">
+        INSERT INTO board (boardtype_no, board_title, board_created_date, user_no, board_content, board_tag)
+        VALUES (2, #{boardTitle}, NOW(), 3, #{boardContent}, #{boardTag})
+    </insert>
+
+    <!-- 동행게시판 - 상세 글조회 -->
+    <select id="findBy" resultMap="BoardMap" parameterType="int">
+        SELECT
+            b.board_no,
+            b.boardtype_no,
+            b.board_title,
+            b.board_count,
+            b.board_created_date,
+            b.user_no,
+            b.trip_no,
+            b.board_content,
+            b.board_tag,
+            u.user_nickname
+        FROM
+            board b
+        INNER JOIN user u ON b.user_no = u.user_no
+        WHERE
+            b.board_no = #{boardNo}
+    </select>
+
+
+    <!-- 동행게시판 - 댓글 정보 -->
+
+
+    <!-- 동행게시판 - 글 수정 -->
+    <update id="update" parameterType="board">
+        UPDATE board
+        SET board_title = #{boardTitle},
+            board_content = #{boardContent},
+            board_tag = #{boardTag}
+        WHERE board_no = #{boardNo}
+    </update>
+
+
+    <!-- 동행게시판 - 글삭제 -->
+    <delete id="delete" parameterType="int">
+        DELETE FROM board
+        WHERE board_no=#{boardNo}
+    </delete>
+
+    <update id="updateViewCount">
+        update board set
+        board_count=#{boardCount}
+        where board_no = #{boardNo}
+    </update>
+
+    <select id="countAll" resultType="int">
+        SELECT count(*)
+        FROM board
+        WHERE boardtype_no=#{BOARD_TYPE_COMPANION}
+    </select>
+</mapper>

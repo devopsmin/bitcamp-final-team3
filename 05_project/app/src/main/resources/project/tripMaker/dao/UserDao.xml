@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="project.tripMaker.dao.UserDao">
+
+    <resultMap id="UserMap" type="project.tripMaker.vo.User">
+        <id column="user_no" property="userNo"/>
+        <result column="user_photo" property="userPhoto"/>
+        <result column="user_lastest_login" property="userLastestLogin"/>
+        <result column="user_email" property="userEmail"/>
+        <result column="user_password" property="userPassword"/>
+        <result column="user_tel" property="userTel"/>
+        <result column="user_created_date" property="userCreatedDate"/>
+        <result column="user_nickname" property="userNickname"/>
+        <result column="user_role" property="userRole"/>
+        <result column="user_block" property="userBlock"/>
+        <result column="sns_no" property="snsNo"/>
+        <result column="sns_name" property="snsName"/>
+    </resultMap>
+
+    <select id="list" resultMap="UserMap">
+        select
+          u.user_no,
+          u.user_photo,
+          u.user_created_date,
+          u.user_lastest_login,
+          u.user_email,
+          u.user_password,
+          u.user_tel,
+          u.user_nickname,
+          u.user_role,
+          u.user_block,
+          s.sns_name
+        from
+          user u
+           left join sns s on u.sns_no = s.sns_no
+        order by
+         u.user_no asc;
+    </select>
+
+    <insert id="insert" parameterType="User">
+        insert into user (
+            user_created_date,
+            user_email,
+            user_password,
+            user_tel,
+            user_nickname,
+            user_lastest_login)
+        values
+        (NOW(), #{userEmail}, #{userPassword}, #{userTel}, #{userNickname}, NOW())
+    </insert>
+
+    <insert id="adminInsert" parameterType="User">
+        insert into user (
+        user_created_date,
+        user_email,
+        user_password,
+        user_tel,
+        user_nickname,
+        user.user_role,
+        user_lastest_login)
+        values
+        (NOW(), #{userEmail}, #{userPassword}, #{userTel}, #{userNickname}, 'ROLE_ADMIN', NOW())
+    </insert>
+
+    <insert id="insertSocialUser" parameterType="User">
+        insert into user (
+              user_email,
+              user_password,
+              user_nickname,
+              user_role,
+              user_photo,
+              user_lastest_login,
+              user_created_date,
+              user_block,
+              sns_no,
+              user_tel)
+        values
+              (#{userEmail}, #{userPassword}, #{userNickname}, #{userRole}, #{userPhoto}, NOW(), NOW(), 0, #{snsNo}, #{userTel})
+    </insert>
+
+    <select id="findBy" resultMap="UserMap" parameterType="Long">
+        select
+          user_No,
+          user_Email,
+          user_Tel,
+          user_NickName,
+          user_Created_Date,
+          user_Lastest_Login,
+          user_role,
+          user_Block,
+          sns_No
+        from
+          user
+        where
+          user_no=#{userNo}
+    </select>
+
+    <select id="findByEmail" resultMap="UserMap" parameterType="string">
+        select * from user where user_email = #{userEmail}
+    </select>
+
+    <select id="findByTel" resultMap="UserMap" parameterType="string">
+        select user_email from user where user_tel = #{userTel}
+    </select>
+
+    <select id="findByEmailAndPassword" resultMap="UserMap" parameterType="map">
+        select
+            user_No,
+            user_Email
+        from
+            user
+        where
+            user_Email=#{userEmail} and user_password = #{userPassword}
+    </select>
+
+    <select id="findSnsNoByName" resultType="Integer" parameterType="String">
+        select sns_no from sns where sns_name = #{snsName}
+    </select>
+
+
+    <select id="existsByEmail" resultType="boolean" parameterType="string">
+        select exists (select 1 from user where user_email = #{userEmail})
+    </select>
+
+    <select id="existsByNickname" resultType="boolean" parameterType="string">
+        select exists (select 1 from user where user_nickname = #{userNickname})
+    </select>
+
+    <update id="update" parameterType="User">
+        update user set
+            user_nickname = #{userNickname},
+            user_tel = #{userTel},
+            user_password = #{userPassword}
+        where
+            user_no=#{userNo}
+    </update>
+
+    <update id="updateLastLogin" parameterType="Long">
+        update user set user_lastest_login = NOW()
+        where user_no = #{userNo}
+    </update>
+
+    <delete id="delete" parameterType="Long">
+        delete from user
+        where user_no=#{userNo}
+    </delete>
+
+</mapper>

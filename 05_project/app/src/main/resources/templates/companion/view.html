@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+    <head data-th-replace="~{header :: head}"></head>
+    <body>
+        <header data-th-replace="~{header :: #page-header}"></header>
+        <a data-th-href="@{/companion/form}" href="form.html">글쓰기</a>
+        <form data-th-action ="@{modify}" method="post">
+            <h1 data-th-text="*{board.boardTitle}"></h1>
+            <input readonly name='boardNo'type="text"  data-th-value="*{board.boardNo}" style="border:none; display: none"><br>
+            작성자: <input data-th-value="*{board.writer.userNickname}" name="writer" style="border:none;" readonly><br>
+            작성일: <input data-th-value="*{board.boardCreatedDate}" name="boardCreatedDate" style="border:none;" readonly><br>
+            조회수: <input data-th-value="*{board.boardCount}" name = boardCount style="border:none;" readonly><br>
+            내용: <input data-th-value="*{board.boardContent}" name = boardContent style="border:none;" readonly><br>
+            <button type="submit">수정</button>
+        </form>
+            <button type="button" onclick="location.href='list'">목록</button>
+            <button data-th-onclick="|deleteBoard(${board.boardNo})|">삭제</button>
+        <br>
+            <h3>댓글</h3>
+            <br>
+        <script>
+            function deleteBoard(no) {
+                location.href = "delete?boardNo=" + no
+                location.redirect
+            }
+        </script>
+    </body>
+</html>

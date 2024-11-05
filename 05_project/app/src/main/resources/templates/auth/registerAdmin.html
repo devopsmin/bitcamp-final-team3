@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head data-th-replace="~{header :: head}"></head>
+<body>
+
+<header data-th-replace="~{header :: #page-header}"></header>
+
+<h1>관리자 등록</h1>
+<form action="registerAdmin" method="post">
+  이메일: <input name='userEmail' type='email' required><br>
+  닉네임: <input name='userNickname' type='text' required><br>
+
+  암호: <input id="password" name='userPassword' type='password' required>
+  <input type="checkbox" id="showPassword" onclick="togglePasswordVisibility()">
+  <label for="showPassword">비밀번호 표시</label><br>
+
+  비밀번호 확인: <input id="confirmPassword" name='confirmPassword' type='password' required>
+  <input type="checkbox" id="showConfirmPassword" onclick="toggleConfirmPasswordVisibility()">
+  <label for="showConfirmPassword">비밀번호 확인 표시</label><br>
+
+  연락처: <input name='userTel' type='tel' required><br>
+
+  <input type='submit' value='등록'>
+</form>
+
+<script>
+  function togglePasswordVisibility() {
+      var passwordInput = document.getElementById("password");
+      var checkbox = document.getElementById("showPassword");
+      passwordInput.type = checkbox.checked ? "text" : "password";
+  }
+
+  function toggleConfirmPasswordVisibility() {
+      var confirmPasswordInput = document.getElementById("confirmPassword");
+      var checkbox = document.getElementById("showConfirmPassword");
+      confirmPasswordInput.type = checkbox.checked ? "text" : "password";
+  }
+</script>
+
+</body>
+</html>

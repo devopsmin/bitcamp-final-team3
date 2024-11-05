@@ -1,0 +1,103 @@
+.container {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap; /* 여러 줄로 카드가 배치될 경우 */
+}
+
+.search-box {
+  display: flex;
+  align-items: center;
+  width: 600px;
+  background-color: #e0f7ff;
+  border-radius: 40px;
+  padding: 5px 15px;
+  border: 2px solid #a8dff0;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.3s ease-in-out;
+}
+
+.search-box:hover {
+  box-shadow: 0px 6px 8px rgba(0, 0, 0, 0.15);
+}
+
+.search-txt {
+  flex: 1;
+  border: none;
+  background: none;
+  outline: none;
+  padding: 0 10px;
+  color: #5a5a5a;
+  font-size: 15px;
+  line-height: 30px;
+}
+
+.search-txt::placeholder {
+  color: #666;
+  font-style: italic;
+}
+
+.search-btn {
+  color: white;
+  background-color: #4a90e2;
+  border: none;
+  border-radius: 50%;
+  width: 35px;
+  height: 35px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.search-btn:hover {
+  background-color: #4179d4;
+}
+
+.search-btn i {
+  font-size: 18px;
+}
+
+/* 카드 크기와 스타일 조정 */
+.card h-100{
+  max-width: 1000px; /* 카드 너비를 이미지에 맞춰 500px로 설정 */
+  margin: auto;
+}
+
+.card-img-top {
+  width: 100%;
+  height: 150px; /* 이미지 높이를 150px로 설정 */
+  object-fit: cover;
+}
+
+.card-body {
+  padding: 20px; /* 카드 본문 영역의 패딩 */
+  font-size: 14px;
+}
+
+.card-footer {
+  padding: 15px 20px; /* 카드 푸터 영역의 패딩 */
+  font-size: 12px;
+  text-align: center;
+}
+
+.box {
+  border: 1px solid #ddd;
+  padding: 20px;
+  margin: 10px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2em;
+  color: #888;
+  background-color: #f9f9f9;
+  width: 200px;
+  height: 100px;
+  position: relative;
+}
+
+.box i {
+  font-size: 2em;
+  margin-right: 10px;
+  color: #aaa;
+}

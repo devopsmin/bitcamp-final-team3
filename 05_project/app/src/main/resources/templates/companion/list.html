@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head data-th-replace="~{header :: head}"></head>
+<body>
+
+<header data-th-replace="~{header :: #page-header}"></header>
+
+    <h1>게시글 목록</h1>
+        <a data-th-href="@{/companion/form}" href="form.html">글쓰기</a>
+    <table>
+        <thead>
+            <tr>
+                <th>번호</th>
+                <th>제목</th>
+                <th>작성일</th>
+                <th>조회수</th>
+                <th>태그</th>
+            </tr>
+        </thead>
+    <tbody>
+        <tr data-th-each="board : ${list}" data-th-object="${board}">
+            <td data-th-text="*{boardNo}"></td>
+            <td>
+                <a data-th-href="@{/companion/view(boardNo=*{boardNo})}" data-th-text="*{boardTitle}"
+                   href='view.html'></a>>
+            </td>
+            <td data-th-text="*{boardCreatedDate}"></td>
+            <td data-th-text="*{boardCount}"></td>
+            <td data-th-text="*{boardTag}"></td>
+        </tr>
+    </c:forEach>
+    </tbody>
+    </table>
+
+    [
+    <a data-th-href="@{/companion/list(pageNo=${pageNo - 1},pageSize=${pageSize})}"
+       data-th-if="${pageNo > 1}"
+       href="list.html">이전</a>
+    <span data-th-unless="${pageNo > 1}">이전</span>
+    ]
+
+    <span data-th-text="${pageNo}">1</span>
+
+    [
+    <a data-th-href="@{/companion/list(pageNo=${pageNo + 1},pageSize=${pageSize})}"
+       data-th-if="${pageNo < pageCount}"
+       href="list.html">다음</a>
+    <span data-th-unless="${pageNo < pageCount}">다음</span>
+    ]
+</body>
+</html>

@@ -1,0 +1,60 @@
+-- SNS 테이블 더미 데이터
+INSERT INTO sns (sns_name) VALUES
+('Google'), ('Naver'), ('KakaoTalk');
+
+-- 유저 테이블 더미 데이터
+-- 비밀번호 전부 1111 / 각 유저 마지막번호(6,8,10,12) 차단되어있음
+-- 생성일/마지막 로그인 날짜 NOW() 통일
+-- 관리자 [1]
+INSERT INTO user (user_lastest_login, user_email, user_password, user_tel, user_nickname, user_autherlize, user_block) VALUES
+(NOW(), 'admin@example.com', '1111', '010-1234-5678', '관리자', 0, 0);
+-- 일반유저 [2~6]
+INSERT INTO user (user_lastest_login, user_email, user_password, user_tel, user_nickname, user_autherlize, user_block) VALUES
+(NOW(), 'user1@example.com', '1111', '010-1111-1111', '회원1', 1, 0),
+(NOW(), 'user2@example.com', '1111', '010-1212-1212', '회원2', 1, 0),
+(NOW(), 'user3@example.com', '1111', '010-1313-1313', '회원3', 1, 0),
+(NOW(), 'user4@example.com', '1111', '010-1414-1414', '회원4', 1, 0),
+(NOW(), 'user5@example.com', '1111', '010-1515-1515', '회원5', 1, 1);
+-- 소셜유저 [7~12]
+INSERT INTO user (user_lastest_login, user_email, user_password, user_tel, user_nickname, user_autherlize, user_block, sns_no) VALUES
+(NOW(), 'google1@google.com', '1111', '010-1234-5678', '구글1', 1, 0, 1),
+(NOW(), 'google2@google.com', '1111', '010-2345-6789', '구글2', 1, 1, 1),
+(NOW(), 'naver1@naver.com', '1111', '010-1234-1234', '네이버1', 1, 0, 2),
+(NOW(), 'naver2@naver.com', '1111', '010-2345-2345', '네이버2', 1, 1, 2),
+(NOW(), 'kakao1@kakao.com', '1111', '010-3456-3456', '카카오1', 1, 0, 3),
+(NOW(), 'kakao2@kakao.com', '1111', '010-4567-4567', '카카오2', 1, 1, 3);
+
+-- 차단분류 테이블 더미 데이터
+-- 추가가능
+INSERT INTO bentype (bentype_name) VALUES
+('광고'),
+('불법 컨텐츠'),
+('부적절한 언어'),
+('욕설'),
+('운영자에 의한 차단');
+
+-- 차단관련 더미 테이블
+-- 차단 테이블 더미 데이터
+INSERT INTO ben (user_no, bentype_no, ben_desc) VALUES
+(6, 1, '지속적인 광고성 게시글 작성'),
+(8, 2, '불법 컨텐츠 게시글 작성'),
+(10, 3, '성희롱 적인 댓글 작성'),
+(12, 4, '타 유저를 향한 비난적인 욕설 지속적 작성');
+
+
+-- 쪽지 테이블 더미 데이터
+-- 1번 관리자 (읽음)
+-- 2번유저 -> 전체유저에게 하나씩
+-- 8~12번 유저 읽음 표시
+INSERT INTO letter (send_user_no, receive_user_no, letter_title, letter_content, letter_check) VALUES
+(1, 6, '관리자 안내', '지속적인 광고성 게시글 작성으로 차단되었습니다.', 1),
+(2, 3, '여행 계획 문의', '제주도 여행 계획에 대해 궁금한 점이 있어요.', 0),
+(2, 4, '동행 요청', '부산 맛집 투어에 함께 가고 싶습니다!', 0),
+(2, 5, '서울 여행 팁', '서울 문화 투어 다녀오셨다고 해서요. 좋은 장소 추천해주세요!', 0),
+(2, 6, '맛집 정보 공유', '부산에서 꼭 가봐야 할 맛집 리스트 공유해 드릴게요.', 0),
+(2, 7, '여행 동행 제안', '다음 달에 계획 중인 여행에 함께 가실래요?', 0),
+(2, 8, '제주도 숙소 문의', '제주도 여행 계획 중이신데, 좋은 숙소 있나요?', 1),
+(2, 9, '여행 후기 감사', '공유해주신 여행 후기 정말 도움 많이 됐어요. 감사합니다!', 1),
+(2, 10, '맛집 투어 일정 조율', '부산 맛집 투어 일정을 조율하고 싶어요. 언제가 좋으세요?', 1),
+(2, 11, '서울 방문 계획', '다음 주에 서울에 가는데, 만나서 이야기 나눌 수 있을까요?', 1),
+(2, 12, '여행 조언 요청', '처음으로 해외여행을 가려고 해요. 조언 부탁드려요!', 1);

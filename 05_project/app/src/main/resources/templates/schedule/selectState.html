@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <link data-th-href="@{/css/common.css}" href="/css/common.css" rel="stylesheet">
+    <title>모두의 여행</title>
+</head>
+<body>
+<header>
+</header>
+
+<h1>여행지역 선택</h1>
+
+
+<select id="stateCode" name="stateCode" onchange="fetchCityList()"> <!-- onchange 이벤트 추가 -->
+    <option value="">시도 선택</option>
+    <option data-th-each="state : ${stateList}"
+            data-th-text="${state.stateName}"
+            data-th-value="${state.stateCode}">
+        제주도
+    </option>
+</select>
+
+<select id="cityCode" name="cityCode">
+    <option value="">시군구 선택</option>
+</select>
+
+<!-- 일정 생성 폼 -->
+<form action="/schedule/selectDate" id="createScheduleForm" method="post">
+    <input name="tripType" type="hidden" value="/schedule/selectLocation"/>
+    <input id="stateCodeHidden" name="stateCode" type="hidden">
+    <input id="cityCodeHidden" name="cityCode" type="hidden">
+    <div class="btn btn-mint">
+        <button class="custom-btn custom-btn-white" type="submit">일정생성</button>
+    </div>
+</form>
+
+<!-- 일정 가져오기 폼 -->
+<form action="/schedule/selectDate" id="fetchScheduleForm" method="post">
+    <input name="tripType" type="hidden" value="/schedule/selectTripList"/>
+    <input id="stateCodeHiddenFetch" name="stateCode" type="hidden">
+    <input id="cityCodeHiddenFetch" name="cityCode" type="hidden">
+    <div class="btn btn-black">
+        <button class="custom-btn custom-btn-white" type="submit">일정가져오기</button>
+    </div>
+</form>
+
+<script>
+    document.getElementById('createScheduleForm').addEventListener('submit', function (event) {
+        document.getElementById('stateCodeHidden').value = document.getElementById('stateCode').value;
+        document.getElementById('cityCodeHidden').value = document.getElementById('cityCode').value;
+    });
+
+    document.getElementById('fetchScheduleForm').addEventListener('submit', function (event) {
+        document.getElementById('stateCodeHiddenFetch').value = document.getElementById('stateCode').value;
+        document.getElementById('cityCodeHiddenFetch').value = document.getElementById('cityCode').value;
+    });
+
+    // 시도 선택 시 시군구 리스트를 불러오는 함수 (POST 요청)
+    function fetchCityList() {
+        const stateCode = document.getElementById('stateCode').value; // 선택된 시도의 stateCode 가져오기
+        if (stateCode) {
+            fetch('/schedule/selectCity', {  // POST 요청을 보냄
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'  // 폼 데이터를 전송할 때의 Content-Type
+                },
+                body: `stateCode=${stateCode}`  // body에 stateCode 데이터를 추가
+            })
+                .then(response => response.json())  // 응답을 JSON 형식으로 변환
+                .then(data => {
+                    const citySelect = document.getElementById('cityCode');
+                    citySelect.innerHTML = ''; // 기존 옵션 초기화
+
+                    // 시군구 리스트를 받아와서 새로운 옵션 추가
+                    data.forEach(city => {
+                        const option = document.createElement('option');
+                        option.value = city.cityCode;
+                        option.textContent = city.cityName;
+                        citySelect.appendChild(option);  // 새로운 옵션 추가
+                    });
+                })
+                .catch(error => console.error('Error fetching city list:', error));
+        }
+    }
+</script>
+
+</body>
+</html>

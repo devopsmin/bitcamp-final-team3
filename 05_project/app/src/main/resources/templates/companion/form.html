@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head data-th-replace="~{header :: head}"></head>
+<body>
+
+<header data-th-replace="~{header :: #page-header}"></header>
+
+        <h1>동행게시판 - 글쓰기</h1>
+        <form action="add" method="post">
+            <label>제목</label>
+                <input name="boardTitle" type="text"><br><br>
+            <label >내용</label><br>
+                <textarea name="boardContent"></textarea><br><br>
+            <label >태그</label><br>
+                <input name="boardTag" type="text"><br><br>
+            <button type="button" onclick="location.href='list'">목록</button>
+            <input type="submit" value="글등록">
+        </form>
+    </body>
+</html>

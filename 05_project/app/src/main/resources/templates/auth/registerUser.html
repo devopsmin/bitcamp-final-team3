@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<div class="container p-4">
+  <form action="/auth/registerUser" method="post" id="registerForm" class="needs-validation" novalidate>
+
+    <div th:if="${errorMessage}" class="alert alert-danger mb-3" role="alert">
+      <span th:text="${errorMessage}"></span>
+    </div>
+
+    <div class="mb-3">
+      <div class="input-group has-validation">
+        <input name="userEmail" type="email" id="registerUserEmail" class="form-control form-control-lg" placeholder="이메일을 입력해주세요" autocomplete="email" required>
+        <button type="button" id="emailVerificationBtn" class="btn btn-primary" onclick="sendVerificationEmail()">전송</button>
+        <div class="invalid-feedback">이메일을 입력해주세요.
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-3">
+      <div class="input-group has-validation">
+        <input type="text" id="verificationCode" class="form-control form-control-lg" placeholder="인증번호를 입력해주세요" required>
+        <button type="button" class="btn btn-primary" onclick="verifyCode()">확인</button>
+        <div class="invalid-feedback">인증번호를 입력해주세요.
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-3">
+      <div class="input-group has-validation">
+        <input name="userNickname" type="text" id="userNickname" class="form-control form-control-lg" placeholder="닉네임을 입력해주세요" required>
+        <button type="button" class="btn btn-primary" onclick="checkNickname()">확인</button>
+        <div class="invalid-feedback">닉네임을 입력해주세요.
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-3">
+      <div class="input-group has-validation">
+        <input name="userTel" type="text" id="userTel" class="form-control form-control-lg" placeholder="전화번호를 입력해주세요 (예: 010-1234-5678)" pattern="[0-9]{3}-[0-9]{4}-[0-9]{4}" required>
+        <button type="button" class="btn btn-primary" onclick="checkPhoneNumber()">확인</button>
+        <div class="invalid-feedback">올바른 전화번호 형식으로 입력해주세요 (예: 010-1234-5678)</div>
+      </div>
+    </div>
+
+    <div class="mb-3">
+      <div class="input-group has-validation">
+        <input id="password" name="userPassword" type="password" class="form-control form-control-lg" placeholder="비밀번호를 입력해주세요" autocomplete="new-password" required>
+        <div class="invalid-feedback">비밀번호를 입력해주세요.
+        </div>
+      </div>
+      <div class="form-check mt-2">
+        <input type="checkbox" id="showPassword" class="form-check-input" onclick="togglePasswordVisibility()">
+        <label class="form-check-label" for="showPassword">비밀번호 표시</label>
+      </div>
+    </div>
+
+    <div class="mb-4">
+      <div class="input-group has-validation">
+        <input id="confirmPassword" name="confirmPassword" type="password" class="form-control form-control-lg" placeholder="비밀번호를 재입력해주세요" autocomplete="new-password" required>
+        <div class="invalid-feedback">비밀번호를 재입력해주세요.
+        </div>
+      </div>
+      <div class="form-check mt-2">
+        <input type="checkbox" id="showConfirmPassword" class="form-check-input" onclick="toggleConfirmPasswordVisibility()">
+        <label class="form-check-label" for="showConfirmPassword">비밀번호 확인 표시</label>
+      </div>
+    </div>
+
+    <button type="submit" id="submitBtn" class="btn btn-primary w-100 py-2" disabled>가입하기</button>
+  </form>
+</div>
+</html>

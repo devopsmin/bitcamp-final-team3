@@ -1,0 +1,79 @@
+form {
+    display: inline-block;
+}
+
+.btn,
+.btn * {
+    box-sizing: border-box;
+}
+
+.btn {
+    border-radius: 5px;
+    padding: 5px 5px;
+    display: inline-flex;
+    /* flex 대신 inline-flex 사용 */
+    flex-direction: row;
+    gap: 10px;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    width: auto;
+    /* 고정 너비 대신 auto 사용 */
+    white-space: nowrap;
+    /* 텍스트가 줄바꿈되지 않도록 설정 */
+}
+
+
+/* 민트 버튼 */
+.btn-mint {
+    background: var(--main-main02, #48cfcb);
+}
+
+/* 다크 그린 버튼 */
+.btn-dark-green {
+    background: var(--main-main03, #229799);
+}
+
+/* 그레이 버튼 */
+.btn-gray {
+    background: var(--main-main01, #979a9e);
+}
+
+/* 다크 그레이 버튼 */
+.btn-dark-gray {
+    background: var(--main-main04, #424242);
+}
+
+/* 블랙 버튼 */
+.btn-black {
+    background: var(--black, #000000);
+}
+
+/* 밑줄 추가 */
+.btn-undeline {
+    border-radius: 0px;
+    width: 100px;
+    border-bottom: 2px solid var(--true-true04, #4660f4);
+}
+
+
+.custom-btn {
+    background: none;
+    border: none;
+    text-align: center;
+    font-family: var(--h5-font-family, "NanumGothic-Bold", sans-serif);
+    font-size: var(--h5-font-size, 12px);
+    font-weight: var(--h5-font-weight, 700);
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.custom-btn-white {
+    color: var(--white, #ffffff);
+}
+
+.custom-btn-black {
+    color: var(--black, #000000);
+}

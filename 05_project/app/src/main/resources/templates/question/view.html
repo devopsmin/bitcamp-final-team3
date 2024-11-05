@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head data-th-replace="~{header :: head}"></head>
+<body>
+
+<header data-th-replace="~{header :: #page-header}"></header>
+
+<body>
+<h1>일정 질문 게시판</h1>
+
+
+<div data-th-unless="${board}">
+    <p>없는 게시글입니다.</p>
+</div>
+
+<div data-th-if="${board}" >
+    <form action="view2" method="post" enctype="multipart/form-data">
+        <input type="hidden" name="boardNo" data-th-value='${board.boardNo}'>
+        제목: <input name="boardTitle" readonly type="text" data-th-value='${board.boardTitle}'><br/>
+        작성일: <input readonly type="text" data-th-value="${#calendars.format(board.boardCreatedDate, 'yyyy-MM-dd')}"><br>
+        조회수: <input readonly type="text" data-th-value="${board.boardCount}"><br>
+        내용: <br>
+        <textarea name="boardContent" readonly rows="10" cols="100" data-th-text="${board.boardContent}"></textarea><br>
+        태그: <input name="boardTag" readonly type="text" data-th-value="${board.boardTag}"><br/>
+
+        <button type="button" data-th-onclick="|location.href='@{list}'|">목록</button>
+        <button>수정</button>
+        <button type="button" data-th-onclick="|location.href='@{delete(boardNo=${board.boardNo})}'|">삭제</button>
+    </form>
+</div>
+
+<h3>댓글 작성</h3>
+<form data-th-action="@{/comment/add}" method="post">
+    <textarea name="commentContent" rows="4" cols="100" placeholder="댓글을 입력하세요"></textarea>
+    <input type="hidden" name="boardType" value="1">
+    <input type="hidden" name="boardNo" data-th-value="${board.boardNo}"> <br>
+    <button type="submit">댓글 등록</button>
+</form>
+
+<br> 댓글 : <br>
+<!-- 댓글이 없는 경우 -->
+<p data-th-unless="${commentList}">댓글이 없습니다.</p>
+
+ 댓글이 있는 경우
+<ul data-th-if="${commentList != null and commentList.size() > 0}">
+        <li data-th-each="comment : ${commentList}">
+            작성일 <input readonly type="text" data-th-value="${comment.commentCreatedDate}" size="25"> <br>
+            댓글 <br>
+            <textarea name="commentContent" readonly rows="3" cols="70" data-th-text="${comment.commentContent}"></textarea><br>
+<!--            <button type="button" data-th-onclick="|updateComment(${comment.commentNo}, '${comment.commentContent}')|">변경</button>-->
+            <button type="button" data-th-onclick="|deleteComment(${comment.commentNo},${board.boardNo})|">삭제</button>
+        </li>
+</ul>
+
+<script>
+    function deleteComment(commentNo, no) {
+        if (confirm('댓글을 삭제하시겠습니까?')) {
+            location.href = '../comment/delete?commentNo=' + commentNo + '&boardNo=' + no +'&boardType=1';
+        }
+    }
+</script>
+<!--    function updateComment(commentNo, commentContent) {-->
+<!--        const popup = window.open('', 'commentUpdate', 'width=500,height=300,scrollbars=yes');-->
+
+<!--        popup.document.write(`-->
+<!--            <html>-->
+<!--                <head>-->
+<!--                    <title>댓글 수정</title>-->
+<!--                </head>-->
+<!--                <body>-->
+<!--                    <h3>댓글 수정</h3>-->
+<!--                    <form action='../comment/update' method='post'>-->
+<!--                        <input type="hidden" name="commentNo" value="` + commentNo + `">-->
+<!--                        <input type="hidden" name="boardNo" value="` + /*[[${board.boardNo}]]*/ '' + `">-->
+<!--                        <textarea name="commentContent" rows="10" cols="100">` + commentContent + `</textarea><br>-->
+<!--                        <button type='submit'>저장</button>-->
+<!--                        <button type='button' onclick='window.close()'>취소</button>-->
+<!--                    </form>-->
+<!--                </body>-->
+<!--            </html>-->
+<!--        `);-->
+<!--    }-->
+<!--</script>-->
+
+</body>
+</html>

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head data-th-replace="~{header :: head}"></head>
+<body>
+
+<header data-th-replace="~{header :: #page-header}"></header>
+
+<body>
+<h1>일정 질문 게시판</h1>
+<label>정렬</label>
+<select name="sort" onchange="changeSort(this.value)">
+    <option value="latest"
+            data-th-selected="${sort == 'latest' ||sort == null}">최신순</option>
+    <option value="likes"
+            data-th-selected="${sort == 'likes'}">좋아요</option>
+    <option value="favorites"
+            data-th-selected="${sort == 'favorites'}">즐겨찾기</option>
+    <option value="views"
+            data-th-selected="${sort == 'views'}">조회수</option>
+</select>
+
+<script>
+    function changeSort(sortType) {
+        window.location.href = 'list?sort=' + sortType;
+    }
+</script>
+
+<p><a data-th-href="@{form}">글쓰기</a></p>
+
+<table>
+    <thead>
+    <tr><th>유저사진</th><th>유저닉네임</th><th>제목</th><th>날짜</th><th>좋아요</th><th>조회수</th></tr>
+    </thead>
+    <tbody>
+    <tr data-th-each="board : ${list}">
+        <td data-th-text="${board.writer.userPhoto}">포토</td>
+        <td data-th-text="${board.writer.userNickname}">닉네임</td>
+        <td><a data-th-href="@{view(boardNo=${board.boardNo})}" data-th-text="*{board.boardTitle}">제목</a></td>
+        <td data-th-text="${board.boardCreatedDate}">날짜</td>
+        <td data-th-text="${board.boardLike}">좋아요</td>
+        <td data-th-text="${board.boardCount}">조회수</td>
+    </tr>
+    </tbody>
+</table>
+
+<div>
+    <span data-th-if="${pageNo > 1}">
+        <a data-th-href="@{'list'(sort=${param.sort}, pageNo=${pageNo - 1}, pageSize=${pageSize})}">
+            [이전]
+        </a>
+    </span>
+    <span data-th-unless="${pageNo > 1}">[이전]</span>
+
+    <span data-th-each="i : ${#numbers.sequence(1, pageCount)}">
+        <a data-th-href="@{'list'(pageNo=${i})}" data-th-text="${i}">1</a>
+    </span>
+
+    <span data-th-if="${pageNo < pageCount}">
+        <a data-th-href="@{'list'(sort=${param.sort}, pageNo=${pageNo + 1}, pageSize=${pageSize})}">
+            [다음]
+        </a>
+    </span>
+    <span data-th-unless="${pageNo < pageCount}">[다음]</span>
+</div>
+
+</body>
+</html>

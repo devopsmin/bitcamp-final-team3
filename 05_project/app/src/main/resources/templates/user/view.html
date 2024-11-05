@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head data-th-replace="~{header :: head}"></head>
+<body>
+
+<header data-th-replace="~{header :: #page-header}"></header>
+
+<h1>회원 조회</h1>
+
+<div data-th-unless="${user}">
+    <p>없는 회원입니다.</p>
+</div>
+<div data-th-if="${user}" data-th-object="${user}">
+    <form method="post" data-th-action="@{/user/{userNo}(userNo=${user.userNo})}" onsubmit="return validateForm()">
+        번호: <input data-th-value="*{userNo}" readonly type="text" value='100'><br>
+        이메일: <input data-th-value="*{userEmail}" name="userEmail" type="email" value='hong@test.com'><br>
+        닉네임: <input data-th-value="*{userNickname}" name="userNickname" type="text" value='홍길동'><br>
+        암호: <input id="password" name="userPassword" type="password">
+        <input type="checkbox" id="showPassword" onclick="togglePasswordVisibility()">
+        <label for="showPassword">비밀번호 표시</label><br>
+        암호확인: <input id="confirmPassword" type="password">
+        <input type="checkbox" id="showConfirmPassword" onclick="toggleConfirmPasswordVisibility()">
+        <label for="showConfirmPassword">비밀번호 확인 표시</label><br>
+        연락처: <input data-th-value="*{userTel}" name="userTel" type="tel" value='010-1111-2222'><br>
+        <button>변경</button>
+        <button data-th-onclick="'deleteUser(' + ${user.userNo} + ')'" type='button'>삭제</button>
+    </form>
+
+    <script>
+        function validateForm() {
+            var password = document.getElementById("password").value;
+            var confirmPassword = document.getElementById("confirmPassword").value;
+
+            if (password !== confirmPassword) {
+                alert("비밀번호가 일치하지 않습니다!");
+                return false;
+            }
+            return true;
+        }
+
+        function togglePasswordVisibility() {
+            var passwordInput = document.getElementById("password");
+            var checkbox = document.getElementById("showPassword");
+            passwordInput.type = checkbox.checked ? "text" : "password";
+        }
+
+        function toggleConfirmPasswordVisibility() {
+            var confirmPasswordInput = document.getElementById("confirmPassword");
+            var checkbox = document.getElementById("showConfirmPassword");
+            confirmPasswordInput.type = checkbox.checked ? "text" : "password";
+        }
+
+        function deleteUser(no) {
+            if (confirm("정말 삭제하시겠습니까?")) {
+                const xhr = new XMLHttpRequest();
+                xhr.open("DELETE", "/user/" + no, true);
+                xhr.onload = function () {
+                    if (xhr.status === 200) {
+                        location.href = "../user";
+                    } else {
+                        alert("삭제 실패입니다!");
+                    }
+                };
+                xhr.send();
+            }
+        }
+    </script>
+</div>
+
+</body>
+</html>

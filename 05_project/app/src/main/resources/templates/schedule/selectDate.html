@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>모두의 여행</title>
+    <link data-th-href="@{/css/modal.css}" rel="stylesheet">
+    <link data-th-href="@{/css/common.css}" rel="stylesheet">
+</head>
+<body>
+<header>
+</header>
+
+<h1>날짜 선택</h1>
+
+<form data-th-action="@{${tripType}}" id="dateForm" method="post">
+    기간:
+    <label><input id="startDate" name='startDate' required type='date'></label> ~
+    <label><input id="endDate" name='endDate' required type='date'></label><br>
+    <div class="btn btn-gray" id="buttonContainer">
+        <button class="custom-btn custom-btn-black" disabled id="nextBtn" type="submit">일정생성</button>
+    </div>
+</form>
+
+<!-- 커스텀 경고창 -->
+<div id="customAlertModal">
+    <div id="customAlertContent">
+        <div id="customAlertTitle">경고</div>
+        <div id="customAlertMessage">경고 메시지</div>
+        <button id="customAlertCloseBtn" onclick="closeCustomAlert()">확인</button>
+    </div>
+</div>
+
+<script>
+    function initializeDateInputs() {
+        const startDateInput = document.getElementById('startDate');
+        const endDateInput = document.getElementById('endDate');
+        const nextBtn = document.getElementById('nextBtn');
+        const buttonContainer = document.getElementById('buttonContainer');
+
+
+        // 두 날짜 입력 필드 모두 입력이 끝났을 때 버튼을 활성화하고, 변경 사항을 콘솔에 출력
+        function checkDates() {
+            console.log("변경됨");  // 값이 변경될 때마다 콘솔에 출력
+            if (startDateInput.value && endDateInput.value) {
+                const startDate = new Date(startDateInput.value);
+                const endDate = new Date(endDateInput.value);
+
+                if (startDate > endDate) {
+                    showCustomAlert('날짜 오류', '시작 날짜는 종료 날짜보다 빠를 수 없습니다.');
+                    nextBtn.disabled = true;  // 유효하지 않으면 버튼 비활성화
+                } else {
+                    nextBtn.disabled = false;  // 유효하면 버튼 활성화
+                    buttonContainer.classList.remove("btn-gray");
+                    buttonContainer.classList.add("btn-mint");
+                    nextBtn.classList.remove("custom-btn-black");
+                    nextBtn.classList.add("custom-btn-white");
+                }
+            } else {
+                nextBtn.disabled = true;   // 하나라도 비어있으면 버튼 비활성화
+            }
+        }
+
+        // 날짜가 변경될 때마다 이벤트 감지
+        startDateInput.addEventListener('input', checkDates);
+        endDateInput.addEventListener('input', checkDates);
+    }
+
+    // 커스텀 경고창을 띄우는 함수
+    function showCustomAlert(title, message) {
+        document.getElementById('customAlertTitle').innerText = title;
+        document.getElementById('customAlertMessage').innerText = message;
+        document.getElementById('customAlertModal').style.display = 'block';
+    }
+
+    // 커스텀 경고창을 닫는 함수
+    function closeCustomAlert() {
+        document.getElementById('customAlertModal').style.display = 'none';
+    }
+
+    // 확인 버튼 클릭 시 경고창 닫기 이벤트 연결
+    document.getElementById('customAlertCloseBtn').addEventListener('click', closeCustomAlert);
+
+
+    // 함수 호출로 이벤트 설정
+    initializeDateInputs();
+</script>
+
+</body>
+</html>

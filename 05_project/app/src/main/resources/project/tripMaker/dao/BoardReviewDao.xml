@@ -1,0 +1,527 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="project.tripMaker.dao.BoardReviewDao">
+
+    <resultMap id="BoardMap" type="project.tripMaker.vo.Board">
+        <id property="boardNo" column="board_no"/>
+        <result property="tmpNo" column="tmp_no"/>
+        <result property="boardtypeNo" column="boardtype_no"/>
+        <result property="boardTitle" column="board_title"/>
+        <result property="boardCount" column="board_count"/>
+        <result property="boardCreatedDate" column="board_created_date"/>
+        <result property="tripNo" column="trip_no"/>
+        <result property="boardContent" column="board_content"/>
+        <result property="boardTag" column="board_tag"/>
+        <result property="boardLike" column="like_count"/>
+        <result property="boardFavor" column="favor_count"/>
+
+        <!-- Trip 및 City 정보 매핑 -->
+        <association property="trip" javaType="project.tripMaker.vo.Trip">
+            <id property="tripNo" column="trip_no"/>
+            <result property="tripTitle" column="trip_title"/>
+            <association property="city" javaType="project.tripMaker.vo.City">
+               <result property="cityName" column="city_name"/>
+            </association>
+        </association>
+
+        <association property="writer" javaType="project.tripMaker.vo.User">
+            <id property="userNo" column="writer_user_no" javaType="java.lang.Long"/>
+            <result property="userNickname" column="user_nickname"/>
+            <result property="userPhoto" column="user_photo"/>
+        </association>
+
+        <collection property="comments" ofType="project.tripMaker.vo.Comment">
+            <id property="commentNo" column="comment_no"/>
+            <result property="boardNo" column="board_no"/>
+            <result property="userNo" column="user_no" javaType="java.lang.Long"/>
+            <result property="commentContent" column="comment_content"/>
+            <result property="commentCreatedDate" column="comment_created_date"/>
+        </collection>
+    </resultMap>
+
+  <resultMap id="TripMap" type="project.tripMaker.vo.Trip">
+    <id property="tripNo" column="trip_no"/>
+    <result property="userNo" column="user_no"/>
+    <result property="tripTitle" column="trip_title"/>
+    <result property="startDate" column="start_date"/>
+    <result property="endDate" column="end_date"/>
+    <result property="tripCreatedDate" column="trip_created_date"/>
+    <result property="totalDay" column="total_day"/>
+
+    <!-- Thema 정보 매핑 -->
+    <association property="thema" javaType="project.tripMaker.vo.Thema">
+      <id property="themaNo" column="thema_no"/>
+      <result property="themaName" column="thema_name"/>
+    </association>
+
+    <!-- City 및 State 정보 매핑 -->
+    <association property="city" javaType="project.tripMaker.vo.City">
+      <id property="cityCode" column="city_code"/>
+      <result property="cityName" column="city_name"/>
+      <association property="state" javaType="project.tripMaker.vo.State">
+        <id property="stateCode" column="state_code"/>
+        <result property="stateName" column="state_name"/>
+      </association>
+    </association>
+
+    <!-- Schedule 및 Location 정보 매핑 -->
+    <collection property="scheduleList" ofType="project.tripMaker.vo.Schedule" javaType="java.util.List">
+      <id property="scheduleNo" column="schedule_no"/>
+      <result property="tripNo" column="trip_no"/>
+      <result property="scheduleDay" column="schedule_day"/>
+      <result property="scheduleRoute" column="schedule_route"/>
+
+      <association property="location" javaType="project.tripMaker.vo.Location">
+        <id property="locationNo" column="location_no"/>
+        <result property="locationName" column="location_name"/>
+        <result property="locationDesc" column="location_desc"/>
+        <result property="locationPhoto" column="location_photo"/>
+        <result property="cityCode" column="city_code"/>
+        <result property="thirdclassCode" column="thirdclass_code"/>
+        <result property="locationAddr" column="location_addr"/>
+        <result property="locationTel" column="location_tel"/>
+        <result property="locationX" column="location_x"/>
+        <result property="locationY" column="location_y"/>
+      </association>
+    </collection>
+  </resultMap>
+
+    <select id="list" resultMap="BoardMap">
+      SELECT
+        @rownum := @rownum + 1 AS tmp_no,  -- 가상 번호 부여
+        b.board_no,
+        b.board_title,
+        b.board_created_date,
+        b.board_count,
+        b.board_tag,
+        b.trip_no,
+        t.trip_title,
+        u.user_no,
+        u.user_nickname,
+        COALESCE(fv.favor_count, 0) AS favor_count,
+        COALESCE(bl.like_count, 0) AS like_count,
+        c.city_name -- 시도명
+      FROM
+        (SELECT @rownum := 0) r,  -- 변수 초기화
+        board b
+          INNER JOIN
+        user u ON b.user_no = u.user_no
+          LEFT JOIN
+        favor_count_view fv ON b.board_no = fv.board_no
+          LEFT JOIN
+        boardlike_count_view bl ON b.board_no = bl.board_no
+          LEFT JOIN
+        trip t ON b.trip_no = t.trip_no -- Trip과 Board 조인 추가
+          LEFT JOIN
+        city c ON t.city_code = c.city_code -- Trip과 City 조인
+      WHERE
+        b.boardtype_no = 3
+      ORDER BY
+        b.board_no ASC
+      LIMIT
+        #{rowNo}, #{length} -- 페이지 보여줄 갯수용 변수
+    </select>
+
+    <insert id="insert" parameterType="board"
+      useGeneratedKeys="true" keyColumn="board_no" keyProperty="boardNo">
+        insert into board(
+                          boardtype_no,
+                          board_title,
+                          user_no,
+                          trip_no,
+                          board_content,
+                          board_tag)
+        values (
+                3,
+                #{boardTitle},
+                #{writer.userNo},
+                #{tripNo},
+                #{boardContent},
+                #{boardTag})
+    </insert>
+
+  <select id="findBy" resultMap="BoardMap" parameterType="int">
+    select
+      b.board_no,
+      b.boardtype_no,
+      b.board_title,
+      b.board_count,
+      b.board_created_date,
+      b.trip_no,
+      b.board_content,
+      b.board_tag,
+      b.user_no as writer_user_no, <!--작성자-->
+      u.user_photo,
+      u.user_nickname,
+      c.user_no,
+      c.comment_no,
+      c.comment_content,
+      c.comment_created_date,
+      COALESCE(fv.favor_count, 0) AS favor_count,
+      COALESCE(bl.like_count, 0) AS like_count,
+      t.trip_title,
+      cy.city_name -- 시도명
+    from
+    board b
+    inner join user u on b.user_no=u.user_no
+    left outer join comment c on c.board_no=b.board_no
+    LEFT JOIN favor_count_view fv ON b.board_no = fv.board_no
+    LEFT JOIN boardlike_count_view bl ON b.board_no = bl.board_no
+    LEFT JOIN
+    trip t ON b.trip_no = t.trip_no -- Trip과 Board 조인 추가
+    LEFT JOIN
+    city cy ON t.city_code = cy.city_code -- Trip과 City 조인
+    where
+        b.board_no=#{boardNo}
+  </select>
+
+  <update id="updateViewCount">
+    update
+        board
+    set
+        board_count=#{boardCount}+1
+    where
+        board_no=#{boardNo}
+  </update>
+
+  <delete id="delete" parameterType="int">
+    delete from board
+    where board_no=#{boardNo}
+  </delete>
+
+  <update id="update" parameterType="board">
+    update
+        board
+    set
+        board_title=#{boardTitle},
+        board_content=#{boardContent}
+    where
+        board_no=#{boardNo}
+  </update>
+
+  <select id="listLike" resultMap="BoardMap">
+    SELECT
+      @rownum := @rownum + 1 AS tmp_no,  -- 가상 번호 부여
+        b.board_no,
+        b.board_title,
+        b.board_created_date,
+        b.board_count,
+        b.board_tag,
+        t.trip_title,
+        u.user_no,
+        u.user_nickname,
+        COALESCE(fv.favor_count, 0) AS favor_count,
+        COALESCE(bl.like_count, 0) AS like_count,
+        c.city_name -- 시도명
+    FROM
+      (SELECT @rownum := 0) r,  -- 변수 초기화
+      board b
+      INNER JOIN
+      user u ON b.user_no = u.user_no
+      LEFT JOIN
+      favor_count_view fv ON b.board_no = fv.board_no
+      LEFT JOIN
+      boardlike_count_view bl ON b.board_no = bl.board_no
+      LEFT JOIN
+      trip t ON b.trip_no = t.trip_no -- Trip과 Board 조인 추가
+      LEFT JOIN
+      city c ON t.city_code = c.city_code -- Trip과 City 조인
+    WHERE
+      b.boardtype_no = 3
+    ORDER BY
+      like_count DESC, b.board_no ASC
+    LIMIT
+      #{rowNo}, #{length}
+  </select>
+
+  <select id="listFavor" resultMap="BoardMap">
+    SELECT
+      @rownum := @rownum + 1 AS tmp_no,  -- 가상 번호 부여
+        b.board_no,
+        b.board_title,
+        b.board_created_date,
+        b.board_count,
+        b.board_tag,
+        t.trip_title,
+        u.user_no,
+        u.user_nickname,
+        COALESCE(fv.favor_count, 0) AS favor_count,
+        COALESCE(bl.like_count, 0) AS like_count,
+        c.city_name -- 시도명
+    FROM
+      (SELECT @rownum := 0) r,  -- 변수 초기화
+      board b
+      INNER JOIN
+      user u ON b.user_no = u.user_no
+      LEFT JOIN
+      favor_count_view fv ON b.board_no = fv.board_no
+      LEFT JOIN
+      boardlike_count_view bl ON b.board_no = bl.board_no
+      LEFT JOIN
+      trip t ON b.trip_no = t.trip_no -- Trip과 Board 조인 추가
+      LEFT JOIN
+      city c ON t.city_code = c.city_code -- Trip과 City 조인
+    WHERE
+      b.boardtype_no = 3
+    ORDER BY
+      favor_count DESC, b.board_no ASC
+    LIMIT
+      #{rowNo}, #{length}
+  </select>
+
+  <select id="listView" resultMap="BoardMap">
+    SELECT
+      @rownum := @rownum + 1 AS tmp_no,  -- 가상 번호 부여
+        b.board_no,
+        b.board_title,
+        b.board_created_date,
+        b.board_count,
+        b.board_tag,
+        t.trip_title,
+        u.user_no,
+        u.user_nickname,
+        COALESCE(fv.favor_count, 0) AS favor_count,
+        COALESCE(bl.like_count, 0) AS like_count,
+        c.city_name -- 시도명
+    FROM
+      (SELECT @rownum := 0) r,  -- 변수 초기화
+      board b
+      INNER JOIN
+      user u ON b.user_no = u.user_no
+      LEFT JOIN
+      favor_count_view fv ON b.board_no = fv.board_no
+      LEFT JOIN
+      boardlike_count_view bl ON b.board_no = bl.board_no
+      LEFT JOIN
+      trip t ON b.trip_no = t.trip_no -- Trip과 Board 조인 추가
+      LEFT JOIN
+      city c ON t.city_code = c.city_code -- Trip과 City 조인
+    WHERE
+      b.boardtype_no = 3
+    ORDER BY
+      b.board_count DESC, b.board_no ASC
+    LIMIT
+      #{rowNo}, #{length}
+  </select>
+
+  <!--전체게시물 갯수 카운트  -->
+  <select id="countAll" resultType="int">
+    select count(*)
+    from board
+    where boardtype_no=3;
+  </select>
+
+  <!--게시글 번호를 통한 Trip 찾기-->
+  <select id="findTripsByBoardNo" parameterType="int" resultMap="TripMap">
+    SELECT
+      t.trip_no,
+      t.user_no,
+      th.thema_no,
+      th.thema_name,
+      t.trip_title,
+      t.start_date,
+      t.end_date,
+      t.trip_created_date,
+      t.total_day,
+      st.state_code,
+      st.state_name,
+      c.city_code,
+      c.city_name,
+      s.schedule_no,
+      s.trip_no,
+      s.schedule_day,
+      s.schedule_route,
+      l.thirdclass_code,
+      l.city_code,
+      l.location_name,
+      l.location_desc,
+      l.location_photo
+    FROM
+      trip t
+        LEFT OUTER JOIN thema th ON t.thema_no = th.thema_no
+        LEFT OUTER JOIN city c ON t.city_code = c.city_code
+        LEFT OUTER JOIN state st ON st.state_code = c.state_code
+        JOIN schedule s ON t.trip_no = s.trip_no
+        LEFT OUTER JOIN location l ON s.location_no = l.location_no
+        JOIN board b ON b.trip_no = t.trip_no  -- 추가된 부분: trip과 board의 연결
+    WHERE
+      b.board_no = #{boardNo}
+    ORDER BY
+      s.schedule_no ASC
+  </select>
+
+  <!-- 게시글의 좋아요 수 조회 -->
+  <select id="getLikeCount" parameterType="int" resultType="int">
+    SELECT COUNT(*) FROM boardlike WHERE board_no = #{boardNo}
+  </select>
+
+  <!-- 사용자가 해당 게시글에 좋아요를 눌렀는지 확인 -->
+  <select id="isLiked" parameterType="map" resultType="boolean">
+    SELECT COUNT(*) > 0
+    FROM boardlike
+    WHERE board_no = #{boardNo} AND user_no = #{userNo}
+  </select>
+
+  <!-- 좋아요 추가 -->
+  <insert id="addLike" parameterType="map">
+    INSERT INTO boardlike (board_no, user_no) VALUES (#{boardNo}, #{userNo})
+  </insert>
+
+  <!-- 좋아요 삭제 -->
+  <delete id="removeLike" parameterType="map">
+    DELETE FROM boardlike WHERE board_no = #{boardNo} AND user_no = #{userNo}
+  </delete>
+
+  <!-- 게시글의 즐겨찾기 수 조회 -->
+  <select id="getFavorCount" parameterType="int" resultType="int">
+    SELECT COUNT(*) FROM favor WHERE board_no = #{boardNo}
+  </select>
+
+  <!-- 사용자가 해당 게시글에 즐겨찾기를 눌렀는지 확인 -->
+  <select id="isFavored" parameterType="map" resultType="boolean">
+    SELECT COUNT(*) > 0
+    FROM favor
+    WHERE board_no = #{boardNo} AND user_no = #{userNo}
+  </select>
+
+  <!-- 즐겨찾기 추가 -->
+  <insert id="addFavor" parameterType="map">
+    INSERT INTO favor (board_no, user_no) VALUES (#{boardNo}, #{userNo})
+  </insert>
+
+  <!-- 즐겨찾기 삭제 -->
+  <delete id="removeFavor" parameterType="map">
+    DELETE FROM favor WHERE board_no = #{boardNo} AND user_no = #{userNo}
+  </delete>
+
+  <!--제목검색-->
+  <select id="findByTitle" parameterType="string" resultMap="BoardMap">
+    SELECT
+      b.board_no,
+      b.board_title,
+      b.board_created_date,
+      b.board_count,
+      b.board_tag,
+      u.user_no AS writer_user_no,
+      u.user_nickname,
+      COALESCE(fv.favor_count, 0) AS favor_count,
+      COALESCE(bl.like_count, 0) AS like_count,
+      t.trip_title,
+      c.city_name -- 시도명
+    FROM
+      board b
+        INNER JOIN
+      user u ON b.user_no = u.user_no
+        LEFT JOIN
+      favor_count_view fv ON b.board_no = fv.board_no
+        LEFT JOIN
+      boardlike_count_view bl ON b.board_no = bl.board_no
+        LEFT JOIN
+      trip t ON b.trip_no = t.trip_no -- Trip과 Board 조인 추가
+        LEFT JOIN
+      city c ON t.city_code = c.city_code -- Trip과 City 조인
+    WHERE
+      b.boardtype_no = 3
+      AND b.board_title LIKE CONCAT('%', #{title}, '%')
+    ORDER BY
+      b.board_no ASC
+  </select>
+
+  <!--작성자검색-->
+  <select id="findByWriter" parameterType="string" resultMap="BoardMap">
+    SELECT
+      b.board_no,
+      b.board_title,
+      b.board_created_date,
+      b.board_count,
+      b.board_tag,
+      u.user_no AS writer_user_no,
+      u.user_nickname,
+      COALESCE(fv.favor_count, 0) AS favor_count,
+      COALESCE(bl.like_count, 0) AS like_count,
+      t.trip_title,
+      c.city_name -- 시도명
+    FROM
+      board b
+        INNER JOIN
+      user u ON b.user_no = u.user_no
+        LEFT JOIN
+      favor_count_view fv ON b.board_no = fv.board_no
+        LEFT JOIN
+      boardlike_count_view bl ON b.board_no = bl.board_no
+        LEFT JOIN
+      trip t ON b.trip_no = t.trip_no -- Trip과 Board 조인 추가
+        LEFT JOIN
+      city c ON t.city_code = c.city_code -- Trip과 City 조인
+    WHERE
+      b.boardtype_no = 3
+      AND u.user_nickname LIKE CONCAT('%', #{writer}, '%')
+    ORDER BY
+      b.board_no ASC
+  </select>
+
+  <!--태그검색-->
+  <select id="findByTag" parameterType="string" resultMap="BoardMap">
+    SELECT
+      b.board_no,
+      b.board_title,
+      b.board_created_date,
+      b.board_count,
+      b.board_tag,
+      u.user_no AS writer_user_no,
+      u.user_nickname,
+      COALESCE(fv.favor_count, 0) AS favor_count,
+      COALESCE(bl.like_count, 0) AS like_count,
+      t.trip_title,
+      c.city_name -- 시도명
+    FROM
+      board b
+        INNER JOIN
+      user u ON b.user_no = u.user_no
+        LEFT JOIN
+      favor_count_view fv ON b.board_no = fv.board_no
+        LEFT JOIN
+      boardlike_count_view bl ON b.board_no = bl.board_no
+        LEFT JOIN
+      trip t ON b.trip_no = t.trip_no -- Trip과 Board 조인 추가
+        LEFT JOIN
+      city c ON t.city_code = c.city_code -- Trip과 City 조인
+    WHERE
+      b.boardtype_no = 3
+      AND b.board_tag LIKE CONCAT('%', #{tag}, '%')
+    ORDER BY
+      b.board_no ASC
+  </select>
+
+  <!--시/도검색-->
+  <select id="findByCity" parameterType="string" resultMap="BoardMap">
+    SELECT
+      b.board_no,
+      b.board_title,
+      b.board_created_date,
+      b.board_count,
+      b.board_tag,
+      u.user_no AS writer_user_no,
+      u.user_nickname,
+      COALESCE(fv.favor_count, 0) AS favor_count,
+      COALESCE(bl.like_count, 0) AS like_count,
+      t.trip_title,
+      c.city_name -- 시도명
+    FROM
+      board b
+        INNER JOIN user u ON b.user_no = u.user_no
+        LEFT JOIN favor_count_view fv ON b.board_no = fv.board_no
+        LEFT JOIN boardlike_count_view bl ON b.board_no = bl.board_no
+        LEFT JOIN trip t ON b.trip_no = t.trip_no
+        LEFT JOIN city c ON t.city_code = c.city_code
+    WHERE
+      b.boardtype_no = 3
+      AND c.city_name LIKE CONCAT('%', #{city}, '%')
+    ORDER BY
+      b.board_no ASC
+  </select>
+
+</mapper>

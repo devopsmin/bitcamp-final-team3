@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head data-th-replace="~{header :: head}"></head>
+<body>
+
+<header data-th-replace="~{header :: #page-header}"></header>
+
+<h1>아이디 찾기</h1>
+<form action="findUserByTel" method="post">
+  <label for="userTel">핸드폰 번호:</label>
+  <input type="text" id="userTel" name="userTel" required>
+  <input type="submit" value="아이디 찾기">
+</form>
+
+</body>
+</html>

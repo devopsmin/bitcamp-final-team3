@@ -1,0 +1,77 @@
+-- 동행모집 테이블(companionrecruit)
+CREATE TABLE `companionrecruit` (
+	`companion_recruit_no` INTEGER NOT NULL, -- 동행모집 번호
+	`board_no`             INTEGER NOT NULL, -- 게시판번호
+	`schedule_no`          INTEGER NULL,     -- 여행일정번호
+	`checked`              TINYINT NULL,     -- 동행모집 선택체크
+	`checked_all`          TINYINT NULL,     -- 동행모집 전체 체크
+	`recruit_max_no`       INTEGER NULL     DEFAULT 0 -- 모집 최대인원수
+);
+
+ALTER TABLE `companionrecruit`
+	ADD CONSTRAINT `PK_companionrecruit` -- 동행모집 기본키
+	PRIMARY KEY (
+	`companion_recruit_no` -- 동행모집 번호
+	);
+
+ALTER TABLE `companionrecruit`
+	MODIFY COLUMN `companion_recruit_no` INTEGER NOT NULL AUTO_INCREMENT;
+
+
+ALTER TABLE `companionrecruit`
+	ADD CONSTRAINT `FK_board_TO_companionrecruit` -- 게시판 -> 동행모집
+	FOREIGN KEY (
+	`board_no` -- 게시판번호
+	)
+	REFERENCES `board` ( -- 게시판
+	`board_no` -- 게시판번호
+	);
+
+
+ALTER TABLE `companionrecruit`
+	ADD CONSTRAINT `FK_schedule_TO_companionrecruit` -- 여행일정 -> 동행모집
+	FOREIGN KEY (
+	`schedule_no` -- 여행일정번호
+	)
+	REFERENCES `schedule` ( -- 여행일정
+	`schedule_no` -- 여행일정번호
+	);
+
+
+
+
+
+
+-- 동행신청 테이블(companionapply)
+CREATE TABLE `companionapply` (
+	`companion_apply_no`   INTEGER NOT NULL, -- 동행신청 번호
+	`companion_recruit_no` INTEGER NULL,     -- 동행모집 번호
+	`user_no`              BIGINT  NULL     COMMENT '동행신청한 유저의 고유번호 저장' -- 유저번호
+);
+
+ALTER TABLE `companionapply`
+	ADD CONSTRAINT `PK_companionapply` -- 동행신청 기본키
+	PRIMARY KEY (
+	`companion_apply_no` -- 동행신청 번호
+	);
+
+ALTER TABLE `companionapply`
+	MODIFY COLUMN `companion_apply_no` INTEGER NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `companionapply`
+	ADD CONSTRAINT `FK_companionrecruit_TO_companionapply` -- 동행모집 -> 동행신청
+	FOREIGN KEY (
+	`companion_recruit_no` -- 동행모집 번호
+	)
+	REFERENCES `companionrecruit` ( -- 동행모집
+	`companion_recruit_no` -- 동행모집 번호
+	);
+
+ALTER TABLE `companionapply`
+	ADD CONSTRAINT `FK_user_TO_companionapply` -- 유저 -> 동행신청
+	FOREIGN KEY (
+	`user_no` -- 유저번호
+	)
+	REFERENCES `user` ( -- 유저
+	`user_no` -- 유저번호
+	);

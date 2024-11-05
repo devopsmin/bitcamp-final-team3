@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>모두의 여행</title>
+</head>
+<body>
+<header>
+</header>
+<h1>숙소 선택</h1>
+<form action="/schedule/createSchedule" method="post">
+    <ul>
+        <li data-th-each="hotel : ${hotelList}">
+            <input data-th-name='hotelNos'
+                   data-th-text="${hotel.locationName}"
+                   data-th-value='${hotel.locationNo}'
+                   type='checkbox'></li>
+    </ul>
+
+    <p>---내가추가한 숙소 </p>
+    <ul data-th-unless="${myHotels} == null">
+        <li data-th-each="hotel : ${myHotels}" data-th-object="${location}">
+            <input checked data-th-name='hotelNos'
+                   data-th-text="*{locationName}"
+                   data-th-value='*{locationNo}'
+                   type='checkbox'></li>
+    </ul>
+    <button data-url="/schedule/addHotel" type="button">숙소추가하기</button>
+    <button type="submit">다음</button>
+</form>
+</body>
+</html>

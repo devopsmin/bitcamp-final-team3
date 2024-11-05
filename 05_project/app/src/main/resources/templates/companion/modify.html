@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<h1>동행게시판 - 수정</h1>
+    <form data-th-action = "@{update}" method="post">
+        <input name='boardNo' readonly type='text' data-th-value='*{board.boardNo}' style="display: none"><br>
+        제목: <input name='boardTitle' type='text' data-th-value='*{board.boardTitle}'><br>
+        내용: <textarea name='boardContent' data-th-value="*{board.boardContent}"></textarea><br>
+        작성일: <input readonly style="border:none" type='text' data-th-value='*{board.boardCreatedDate}'><br>
+        작성자: <input readonly style="border:none" type='text' data-th-value='*{board.writer.userNickname}'><br>
+        태그 : <input name="boardTag" type='text' data-th-value='*{board.boardTag}'>
+        조회수 : <input name='boardCount' readonly type='text' data-th-value='*{board.boardCount}' style="display: none"><br>
+        <button type="button" onclick="location.href='list'">목록</button>
+        <button type="submit">변경</button>
+    </form>
+
+</body>
+</html>
