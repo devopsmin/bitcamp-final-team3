@@ -1,28 +1,51 @@
 <!DOCTYPE html>
 <html>
-    <head data-th-replace="~{header :: head}"></head>
-    <body>
-        <header data-th-replace="~{header :: #page-header}"></header>
-        <a data-th-href="@{/companion/form}" href="form.html">글쓰기</a>
-        <form data-th-action ="@{modify}" method="post">
-            <h1 data-th-text="*{board.boardTitle}"></h1>
-            <input readonly name='boardNo'type="text"  data-th-value="*{board.boardNo}" style="border:none; display: none"><br>
-            작성자: <input data-th-value="*{board.writer.userNickname}" name="writer" style="border:none;" readonly><br>
-            작성일: <input data-th-value="*{board.boardCreatedDate}" name="boardCreatedDate" style="border:none;" readonly><br>
-            조회수: <input data-th-value="*{board.boardCount}" name = boardCount style="border:none;" readonly><br>
-            내용: <input data-th-value="*{board.boardContent}" name = boardContent style="border:none;" readonly><br>
-            <button type="submit">수정</button>
-        </form>
-            <button type="button" onclick="location.href='list'">목록</button>
-            <button data-th-onclick="|deleteBoard(${board.boardNo})|">삭제</button>
+<head data-th-replace="~{header :: head}"></head>
+<body>
+<header data-th-replace="~{header :: #page-header}"></header>
+<a data-th-href="@{/companion/form}" href="form.html">글쓰기</a>
+<form data-th-action ="@{modify}" method="post">
+    <h1 data-th-text="*{board.boardTitle}"></h1>
+    <input readonly name='boardNo'type="text"  data-th-value="*{board.boardNo}" style="border:none; display: none"><br>
+    작성자: <input data-th-value="*{board.writer.userNickname}" name="writer" style="border:none;" readonly><br>
+    작성일: <input data-th-value="*{board.boardCreatedDate}" name="boardCreatedDate" style="border:none;" readonly><br>
+    조회수: <input data-th-value="*{board.boardCount}" name = boardCount style="border:none;" readonly><br>
+    내용: <input data-th-value="*{board.boardContent}" name = boardContent style="border:none;" readonly><br>
+    <button type="submit">수정</button>
+</form>
+<button type="button" onclick="location.href='list'">목록</button>
+<button data-th-onclick="|deleteBoard(${board.boardNo})|">삭제</button>
+<br>
+
+<h3>댓글</h3>
+<ul data-th-if="${commentList}">
+    <li data-th-each="comment : ${commentList}">
+        <label> 댓글 번호:
+            <input readonly type="text" data-th-value="${comment.commentNo}" size="3">
+        </label>
+
+        <label>작성자:
+            <input readonly type="text" data-th-value="${comment.writer.userNickname}">
+        </label>
+
+        작성일: <input readonly type="text" data-th-value="${#dates.format(comment.commentCreatedDate, 'yyyy-MM-dd HH:mm')}"><br>
+
+        댓글: <input readonly type="text" data-th-value="${comment.commentContent}" size="50"><br>
+
+        <button type="button"
+                th:if="${session.loginUser ne null and session.loginUser.userNo eq comment.userNo}"
+                th:onclick="|deleteComment(${comment.commentNo}, ${board.boardNo}, 'REVIEW')|">
+            삭제
+        </button>
         <br>
-            <h3>댓글</h3>
-            <br>
-        <script>
-            function deleteBoard(no) {
-                location.href = "delete?boardNo=" + no
-                location.redirect
-            }
-        </script>
-    </body>
+    </li>
+</ul>
+
+<script>
+    function deleteBoard(no) {
+        location.href = "delete?boardNo=" + no
+        location.redirect
+    }
+</script>
+</body>
 </html>

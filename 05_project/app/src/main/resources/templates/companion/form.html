@@ -1,20 +1,231 @@
 <!DOCTYPE html>
 <html>
 <head data-th-replace="~{header :: head}"></head>
-<body>
 
+<body>
 <header data-th-replace="~{header :: #page-header}"></header>
 
-        <h1>동행게시판 - 글쓰기</h1>
-        <form action="add" method="post">
-            <label>제목</label>
-                <input name="boardTitle" type="text"><br><br>
-            <label >내용</label><br>
-                <textarea name="boardContent"></textarea><br><br>
-            <label >태그</label><br>
-                <input name="boardTag" type="text"><br><br>
-            <button type="button" onclick="location.href='list'">목록</button>
-            <input type="submit" value="글등록">
-        </form>
-    </body>
+<h1>동행게시판 - 글쓰기</h1>
+
+<!-- 여행일정 선택 및 선택 여행일정 관련 데이터-->
+<form name="Trip" id="Trip">
+    <label for="tripSelect">여행 일정선택</label>
+    <select id="tripSelect" name="tripNo" onchange="storeTripNo(); loadScheduleList();">
+        <option value="" disabled selected>여행 일정을 선택하세요</option>
+        <option data-th-each="trip : ${tripList}"
+                data-th-value="${trip.tripNo}"
+                data-th-text="${trip.tripTitle}">
+        </option>
+    </select>
+</form>
+
+<!-- 동행모집 데이터 -->
+<form name="Companionrecruit" id="Companionrecruit">
+    <div id="scheduleListContainer" style="display: flex;"></div>
+</form>
+
+<!-- 일반 게시판 데이터 -->
+<form name="Board" id="Board">
+    <label>제목</label>
+    <input name="boardTitle" type="text"><br><br>
+    <label>내용</label><br>
+    <textarea name="boardContent"></textarea><br><br>
+    <label>태그</label><br>
+    <input name="boardTag" type="text"><br><br>
+    <button type="button" onclick="location.href='list'">목록</button>
+    <button type="button" onclick="submitBoardForm()">글등록</button>
+</form>
+
+<script>
+    let storedTripNo = null;
+
+    function storeTripNo() {
+        const tripSelect = document.getElementById("tripSelect");
+        storedTripNo = tripSelect.value;
+    }
+
+    function loadScheduleList() {
+        if (!storedTripNo) {
+            return;
+        }
+
+        fetch('/companion/selectSchedule', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: new URLSearchParams({ tripNo: storedTripNo })
+        })
+            .then(response => response.json())
+            .then(scheduleList => {
+                const container = document.getElementById("scheduleListContainer");
+                container.innerHTML = '';
+
+                const scheduleGroups = {};
+
+                scheduleList.forEach(schedule => {
+                    if (!scheduleGroups[schedule.scheduleDay]) {
+                        scheduleGroups[schedule.scheduleDay] = [];
+                    }
+                    scheduleGroups[schedule.scheduleDay].push(schedule);
+                });
+
+                for (const [day, schedules] of Object.entries(scheduleGroups)) {
+                    const dayContainer = document.createElement('div');
+                    dayContainer.style.marginRight = '20px';
+                    dayContainer.className = `day-container-${day}`;
+
+                    dayContainer.innerHTML = `<label>${day} 일차</label>&nbsp&nbsp&nbsp
+                                              <label>전체 체크</label><input name="checkedAll" id="checkedAll" type="checkbox" onclick="toggleAllSchedules(this, '${day}')" />
+                                              <div class="checkedAllrecruitMaxNoContainer" style="display: none;">
+                                                  <label>동행모집 최대 인원수: </label>
+                                                  <input name="recruitMaxNo" type="number" min="1" max="100" step="1">
+                                              </div>
+                                              `;
+
+                    schedules.forEach(schedule => {
+                        const scheduleDiv = document.createElement('div');
+                        scheduleDiv.innerHTML = `
+                                <form name="Companionrecruitdata${schedule.scheduleNo}" id="Companionrecruitdata${schedule.scheduleNo}">
+                                    <input name="scheduleNo" value="${schedule.scheduleNo}" type="hidden">
+                                    <input name="boardNo" value="${schedule.boardNo}" type="hidden">
+                                    <label> 여행 순서 </label>
+                                        <input name="scheduleRoute" value="${schedule.scheduleRoute}" type="text" style="border: none; outline: none; padding: 0;" readonly><br>
+                                    <label> 여행 장소: </label>
+                                        <input name="locationName" value="${schedule.location.locationName}" type="text" style="border: none; outline: none; padding: 0;" readonly><br>
+                                    <label> 동행모집 선택: </label>
+                                        <input name="checked" type="checkbox" value="0" onchange="toggleRecruitMaxNoInput(this)"/><br>
+                                    <div class="recruitMaxNoContainer" style="display: none;">
+                                        <label>동행모집 최대 인원수: </label>
+                                        <input name="recruitMaxNo" type="number" min="1" max="100" step="1">
+                                    </div>
+                                    <br><br>
+                                </form>
+                            `;
+                        dayContainer.appendChild(scheduleDiv);
+                    });
+
+                    container.appendChild(dayContainer);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    }
+
+    function toggleRecruitMaxNoInput(checkbox) {
+        const recruitMaxNoContainer = checkbox.parentElement.querySelector('.recruitMaxNoContainer');
+        if (checkbox.checked) {
+            recruitMaxNoContainer.style.display = 'block';
+            checkbox.value = 1;
+        } else {
+            recruitMaxNoContainer.style.display = 'none';
+            checkbox.value = 0;
+        }
+    }
+
+    function toggleAllSchedules(allCheckbox, day) {
+        const dayContainer = document.querySelector(`.day-container-${day}`);
+        const checkboxes = dayContainer.querySelectorAll("input[name='checked']");
+
+        checkboxes.forEach(checkbox => {
+            if (allCheckbox.checked) {
+                checkbox.checked = true;
+                checkbox.value = 1;
+                checkbox.style.display = 'none';
+            } else {
+                checkbox.checked = false;
+                checkbox.value = 0;
+                checkbox.style.display = 'inline-block';
+            }
+        });
+
+        const recruitMaxNoContainer = dayContainer.querySelector(".checkedAllrecruitMaxNoContainer");
+        if (allCheckbox.checked) {
+            recruitMaxNoContainer.style.display = 'block';
+        } else {
+            recruitMaxNoContainer.style.display = 'none';
+        }
+    }
+
+    function submitBoardForm() {
+        if (!storedTripNo) {
+            alert('여행 일정을 선택하세요.');
+            return;
+        }
+
+        const boardTitle = document.getElementsByName("boardTitle")[0].value;
+        const boardContent = document.getElementsByName("boardContent")[0].value;
+        const boardTag = document.getElementsByName("boardTag")[0].value;
+
+        const board = {
+            tripNo: storedTripNo,
+            boardTitle: boardTitle,
+            boardContent: boardContent,
+            boardTag: boardTag
+        };
+
+        const companionRecruits = [];
+
+        document.querySelectorAll("form[name^='Companionrecruitdata']").forEach(form => {
+            const checkedInput = form.querySelector("input[name='checked']");
+            if (checkedInput.checked) {
+                const scheduleNo = form.querySelector("input[name='scheduleNo']").value;
+                const recruitMaxNo = form.querySelector("input[name='recruitMaxNo']").value;
+                const checkedAll = false;
+
+                companionRecruits.push({
+                    scheduleNo: scheduleNo,
+                    checked: true,
+                    checkedAll: checkedAll,
+                    recruitMaxNo: recruitMaxNo
+                });
+            }
+        });
+
+        document.querySelectorAll("input[name='checkedAll']:checked").forEach(checkedAllInput => {
+            const day = checkedAllInput.getAttribute('onclick').match(/\'([^']+)\'/)[1];
+            const dayContainer = document.querySelector(`.day-container-${day}`);
+            const recruitMaxNo = dayContainer.querySelector(".checkedAllrecruitMaxNoContainer input[name='recruitMaxNo']").value;
+
+            dayContainer.querySelectorAll("form[name^='Companionrecruitdata']").forEach(form => {
+                const scheduleNo = form.querySelector("input[name='scheduleNo']").value;
+                const checked = false;
+                const checkedAll = true;
+
+                companionRecruits.push({
+                    scheduleNo: scheduleNo,
+                    checked: checked,
+                    checkedAll: checkedAll,
+                    recruitMaxNo: recruitMaxNo
+                });
+            });
+        });
+
+        const payload = {
+            board: board,
+            companionRecruits: companionRecruits
+        };
+
+        fetch('add', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(payload)
+        })
+            .then(response => {
+                if (response.ok) {
+                    location.href = 'list';
+                } else {
+                    alert('글 등록에 실패했습니다.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('오류가 발생했습니다.');
+            });
+    }
+</script>
+</body>
 </html>

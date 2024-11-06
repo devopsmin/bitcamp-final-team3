@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="project.tripMaker.dao.CompanionApplyDao">
+
+    <resultMap id="CompanionApplyResultMap" type="project.tripMaker.vo.Companionapply">
+        <result property="companionapplyNo" column="companion_apply_no" />
+        <result property="companionrecruitNo" column="companion_recruit_no" />
+        <result property="userNo" column="user_no" />
+    </resultMap>
+
+    <!-- Select -->
+    <select id="selectCompanionApply" resultMap="CompanionApplyResultMap">
+        SELECT * FROM companionapply WHERE companion_apply_no = #{companionapplyNo}
+    </select>
+
+    <!-- Insert -->
+    <insert id="insertCompanionApply">
+        INSERT INTO companionapply (companion_recruit_no, user_no)
+        VALUES (#{companionrecruitNo}, #{userNo})
+    </insert>
+
+    <!-- Update -->
+    <update id="updateCompanionApply">
+        UPDATE companionapply
+        SET companion_recruit_no = #{companionrecruitNo}, user_no = #{userNo}
+        WHERE companion_apply_no = #{companionapplyNo}
+    </update>
+
+    <!-- Delete -->
+    <delete id="deleteCompanionApply">
+        DELETE FROM companionapply WHERE companion_apply_no = #{companionapplyNo}
+    </delete>
+
+</mapper>

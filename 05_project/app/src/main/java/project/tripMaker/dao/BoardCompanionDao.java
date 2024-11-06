@@ -2,10 +2,10 @@ package project.tripMaker.dao;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import project.tripMaker.vo.Board;
 
 import java.util.List;
 import java.util.Map;
-import project.tripMaker.vo.Board;
 
 @Mapper
 public interface BoardCompanionDao extends BoardDao{
@@ -34,4 +34,6 @@ public interface BoardCompanionDao extends BoardDao{
   boolean delete(@Param("boardNo")int boardNo) throws Exception;
 
   boolean update(Board board) throws Exception;
+
+  Board selectIdNoByTripNo(int tripNo, int userNo) throws Exception;
 }

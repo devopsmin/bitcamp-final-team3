@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="project.tripMaker.dao.CompanionRecruitDao">
+
+    <resultMap id="CompanionRecruitResultMap" type="project.tripMaker.vo.Companionrecruit">
+        <result property="companionrecruitNo" column="companion_recruit_no" />
+        <result property="boardNo" column="board_no" />
+        <result property="scheduleNo" column="schedule_no" />
+        <result property="checked" column="checked" />
+        <result property="checkedAll" column="checked_all" />
+        <result property="recruitMaxNo" column="recruit_max_no" />
+    </resultMap>
+
+    <!-- Select -->
+    <select id="selectCompanionRecruit" resultMap="CompanionRecruitResultMap">
+        SELECT * FROM companionrecruit WHERE companion_recruit_no = #{companionrecruitNo}
+    </select>
+
+    <!-- Insert -->
+    <insert id="insertCompanionRecruit">
+        INSERT INTO companionrecruit (board_no, schedule_no, checked, checked_all, recruit_max_no)
+        VALUES (#{boardNo}, #{scheduleNo}, #{checked}, #{checkedAll}, #{recruitMaxNo})
+    </insert>
+
+    <!-- Update -->
+    <update id="updateCompanionRecruit">
+        UPDATE companionrecruit
+        SET board_no = #{boardNo}, schedule_no = #{scheduleNo}, checked = #{checked},
+            checked_all = #{checkedAll}, recruit_max_no = #{recruitMaxNo}
+        WHERE companion_recruit_no = #{companionrecruitNo}
+    </update>
+
+    <!-- Delete -->
+    <delete id="deleteCompanionRecruit">
+        DELETE FROM companionrecruit WHERE companion_recruit_no = #{companionrecruitNo}
+    </delete>
+
+</mapper>
