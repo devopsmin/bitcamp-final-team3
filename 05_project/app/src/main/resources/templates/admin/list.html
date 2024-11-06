@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head data-th-replace="~{header :: head}"></head>
+<body>
+
+<header data-th-replace="~{header :: #page-header}"></header>
+
+<h1>회원 목록</h1>
+<p><a data-th-href="@{/auth/register/admin}">새 관리자</a></p>
+<table>
+  <thead>
+  <tr>
+    <th>번호</th>
+    <th>프로필 이미지</th>
+    <th>이메일</th>
+    <th>닉네임</th>
+    <th>전화번호</th>
+    <th>권한</th>
+    <th>블록 여부</th>
+    <th>SNS 구분</th>
+    <th>관리</th>  <!-- 관리 열 추가 -->
+  </tr>
+  </thead>
+  <tbody>
+
+  <tr data-th-each="user : ${list}">
+    <td data-th-text="${user.userNo}"></td>
+    <td>
+      <img data-th-src="@{https://dgg7dnk35523.edge.naverncp.com/HZiW9aEJy7/user/default.png(type=f,w=20,h=20)}"
+           data-th-unless="${user.userPhoto}"
+           src="/images/default.png">
+      <img data-th-if="${user.userPhoto}"
+           data-th-src="@{https://dgg7dnk35523.edge.naverncp.com/HZiW9aEJy7/user/} + ${user.userPhoto} + '?type=f&w=20&h=20'"
+           src="/images/default.png">
+    </td>
+    <td>
+      <a data-th-href="@{/user/profile/{userNo}(userNo=${user.userNo})}" data-th-text="${user.userEmail}"></a>
+    </td>
+    <td data-th-text="${user.userNickname}"></td>
+    <td data-th-text="${user.userTel}"></td>
+    <td data-th-text="${user.userRole}"></td>
+    <td data-th-text="${user.userBlock == 0 ? '미차단' : '차단'}"></td>
+    <td data-th-text="${user.snsName}"></td>
+    <td>
+      <button data-th-onclick="'deleteUser(' + ${user.userNo} + ')'" type="button">삭제</button>
+    </td>
+  </tr>
+
+  </tbody>
+</table>
+
+<script>
+  function deleteUser(no) {
+      if (confirm("정말 삭제하시겠습니까?")) {
+          const xhr = new XMLHttpRequest();
+          xhr.open("DELETE", "/admin/" + no, true);
+          xhr.onload = function() {
+              if (xhr.status === 200) {
+                  location.href = "/admin";
+              } else {
+                  alert("삭제 실패입니다!");
+              }
+          };
+          xhr.send();
+      }
+  }
+</script>
+
+</body>
+</html>

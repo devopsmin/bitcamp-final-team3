@@ -12,7 +12,9 @@
 
 #registerModalContent .form-control,
 #termsModal .form-control {
- border: 1px solid #dee2e6;
+    border: 1px solid #dee2e6;
+    font-size: 0.875rem; /* 글자 크기 조정 */
+    padding: 0.5rem 0.75rem; /* 입력 칸 높이 조정 */
 }
 
 #registerModalContent .form-control:focus,

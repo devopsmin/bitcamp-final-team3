@@ -47,7 +47,7 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
       if ("소셜로그인".equals(user.getUserTel())) {
         HttpSession session = request.getSession();
         session.setAttribute("tempLoginUser", user);
-        response.sendRedirect("/auth/phone-verification?email=" + user.getUserEmail());
+        response.sendRedirect("/verify/phone?email=" + user.getUserEmail());
         return;
       }
 

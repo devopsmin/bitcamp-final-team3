@@ -53,6 +53,8 @@ dependencies {
     // Tomcat Embedded Server용 JSP 엔진 라이브러리
     implementation 'org.apache.tomcat.embed:tomcat-embed-jasper:9.0.83'
 
+    implementation 'net.nurigo:sdk:4.3.0'
+
     // JSTL API 및 구현체 라이브러리
     implementation 'javax.servlet:jstl:1.2'
 

@@ -24,8 +24,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
   @Override
   protected void configure(HttpSecurity http) throws Exception {
     http.authorizeRequests()
-        .antMatchers("/", "/auth/**", "/oauth2/**", "/css/**", "/js/**", "/images/**", "/schedule/**", "/user/**", "/home", "/board/**", "/comment/**", "/app/**", "/question/**", "/review/**", "/companion/**").permitAll()
-        .antMatchers("/admin/**").hasRole("ADMIN")
+        .antMatchers("/admin/**", "/", "/auth/**", "/oauth2/**", "/verify/**", "/css/**", "/js/**", "/images/**", "/schedule/**", "/user/**", "/home", "/board/**", "/comment/**", "/app/**", "/question/**", "/review/**", "/companion/**").permitAll()
+//        .antMatchers("/admin/**").hasRole("ADMIN")
         // .antMatchers("/user/**").hasRole("USER")  // 추후 USER 마이페이지 USER권한만 접근 가능하게 하기 위해서 만들어 놓음
         .anyRequest().authenticated();
 

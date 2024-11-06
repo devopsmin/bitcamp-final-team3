@@ -20,7 +20,7 @@
         <input name="saveEmail" type="checkbox" class="form-check-input" id="saveEmail">
         <label class="form-check-label" for="saveEmail">이메일 저장</label>
       </div>
-      <a href="/auth/findIdForm" class="text-decoration-none">아이디/비밀번호 찾기</a>
+      <a href="/auth/find/id" class="text-decoration-none">아이디/비밀번호 찾기</a>
     </div>
 
     <button type="submit" class="btn btn-primary w-100 py-2 mb-3">로그인</button>
@@ -33,8 +33,11 @@
   </div>
 
   <div class="d-grid gap-2">
-    <button type="button" class="btn btn-lg btn-google w-100" onclick="location.href='/oauth2/authorization/google'">Google로 로그인</button>
-    <button type="button" class="btn btn-lg btn-naver w-100" onclick="location.href='/oauth2/authorization/naver'">Naver로 로그인</button>
-    <button type="button" class="btn btn-lg btn-kakao w-100" onclick="location.href='/oauth2/authorization/kakao'">Kakao로 로그인</button>
+    <button type="button" class="btn btn-lg btn-google w-100" onclick="openSocialLoginPopup('/oauth2/authorization/google')">Google로 로그인</button>
+    <button type="button" class="btn btn-lg btn-naver w-100" onclick="openSocialLoginPopup('/oauth2/authorization/naver')">Naver로 로그인</button>
+    <button type="button" class="btn btn-lg btn-kakao w-100" onclick="openSocialLoginPopup('/oauth2/authorization/kakao')">Kakao로 로그인</button>
   </div>
 </div>
+
+<script th:src="@{/js/auth.js}"></script>
+</html>
