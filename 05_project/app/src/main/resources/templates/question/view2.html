@@ -1,81 +1,109 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title>일정 질문 게시판</title>
+<html>
+<head data-th-replace="~{header :: head}">
 </head>
+<header data-th-replace="~{header :: #page-header}"></header>
+
 <body>
 <h1>일정 질문 게시판</h1>
 
-<div th:unless="${board}">
+<div data-th-unless="${board}">
     <p>없는 게시글입니다.</p>
 </div>
 
-<div th:if="${board}">
-    <form th:action="@{update}" method="post" enctype="multipart/form-data">
-        <input type="hidden" name="boardNo" th:value="${board.boardNo}">
-        제목: <input name="boardTitle" type="text" th:value="${board.boardTitle}"><br/>
-        내용: <br>
-        <textarea name="boardContent" rows="10" cols="100" th:text="${board.boardContent}"></textarea><br>
-        태그: <input name="boardTag" th:value="${board.boardTag}"><br/>
+<div data-th-if="${board}">
+    <form data-th-action="@{update}" method="post" enctype="multipart/form-data" onsubmit="return confirmUpdate();">
+        <input type="hidden" name="boardNo" data-th-value="${board.boardNo}">
+        제목: <input name="boardTitle" type="text" data-th-value="${board.boardTitle}"><br/>
 
-        <button>완료</button>
-        <button type="button" th:onclick="|location.href='@{view(boardNo=${board.boardNo})}'|">취소</button>
+        <label for="tripSelect">여행 선택:</label>
+        <select id="tripSelect" onchange="loadScheduleList(this.value)">
+            <option value="">여행을 선택하세요</option>
+            <option data-th-each="trip : ${trips}" data-th-value="${trip.tripNo}"
+                    data-th-text="${trip.tripTitle}"></option>
+        </select>
+
+        <table border="1">
+            <thead>
+            <tr>
+                <th>여행번호</th>
+                <th>여행제목</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr data-th-each="trip : ${trips}" data-th-object="${trip}">
+                <td><span data-th-text="*{tripNo}">번호</span></td>
+                <td><span data-th-text="*{tripTitle}">제목</span></td>
+            </tr>
+            </tbody>
+        </table>
+
+        <!-- Schedule 리스트 -->
+        <div id="scheduleContainer" style="display: none;">
+            <h2>일정 리스트</h2>
+            <table border="1">
+                <thead>
+                <tr>
+                    <th>일정번호</th>
+                    <th>장소</th>
+                    <th>일차</th>
+                    <th>순서</th>
+                </tr>
+                </thead>
+                <tbody id="scheduleTableBody">
+                </tbody>
+            </table>
+        </div>
+
+        <script>
+            function loadScheduleList(tripNo) {
+
+              document.getElementById('tripNo').value = tripNo;
+
+              if (tripNo) {
+                fetch(`/review/getScheduleList?tripNo=${tripNo}`)
+                .then(response => response.json())
+                .then(data => {
+                  const scheduleContainer = document.getElementById('scheduleContainer');
+                  const scheduleTableBody = document.getElementById('scheduleTableBody');
+                  scheduleTableBody.innerHTML = ''; // 기존 데이터를 초기화합니다.
+
+                  if (data.length > 0) {
+                    data.forEach(schedule => {
+                      const row = document.createElement('tr');
+                      row.innerHTML = `
+                          <td>${schedule.scheduleNo}</td>
+                          <td>${schedule.location ? schedule.location.locationName : 'N/A'}</td>
+                          <td>${schedule.scheduleDay}</td>
+                          <td>${schedule.scheduleRoute}</td>
+                        `;
+                      scheduleTableBody.appendChild(row);
+                    });
+                    scheduleContainer.style.display = 'block';
+                  } else {
+                    scheduleTableBody.innerHTML = '<tr><td colspan="4">일정 데이터가 없습니다.</td></tr>';
+                  }
+                })
+                .catch(error => console.error('Error fetching schedule:', error));
+              } else {
+                document.getElementById('scheduleContainer').style.display = 'none';
+              }
+            }
+        </script>
+
+        내용: <br>
+        <textarea name="boardContent" rows="10" cols="100" data-th-text="${board.boardContent}"></textarea><br>
+        태그: <input name="boardTag" data-th-value="${board.boardTag}"><br/>
+
+        <button>저장</button>
+        <button type="button" data-th-onclick="|location.href='@{view(boardNo=${board.boardNo})}'|">취소</button>
     </form>
 </div>
 
-<!--<h3>댓글 작성</h3>-->
-<!--<form th:action="@{/comment/add}" method="post">-->
-<!--    <textarea name="commentContent" rows="4" cols="100" placeholder="댓글을 입력하세요"></textarea>-->
-<!--    <input type="hidden" name="boardNo" th:value="${board.boardNo}"> <br>-->
-<!--    <button type="submit">댓글 등록</button>-->
-<!--</form>-->
-
-<!--<br> 댓글 : <br>-->
-<!--<div th:if="${#lists.isEmpty(commentList)}">-->
-<!--    <p>댓글이 없습니다.</p>-->
-<!--</div>-->
-
-<!--<div th:if="${#lists.isNotEmpty(commentList)}">-->
-<!--    <ul>-->
-<!--        <li th:each="comment : ${commentList}">-->
-<!--            작성일 <input readonly type="text" th:value="${comment.commentCreatedDate}" size="25"> <br>-->
-<!--            댓글 <br>-->
-<!--            <textarea name="commentContent" readonly rows="3" cols="70" th:text="${comment.commentContent}"></textarea><br>-->
-<!--            <button type="button" th:onclick="|updateComment(${comment.commentNo}, '${comment.commentContent}')|">변경</button>-->
-<!--            <button type="button" th:onclick="|deleteComment(${comment.commentNo})|">삭제</button>-->
-<!--        </li>-->
-<!--    </ul>-->
-<!--</div>-->
-
-<!--<script>-->
-<!--    function deleteComment(commentNo) {-->
-<!--        if (confirm('댓글을 삭제하시겠습니까?')) {-->
-<!--            location.href = '../comment/delete?commentNo=' + commentNo + '&boardNo=' + /*[[${board.boardNo}]]*/ '';-->
-<!--        }-->
-<!--    }-->
-
-<!--    function updateComment(commentNo, commentContent) {-->
-<!--        const popup = window.open('', 'commentUpdate', 'width=500,height=300,scrollbars=yes');-->
-
-<!--        popup.document.write(`-->
-<!--            <html>-->
-<!--                <head>-->
-<!--                    <title>댓글 수정</title>-->
-<!--                </head>-->
-<!--                <body>-->
-<!--                    <h3>댓글 수정</h3>-->
-<!--                    <form action='../comment/update' method='post'>-->
-<!--                        <input type="hidden" name="commentNo" value="` + commentNo + `">-->
-<!--                        <input type="hidden" name="boardNo" value="` + /*[[${board.boardNo}]]*/ '' + `">-->
-<!--                        <textarea name="commentContent" rows="10" cols="100">` + commentContent + `</textarea><br>-->
-<!--                        <button type='submit'>저장</button>-->
-<!--                        <button type='button' onclick='window.close()'>취소</button>-->
-<!--                    </form>-->
-<!--                </body>-->
-<!--            </html>-->
-<!--        `);-->
-<!--    }-->
+<script>
+    function confirmUpdate() {
+        return confirm("게시글을 수정하시겠습니까?");
+    }
 </script>
 
 </body>

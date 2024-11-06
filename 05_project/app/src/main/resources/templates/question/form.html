@@ -1,18 +1,101 @@
 <!DOCTYPE html>
 <html>
 <head data-th-replace="~{header :: head}"></head>
-<body>
-
 <header data-th-replace="~{header :: #page-header}"></header>
 
 <body>
 <h1>일정 질문 작성하기</h1>
 
+<!--&lt;!&ndash; 데이터 확인용 &ndash;&gt;-->
+<!--<span data-th-if="${trips}"-->
+<!--      data-th-data="${trips.size()}">-->
+<!--  <p><h2>디버깅용 : Trip 데이터가 존재합니다.</h2></p>-->
+<!--</span>-->
+<!--<span data-th-unless="${trips}">-->
+<!--  <p><h2>디버깅용 : Trip  데이터가 없습니다.</h2></p>-->
+<!--</span>-->
+
+<!-- 여행 선택 -->
+<label for="tripSelect">여행 선택:</label>
+<select id="tripSelect" onchange="loadScheduleList(this.value)">
+    <option value="">여행을 선택하세요</option>
+    <option data-th-each="trip : ${trips}" data-th-value="${trip.tripNo}"
+            data-th-text="${trip.tripTitle}"></option>
+</select>
+
+<table border="1">
+    <thead>
+    <tr>
+        <th>여행번호</th>
+        <th>여행제목</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr data-th-each="trip : ${trips}" data-th-object="${trip}">
+        <td><span data-th-text="*{tripNo}">번호</span></td>
+        <td><span data-th-text="*{tripTitle}">제목</span></td>
+    </tr>
+    </tbody>
+</table>
+
+<!-- Schedule 리스트 -->
+<div id="scheduleContainer" style="display: none;">
+    <h2>일정 리스트</h2>
+    <table border="1">
+        <thead>
+        <tr>
+            <th>일정번호</th>
+            <th>장소</th>
+            <th>일차</th>
+            <th>순서</th>
+        </tr>
+        </thead>
+        <tbody id="scheduleTableBody">
+        </tbody>
+    </table>
+</div>
+
+<script>
+    function loadScheduleList(tripNo) {
+
+      document.getElementById('tripNo').value = tripNo;
+
+      if (tripNo) {
+        fetch(`/review/getScheduleList?tripNo=${tripNo}`)
+        .then(response => response.json())
+        .then(data => {
+          const scheduleContainer = document.getElementById('scheduleContainer');
+          const scheduleTableBody = document.getElementById('scheduleTableBody');
+          scheduleTableBody.innerHTML = ''; // 기존 데이터를 초기화합니다.
+
+          if (data.length > 0) {
+            data.forEach(schedule => {
+              const row = document.createElement('tr');
+              row.innerHTML = `
+                  <td>${schedule.scheduleNo}</td>
+                  <td>${schedule.location ? schedule.location.locationName : 'N/A'}</td>
+                  <td>${schedule.scheduleDay}</td>
+                  <td>${schedule.scheduleRoute}</td>
+                `;
+              scheduleTableBody.appendChild(row);
+            });
+            scheduleContainer.style.display = 'block';
+          } else {
+            scheduleTableBody.innerHTML = '<tr><td colspan="4">일정 데이터가 없습니다.</td></tr>';
+          }
+        })
+        .catch(error => console.error('Error fetching schedule:', error));
+      } else {
+        document.getElementById('scheduleContainer').style.display = 'none';
+      }
+    }
+</script>
+
 <form action="add" method="post">
 
-    제목: <input name="boardTitle" type="text"><br>
-    내용: <textarea name="boardContent" rows="10" cols="100" placeholder="내용을 입력하세요"></textarea><br>
-    태그: <input name="boardTag" type="text"><br>
+    제목: <input name="boardTitle" type="text" placeholder="제목을 입력해 주세요."><br>
+    내용: <textarea name="boardContent" rows="10" cols="100" placeholder="내용을 입력해 주세요."></textarea><br>
+    태그: <input name="boardTag" type="text" placeholder="#태그를 입력해 주세요."><br>
 
     <input type="submit" value="등록">
     <button type="button" data-th-onclick="|location.href='@{list}'|">취소</button>

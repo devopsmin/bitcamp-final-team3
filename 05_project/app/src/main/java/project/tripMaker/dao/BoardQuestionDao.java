@@ -1,10 +1,12 @@
 package project.tripMaker.dao;
 
-import java.util.List;
-import java.util.Map;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import project.tripMaker.vo.Board;
+import project.tripMaker.vo.Trip;
+
+import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface BoardQuestionDao extends BoardDao{
@@ -20,6 +22,8 @@ public interface BoardQuestionDao extends BoardDao{
 
   // 조회수 순으로 정렬된 목록 조회
   List<Board> listView(Map<String, Object> options) throws Exception;
+
+  List<Board> searchBoards(Map<String, Object> params) throws Exception;
 
   // 게시물 등록
   boolean insert(Board board) throws Exception;
@@ -37,5 +41,20 @@ public interface BoardQuestionDao extends BoardDao{
   void updateBoardCount(@Param("boardNo") int boardNo, @Param("boardCount") int boardCount) throws Exception;
 
   // 전체 게시물 수 조회
-  int countAll() throws Exception;
+  List<Board> listBoard(@Param("boardtypeNo") int boardtypeNo) throws Exception;
+
+  Integer getLikeCount(int boardNo); // 좋아요 수 조회
+  boolean isLiked(Map<String, Object> params); // 좋아요 여부 확인
+  void addLike(Map<String, Object> params); // 좋아요 추가
+  void removeLike(Map<String, Object> params); // 좋아요 삭제
+
+  Integer getFavorCount(int boardNo); // 좋아요 수 조회
+  boolean isFavored(Map<String, Object> params); // 좋아요 여부 확인
+  void addFavor(Map<String, Object> params); // 좋아요 추가
+  void removeFavor(Map<String, Object> params); // 좋아요 삭제
+
+  List<Trip> findTripsByBoardNo(int boardNo);
+
+  int searchBoardCount(@Param("search") String search) throws Exception;
+
 }

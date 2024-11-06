@@ -1,6 +1,8 @@
 package project.tripMaker.dao;
 
 import java.util.List;
+import java.util.Map;
+
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import project.tripMaker.vo.Comment;
@@ -18,5 +20,17 @@ public interface CommentDao {
   boolean update(Comment comment) throws Exception;
 
   boolean delete(@Param("commentNo")int commentNo) throws Exception;
+
+
+
+
+  List<Comment> listByPage(@Param("boardNo") int boardNo, @Param("offset") int offset, @Param("limit") int limit) throws Exception;
+
+  List<Comment> findCommentsByLikes(@Param("boardNo") int boardNo, @Param("offset") int offset, @Param("limit") int limit) throws Exception;
+
+  Integer getCommentLikeCount(int commentNo); // 좋아요 수 조회
+  boolean isCommentLiked(Map<String, Object> params); // 좋아요 여부 확인
+  void addCommentLike(Map<String, Object> params); // 좋아요 추가
+  void removeCommentLike(Map<String, Object> params); // 좋아요 삭제
 
 }

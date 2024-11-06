@@ -11,6 +11,7 @@
         <result property="userNo" column="user_no" javaType="java.lang.Long"/>
         <result property="commentContent" column="comment_content"/>
         <result property="commentCreatedDate" column="comment_created_date"/>
+        <result property="commentLike" column="comment_like_count"/>
 
         <association property="writer" javaType="project.tripMaker.vo.User">
             <id property="userNo" column="user_no" javaType="java.lang.Long"/>
@@ -86,5 +87,81 @@
     <select id="countByBoardNo" resultType="int">
         SELECT COUNT(*) FROM comment WHERE board_no = #{boardNo}
     </select>
+
+
+
+
+
+    <select id="listByPage" resultMap="CommentMap" parameterType="int">
+        SELECT
+        c.comment_no,
+        c.board_no,
+        c.user_no,
+        c.comment_content,
+        c.comment_created_date,
+        u.user_no AS user_no,
+        u.user_nickname,
+        u.user_photo
+        FROM
+        comment c
+        JOIN
+        user u ON c.user_no = u.user_no
+        WHERE
+        c.board_no = #{boardNo}
+        ORDER BY
+        c.comment_no ASC
+        LIMIT #{offset}, #{limit}
+    </select>
+
+    <select id="getCommentLikeCount" resultType="int" parameterType="int">
+        SELECT COALESCE(comment_like_count, 0)
+        FROM commentlike_count_view
+        WHERE comment_no = #{commentNo}
+    </select>
+
+    <!-- 사용자가 해당 게시글에 좋아요를 눌렀는지 확인 -->
+    <select id="isCommentLiked" parameterType="map" resultType="boolean">
+        SELECT COUNT(*) > 0
+        FROM commentlike
+        WHERE comment_no = #{commentNo} AND user_no = #{userNo}
+    </select>
+
+    <!-- 좋아요 추가 -->
+    <insert id="addCommentLike" parameterType="map">
+        INSERT INTO commentlike (comment_no, user_no) VALUES (#{commentNo}, #{userNo})
+    </insert>
+
+    <!-- 좋아요 삭제 -->
+    <delete id="removeCommentLike" parameterType="map">
+        DELETE FROM commentlike WHERE comment_no = #{commentNo} AND user_no = #{userNo}
+    </delete>
+
+    <!-- 좋아요 순으로 댓글 조회 -->
+    <select id="findCommentsByLikes" resultMap="CommentMap">
+        SELECT
+        c.comment_no,
+        c.board_no,
+        c.user_no,
+        c.comment_content,
+        c.comment_created_date,
+        u.user_no AS user_no,
+        u.user_nickname,
+        u.user_photo,
+        COALESCE(cl.like_count, 0) AS comment_like_count
+        FROM
+        comment c
+        JOIN
+        user u ON c.user_no = u.user_no
+        LEFT JOIN
+        (SELECT comment_no, COUNT(*) AS like_count FROM commentlike GROUP BY comment_no) cl
+        ON
+        c.comment_no = cl.comment_no
+        WHERE
+        c.board_no = #{boardNo}
+        ORDER BY
+        cl.like_count DESC
+        LIMIT #{limit} OFFSET #{offset}
+    </select>
+
 
 </mapper>

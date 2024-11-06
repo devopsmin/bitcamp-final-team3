@@ -14,4 +14,5 @@ public interface BoardService {
     public void delete(int boardNo) throws Exception;
 
     public boolean update(Board board) throws Exception;
+
 }

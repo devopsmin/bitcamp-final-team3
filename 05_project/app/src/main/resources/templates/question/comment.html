@@ -1,0 +1,190 @@
+
+
+<h3>댓글 작성</h3>
+<form data-th-action="@{/comment/add}" method="post">
+    <textarea name="commentContent" rows="4" cols="100" placeholder="댓글을 입력하세요"></textarea>
+    <input type="hidden" name="boardType" value="1">
+    <input type="hidden" name="boardNo" data-th-value="${board.boardNo}"> <br>
+    <button type="submit">댓글 등록</button>
+</form>
+
+<br> 댓글 목록 <br>
+
+<select id="commentSort" onchange="changeCommentSort()">
+    <option value="registered" data-th-selected="${sort == 'registered'}">등록순</option>
+    <option value="likes" data-th-selected="${sort == 'likes'}">좋아요순</option>
+</select>
+
+<p data-th-unless="${commentList}">댓글이 없습니다.</p>
+
+<ul data-th-if="${commentList != null and commentList.size() > 0}">
+    <li data-th-each="comment : ${commentList}">
+
+        유저 포토: <img data-th-src="@{/images/default.png}"
+                    data-th-unless="${board.writer.userPhoto}"
+                    src="/images/default.png"
+                    style="width: 40px; height: 35px;"> <br>
+        유저 닉네임: <td data-th-text="${board.writer.userNickname}">닉네임</td><br>
+        내용: <br>
+        <textarea name="commentContent" readonly rows="5" cols="50" data-th-text="${comment.commentContent}"></textarea><br>
+        작성일: <input readonly data-th-value="${#calendars.format(comment.commentCreatedDate,'yyyy년 MM월 dd일 HH:mm') }" size="20"> <br>
+
+        <!--        <div>-->
+        <!--            <button type="button" data-th-onclick="|toggleCommentLike(${comment.commentNo})|"-->
+        <!--                    data-th-text="${comment.isCommentLiked ? '좋아요 취소' : '좋아요'}">-->
+        <!--            </button>-->
+        <!--            <span data-th-text="${comment.commentLikeCount}">0</span>-->
+        <!--        </div>-->
+
+        <!-- 좋아요 버튼 -->
+        <div>
+            <button type="button"
+                    data-th-id="'commentLikeButton-' + ${comment.commentNo}"
+                    data-th-onclick="|toggleCommentLike(${comment.commentNo})|"
+                    data-th-text="${commentLikedMap[comment.commentNo] != null && commentLikedMap[comment.commentNo] ? '❤️ 좋아요 취소' : '🤍 좋아요'}">
+            </button>
+            <input type="text"
+                   readonly
+                   data-th-id="'commentLikeCount-' + ${comment.commentNo}"
+                   data-th-value="${comment.commentLike}">
+        </div>
+
+        <div data-th-if="${isLoggedIn and comment.userNo == loginUserNo}">
+            <button type="button" onclick="enableEdit(this)">수정</button>
+            <button type="button" data-th-onclick="|updateComment(${comment.commentNo}, ${board.boardNo}, this)|"
+                    style="display: none;">저장
+            </button>
+            <button type="button" onclick="cancelEdit(this)" style="display: none;">취소</button>
+            <button type="button" data-th-onclick="|deleteComment(${comment.commentNo}, ${board.boardNo})|">삭제</button>
+        </div>
+    </li>
+</ul>
+
+<div>
+
+    <span data-th-if="${currentPage > 1}">
+        <a data-th-href="@{|?boardNo=${board.boardNo}&page=${currentPage - 1}|}">
+            [이전]
+        </a>
+    </span>
+    <span data-th-unless="${currentPage > 1}">[이전]</span>
+
+
+    <span data-th-each="i : ${#numbers.sequence(1, totalPages)}">
+        <a data-th-href="@{|?boardNo=${board.boardNo}&page=${i}|}"
+           data-th-classappend="${i == currentPage} ? 'active' : ''"
+           data-th-text="${i}">
+
+           1
+        </a>
+    </span>
+
+
+    <span data-th-if="${currentPage < totalPages}">
+        <a data-th-href="@{|?boardNo=${board.boardNo}&page=${currentPage + 1}|}">
+            [다음]
+        </a>
+    </span>
+    <span data-th-unless="${currentPage < totalPages}">[다음]</span>
+</div>
+
+<script>
+    function enableEdit(button) {
+
+        const listItem = button.closest('li');
+        const textarea = listItem.querySelector('textarea');
+
+        // 현재 내용을 저장해둠
+        textarea.setAttribute('data-original-content', textarea.value);
+
+        // 텍스트 영역 수정 가능하게 설정
+        textarea.removeAttribute('readonly');
+        button.style.display = 'none'; // 수정 버튼 숨기기
+        // 저장 및 취소 버튼을 찾고 표시
+        listItem.querySelector('button[onclick^="updateComment"]').style.display = 'inline'; // 저장 버튼 표시
+        listItem.querySelector('button[onclick^="cancelEdit"]').style.display = 'inline'; // 취소 버튼 표시
+        listItem.querySelector('button[onclick^="deleteComment"]').style.display = 'none'; // 삭제 버튼 숨기기
+    }
+
+    function updateComment(commentNo, boardNo, button) {
+        const listItem = button.closest('li');
+        const textarea = listItem.querySelector('textarea');
+        const commentContent = textarea.value;
+
+        if (confirm('댓글을 수정하시겠습니까?')) {
+            fetch(`../comment/update`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: `commentNo=${commentNo}&commentContent=${encodeURIComponent(commentContent)}&boardType=1&boardNo=${boardNo}`
+            }).then(response => {
+                if (response.ok) {
+                    alert('댓글이 수정되었습니다.');
+                    location.reload(); // 페이지 새로고침
+                } else {
+                    alert('댓글 수정에 실패했습니다.');
+                }
+            });
+        }
+    }
+
+    function cancelEdit(button) {
+        const listItem = button.closest('li');
+        const textarea = listItem.querySelector('textarea');
+
+        // 저장해둔 원래 내용을 되돌리기
+        textarea.value = textarea.getAttribute('data-original-content');
+        textarea.setAttribute('readonly', true);
+
+        // 버튼 표시 상태 원래대로 복구
+        listItem.querySelector('button[onclick="enableEdit(this)"]').style.display = 'inline'; // 수정 버튼 다시 표시
+        listItem.querySelector('button[onclick^="updateComment"]').style.display = 'none'; // 저장 버튼 숨기기
+        listItem.querySelector('button[onclick^="cancelEdit"]').style.display = 'none'; // 취소 버튼 숨기기
+        listItem.querySelector('button[onclick^="deleteComment"]').style.display = 'inline'; // 삭제 버튼 다시 표시하기
+    }
+
+    function deleteComment(commentNo, no) {
+        if (confirm('댓글을 삭제하시겠습니까?')) {
+            location.href = '../comment/delete?commentNo=' + commentNo + '&boardNo=' + no +'&boardType=1';
+        }
+    }
+</script>
+<script>
+
+    function toggleCommentLike(commentNo) {
+<!--    console.log(`Toggling like for commentNo: ${commentNo}`);--> 콘솔 로그
+    fetch(`/comment/toggleCommentLike?commentNo=${commentNo}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+    })
+    .then(response => response.json())
+    .then(data => {
+<!--        console.log(`Response data for commentNo ${commentNo}:`, data);--> 콘솔 로그
+
+        const likeCountElem = document.getElementById(`commentLikeCount-${commentNo}`);
+        const likeButtonElem = document.getElementById(`commentLikeButton-${commentNo}`);
+
+        if (likeCountElem && likeButtonElem) {
+            likeCountElem.value = data.commentLikeCount;
+            likeButtonElem.textContent = data.isCommentLiked ? '❤️ 좋아요 취소' : '🤍 좋아요';
+            alert(data.message);
+        } else {
+            console.error(`Elements for commentNo ${commentNo} not found.`, {
+                likeCountElem,
+                likeButtonElem
+            });
+        }
+    })
+    .catch(error => console.error('Error:', error));
+}
+
+</script>
+
+<script>
+    function changeCommentSort() {
+        const sort = document.getElementById('commentSort').value;
+        const urlParams = new URLSearchParams(window.location.search);
+        urlParams.set('sort', sort);
+        urlParams.set('page', '1');  // 페이지를 1로 초기화
+        window.location.search = urlParams.toString();
+    }
+</script>

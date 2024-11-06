@@ -12,5 +12,6 @@ public class Comment {
     private Date commentCreatedDate;
     private User writer; // 작성자
 
+    private int commentLike;  // 댓글 좋아요
 }
 

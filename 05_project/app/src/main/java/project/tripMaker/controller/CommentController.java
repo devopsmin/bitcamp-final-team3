@@ -67,7 +67,7 @@ public class CommentController {
   @GetMapping("delete")
   public String delete(
       @RequestParam int commentNo,
-      @RequestParam("boardType") int boardTypeCode,
+      @RequestParam("boardType") Integer boardTypeCode,
       HttpSession session) throws Exception {
 
     User loginUser = (User) session.getAttribute("loginUser");
@@ -98,34 +98,102 @@ public class CommentController {
     return "redirect:../" + boardType.name().toLowerCase() + "/view?boardNo=" + comment.getBoardNo();
   }
 
-  @PostMapping("/update")
-  @ResponseBody
-  public Map<String, Object> update(
-      // @RequestParam("boardType") int boardTypeCode, @RequestParam("commentNo") Integer commentNo, @RequestParam("content") String content
-      @RequestBody Map<String, Object> request
-  ) {
+//  @PostMapping("/update")
+//  @ResponseBody
+//  public Map<String, Object> update(
+//      // @RequestParam("boardType") int boardTypeCode, @RequestParam("commentNo") Integer commentNo, @RequestParam("content") String content
+//      @RequestBody Map<String, Object> request
+//  ) {
+//
+//    Map<String, Object> response = new HashMap<>();
+//
+//    try {
+//      Integer commentNo = (Integer) request.get("commentNo");
+//      String content = (String) request.get("content");
+//
+//      // 댓글 가져오기
+//      Comment comment = commentService.get(commentNo);
+//      if (comment == null) {
+//        throw new Exception("존재하지 않는 댓글입니다.");
+//      }
+//
+//      // 댓글 내용 업데이트
+//      comment.setCommentContent(content);
+//      commentService.update(comment);
+//
+//      response.put("success", true);
+//    } catch (Exception e) {
+//      response.put("success", false);
+//      response.put("message", e.getMessage());
+//    }
+//    return response;
+//  }
 
+  @PostMapping("update")
+  public String update(
+          @RequestParam("boardType") int boardTypeCode,
+          @RequestParam("commentNo") Integer commentNo,
+          @RequestParam("commentContent") String commentContent,
+          @RequestParam("boardNo") Integer boardNo,
+          HttpSession session) throws Exception {
+
+    User loginUser = (User) session.getAttribute("loginUser");
+    if (loginUser == null) {
+      throw new Exception("로그인이 필요합니다.");
+    }
+
+//    System.out.println("로그인 사용자: " + loginUser.getUserNo());
+
+    Comment comment = commentService.get(commentNo);
+    if (comment == null) {
+      throw new Exception("존재하지 않는 댓글입니다.");
+    }
+
+    // 댓글 작성자와 로그인 유저가 같은지 확인
+    if (!comment.getUserNo().equals(loginUser.getUserNo())) {
+      throw new Exception("수정 권한이 없습니다.");
+    }
+
+//    System.out.println("업데이트할 댓글 번호: " + commentNo + ", 내용: " + commentContent);
+
+    comment.setCommentContent(commentContent);
+
+    boolean isUpdated = commentService.update(comment);
+//    if (!isUpdated) {
+//      System.out.println("댓글 업데이트 실패");
+//    } else {
+//      System.out.println("댓글 업데이트 성공");
+//    }
+
+    // boardTypeCode를 BoardType Enum으로 변환
+    BoardType boardType = BoardType.fromTypeCode(boardTypeCode);
+
+    return "redirect:../" + boardType.name().toLowerCase() + "/view?boardNo=" + comment.getBoardNo();
+  }
+
+  @PostMapping("/toggleCommentLike")
+  @ResponseBody
+  public Map<String, Object> toggleCommentLike(@RequestParam("commentNo") int commentNo, HttpSession session) throws Exception {
     Map<String, Object> response = new HashMap<>();
+    User loginUser = (User) session.getAttribute("loginUser");
+
+    if (loginUser == null) {
+      response.put("message", "로그인이 필요합니다.");
+      response.put("isCommentLiked", false);
+      response.put("commentLikeCount", commentService.getCommentLikeCount(commentNo));
+      return response;
+    }
 
     try {
-      Integer commentNo = (Integer) request.get("commentNo");
-      String content = (String) request.get("content");
-
-      // 댓글 가져오기
-      Comment comment = commentService.get(commentNo);
-      if (comment == null) {
-        throw new Exception("존재하지 않는 댓글입니다.");
-      }
-
-      // 댓글 내용 업데이트
-      comment.setCommentContent(content);
-      commentService.update(comment);
-
-      response.put("success", true);
+      Map<String, Object> serviceResponse = commentService.toggleCommentLike(commentNo, Math.toIntExact(loginUser.getUserNo()));
+      response.putAll(serviceResponse);
     } catch (Exception e) {
-      response.put("success", false);
-      response.put("message", e.getMessage());
+      response.put("message", "좋아요 처리 중 오류가 발생했습니다.");
+      response.put("isCommentLiked", false);
+      response.put("commentLikeCount", commentService.getCommentLikeCount(commentNo));  // 현재 좋아요 수 반환
     }
+
     return response;
   }
+
 }

@@ -1,0 +1,131 @@
+.text-center {
+    text-align: center;
+    margin-bottom: 20px; /* 제목 아래 여백 추가 */
+}
+
+.search-sort-container {
+    display: flex;
+    justify-content: center; /* 검색창과 버튼을 전체 중앙에 배치 */
+    padding: 20px 0;
+}
+
+.search-sort-wrapper {
+    display: flex;
+    align-items: center; /* 수직 가운데 정렬 */
+    gap: 10px; /* 검색창과 정렬/글쓰기 버튼 사이의 간격 */
+}
+
+.search-form {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* 검색창과 검색 버튼 사이의 간격 */
+}
+
+.search-input {
+    width: 300px; /* 검색창 너비 */
+    padding: 5px 10px;
+    font-size: 16px;
+}
+
+.sort-write-container {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* 정렬 드롭다운과 글쓰기 버튼 사이의 간격 */
+}
+
+/*-------------------------------------------------------------------------*/
+
+.card-list-container {
+    display: flex; /* 컨테이너를 플렉스 박스로 설정 */
+    justify-content: center; /* 컨테이너 내의 내용물들을 중앙에 정렬 */
+    padding: 20px; /* 컨테이너의 안쪽 여백 */
+}
+
+.card-list {
+    display: grid; /* 그리드 레이아웃 사용 */
+    grid-template-columns: repeat(4, 1fr); /* 4개의 동일한 너비의 열 생성 */
+    gap: 20px; /* 카드들 사이의 간격 */
+    max-width: 1700px; /* 카드 목록의 최대 너비 설정 */
+}
+
+.card-container {
+    display: flex; /* 플렉스 박스로 설정하여 내부 요소들을 가로로 배치 */
+    align-items: center; /* 수직 중앙 정렬 */
+    border: 1px solid #ddd; /* 카드의 외곽 테두리 */
+    border-radius: 15px; /* 카드의 둥근 모서리 */
+    padding: 10px; /* 카드의 안쪽 여백 */
+    width: 400px; /* 카드의 고정 너비 */
+    height: 200px; /* 카드의 고정 높이 */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 카드의 그림자 효과 */
+    background-color: #fff; /* 카드의 배경색 */
+    text-decoration: none; /* 링크일 경우 텍스트 밑줄 제거 */
+    color: inherit; /* 텍스트 색상을 부모 요소에서 상속 */
+    transition: box-shadow 0.2s ease; /* 그림자 변화에 애니메이션 효과 적용 */
+}
+
+.card-container:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* 마우스 오버 시 그림자 강화 */
+    cursor: pointer; /* 마우스 오버 시 커서를 포인터로 변경 */
+}
+
+.user-photo {
+    width: 10px; /* 프로필 이미지 너비 */
+    height: 10px; /* 프로필 이미지 높이 */
+    border-radius: 50%; /* 원형으로 만들기 */
+    margin-right: 10px; /* 오른쪽 여백 */
+}
+
+.city-photo {
+    width: 100px; /* 도시 이미지 너비 */
+    height: 100px; /* 도시 이미지 높이 */
+    margin-right: 10px; /* 오른쪽 여백 */
+}
+
+.card-content {
+    display: flex; /* 카드 내용을 플렉스 박스로 설정 */
+    flex-direction: column; /* 내용물들을 세로로 정렬 */
+    width: 100%; /* 카드 내용의 너비를 부모 요소에 맞춤 */
+}
+
+.image-container {
+    width: 60px; /* 이미지 컨테이너의 너비 */
+    height: 60px; /* 이미지 컨테이너의 높이 */
+    border-radius: 10px; /* 이미지 컨테이너의 둥근 모서리 */
+    overflow: hidden; /* 컨테이너를 벗어난 이미지 부분 숨기기 */
+    margin-bottom: 5px; /* 아래쪽 여백 */
+}
+
+.image-container img {
+    width: 100%; /* 이미지 너비를 컨테이너에 맞춤 */
+    height: 100%; /* 이미지 높이를 컨테이너에 맞춤 */
+    object-fit: cover; /* 이미지 비율을 유지하며 컨테이너에 맞춤 */
+}
+
+.user-info {
+    display: flex; /* 플렉스 박스로 설정하여 이미지와 텍스트를 나란히 배치 */
+    align-items: center; /* 수직 중앙 정렬 */
+    font-size: 12px; /* 텍스트 크기 */
+    font-weight: bold; /* 텍스트 굵게 */
+    margin-bottom: 5px; /* 아래쪽 여백 */
+}
+
+.title {
+    font-size: 14px; /* 제목의 글씨 크기 */
+    font-weight: bold; /* 제목을 굵게 표시 */
+    margin: 5px 0; /* 위아래 여백 */
+}
+
+.time-location {
+    font-size: 11px; /* 시간 및 위치 텍스트 크기 */
+    color: #888; /* 텍스트 색상 */
+    margin-bottom: 5px; /* 아래쪽 여백 */
+}
+
+.icon-bar {
+    display: flex; /* 아이콘 바를 플렉스 박스로 설정 */
+    align-items: center; /* 아이콘을 수직 중앙 정렬 */
+    gap: 10px; /* 아이콘 사이의 간격 */
+    font-size: 12px; /* 아이콘 글씨 크기 */
+    color: #888; /* 아이콘 텍스트 색상 */
+    margin-top: 5px; /* 위쪽 여백 */
+}

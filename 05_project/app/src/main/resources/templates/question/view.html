@@ -1,8 +1,7 @@
 <!DOCTYPE html>
 <html>
-<head data-th-replace="~{header :: head}"></head>
-<body>
-
+<head data-th-replace="~{header :: head}">
+</head>
 <header data-th-replace="~{header :: #page-header}"></header>
 
 <body>
@@ -11,76 +10,184 @@
 
 <div data-th-unless="${board}">
     <p>없는 게시글입니다.</p>
+
 </div>
 
-<div data-th-if="${board}" >
-    <form action="view2" method="post" enctype="multipart/form-data">
-        <input type="hidden" name="boardNo" data-th-value='${board.boardNo}'>
-        제목: <input name="boardTitle" readonly type="text" data-th-value='${board.boardTitle}'><br/>
-        작성일: <input readonly type="text" data-th-value="${#calendars.format(board.boardCreatedDate, 'yyyy-MM-dd')}"><br>
-        조회수: <input readonly type="text" data-th-value="${board.boardCount}"><br>
-        내용: <br>
-        <textarea name="boardContent" readonly rows="10" cols="100" data-th-text="${board.boardContent}"></textarea><br>
-        태그: <input name="boardTag" readonly type="text" data-th-value="${board.boardTag}"><br/>
+<div data-th-if="${board}">
+    <!-- 좋아요 버튼 -->
+    <button type="button" id="likeButton"
+            data-th-onclick="|toggleLike(${board.boardNo})|"
+            data-th-text="${isLiked != null and isLiked ? '❤️ 좋아요 취소' : '🤍 좋아요'}"></button>
+    <input id="likeCount" readonly data-th-value="${board.boardLike}"><br>
 
-        <button type="button" data-th-onclick="|location.href='@{list}'|">목록</button>
+    <!-- 즐겨찾기 버튼 -->
+    <button type="button" id="favorButton"
+            data-th-onclick="|toggleFavor(${board.boardNo})|"
+            data-th-text="${isFavored != null and isFavored ? '⭐ 즐겨찾기 취소' : '⚪ 즐겨찾기'}"></button>
+    <input id="favorCount" readonly data-th-value="${board.boardFavor}"><br>
+</div>
+
+<form action="view2" method="post" enctype="multipart/form-data">
+    <input type="hidden" name="boardNo" data-th-value='${board.boardNo}'>
+    포토: <img data-th-src="@{/images/default.png}"
+             data-th-unless="${board.writer.userPhoto}"
+             src="/images/default.png"
+             style="width: 40px; height: 35px;"> <br/>
+    닉네임: <input name="userNickname" readonly type="text" data-th-value='${board.writer.userNickname}'>
+    <button type="button">쪽지</button><br/>
+    제목: <input name="boardTitle" readonly type="text" data-th-value='${board.boardTitle}'><br/>
+    작성일: <input readonly data-th-value="${#calendars.format(board.boardCreatedDate, 'yyyy년 MM월 dd일 HH:mm')}" size="20"><br>
+
+    조회수: <input readonly data-th-value="${board.boardCount}"><br>
+    내용: <br>
+    <textarea name="boardContent" readonly rows="10" cols="100" data-th-text="${board.boardContent}"></textarea><br>
+    태그: <input name="boardTag" readonly type="text" data-th-value="${board.boardTag}"><br/>
+    <button type="button" data-th-onclick="|location.href='@{list}'|">목록</button>
+
+    <div data-th-if="${isUserAuthorized}">
         <button>수정</button>
-        <button type="button" data-th-onclick="|location.href='@{delete(boardNo=${board.boardNo})}'|">삭제</button>
-    </form>
+        <button type="button" data-th-onclick="|if(confirm('게시글을 삭제하시겠습니까?'))location.href='@{delete(boardNo=${board.boardNo})}'|">삭제</button>
+    </div>
+</form>
 </div>
 
-<h3>댓글 작성</h3>
-<form data-th-action="@{/comment/add}" method="post">
-    <textarea name="commentContent" rows="4" cols="100" placeholder="댓글을 입력하세요"></textarea>
-    <input type="hidden" name="boardType" value="1">
-    <input type="hidden" name="boardNo" data-th-value="${board.boardNo}"> <br>
-    <button type="submit">댓글 등록</button>
+<br><h2>여행 데이터</h2><br>
+<!--&lt;!&ndash; 데이터 확인용 &ndash;&gt;-->
+<!--<span data-th-if="${trips}"-->
+<!--      data-th-data="${trips.size()}">-->
+<!--          <p>디버깅용 : Trip 데이터가 존재합니다.</p>-->
+<!--        </span>-->
+<!--<span data-th-unless="${trips}">-->
+<!--          <p>디버깅용 : Trip  데이터가 없습니다.</p>-->
+<!--        </span>-->
+
+<table border="1">
+    <thead>
+    <tr>
+        <th>여행번호</th>
+        <th>여행제목</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr data-th-each="trip : ${trips}" data-th-object="${trip}">
+        <td><span data-th-text="*{tripNo}">번호</span></td>
+        <td><span data-th-text="*{tripTitle}">제목</span></td>
+    </tr>
+    </tbody>
+</table>
+
+<br><h2>일정 데이터</h2><br>
+<!-- 데이터 확인용 -->
+<!--<span data-th-if="${schedule}"-->
+<!--      data-th-data="${schedule.size()}">-->
+<!--          <p>디버깅용 : Schedule 데이터가 존재합니다.</p>-->
+<!--        </span>-->
+<!--<span data-th-unless="${schedule}">-->
+<!--          <p>디버깅용 : Schedule 데이터가 없습니다.</p>-->
+<!--        </span>-->
+
+<div data-th-each="entry : ${groupedSchedules}">
+    <h3 data-th-text="'Day ' + ${entry.key}">Day</h3>
+
+    <table border="1">
+        <thead>
+        <tr>
+            <th>일정번호</th>
+            <th>일정제목</th>
+            <th>일정날짜[Day]</th>
+            <th>일정순서</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr data-th-each="schedule : ${entry.value}" data-th-object="${schedule}">
+            <td><span data-th-text="*{scheduleNo}">번호</span></td>
+            <td><span data-th-text="*{location.locationName}">제목</span></td>
+            <td><span data-th-text="*{scheduleDay}">Day</span></td>
+            <td><span data-th-text="*{scheduleRoute}">순서</span></td>
+        </tr>
+        </tbody>
+    </table>
+
+    <!--<br>-->
+    <!--<div class="box">-->
+    <!--    <i class="fa-regular fa-image"></i>-->
+    <!--    이미지 예정-->
+    <!--</div>-->
+    <!--<br>-->
+    <!--내용: <textarea readonly name="content" data-th-text="${board.boardContent}" rows="8" cols="70"></textarea><br>-->
+
+    <!--&lt;!&ndash;디버깅&ndash;&gt;-->
+    <!--<p>디버깅용 : 로그인 유저: <span data-th-text="${session.loginUser.userNo}"></span></p>-->
+    <!--<p>디버깅용 : 게시글 작성자: <span data-th-text="${board.writer.userNo}"></span></p>-->
+
+    <!--<button type="button" onclick="location.href='list'">목록</button>-->
+    <!--<button type="submit"-->
+    <!--        data-th-if="${session.loginUser != null and session.loginUser.userNo == board.writer.userNo}">수정</button>-->
+    <!--<button type="button"-->
+    <!--        data-th-if="${session.loginUser != null and session.loginUser.userNo == board.writer.userNo}"-->
+    <!--        data-th-onclick="|deleteBoard(${board.boardNo})|">삭제</button>-->
+</div>
 </form>
 
-<br> 댓글 : <br>
-<!-- 댓글이 없는 경우 -->
-<p data-th-unless="${commentList}">댓글이 없습니다.</p>
+<hr/>
 
- 댓글이 있는 경우
-<ul data-th-if="${commentList != null and commentList.size() > 0}">
-        <li data-th-each="comment : ${commentList}">
-            작성일 <input readonly type="text" data-th-value="${comment.commentCreatedDate}" size="25"> <br>
-            댓글 <br>
-            <textarea name="commentContent" readonly rows="3" cols="70" data-th-text="${comment.commentContent}"></textarea><br>
-<!--            <button type="button" data-th-onclick="|updateComment(${comment.commentNo}, '${comment.commentContent}')|">변경</button>-->
-            <button type="button" data-th-onclick="|deleteComment(${comment.commentNo},${board.boardNo})|">삭제</button>
-        </li>
-</ul>
+<div data-th-replace="~{question/comment}"></div>
 
-<script>
-    function deleteComment(commentNo, no) {
-        if (confirm('댓글을 삭제하시겠습니까?')) {
-            location.href = '../comment/delete?commentNo=' + commentNo + '&boardNo=' + no +'&boardType=1';
-        }
+<!-- 상단 이동 버튼 -->
+<button id="scrollTopButton" onclick="scrollToTop()" style="position: fixed; bottom: 20px; left: 800px; visibility: hidden;">
+    ⬆️ 상단으로 이동
+</button>
+
+<script defer>
+    // 좋아요 버튼 클릭 이벤트
+    function toggleLike(boardNo) {
+        fetch(`/question/toggleLike?boardNo=${boardNo}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+        })
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('likeCount').value = data.likeCount;
+            document.getElementById('likeButton').textContent = data.isLiked ? '❤️ 좋아요 취소' : '🤍 좋아요';
+            alert(data.message);
+        })
+        .catch(error => console.error('Error:', error));
+    }
+
+    // 즐겨찾기 버튼 클릭 이벤트
+    function toggleFavor(boardNo) {
+        fetch(`/question/toggleFavor?boardNo=${boardNo}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+        })
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('favorCount').value = data.favorCount;
+            document.getElementById('favorButton').textContent = data.isFavored ? '⭐ 즐겨찾기 취소' : '⚪ 즐겨찾기';
+            alert(data.message);
+        })
+        .catch(error => console.error('Error:', error));
     }
 </script>
-<!--    function updateComment(commentNo, commentContent) {-->
-<!--        const popup = window.open('', 'commentUpdate', 'width=500,height=300,scrollbars=yes');-->
 
-<!--        popup.document.write(`-->
-<!--            <html>-->
-<!--                <head>-->
-<!--                    <title>댓글 수정</title>-->
-<!--                </head>-->
-<!--                <body>-->
-<!--                    <h3>댓글 수정</h3>-->
-<!--                    <form action='../comment/update' method='post'>-->
-<!--                        <input type="hidden" name="commentNo" value="` + commentNo + `">-->
-<!--                        <input type="hidden" name="boardNo" value="` + /*[[${board.boardNo}]]*/ '' + `">-->
-<!--                        <textarea name="commentContent" rows="10" cols="100">` + commentContent + `</textarea><br>-->
-<!--                        <button type='submit'>저장</button>-->
-<!--                        <button type='button' onclick='window.close()'>취소</button>-->
-<!--                    </form>-->
-<!--                </body>-->
-<!--            </html>-->
-<!--        `);-->
-<!--    }-->
-<!--</script>-->
+<script>
+    // 상단 이동 함수
+   function scrollToTop() {
+       window.scrollTo({ top: 0, behavior: 'smooth' });
+   }
+
+   // 스크롤 이벤트 감지하여 버튼 표시
+   window.addEventListener('scroll', function() {
+       const scrollTopButton = document.getElementById('scrollTopButton');
+       if (window.scrollY > 500) {
+           scrollTopButton.style.visibility = "visible";
+       } else {
+           scrollTopButton.style.visibility = "hidden";
+       }
+   });
+</script>
+
 
 </body>
+
 </html>
