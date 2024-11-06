@@ -1,16 +1,19 @@
 package project.tripMaker.controller;
 
 import lombok.Data;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import project.tripMaker.service.CommentService;
-import project.tripMaker.service.CompanionRecruitService;
 import project.tripMaker.service.CompanionService;
 import project.tripMaker.service.ScheduleService;
-import project.tripMaker.vo.*;
+import project.tripMaker.vo.Board;
+import project.tripMaker.vo.Trip;
+import project.tripMaker.vo.User;
 
 import javax.servlet.http.HttpSession;
 import java.util.List;
@@ -18,23 +21,22 @@ import java.util.List;
 @Data
 @Controller
 @RequestMapping("/companion")
-public class CompanionController {
+@RequiredArgsConstructor
 
-  private static final Logger logger = LoggerFactory.getLogger(CompanionController.class);
+public class CompanionController {
 
   private final CompanionService companionService;
   private final CommentService commentService;
   private final ScheduleService scheduleService;
-  private final CompanionRecruitService companionRecruitService;
 
   private static final int BOARD_TYPE_COMPANION = 2;
 
+  // 동행게시판 - 게시글 목록 조회
   @GetMapping("list")
   public String list(
           @RequestParam(defaultValue = "1") int pageNo,
           @RequestParam(defaultValue = "5") int pageSize,
-          Model model
-  ) throws Exception {
+          Model model) throws Exception {
 
     if (pageNo < 1) {
       pageNo = 1;
@@ -60,102 +62,68 @@ public class CompanionController {
     return "companion/list";
   }
 
+  // 동행게시판 - 게시글 작성 폼
   @GetMapping("form")
   public String form(Model model, HttpSession session) throws Exception {
-
     User loginUser = (User) session.getAttribute("loginUser");
     if (loginUser == null) {
       throw new Exception("로그인이 필요합니다.");
     }
 
-    List<Trip> tripList = scheduleService.getTripsByUserNo(loginUser.getUserNo());
-    logger.info("Trip List: {}", tripList);
-    model.addAttribute("tripList", tripList);
-    return "companion/form";
-  }
+      List<Trip> tripList = scheduleService.getTripsByUserNo(loginUser.getUserNo());
+      model.addAttribute("trips", tripList);
+      return "companion/form";
+    }
 
-  @PostMapping("selectSchedule")
-  @ResponseBody
-  public List<Schedule> selectSchedule(@RequestParam int tripNo) throws Exception {
-    List<Schedule> scheduleList = scheduleService.viewSchedule(tripNo);
-    logger.info("Schedule List: {}", scheduleList);
-    return scheduleList;
-  }
-
+  // 동행게시판 - 게시글 작성
   @PostMapping("add")
-  @ResponseBody
-  public void add(@RequestBody AddRequest addRequest, HttpSession session) throws Exception {
+  public String add(Board board, HttpSession session) throws Exception {
     User loginUser = (User) session.getAttribute("loginUser");
-
     if (loginUser == null) {
       throw new Exception("로그인이 필요합니다.");
     }
 
-    Board board = addRequest.getBoard();
-
-    board.setUserNo(loginUser.getUserNo());
-
-    // Step 3: tripNo 값을 임의의 int 형 변수에 저장
-    int tripNo = board.getTripNo();
-
-    // Step 4: companionService 의 add 메서드 호출
+    board.setWriter(loginUser);
     companionService.add(board);
-
-    // Step 5: Long 타입의 임의의 변수에 로그인한 사용자 번호 저장
-    int userNo = board.getUserNo().intValue();
-
-    // Step 6: 반환된 값 저장
-    Board findBoard = companionService.selectIdNoByTripNo(tripNo, userNo);
-
-    int findBoardId = findBoard.getBoardNo();
-
-    System.out.println("userNo 값 : " + userNo);
-    System.out.println("findBoardId 값 : " + findBoardId);
-
-    // 동행 모집 정보 추가
-    List<Companionrecruit> companionRecruits = addRequest.getCompanionRecruits();
-    for (Companionrecruit recruit : companionRecruits) {
-      recruit.setBoardNo(findBoardId);
-      companionRecruitService.addRecruit(recruit);
-    }
+    return "redirect:list";
   }
 
+  // 동행게시판 - 특정 게시글 조회
   @GetMapping("view")
-  public String view(@RequestParam int boardNo, Model model) throws Exception {
-    companionService.increaseViewCount(boardNo);
-    Board board = companionService.findBy(boardNo);
-
+  public String view(int boardNo, Model model) throws Exception {
+    Board board = companionService.get(boardNo);
     if (board == null) {
       throw new Exception("게시글이 존재하지 않습니다.");
     }
 
-    List<Comment> commentList = commentService.list(boardNo);
+    companionService.increaseViewCount(board.getBoardNo());
+
     model.addAttribute("board", board);
-    model.addAttribute("commentList", commentList);
 
     return "companion/view";
   }
 
+  // 동행게시판 - 수정하기 페이지 로딩
   @PostMapping("modify")
   public String modify(@RequestParam("boardNo") int boardNo, Model model) throws Exception {
-    Board board = companionService.findBy(boardNo);
+    Board board = companionService.get(boardNo);
 
     if (board == null) {
       throw new Exception("게시글이 존재하지 않습니다.");
     }
-
     model.addAttribute("board", board);
     return "companion/modify";
   }
 
+  // 게시글 수정
   @PostMapping("update")
   public String update(
           @RequestParam("boardNo") int boardNo,
-          @RequestParam("boardTitle") String boardTitle,
-          @RequestParam("boardContent") String boardContent,
-          @RequestParam("boardTag") String boardTag
-  ) throws Exception {
-    Board board = companionService.findBy(boardNo);
+          @RequestParam("boardTitle")String boardTitle,
+          @RequestParam("boardContent")String boardContent,
+          @RequestParam("boardTag")String boardTag) throws Exception {
+
+    Board board = companionService.get(boardNo);
     if (board == null) {
       throw new Exception("없는 게시글입니다.");
     }
@@ -168,9 +136,10 @@ public class CompanionController {
     return "redirect:view?boardNo=" + boardNo;
   }
 
+  // 게시글 삭제
   @GetMapping("delete")
   public String delete(int boardNo) throws Exception {
-    Board board = companionService.findBy(boardNo);
+    Board board = companionService.get(boardNo);
 
     if (board == null) {
       throw new Exception("없는 게시글입니다.");

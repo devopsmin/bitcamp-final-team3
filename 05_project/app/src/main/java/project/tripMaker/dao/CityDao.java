@@ -1,10 +1,10 @@
 package project.tripMaker.dao;
 
 import org.apache.ibatis.annotations.Mapper;
-import project.tripMaker.vo.City;
-import project.tripMaker.vo.State;
 
 import java.util.List;
+import project.tripMaker.vo.City;
+import project.tripMaker.vo.State;
 
 
 @Mapper

@@ -1,12 +1,11 @@
 package project.tripMaker.vo;
 
+import java.time.LocalDateTime;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import project.tripMaker.user.UserRole;
-
-import java.time.LocalDateTime;
 
 @Getter
 @Setter

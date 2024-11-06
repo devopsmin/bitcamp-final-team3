@@ -1,5 +1,7 @@
 package project.tripMaker.service;
 
+import java.util.Collections;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
@@ -15,9 +17,6 @@ import project.tripMaker.user.KakaoUserInfo;
 import project.tripMaker.user.NaverUserInfo;
 import project.tripMaker.user.OAuth2UserInfo;
 import project.tripMaker.vo.User;
-
-import java.util.Collections;
-import java.util.Map;
 
 @Service
 @RequiredArgsConstructor

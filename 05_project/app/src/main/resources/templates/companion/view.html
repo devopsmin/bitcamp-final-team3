@@ -16,31 +16,8 @@
             <button type="button" onclick="location.href='list'">목록</button>
             <button data-th-onclick="|deleteBoard(${board.boardNo})|">삭제</button>
         <br>
-
-        <h3>댓글</h3>
-        <ul data-th-if="${commentList}">
-            <li data-th-each="comment : ${commentList}">
-                <label> 댓글 번호:
-                    <input readonly type="text" data-th-value="${comment.commentNo}" size="3">
-                </label>
-
-                <label>작성자:
-                    <input readonly type="text" data-th-value="${comment.writer.userNickname}">
-                </label>
-
-                작성일: <input readonly type="text" data-th-value="${#dates.format(comment.commentCreatedDate, 'yyyy-MM-dd HH:mm')}"><br>
-
-                댓글: <input readonly type="text" data-th-value="${comment.commentContent}" size="50"><br>
-
-                <button type="button"
-                        data-th-if="${session.loginUser != null and session.loginUser.userNo == comment.userNo}"
-                        data-th-onclick="deleteComment([[${comment.commentNo}]], [[${board.boardNo}]], 'REVIEW')">
-                    삭제
-                </button>
-                <br>
-            </li>
-        </ul>
-
+            <h3>댓글</h3>
+            <br>
         <script>
             function deleteBoard(no) {
                 location.href = "delete?boardNo=" + no

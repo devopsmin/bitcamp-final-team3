@@ -1,9 +1,8 @@
 package project.tripMaker.vo;
 
-import lombok.Data;
-
 import java.sql.Date;
 import java.util.List;
+import lombok.Data;
 
 @Data
 public class Trip {

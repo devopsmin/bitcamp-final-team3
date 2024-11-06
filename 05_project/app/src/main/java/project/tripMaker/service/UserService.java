@@ -1,8 +1,7 @@
 package project.tripMaker.service;
 
-import project.tripMaker.vo.User;
-
 import java.util.List;
+import project.tripMaker.vo.User;
 
 public interface UserService {
 
