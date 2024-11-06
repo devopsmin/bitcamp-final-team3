@@ -1,29 +1,20 @@
 package project.tripMaker.controller;
 
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
+import project.tripMaker.service.CommentService;
+import project.tripMaker.service.ReviewService;
+import project.tripMaker.service.ScheduleService;
+import project.tripMaker.vo.*;
+
+import javax.servlet.http.HttpSession;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.servlet.http.HttpSession;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.SessionAttribute;
-import project.tripMaker.service.CommentService;
-import project.tripMaker.service.ReviewService;
-import project.tripMaker.service.ScheduleService;
-import project.tripMaker.vo.Board;
-import project.tripMaker.vo.Comment;
-import project.tripMaker.vo.Schedule;
-import project.tripMaker.vo.Trip;
-import project.tripMaker.vo.User;
 
 @Controller
 @RequestMapping("/review")

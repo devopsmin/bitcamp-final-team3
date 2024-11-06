@@ -1,6 +1,7 @@
 package project.tripMaker.vo;
 
 import lombok.Data;
+
 import java.util.Date;
 
 @Data

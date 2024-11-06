@@ -1,11 +1,9 @@
 package project.tripMaker.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import project.tripMaker.dao.CommentDao;
-import project.tripMaker.vo.Board;
 import project.tripMaker.vo.Comment;
 
 import java.util.List;

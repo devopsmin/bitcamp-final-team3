@@ -1,11 +1,12 @@
 package project.tripMaker.dao;
 
 import org.apache.ibatis.annotations.Mapper;
-import org.springframework.stereotype.Repository;
-import project.tripMaker.vo.*;
+import project.tripMaker.vo.Location;
+import project.tripMaker.vo.Schedule;
+import project.tripMaker.vo.Thema;
+import project.tripMaker.vo.Trip;
 
 import java.util.List;
-import java.util.Map;
 
 @Mapper
 public interface ScheduleDao {

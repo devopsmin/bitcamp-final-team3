@@ -33,7 +33,7 @@ public class CompanionService {
   }
 
   // 특정 게시글 조회
-  public Board get(int boardNo) throws Exception {
+  public Board findBy(int boardNo) throws Exception {
     return boardCompanionDao.findBy(boardNo);
   }
 
@@ -62,6 +62,10 @@ public class CompanionService {
   @Transactional
   public void delete(int boardNo) throws Exception {
     boardCompanionDao.delete(boardNo);
+  }
+
+  public Board selectIdNoByTripNo(int tripNo, int userNo) throws Exception {
+    return boardCompanionDao.selectIdNoByTripNo(tripNo, userNo);
   }
 }
 

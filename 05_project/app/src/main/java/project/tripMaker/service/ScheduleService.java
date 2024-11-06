@@ -1,19 +1,19 @@
 package project.tripMaker.service;
 
 import lombok.Data;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import project.tripMaker.dao.ScheduleDao;
-import project.tripMaker.vo.*;
+import project.tripMaker.vo.Location;
+import project.tripMaker.vo.Schedule;
+import project.tripMaker.vo.Thema;
+import project.tripMaker.vo.Trip;
 
-import java.sql.Date;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 
 @Data
 @Service

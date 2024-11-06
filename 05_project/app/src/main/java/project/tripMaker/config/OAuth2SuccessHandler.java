@@ -1,11 +1,5 @@
 package project.tripMaker.config;
 
-import java.io.IOException;
-import java.util.Map;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
@@ -14,12 +8,15 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 import project.tripMaker.service.CustomOAuth2UserService;
-import project.tripMaker.user.GoogleUserInfo;
-import project.tripMaker.user.KakaoUserInfo;
-import project.tripMaker.user.NaverUserInfo;
-import project.tripMaker.user.OAuth2UserInfo;
 import project.tripMaker.service.UserService;
+import project.tripMaker.user.OAuth2UserInfo;
 import project.tripMaker.vo.User;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.io.IOException;
 
 @Component
 @RequiredArgsConstructor
@@ -47,7 +44,7 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
       if ("소셜로그인".equals(user.getUserTel())) {
         HttpSession session = request.getSession();
         session.setAttribute("tempLoginUser", user);
-        response.sendRedirect("/verify/phone?email=" + user.getUserEmail());
+        response.sendRedirect("/auth/phone-verification?email=" + user.getUserEmail());
         return;
       }
 

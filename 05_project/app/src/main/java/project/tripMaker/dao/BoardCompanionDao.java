@@ -34,4 +34,6 @@ public interface BoardCompanionDao extends BoardDao{
   boolean delete(@Param("boardNo")int boardNo) throws Exception;
 
   boolean update(Board board) throws Exception;
+
+  Board selectIdNoByTripNo(int tripNo, int userNo) throws Exception;
 }

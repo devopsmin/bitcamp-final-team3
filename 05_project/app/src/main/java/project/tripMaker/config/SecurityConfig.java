@@ -7,7 +7,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.password.PasswordEncoder;
-
 import project.tripMaker.service.CustomOAuth2UserService;
 import project.tripMaker.service.CustomUserDetailsService;
 
@@ -24,8 +23,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
   @Override
   protected void configure(HttpSecurity http) throws Exception {
     http.authorizeRequests()
-        .antMatchers("/admin/**", "/", "/auth/**", "/oauth2/**", "/verify/**", "/css/**", "/js/**", "/images/**", "/schedule/**", "/user/**", "/home", "/board/**", "/comment/**", "/app/**", "/question/**", "/review/**", "/companion/**").permitAll()
-//        .antMatchers("/admin/**").hasRole("ADMIN")
+        .antMatchers("/", "/auth/**", "/oauth2/**", "/css/**", "/js/**", "/images/**", "/schedule/**", "/user/**", "/home", "/board/**", "/comment/**", "/app/**", "/question/**", "/review/**", "/companion/**").permitAll()
+        .antMatchers("/admin/**").hasRole("ADMIN")
         // .antMatchers("/user/**").hasRole("USER")  // 추후 USER 마이페이지 USER권한만 접근 가능하게 하기 위해서 만들어 놓음
         .anyRequest().authenticated();
 

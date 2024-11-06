@@ -5,8 +5,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import project.tripMaker.dao.UserDao;
-import project.tripMaker.vo.User;
 import project.tripMaker.user.UserRole;
+import project.tripMaker.vo.User;
 
 import java.util.List;
 

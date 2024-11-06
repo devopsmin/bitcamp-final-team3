@@ -1,25 +1,18 @@
 package project.tripMaker.controller;
 
-import java.util.HashMap;
-import java.util.UUID;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.CookieValue;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.multipart.MultipartFile;
-import project.tripMaker.service.SMSService;
-import project.tripMaker.service.StorageService;
+import org.springframework.web.bind.annotation.*;
+import project.tripMaker.service.MailService;
 import project.tripMaker.service.UserService;
 import project.tripMaker.vo.User;
+
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 @RequiredArgsConstructor
 @Controller
@@ -27,12 +20,9 @@ import project.tripMaker.vo.User;
 public class AuthController {
 
   private final UserService userService;
-  private final SMSService smsService;
-  private final StorageService storageService;
+  private final MailService mailService;
 
-  private final String folderName = "user/";
-
-  @GetMapping("/login/form")
+  @GetMapping("form")
   public void form(@CookieValue(name = "userEmail", required = false) String userEmail, Model model) {
     model.addAttribute("userEmail", userEmail);
   }
@@ -47,8 +37,8 @@ public class AuthController {
 
     User user = userService.exists(userEmail, userPassword);
     if (user == null) {
-      res.setHeader("Refresh", "2; url=login/form");
-      return "auth/login/fail";
+      res.setHeader("Refresh", "2; url=form");
+      return "auth/fail";
     }
 
     userService.updateLastLogin(user.getUserNo());
@@ -73,6 +63,77 @@ public class AuthController {
     return "redirect:/";
   }
 
+  @GetMapping("registerUser")
+  public String registerUserForm() {
+    return "auth/registerUser";
+  }
+
+  @PostMapping("registerUser")
+  public String registerUser(User user, @RequestParam String confirmPassword, Model model) {
+    try {
+      if (!user.getUserPassword().equals(confirmPassword)) {
+        throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+      }
+
+      userService.add(user);
+      return "redirect:/";
+    } catch (Exception e) {
+      model.addAttribute("errorMessage", e.getMessage());
+      return "auth/registerUser";
+    }
+  }
+
+  @GetMapping("registerAdmin")
+  public String registerAdminForm() {
+    return "auth/registerAdmin";
+  }
+
+  @PostMapping("registerAdmin")
+  public String registerAdmin(User user, @RequestParam String confirmPassword, Model model) {
+    try {
+      if (!user.getUserPassword().equals(confirmPassword)) {
+        model.addAttribute("errorMessage", "비밀번호가 일치하지 않습니다.");
+        return "auth/registerAdmin";
+      }
+      userService.addAdmin(user);
+      return "redirect:/";
+    } catch (Exception e) {
+      model.addAttribute("errorMessage", "관리자 등록 중 오류가 발생했습니다.");
+      return "auth/registerAdmin";
+    }
+  }
+
+
+  @GetMapping("findIdForm")
+  public String showFindIdForm(Model model) {
+    return "auth/findIdForm";
+  }
+
+  @PostMapping("findUserByTel")
+  public String findUserByTel(@RequestParam String userTel, Model model) throws Exception {
+    User user = userService.findByTel(userTel);
+
+    if (user == null) {
+      model.addAttribute("message", "존재하지 않는 유저입니다.");
+      return "auth/findIdForm";
+    } else {
+      model.addAttribute("message", "아이디 : " + user.getUserEmail());
+      return "auth/findIdResult";
+    }
+  }
+  @PostMapping("/check-nickname")
+  @ResponseBody
+  public String checkNickname(@RequestParam String nickname) {
+    try {
+      if (userService.existsByNickname(nickname)) {
+        return "duplicate";
+      }
+      return "available";
+    } catch (Exception e) {
+      return "error";
+    }
+  }
+
   @GetMapping("/oauth2/callback")
   public String oauth2Callback(OAuth2AuthenticationToken authentication) {
     OAuth2User oauth2User = authentication.getPrincipal();
@@ -80,80 +141,62 @@ public class AuthController {
     return "redirect:/home";
   }
 
-  @GetMapping("/register/user")
-  public String registerUserForm() {
-    return "auth/register/user";
+
+  @GetMapping("/phone-verification")
+  public String showPhoneVerificationForm(@RequestParam String email, Model model) {
+    model.addAttribute("email", email);
+    return "auth/phoneVerification";
   }
 
-  @PostMapping("/register/user")
-  public String registerUser(
-      User user,
-      @RequestParam String confirmPassword,
-      Model model,
-      @RequestParam(required = false) MultipartFile file) {
+  @PostMapping("/phone-verification")
+  public String verifyPhone(@RequestParam String email,
+      @RequestParam String phoneNumber,
+      HttpSession session,
+      Model model) {
     try {
-      if (!user.getUserPassword().equals(confirmPassword)) {
-        throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+      if (!phoneNumber.matches("\\d{3}-\\d{4}-\\d{4}")) {
+        throw new IllegalArgumentException("올바른 전화번호 형식이 아닙니다. (예: 010-1234-5678)");
       }
 
-      if (!smsService.isPhoneVerified(user.getUserTel())) {
-        throw new IllegalArgumentException("전화번호 인증이 필요합니다.");
+      User existingUser = userService.findByTel(phoneNumber);
+      if (existingUser != null) {
+        throw new IllegalArgumentException("이미 등록된 전화번호입니다.");
       }
 
-      // 프로필 이미지 처리
-      if (file != null && !file.isEmpty()) {
-        String filename = UUID.randomUUID().toString();
-        HashMap<String, Object> options = new HashMap<>();
-        options.put(StorageService.CONTENT_TYPE, file.getContentType());
-        storageService.upload(folderName + filename,
-            file.getInputStream(),
-            options);
-        user.setUserPhoto(filename);
-      }
+      User user = userService.getByEmail(email);
+      user.setUserTel(phoneNumber);
+      userService.update(user);
 
-      userService.add(user);
-      return "redirect:/";
+      session.setAttribute("loginUser", user);
+      session.removeAttribute("tempLoginUser");
+
+      return "redirect:/home";
+
+    } catch (IllegalArgumentException e) {
+      model.addAttribute("email", email);
+      model.addAttribute("error", e.getMessage());
+      return "auth/phoneVerification";
     } catch (Exception e) {
-      model.addAttribute("errorMessage", e.getMessage());
-      return "auth/register/user";
+      model.addAttribute("error", "전화번호 인증 중 오류가 발생했습니다.");
+      return "auth/phoneVerification";
     }
   }
 
-  @GetMapping("/register/admin")
-  public String registerAdminForm() {
-    return "auth/register/admin";
-  }
-
-  @PostMapping("/register/admin")
-  public String registerAdmin(User user, @RequestParam String confirmPassword, Model model) {
+  @PostMapping("/mail-confirm")
+  @ResponseBody
+  public String mailConfirm(@RequestParam String email) {
     try {
-      if (!user.getUserPassword().equals(confirmPassword)) {
-        model.addAttribute("errorMessage", "비밀번호가 일치하지 않습니다.");
-        return "auth/register/admin";
+      if (userService.existsByEmail(email)) {
+        return "이미 가입된 이메일입니다.";
       }
-      userService.addAdmin(user);
-      return "redirect:/";
+
+      int confirmNumber = mailService.sendMail(email);
+      return String.valueOf(confirmNumber);
+
     } catch (Exception e) {
-      model.addAttribute("errorMessage", "관리자 등록 중 오류가 발생했습니다.");
-      return "auth/register/admin";
+      return "이메일 전송에 실패했습니다.";
     }
   }
 
-  @GetMapping("/find/id")
-  public String showFindIdForm(Model model) {
-    return "auth/find/id-form";
-  }
 
-  @PostMapping("/find/id/result")
-  public String findUserByTel(@RequestParam String userTel, Model model) throws Exception {
-    User user = userService.findByTel(userTel);
-
-    if (user == null) {
-      model.addAttribute("message", "존재하지 않는 유저입니다.");
-      return "auth/find/id-form";
-    } else {
-      model.addAttribute("message", "아이디 : " + user.getUserEmail());
-      return "auth/find/id-result";
-    }
-  }
 }

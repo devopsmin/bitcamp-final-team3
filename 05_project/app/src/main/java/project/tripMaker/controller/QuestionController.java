@@ -7,15 +7,15 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import project.tripMaker.service.QuestionService;
 import project.tripMaker.service.CommentService;
+import project.tripMaker.service.QuestionService;
 import project.tripMaker.service.ScheduleService;
 import project.tripMaker.service.UserService;
 import project.tripMaker.vo.Board;
-
-import java.util.List;
 import project.tripMaker.vo.Comment;
 import project.tripMaker.vo.User;
+
+import java.util.List;
 
 
 @Controller

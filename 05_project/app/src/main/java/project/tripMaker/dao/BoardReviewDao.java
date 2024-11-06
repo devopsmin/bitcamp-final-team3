@@ -3,10 +3,10 @@ package project.tripMaker.dao;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import project.tripMaker.vo.Board;
+import project.tripMaker.vo.Trip;
 
 import java.util.List;
 import java.util.Map;
-import project.tripMaker.vo.Trip;
 
 @Mapper
 public interface BoardReviewDao extends BoardDao{

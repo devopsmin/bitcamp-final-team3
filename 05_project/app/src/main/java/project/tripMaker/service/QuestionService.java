@@ -1,13 +1,12 @@
 package project.tripMaker.service;
 
-import java.util.HashMap;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import project.tripMaker.dao.BoardQuestionDao;
 import project.tripMaker.vo.Board;
-import project.tripMaker.dao.BoardDao;
 
+import java.util.HashMap;
 import java.util.List;
 
 @Service

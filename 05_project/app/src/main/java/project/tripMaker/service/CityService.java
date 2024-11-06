@@ -1,11 +1,12 @@
 package project.tripMaker.service;
 
-import java.util.List;
 import lombok.Data;
 import org.springframework.stereotype.Service;
 import project.tripMaker.dao.CityDao;
 import project.tripMaker.vo.City;
 import project.tripMaker.vo.State;
+
+import java.util.List;
 
 @Data
 @Service

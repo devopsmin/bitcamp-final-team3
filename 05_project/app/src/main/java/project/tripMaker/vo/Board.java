@@ -1,7 +1,7 @@
 package project.tripMaker.vo;
 
-import java.util.Map;
 import lombok.Data;
+
 import java.util.Date;
 import java.util.List;
 
