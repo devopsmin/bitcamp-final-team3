@@ -5,7 +5,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import project.tripMaker.dao.ScheduleDao;
-import project.tripMaker.vo.*;
+import project.tripMaker.vo.Location;
+import project.tripMaker.vo.Schedule;
+import project.tripMaker.vo.Thema;
+import project.tripMaker.vo.Trip;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
@@ -25,6 +28,7 @@ public class ScheduleService {
   public List<Location> hotelList(String cityCode) throws Exception {
     return scheduleDao.hotelList(cityCode);
   }
+
   @Transactional
   public void addSchedule(Schedule schedule) throws Exception {
     scheduleDao.addSchedule(schedule);
@@ -43,15 +47,16 @@ public class ScheduleService {
   }
 
   @Transactional
-  public void makeTrip(Trip trip) throws Exception{
+  public void makeTrip(Trip trip) throws Exception {
     scheduleDao.makeTrip(trip);
   }
 
   @Transactional
   public void saveTrip(Trip trip) {
     scheduleDao.makeTrip(trip);
-    for(Schedule schedule : trip.getScheduleList()) {
+    for (Schedule schedule : trip.getScheduleList()) {
       schedule.setTripNo(trip.getTripNo());
+      scheduleDao.addLocation(schedule.getLocation());
       scheduleDao.addSchedule(schedule);
     }
   }
@@ -61,11 +66,11 @@ public class ScheduleService {
     scheduleDao.deleteSchedule(tripNo);
     scheduleDao.deleteTrip(tripNo);
   }
-
-  @Transactional
-  public void addLocation(Location myLocation) {
-    scheduleDao.addLocation(myLocation);
-  }
+  //
+  //  @Transactional
+  //  public void addLocation(Location myLocation) {
+  //    scheduleDao.addLocation(myLocation);
+  //  }
 
   public List<Trip> getTripList(Trip trip) {
     return scheduleDao.getTripList(trip);
@@ -89,8 +94,9 @@ public class ScheduleService {
   public void calculateDay(Trip trip) {
     LocalDate start = trip.getStartDate().toLocalDate();
     LocalDate end = trip.getEndDate().toLocalDate();
-    trip.setTotalDay((int)ChronoUnit.DAYS.between(start, end));
+    trip.setTotalDay((int) ChronoUnit.DAYS.between(start, end));
   }
+
 
   public List<Trip> getTripsByUserNo(Long userNo) {
     return scheduleDao.findTripsByUserNo(userNo);

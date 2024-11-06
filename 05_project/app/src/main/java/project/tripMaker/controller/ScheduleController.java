@@ -1,180 +1,251 @@
 package project.tripMaker.controller;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.fasterxml.jackson.databind.JsonNode;
 import lombok.Data;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.SessionAttributes;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.support.SessionStatus;
 import project.tripMaker.service.CityService;
 import project.tripMaker.service.ScheduleService;
-import project.tripMaker.vo.City;
-import project.tripMaker.vo.Location;
-import project.tripMaker.vo.Schedule;
-import project.tripMaker.vo.State;
-import project.tripMaker.vo.Thema;
-import project.tripMaker.vo.Trip;
+import project.tripMaker.service.TourAPIService;
+import project.tripMaker.vo.*;
+
+import javax.servlet.http.HttpSession;
+import java.sql.Date;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Data
 @Controller
 @RequestMapping("/schedule")
-@SessionAttributes({"locationNos", "trip", "myLocations", "myHotels", "tripType"})
+@SessionAttributes(
+    {"locationNos", "trip", "myLocations", "myHotels", "tripType", "locationList", "selectLoList",
+        "hotelList", "selectHoList", "tripScheduleList"})
 public class ScheduleController {
 
   private final CityService cityService;
   private final ScheduleService scheduleService;
+  private final TourAPIService tourAPIService;
 
   @RequestMapping("selectState")
   public void selectState(Model model, Trip trip) throws Exception {
     List<State> stateList = cityService.stateList();
     model.addAttribute("stateList", stateList);
     model.addAttribute("trip", trip);
+
     //    model.addAttribute("tripType", tripType);
+    List<Location> selectLoList = new ArrayList<>();
+    model.addAttribute("selectLoList", selectLoList);
   }
 
   @PostMapping("selectCity")
-  @ResponseBody  // JSON 형태로 응답
-  public List<City> selectCity(@RequestParam String stateCode) throws Exception {
-    // stateCode에 해당하는 cityList를 가져옴
-    List<City> cityList = cityService.cityList(stateCode);
-    return cityList;  // JSON 형태로 반환
+  @ResponseBody
+  public List<City> selectCity(@RequestBody String stateCode) throws Exception {
+    return cityService.cityList(stateCode);
   }
 
-  @PostMapping("selectDate")
-  public void selectDate(@ModelAttribute Trip trip, String cityCode, String tripType, Model model)
-      throws Exception {
-    trip.setCity(cityService.firndCity(cityCode));
-    model.addAttribute("tripType", tripType);
-    model.addAttribute("myLocations", new ArrayList<>());
-    model.addAttribute("myHotels", new ArrayList<>());
+  @PostMapping("/saveDates")
+  @ResponseBody
+  public String saveDates(
+      @RequestParam String startDate,
+      @RequestParam String endDate,
+      @ModelAttribute Trip trip,
+      Model model) {
+    Date sqlStartDate = Date.valueOf(startDate);
+    Date sqlEndDate = Date.valueOf(endDate);
+
+    trip.setStartDate(sqlStartDate);
+    trip.setEndDate(sqlEndDate);
+    scheduleService.calculateDay(trip);
+    List<Location> selectHoList = Stream.generate(() -> (Location) null)
+        .limit(trip.getTotalDay())
+        .collect(Collectors.toList());
+    model.addAttribute("selectHoList", selectHoList);
+    model.addAttribute("trip", trip);
+
+    return "success";
   }
 
   @PostMapping("selectLocation")
   public void selectLocation(
       @ModelAttribute Trip trip,
-      @ModelAttribute("myLocations") List<Location> myLocations,
-      @ModelAttribute("myLocation") Location myLocation,
-      Model model) throws Exception {
+      String tripType,
+      String cityCode,
+      Model model)
+      throws Exception {
+    trip.setCity(cityService.firndCity(cityCode));
 
-    scheduleService.calculateDay(trip);
-    String cityCode = trip.getCity().getCityCode();
+    List<Location> locationList =
+        tourAPIService.showLocation(trip.getCity());
 
-    if (myLocation.getLocationName() != null && !myLocations.contains(myLocation)) {
-      myLocation.setCityCode(trip.getCity().getCityCode());
-      myLocations.add(myLocation);
-      scheduleService.addLocation(myLocation);
-      for (Location location : myLocations) {
-        System.out.println(location.getLocationName());
-      }
-    }
-
-    List<Location> locationList = scheduleService.locationList(cityCode);
+    model.addAttribute("needDateSelection", trip.getStartDate() == null);
+    model.addAttribute("trip", trip);
     model.addAttribute("locationList", locationList);
-    model.addAttribute("myLocations", myLocations);
   }
 
-  @RequestMapping("addLocation")
-  public void addLocation(Model model) throws Exception {
-    Location myLocation = new Location();
-    model.addAttribute("myLocation", myLocation);
+  @GetMapping("/appendMyLocation")
+  @ResponseBody
+  public List<Location> appendMyLocation(
+      @RequestParam int index,
+      @ModelAttribute("locationList") List<Location> locationList,
+      @ModelAttribute("selectLoList") List<Location> selectLoList,
+      Model model) {
+    // 인덱스가 리스트 범위 내에 있는지 확인하고 Location 객체를 selectLoList에 추가
+    if (!selectLoList.contains(locationList.get(index))) {
+      selectLoList.add(locationList.get(index));
+      model.addAttribute("selectLoList", selectLoList);
+    }
+    // 변경된 selectLoList 반환
+    return selectLoList;
   }
 
-  @PostMapping("selectHotel")
+  @GetMapping("/deletedMyLocation")
+  @ResponseBody
+  public List<Location> deletedMyLocation(
+      @RequestParam int index,
+      @ModelAttribute("selectLoList") List<Location> selectLoList,
+      Model model) {
+    // 인덱스가 리스트 범위 내에 있는지 확인하고 Location 객체를 selectLoList에 추가
+    selectLoList.remove(index);
+    model.addAttribute("selectLoList", selectLoList);
+
+    // 변경된 selectLoList 반환
+    return selectLoList;
+  }
+
+  @RequestMapping("selectHotel")
   public void selectHotel(
       @ModelAttribute Trip trip,
-      @ModelAttribute("myHotels") ArrayList<Location> myHotels,
-      Location myHotel,
-      int[] locationNos,
-      Model model) throws Exception {
-    model.addAttribute("locationNos", locationNos);
-    if (myHotel.getLocationName() != null && !myHotels.contains(myHotel)) {
-      myHotel.setCityCode(trip.getCity().getCityCode());
-      myHotels.add(myHotel);
-      scheduleService.addLocation(myHotel);
-    }
+      @ModelAttribute("selectLoList") List<Location> selectLoList,
+      Model model)
+      throws Exception {
 
-    String cityCode = trip.getCity().getCityCode();
-    List<Location> hotelList = scheduleService.hotelList(cityCode);
+    model.addAttribute("trip", trip);
+    List<Location> hotelList =
+        tourAPIService.showHotel(trip.getCity());
     model.addAttribute("hotelList", hotelList);
   }
 
-  @RequestMapping("addHotel")
-  public void addHotel(Model model) throws Exception {
-    Location myHotel = new Location();
-    model.addAttribute("myHotel", myHotel);
+  @PostMapping("/appendMyHotel")
+  @ResponseBody
+  public List<Location> appendMyHotel(
+      @ModelAttribute("hotelList") List<Location> hotelList,
+      @ModelAttribute("selectHoList") List<Location> selectHoList,
+      @RequestBody List<Integer> dataIndexes,
+      Model model) {
+    for (int i = 0; i < dataIndexes.size(); i++) {
+      if (dataIndexes.get(i) != null) {
+        Location location = hotelList.get(dataIndexes.get(i));
+        selectHoList.set(i, location);
+      } else {
+        selectHoList.set(i, null);
+      }
+      model.addAttribute("selectHoList", selectHoList);
+    }
+    System.out.println("Received dataIndexes: " + dataIndexes);
+    return selectHoList;
   }
 
-  @PostMapping("createSchedule")
+  @GetMapping("createSchedule")
   public void createSchedule(
-      @ModelAttribute("locationNos") List<Integer> locationNos,
-      int[] hotelNos,
-      Model model) throws Exception {
-
-    List<Location> selectedLocation = new ArrayList<>();
-    for (int locationNo : locationNos) {
-      Location location = scheduleService.findLocation(locationNo);
-      selectedLocation.add(location);
-    }
-
-    List<Location> selectedHotel = new ArrayList<>();
-    for (int hotelNo : hotelNos) {
-      Location location = scheduleService.findLocation(hotelNo);
-      selectedHotel.add(location);
-    }
-    model.addAttribute("selectedLocation", selectedLocation);
-    model.addAttribute("selectedHotels", selectedHotel);
-  }
-
-  @PostMapping("selectTripList")
-  public void getTripList(@ModelAttribute Trip trip, Model model) throws Exception {
-    List<Trip> tripList = scheduleService.getTripList(trip);
-    model.addAttribute("tripList", tripList);
-  }
-
-  @PostMapping("editSchedule")
-  public void editSchedule(
-      @ModelAttribute Trip trip,
-      Integer selectedTripNo,
-      Model model) throws Exception {
-    List<Schedule> scheduleList = scheduleService.viewSchedule(selectedTripNo);
-    model.addAttribute("scheduleList", scheduleList);
-  }
-
-  @PostMapping("checkSchedule")
-  public void checkSchedule(
+      @ModelAttribute("selectHoList") List<Location> selectHoList,
+      @ModelAttribute("selectLoList") List<Location> selectLoList,
       @ModelAttribute Trip trip,
       Model model) throws Exception {
-    List<Schedule> scheduleList = scheduleService.orderSchedule(trip.getScheduleList());
-    for (Schedule schedule : scheduleList) {
-      schedule.setLocation(scheduleService.findLocation(schedule.getLocation().getLocationNo()));
-    }
-    model.addAttribute("scheduleList", scheduleList);
-  }
 
-  @PostMapping("saveTrip")
-  public void saveTrip(Model model) throws Exception {
     List<Thema> themas = scheduleService.themaList();
     model.addAttribute("themas", themas);
+    model.addAttribute("stateName", trip.getCity().getState().getStateName());
+    model.addAttribute("cityName", trip.getCity().getCityName());
+    model.addAttribute("startDate", trip.getStartDate());
+    model.addAttribute("endDate", trip.getEndDate());
+    model.addAttribute("totalDay", trip.getTotalDay());
+
+
+    int index = 0;
+
+    List<Schedule> tripScheduleList = new ArrayList<>();
+    for (int i = 0; i < selectHoList.size(); i++) {
+      Schedule schedule = new Schedule();
+      Location location = selectHoList.get(i);
+      schedule.setScheduleNo(index);
+      location.setLocationNo(index++);
+      location.setCityCode(trip.getCity().getCityCode());
+      schedule.setLocation(location);
+
+      schedule.setScheduleDay(i + 1);
+      schedule.setScheduleRoute(0);
+      tripScheduleList.add(schedule);
+    }
+
+    for (int i = 0; i < selectLoList.size(); i++) {
+      Schedule schedule = new Schedule();
+      Location location = selectLoList.get(i);
+      schedule.setScheduleNo(index);
+      location.setLocationNo(index++);
+      schedule.setLocation(location);
+      location.setCityCode(trip.getCity().getCityCode());
+      schedule.setScheduleDay(1);
+      schedule.setScheduleRoute(i + 1);
+      tripScheduleList.add(schedule);
+    }
+
+    tripScheduleList = scheduleService.orderSchedule(tripScheduleList);
+    model.addAttribute("tripScheduleList", tripScheduleList);
+  }
+
+  @PostMapping("update")
+  @ResponseBody
+  public String update(
+      @RequestBody JsonNode schedules,
+      @ModelAttribute("tripScheduleList") List<Schedule> tripScheduleList,
+      @ModelAttribute Trip trip) {
+    try {
+      for (JsonNode scheduleNode : schedules) {
+        Schedule searchSchedule = new Schedule();
+        searchSchedule.setScheduleNo(scheduleNode.get("scheduleNo").asInt());
+        Schedule schedule = tripScheduleList.get(tripScheduleList.indexOf(searchSchedule));
+        schedule.setScheduleDay(scheduleNode.get("scheduleDay").asInt());
+        schedule.setScheduleRoute(scheduleNode.get("scheduleRoute").asInt());
+      }
+
+      tripScheduleList = scheduleService.orderSchedule(tripScheduleList);
+      trip.setScheduleList(tripScheduleList);
+      return "success";
+    } catch (Exception e) {
+      return "error: " + e.getMessage();
+    }
   }
 
   @PostMapping("save")
   public void save(
       @ModelAttribute Trip trip,
-      int themaNo,
+      //      int themaNo,
+      HttpSession session,
       SessionStatus sessionStatus) throws Exception {
-    trip.setUserNo((long)1);
-    Thema thema = scheduleService.getThema(themaNo);
-    trip.setThema(thema);
+
+    //    User loginUser = (User) session.getAttribute("loginUser");
+    //    if (loginUser == null) {
+    //      throw new Exception("로그인이 필요합니다.");
+    //    }
+
+    //    trip.setUserNo(loginUser.getUserNo());
+    //    Thema thema = scheduleService.getThema(themaNo);
+    //    trip.setThema(thema);
     System.out.println("==========================================");
     System.out.println(trip.toString());
     System.out.println("==========================================");
     scheduleService.saveTrip(trip);
     sessionStatus.setComplete();
+  }
+
+  @PostMapping("/invalidate")
+  @ResponseBody
+  public String invalidateSession(SessionStatus status) {
+    status.setComplete();  // @SessionAttributes로 관리하는 세션 초기화
+    return "Session invalidated";
   }
 }
