@@ -2,9 +2,11 @@ package project.tripMaker.controller;
 
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import javax.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -16,10 +18,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.SessionAttribute;
+import org.springframework.web.multipart.MultipartFile;
 import project.tripMaker.service.CommentService;
 import project.tripMaker.service.ReviewService;
 import project.tripMaker.service.ScheduleService;
+import project.tripMaker.service.StorageService;
 import project.tripMaker.vo.Board;
+import project.tripMaker.vo.BoardImage;
 import project.tripMaker.vo.Comment;
 import project.tripMaker.vo.Schedule;
 import project.tripMaker.vo.Trip;
@@ -33,6 +38,10 @@ public class ReviewController {
   private final ReviewService reviewService;
   private final CommentService commentService;
   private final ScheduleService scheduleService;
+
+  private final StorageService storageService;
+
+  private String folderName = "review/";
 
   // ENUM : 리뷰용 게시판 타입
   private static final int BOARD_TYPE_REVIEW = 3;
@@ -120,12 +129,40 @@ public class ReviewController {
   }
 
   @PostMapping("add")
-  public String add(Board board, HttpSession session) throws Exception {
+  public String add(Board board,
+      @RequestParam("imageFiles")MultipartFile[] files,
+      HttpSession session) throws Exception {
     // 로그인 유저 확인
     User loginUser = (User) session.getAttribute("loginUser");
     if (loginUser == null) {
       throw new Exception("로그인이 필요합니다.");
     }
+
+    List<BoardImage> attachedFiles = new ArrayList<>();
+
+    for (MultipartFile file : files) {
+      if (file.getSize() == 0) {
+        continue;
+      }
+
+      BoardImage boardImage = new BoardImage();
+      boardImage.setBoardimageName(UUID.randomUUID().toString());
+      boardImage.setBoardimageDefaultName(file.getOriginalFilename());
+
+      // 첨부 파일을 Object Storage에 올린다.
+      HashMap<String, Object> options = new HashMap<>();
+      options.put(StorageService.CONTENT_TYPE, file.getContentType());
+
+      storageService.upload(
+          folderName + boardImage.getBoardimageName(), // 업로드 파일의 경로(폴더 경로 포함)
+          file.getInputStream(), // 업로드 파일 데이터를 읽어 들일 입력스트림
+          options
+      );
+
+      attachedFiles.add(boardImage);
+    }
+
+    board.setBoardImages(attachedFiles);
 
     int tripNo = board.getTripNo();
     System.out.println(tripNo);
@@ -163,6 +200,17 @@ public class ReviewController {
     List<Trip> tripList = reviewService.getTripsByBoardNo(board.getTripNo());
     List<Schedule> scheduleList = scheduleService.getSchedulesByTripNo(board.getTripNo());
 
+    // 기본 이미지 설정
+    List<BoardImage> images = board.getBoardImages();
+    if (images == null || images.isEmpty()) {
+      images = new ArrayList<>();
+      BoardImage defaultImage = new BoardImage();
+      defaultImage.setBoardimageName("default.jpg"); // 기본 이미지 파일명
+      images.add(defaultImage);
+    }
+
+    board.setBoardImages(images);
+
     model.addAttribute("board", board);
     model.addAttribute("writer", writer);
     model.addAttribute("commentList", commentList);
@@ -185,16 +233,79 @@ public class ReviewController {
     return "redirect:list";
   }
 
+  // 파일삭제
+  @GetMapping("file/delete")
+  public String fileDelete(
+      int fileNo,
+      int boardNo,
+      HttpSession session) throws Exception {
+
+    User loginUser = (User) session.getAttribute("loginUser");
+
+    if (loginUser == null) {
+      throw new Exception("로그인 하지 않았습니다.");
+    }
+
+    BoardImage attachedFile = reviewService.getAttachedFile(fileNo);
+    if (attachedFile == null) {
+      throw new Exception("없는 첨부파일입니다.");
+    }
+
+    Board board = reviewService.get(attachedFile.getBoardNo());
+    if (board.getWriter().getUserNo() != loginUser.getUserNo()) {
+      throw new Exception("삭제 권한이 없습니다.");
+    }
+
+    try {
+      storageService.delete(folderName + attachedFile.getBoardimageName());
+    } catch (Exception e) {
+      System.out.printf("%s 파일 삭제 실패!\n", folderName + attachedFile.getBoardimageName());
+      // 삭제시 에러 무시
+    }
+
+    reviewService.deleteAttachedFile(fileNo);
+    return "redirect:.";
+
+  }
+
   // 수정 페이지 정보전달
   @PostMapping("update")
   public String update(
       @RequestParam("no") Integer boardNo,
       @RequestParam("title") String title,
-      @RequestParam("content") String content
+      @RequestParam("content") String content,
+      MultipartFile[] files
   ) throws Exception {
+
     Board board = reviewService.get(boardNo);
     board.setBoardTitle(title);
     board.setBoardContent(content);
+
+    List<BoardImage> attachedFiles = new ArrayList<>();
+
+    for (MultipartFile file : files) {
+      if (file.getSize() == 0) {
+        continue;
+      }
+
+      BoardImage boardImage = new BoardImage();
+      boardImage.setBoardimageName(UUID.randomUUID().toString());
+      boardImage.setBoardimageDefaultName(file.getOriginalFilename());
+
+      // 첨부 파일을 Object Storage에 올린다.
+      HashMap<String, Object> options = new HashMap<>();
+      options.put(StorageService.CONTENT_TYPE, file.getContentType());
+
+      storageService.upload(
+          folderName + boardImage.getBoardimageName(), // 업로드 파일의 경로(폴더 경로 포함)
+          file.getInputStream(), // 업로드 파일 데이터를 읽어 들일 입력스트림
+          options
+      );
+
+      attachedFiles.add(boardImage);
+    }
+
+    board.setBoardImages(attachedFiles);
 
     reviewService.update(board);
     return "redirect:view?boardNo=" + boardNo;

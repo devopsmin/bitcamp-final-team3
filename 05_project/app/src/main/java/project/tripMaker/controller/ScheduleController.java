@@ -1,16 +1,25 @@
 package project.tripMaker.controller;
 
+import java.util.ArrayList;
+import java.util.List;
 import lombok.Data;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.bind.support.SessionStatus;
 import project.tripMaker.service.CityService;
 import project.tripMaker.service.ScheduleService;
-import project.tripMaker.vo.*;
-
-import java.util.ArrayList;
-import java.util.List;
+import project.tripMaker.vo.City;
+import project.tripMaker.vo.Location;
+import project.tripMaker.vo.Schedule;
+import project.tripMaker.vo.State;
+import project.tripMaker.vo.Thema;
+import project.tripMaker.vo.Trip;
 
 @Data
 @Controller

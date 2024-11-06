@@ -1,9 +1,8 @@
 package project.tripMaker.vo;
 
-import java.util.Map;
-import lombok.Data;
 import java.util.Date;
 import java.util.List;
+import lombok.Data;
 
 @Data
 public class Board {
@@ -28,4 +27,5 @@ public class Board {
   private int tmpNo;              // 순서대로 번호
 
   private Trip trip;              // 여행
+  private List<BoardImage> boardImages;  // 게시판 첨부 이미지
 }

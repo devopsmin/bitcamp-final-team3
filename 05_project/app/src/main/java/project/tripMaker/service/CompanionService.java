@@ -4,10 +4,10 @@ import lombok.Data;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import project.tripMaker.dao.BoardCompanionDao;
-import project.tripMaker.vo.Board;
 
 import java.util.HashMap;
 import java.util.List;
+import project.tripMaker.vo.Board;
 
 @Data
 @Service

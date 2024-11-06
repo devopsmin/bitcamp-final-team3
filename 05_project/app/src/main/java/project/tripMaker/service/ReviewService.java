@@ -6,8 +6,10 @@ import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import project.tripMaker.dao.BoardReviewDao;
 import project.tripMaker.dao.CommentDao;
 import project.tripMaker.vo.Board;
+import project.tripMaker.vo.BoardImage;
 import project.tripMaker.vo.Trip;
 
 @Service
@@ -69,22 +71,40 @@ public class ReviewService implements BoardService {
   public void add(Board board) throws Exception {
     board.setBoardtypeNo(BOARD_TYPE_REVIEW); // 게시판 타입 설정
     boardReviewDao.insert(board);
+
+
+    if (board.getBoardImages().size() > 0) {
+      boardReviewDao.insertFiles(board);
+    }
   }
 
   // 게시글 찾기
   public Board get(int boardNo) throws Exception {
-    return boardReviewDao.findBy(boardNo);
+    Board board = boardReviewDao.findBy(boardNo);
+
+    if (board != null) {
+      List<BoardImage> images = boardReviewDao.findImagesByBoardNo(boardNo); // 모든 이미지를 가져옵니다.
+      System.out.println("Retrieved images: " + images); // 디버깅용 로그 출력
+      board.setBoardImages(images); // Board 객체에 이미지 리스트 설정
+    }
+    return board;
+    // return boardReviewDao.findBy(boardNo);
   }
 
   // 게시글 삭제
   @Transactional
   public void delete(int boardNo) throws Exception {
+    boardReviewDao.deleteFiles(boardNo);
     boardReviewDao.delete(boardNo);
   }
 
   // 게시글 수정
   @Transactional
   public boolean update(Board board) throws Exception {
+    if(board.getBoardImages().size() > 0){
+      boardReviewDao.insertFiles(board);
+    }
+
     return boardReviewDao.update(board);
   }
 
@@ -183,4 +203,19 @@ public class ReviewService implements BoardService {
   public int getCommentCount(int boardNo) throws Exception {
     return commentDao.countByBoardNo(boardNo);
   }
+
+  // 첨부파일 가져오기
+  public BoardImage getAttachedFile(int fileNo) throws Exception {
+    return boardReviewDao.getFile(fileNo);
+  }
+
+  // 첨부파일 삭제하기
+  @Transactional
+  public boolean deleteAttachedFile(int fileNo) throws Exception {
+    if (!boardReviewDao.deleteFile(fileNo)) {
+      return false;
+    }
+    return true;
+  }
+
 }

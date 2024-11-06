@@ -40,6 +40,13 @@
             <result property="commentContent" column="comment_content"/>
             <result property="commentCreatedDate" column="comment_created_date"/>
         </collection>
+
+      <collection property="boardImages" ofType="project.tripMaker.vo.BoardImage">
+        <id property="boardNo" column="board_no"/>
+        <result property="boardimageNo" column="boardimage_no"/>
+        <result property="boardimageName" column="boardimage_name"/>
+        <result property="boardimageDefaultName" column="boardimage_default_name"/>
+      </collection>
     </resultMap>
 
   <resultMap id="TripMap" type="project.tripMaker.vo.Trip">
@@ -87,6 +94,13 @@
         <result property="locationY" column="location_y"/>
       </association>
     </collection>
+  </resultMap>
+
+  <resultMap id="BoardImageMap" type="project.tripMaker.vo.BoardImage">
+    <id property="boardimageNo" column="boardimage_no"/>
+    <result property="boardNo" column="board_no"/>
+    <result property="boardimageName" column="boardimage_name"/>
+    <result property="boardimageDefaultName" column="boardimage_default_name"/>
   </resultMap>
 
     <select id="list" resultMap="BoardMap">
@@ -522,6 +536,20 @@
       AND c.city_name LIKE CONCAT('%', #{city}, '%')
     ORDER BY
       b.board_no ASC
+  </select>
+
+  <insert id="insertFiles" parameterType="project.tripMaker.vo.Board">
+    INSERT INTO boardimage (board_no, boardimage_name, boardimage_default_name)
+    VALUES
+    <foreach collection="boardImages" item="image" separator=",">
+      (#{boardNo}, #{image.boardimageName}, #{image.boardimageDefaultName})
+    </foreach>
+  </insert>
+
+  <select id="findImagesByBoardNo" resultMap="BoardImageMap">
+    SELECT boardimage_no, board_no, boardimage_name, boardimage_default_name
+    FROM boardimage
+    WHERE board_no = #{boardNo}
   </select>
 
 </mapper>

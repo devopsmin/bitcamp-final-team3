@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import project.tripMaker.board.BoardType;
 import project.tripMaker.service.CommentService;
-import project.tripMaker.service.CommentService;
 import project.tripMaker.service.UserService;
 import project.tripMaker.vo.Comment;
 import project.tripMaker.vo.User;

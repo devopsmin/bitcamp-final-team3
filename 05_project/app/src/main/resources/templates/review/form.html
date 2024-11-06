@@ -13,7 +13,7 @@
 
   <!-- 여행 후기 작성 -->
   <div class="mt-5">
-    <form id="reviewForm" action="add" method="post" onsubmit="combineContent()">
+    <form id="reviewForm" action="add" method="post" onsubmit="combineContent()" enctype="multipart/form-data">
       <div class="mb-3">
         <label for="boardTitle" class="form-label">제목</label>
         <input id="boardTitle" name="boardTitle" type="text" class="form-control">
@@ -46,7 +46,7 @@
       <!-- 파일 첨부 -->
       <div class="mb-3">
         <label for="file-upload" class="form-label">파일 첨부</label>
-        <input id="file-upload" name="imageFile" type="file" class="form-control">
+        <input id="file-upload" name="imageFiles" type="file" class="form-control" multiple>
       </div>
 
       <button type="submit" class="btn btn-primary">등록</button>

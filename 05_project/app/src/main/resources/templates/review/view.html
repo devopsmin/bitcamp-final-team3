@@ -96,14 +96,37 @@
             </tr>
             </tbody>
         </table>
+        <br>
 
-        <br>
-        <div class="box">
-            <i class="fa-regular fa-image"></i>
-            이미지 예정
+<!--        <div class="boardImages">-->
+<!--            <div data-th-each="image : ${board.boardImages}">-->
+<!--                <a data-th-href="${image.boardimageName == null ? 'https://kr.object.ncloudstorage.com/bitcamp-bucket102/review/default.jpg' : 'https://kr.object.ncloudstorage.com/bitcamp-bucket102/review/' + image.boardimageName}"-->
+<!--                   href="/images/default.png">-->
+<!--                    <img data-th-src="${image.boardimageName == null ? 'https://rz0apkvp4931.edge.naverncp.com/GIub2Lc5DE/review/default.jpg?type=u&w=600&h=400' : 'https://rz0apkvp4931.edge.naverncp.com/GIub2Lc5DE/review/' + image.boardimageName + '?type=u&w=600&h=400'}"-->
+<!--                         src="/images/default.png" class="img-thumbnail">-->
+<!--                </a>-->
+<!--            </div>-->
+<!--        </div>-->
+
+        <div class="boardImages">
+            <div data-th-each="image : ${board.boardImages}">
+                <a data-th-href="${image != null && image.boardimageName != null ? 'https://kr.object.ncloudstorage.com/bitcamp-bucket102/review/' + image.boardimageName : 'https://kr.object.ncloudstorage.com/bitcamp-bucket102/review/default.jpg'}"
+                   href="/images/default.png">
+                    <img data-th-src="${image != null && image.boardimageName != null ? 'https://rz0apkvp4931.edge.naverncp.com/GIub2Lc5DE/review/' + image.boardimageName + '?type=u&w=600&h=400' : 'https://rz0apkvp4931.edge.naverncp.com/GIub2Lc5DE/review/default.jpg?type=u&w=600&h=400'}"
+                         src="/images/default.png" class="img-thumbnail">
+                </a>
+            </div>
         </div>
+
+
+        <!--        <div class="boardImage" data-th-object="${boardImage}">-->
+<!--            <a data-th-href="${boardImageName == null ? 'https://kr.object.ncloudstorage.com/bitcamp-bucket102/review/default.jpg' : 'https://kr.object.ncloudstorage.com/bitcamp-bucket102/review/' + boardImageName}"-->
+<!--               href="/images/default.png">-->
+<!--                <img data-th-src="${boardImageName == null ? 'https://rz0apkvp4931.edge.naverncp.com/GIub2Lc5DE/review/default.jpg?type=u&w=600&h=400' : 'https://rz0apkvp4931.edge.naverncp.com/GIub2Lc5DE/review/' + boardImageName + '?type=u&w=600&h=400'}"-->
+<!--                     src="/images/default.png">-->
+<!--            </a>-->
+<!--        </div>-->
         <br>
-        내용: <textarea readonly name="content" data-th-text="${board.boardContent}" rows="8" cols="70"></textarea><br>
 
 <!--디버깅-->
         <p>디버깅용 : 로그인 유저: <span data-th-text="${session.loginUser.userNo}"></span></p>

@@ -11,9 +11,9 @@ import project.tripMaker.service.QuestionService;
 import project.tripMaker.service.CommentService;
 import project.tripMaker.service.ScheduleService;
 import project.tripMaker.service.UserService;
-import project.tripMaker.vo.Board;
 
 import java.util.List;
+import project.tripMaker.vo.Board;
 import project.tripMaker.vo.Comment;
 import project.tripMaker.vo.User;
 
