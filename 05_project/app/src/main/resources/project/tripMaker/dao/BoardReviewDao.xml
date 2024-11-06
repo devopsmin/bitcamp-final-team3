@@ -538,6 +538,7 @@
       b.board_no ASC
   </select>
 
+<!--  파일첨부-->
   <insert id="insertFiles" parameterType="project.tripMaker.vo.Board">
     INSERT INTO boardimage (board_no, boardimage_name, boardimage_default_name)
     VALUES
@@ -546,10 +547,30 @@
     </foreach>
   </insert>
 
+<!--  게시판번호로 파일 찾기-->
   <select id="findImagesByBoardNo" resultMap="BoardImageMap">
     SELECT boardimage_no, board_no, boardimage_name, boardimage_default_name
     FROM boardimage
     WHERE board_no = #{boardNo}
   </select>
+
+  <!-- 특정 파일 조회 -->
+  <select id="getFile" parameterType="int" resultMap="BoardImageMap">
+    SELECT boardimage_no, board_no, boardimage_name, boardimage_default_name
+    FROM boardimage
+    WHERE boardimage_no = #{fileNo}
+  </select>
+
+  <!-- 특정 파일 삭제 -->
+  <delete id="deleteFile" parameterType="int">
+    DELETE FROM boardimage
+    WHERE boardimage_no = #{fileNo}
+  </delete>
+
+  <!-- 게시글에 연결된 모든 파일 삭제 -->
+  <delete id="deleteFiles" parameterType="int">
+    DELETE FROM boardimage
+    WHERE board_no = #{boardNo}
+  </delete>
 
 </mapper>

@@ -11,6 +11,7 @@ import javax.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -234,16 +235,16 @@ public class ReviewController {
   }
 
   // 파일삭제
-  @GetMapping("file/delete")
-  public String fileDelete(
-      int fileNo,
-      int boardNo,
+  @DeleteMapping("file/delete")
+  public String deleteFile(
+      @RequestParam("fileNo") int fileNo,
+      @RequestParam("boardNo") int boardNo,
       HttpSession session) throws Exception {
 
     User loginUser = (User) session.getAttribute("loginUser");
 
     if (loginUser == null) {
-      throw new Exception("로그인 하지 않았습니다.");
+      throw new Exception("로그인하지 않았습니다.");
     }
 
     BoardImage attachedFile = reviewService.getAttachedFile(fileNo);
@@ -251,21 +252,20 @@ public class ReviewController {
       throw new Exception("없는 첨부파일입니다.");
     }
 
-    Board board = reviewService.get(attachedFile.getBoardNo());
+    Board board = reviewService.get(boardNo);
     if (board.getWriter().getUserNo() != loginUser.getUserNo()) {
       throw new Exception("삭제 권한이 없습니다.");
     }
 
+    // 파일 삭제
     try {
       storageService.delete(folderName + attachedFile.getBoardimageName());
+      reviewService.deleteAttachedFile(fileNo);
     } catch (Exception e) {
-      System.out.printf("%s 파일 삭제 실패!\n", folderName + attachedFile.getBoardimageName());
-      // 삭제시 에러 무시
+      System.out.printf("파일 삭제 실패: %s\n", folderName + attachedFile.getBoardimageName());
     }
 
-    reviewService.deleteAttachedFile(fileNo);
-    return "redirect:.";
-
+    return "redirect:view?boardNo=" + boardNo;
   }
 
   // 수정 페이지 정보전달
@@ -274,6 +274,7 @@ public class ReviewController {
       @RequestParam("no") Integer boardNo,
       @RequestParam("title") String title,
       @RequestParam("content") String content,
+      @RequestParam(value = "deletedImages", required = false) String deletedImages,
       MultipartFile[] files
   ) throws Exception {
 
@@ -281,30 +282,29 @@ public class ReviewController {
     board.setBoardTitle(title);
     board.setBoardContent(content);
 
-    List<BoardImage> attachedFiles = new ArrayList<>();
-
-    for (MultipartFile file : files) {
-      if (file.getSize() == 0) {
-        continue;
+    // 삭제된 이미지 파일 처리
+    if (deletedImages != null && !deletedImages.isEmpty()) {
+      String[] imageIds = deletedImages.split(",");
+      for (String imageId : imageIds) {
+        reviewService.deleteAttachedFile(Integer.parseInt(imageId));
       }
+    }
+
+    // 새로 추가된 이미지 파일 처리
+    List<BoardImage> attachedFiles = new ArrayList<>();
+    for (MultipartFile file : files) {
+      if (file.getSize() == 0) continue;
 
       BoardImage boardImage = new BoardImage();
       boardImage.setBoardimageName(UUID.randomUUID().toString());
       boardImage.setBoardimageDefaultName(file.getOriginalFilename());
 
-      // 첨부 파일을 Object Storage에 올린다.
       HashMap<String, Object> options = new HashMap<>();
       options.put(StorageService.CONTENT_TYPE, file.getContentType());
-
-      storageService.upload(
-          folderName + boardImage.getBoardimageName(), // 업로드 파일의 경로(폴더 경로 포함)
-          file.getInputStream(), // 업로드 파일 데이터를 읽어 들일 입력스트림
-          options
-      );
+      storageService.upload(folderName + boardImage.getBoardimageName(), file.getInputStream(), options);
 
       attachedFiles.add(boardImage);
     }
-
     board.setBoardImages(attachedFiles);
 
     reviewService.update(board);
@@ -322,6 +322,8 @@ public class ReviewController {
 
     List<Trip> tripList = reviewService.getTripsByBoardNo(board.getTripNo());
     List<Schedule> scheduleList = scheduleService.getSchedulesByTripNo(board.getTripNo());
+
+
 
     model.addAttribute("board", board);
     model.addAttribute("writer", writer);

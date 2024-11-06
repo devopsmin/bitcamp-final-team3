@@ -46,8 +46,48 @@
       <!-- 파일 첨부 -->
       <div class="mb-3">
         <label for="file-upload" class="form-label">파일 첨부</label>
-        <input id="file-upload" name="imageFiles" type="file" class="form-control" multiple>
+        <input id="file-upload" name="imageFiles" type="file" class="form-control" multiple onchange="previewImages()">
       </div>
+
+      <!-- 미리보기 컨테이너 -->
+      <div id="previewContainer" class="mb-3"></div>
+
+      <script>
+        function previewImages() {
+          const previewContainer = document.getElementById('previewContainer');
+          previewContainer.innerHTML = ''; // 기존 미리보기 초기화
+
+          const files = document.getElementById('file-upload').files;
+          Array.from(files).forEach((file, index) => {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+              const previewItem = document.createElement('div');
+              previewItem.classList.add('d-inline-block', 'position-relative', 'm-2');
+
+              previewItem.innerHTML = `
+          <img src="${e.target.result}" class="img-thumbnail" style="width: 100px; height: 100px;">
+          <p class="text-center mt-1">${file.name}</p>
+          <button type="button" class="btn-close position-absolute top-0 end-0" onclick="removeImage(${index})"></button>
+        `;
+
+              previewContainer.appendChild(previewItem);
+            };
+            reader.readAsDataURL(file);
+          });
+        }
+
+        function removeImage(index) {
+          const fileInput = document.getElementById('file-upload');
+          const dt = new DataTransfer();
+
+          Array.from(fileInput.files).forEach((file, i) => {
+            if (i !== index) dt.items.add(file); // 선택한 인덱스 제외
+          });
+
+          fileInput.files = dt.files;
+          previewImages(); // 미리보기 다시 로드
+        }
+      </script>
 
       <button type="submit" class="btn btn-primary">등록</button>
     </form>

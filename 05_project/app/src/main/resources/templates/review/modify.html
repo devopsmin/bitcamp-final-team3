@@ -77,11 +77,73 @@
         <textarea name="content" id="boardContent" style="display:none;" th:text="${board.boardContent}"></textarea>
         <input type="hidden" name="tripNo" id="tripNo" th:value="${board.tripNo}">
 
-        <!-- 파일 첨부 버튼 -->
+        <!-- 기존 첨부 이미지 미리보기 -->
+        <div id="existingImagesContainer" class="mb-3">
+            <h5>기존 첨부 이미지</h5>
+            <div data-th-each="image : ${board.boardImages}" class="d-inline-block position-relative m-2">
+                <img data-th-src="@{'https://dgg7dnk35523.edge.naverncp.com/HZiW9aEJy7/review/' + ${image.boardimageName}}" class="img-thumbnail" style="width: 100px; height: 100px;">
+                <p class="text-center mt-1" data-th-text="${image.boardimageDefaultName}"></p>
+                <button type="button" class="btn-close position-absolute top-0 end-0"
+                        onclick="removeExistingImage([[${image.boardimageNo}]])"></button>
+            </div>
+        </div>
+
+        <!-- 새 파일 첨부 버튼 -->
         <div class="mb-3">
             <label for="file-upload" class="form-label">파일 첨부</label>
-            <input id="file-upload" name="imageFile" type="file" class="form-control">
+            <input id="file-upload" name="imageFile" type="file" class="form-control" multiple onchange="previewImages()">
         </div>
+
+        <!-- 미리보기 컨테이너 -->
+        <div id="previewContainer" class="mb-3"></div>
+
+        <script>
+            function removeExistingImage(imageId) {
+                // hidden input field to keep track of deleted image IDs
+                const deletedImagesInput = document.getElementById('deletedImages');
+                deletedImagesInput.value += imageId + ','; // add the image ID to be deleted
+                document.querySelector(`[data-image-id="${imageId}"]`).remove(); // remove the image preview
+            }
+        </script>
+
+        <input type="hidden" name="deletedImages" id="deletedImages">
+
+        <script>
+            function previewImages() {
+                const previewContainer = document.getElementById('previewContainer');
+                previewContainer.innerHTML = ''; // 기존 미리보기 초기화
+
+                const files = document.getElementById('file-upload').files;
+                Array.from(files).forEach((file, index) => {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        const previewItem = document.createElement('div');
+                        previewItem.classList.add('d-inline-block', 'position-relative', 'm-2');
+
+                        previewItem.innerHTML = `
+                    <img src="${e.target.result}" class="img-thumbnail" style="width: 100px; height: 100px;">
+                    <p class="text-center mt-1">${file.name}</p>
+                    <button type="button" class="btn-close position-absolute top-0 end-0" onclick="removeImage(${index})"></button>
+                `;
+
+                        previewContainer.appendChild(previewItem);
+                    };
+                    reader.readAsDataURL(file);
+                });
+            }
+
+            function removeImage(index) {
+                const fileInput = document.getElementById('file-upload');
+                const dt = new DataTransfer();
+
+                Array.from(fileInput.files).forEach((file, i) => {
+                    if (i !== index) dt.items.add(file); // 선택한 인덱스 제외
+                });
+
+                fileInput.files = dt.files;
+                previewImages(); // 미리보기 다시 로드
+            }
+        </script>
 
         <button type="button" onclick="location.href='list'" class="btn btn-secondary me-2">목록</button>
         <button type="submit" class="btn btn-primary">변경</button>

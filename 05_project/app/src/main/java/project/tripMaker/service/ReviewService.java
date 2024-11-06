@@ -218,4 +218,10 @@ public class ReviewService implements BoardService {
     return true;
   }
 
+  // 게시글 관련 지울떄 싹다 지우기
+  @Transactional 
+  public void deleteAllFiles(int boardNo) throws Exception {
+    boardReviewDao.deleteFiles(boardNo);
+  }
+
 }

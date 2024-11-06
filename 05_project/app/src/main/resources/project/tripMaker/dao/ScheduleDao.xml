@@ -28,26 +28,6 @@
             </association>
         </association>
 
-        <association property="board" javaType="Board">
-            <id property="boardNo" column="board_no"/>
-            <result property="tmpNo" column="tmp_no"/>
-            <result property="boardtypeNo" column="boardtype_no"/>
-            <result property="boardTitle" column="board_title"/>
-            <result property="boardCount" column="board_count"/>
-            <result property="boardCreatedDate" column="board_created_date"/>
-            <result property="tripNo" column="trip_no"/>
-            <result property="boardContent" column="board_content"/>
-            <result property="boardTag" column="board_tag"/>
-            <result property="boardLike" column="like_count"/>
-            <result property="boardFavor" column="favor_count"/>
-
-            <association property="writer" javaType="project.tripMaker.vo.User">
-                <id property="userNo" column="user_no" javaType="java.lang.Long"/>
-                <result property="userNickname" column="user_nickname"/>
-                <result property="userPhoto" column="user_photo"/>
-            </association>
-        </association>
-
         <collection property="scheduleList" ofType="Schedule">
             <id column="schedule_no" property="scheduleNo"/>
             <result column="trip_no" property="tripNo"/>
