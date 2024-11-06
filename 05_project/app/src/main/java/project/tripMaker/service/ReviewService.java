@@ -6,8 +6,6 @@ import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import project.tripMaker.dao.BoardDao;
-import project.tripMaker.dao.BoardReviewDao;
 import project.tripMaker.dao.CommentDao;
 import project.tripMaker.vo.Board;
 import project.tripMaker.vo.Trip;

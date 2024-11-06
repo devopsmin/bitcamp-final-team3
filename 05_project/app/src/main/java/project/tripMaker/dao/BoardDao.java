@@ -10,5 +10,5 @@ import java.util.Map;
 @Mapper
 public interface BoardDao {
   //월요일에 공통 기능만 추가
-
+111
 }
