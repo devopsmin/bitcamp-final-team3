@@ -23,7 +23,7 @@
     <div class="alert alert-danger mt-4" data-th-unless="${board}">없는 게시글입니다.</div>
 
     <!-- 게시글이 있을 경우 -->
-    <form data-th-if="${board}" th:action="@{update}" method="post" class="mt-4">
+    <form data-th-if="${board}" data-th-action="@{update}" method="post" class="mt-4">
         <div class="mb-3">
             <label for="no" class="form-label">게시글 번호</label>
             <input id="no" name="no" type="text" class="form-control" readonly th:value="${board.boardNo}">
@@ -116,10 +116,12 @@
     let hiddenImages = new Map();
 
     function removeExistingImage(imageId) {
+        console.log("실행됬니?")
         const imageElement = document.querySelector(`[data-image-id="${imageId}"]`);
         if (imageElement) {
             // 이미지 요소를 숨기고, 삭제할 목록에 추가
             imageElement.style.display = 'none';
+            hiddenImages.set(imageId, imageElement);
             deletedImages.add(imageId); // Set에 이미지 ID 추가
             document.getElementById('deletedImages').value = Array.from(deletedImages).join(','); // 업데이트
         }
