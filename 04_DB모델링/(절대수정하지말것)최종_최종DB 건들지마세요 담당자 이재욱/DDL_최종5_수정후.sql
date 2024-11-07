@@ -72,9 +72,14 @@ DROP TABLE IF EXISTS locationtype RESTRICT;
 -- 동행정보
 DROP TABLE IF EXISTS companioninfo RESTRICT;
 
+-- 댓글 좋아요
+DROP TABLE IF EXISTS commentlike RESTRICT;
+
+
 -- View 삭제
 DROP VIEW boardlike_count_view;
 DROP VIEW favor_count_view;
+DROP VIEW commentlike_count_view;
 
 -- 여행
 CREATE TABLE trip (
@@ -179,6 +184,54 @@ ALTER TABLE comment
 
 ALTER TABLE comment
 	MODIFY COLUMN comment_no INTEGER NOT NULL AUTO_INCREMENT COMMENT '댓글번호';
+
+	-- 댓글 좋아요
+DROP TABLE IF EXISTS commentlike RESTRICT;
+
+-- View 삭제
+DROP VIEW commentlike_count_view;
+
+-- 댓글 좋아요
+CREATE TABLE commentlike (
+   comment_no      INTEGER  NOT NULL COMMENT '댓글번호', -- 댓글번호
+   user_no       BIGINT   NOT NULL COMMENT '유저번호', -- 유저번호
+   commentlike_add_date DATETIME NULL     DEFAULT now() COMMENT '추가일자' -- 추가일자
+)
+COMMENT '댓글 좋아요';
+
+-- 댓글 좋아요
+ALTER TABLE commentlike
+   ADD CONSTRAINT PK_commentlike -- 좋아요 기본키
+   PRIMARY KEY (
+   comment_no, -- 댓글번호
+   user_no   -- 유저번호
+   );
+
+-- 댓글 좋아요
+ALTER TABLE commentlike
+   ADD CONSTRAINT FK_comment_TO_commentlike -- 댓글 -> 좋아요
+   FOREIGN KEY (
+   comment_no -- 댓글번호
+   )
+   REFERENCES comment ( -- 댓글
+   comment_no -- 댓글번호
+   );
+
+-- 댓글 좋아요
+ALTER TABLE commentlike
+   ADD CONSTRAINT FK_user_TO_commentlike -- 유저 -> 좋아요
+   FOREIGN KEY (
+   user_no -- 유저번호
+   )
+   REFERENCES user ( -- 유저
+   user_no -- 유저번호
+   );
+
+-- Count 조회용 commentLike View 생성
+CREATE VIEW commentlike_count_view AS
+SELECT comment_no, COUNT(*) AS comment_like_count
+FROM commentlike
+GROUP BY comment_no;
 
 -- 여행지유형대분류
 CREATE TABLE firstclass (
