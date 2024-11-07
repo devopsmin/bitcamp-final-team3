@@ -11,41 +11,62 @@
 <header>
 </header>
 
-<h1>여행지역 선택</h1>
+<div class="container">
+    <div class="row">
+        <!-- 왼쪽 컨테이너 -->
+        <div class="col-md-6">
+            <div class="row justify-content-center">
+                <div class="col-auto">
+                    <div class="d-flex justify-content-center gap-3">
+                        <div class="mb-3">
+                            <select class="form-select" id="stateCode" name="stateCode">
+                                <option value="">시도 선택</option>
+                                <option data-th-each="state : ${stateList}"
+                                        data-th-text="${state.stateName}"
+                                        data-th-value="${state.stateCode}">시도명
+                                </option>
+                            </select>
+                        </div>
 
+                        <div class="mb-3">
+                            <select class="form-select" id="cityCode" name="cityCode">
+                                <option value="">시군구 선택</option>
+                            </select>
+                        </div>
+                    </div>
 
-<select id="stateCode" name="stateCode" onchange="fetchCityList()">
-    <option value="">시도 선택</option>
-    <option data-th-each="state : ${stateList}"
-            data-th-text="${state.stateName}"
-            data-th-value="${state.stateCode}">시도명
-    </option>
-</select>
+                    <div class="d-flex justify-content-center gap-3">
+                        <!-- 일정 생성 폼 -->
+                        <form action="/schedule/selectLocation" id="createScheduleForm" method="post">
+                            <input name="tripType" type="hidden" value="/schedule/selectLocation"/>
+                            <input id="cityCodeHidden" name="cityCode" type="hidden">
+                            <button class="btn btn-primary" type="submit">일정생성</button>
+                        </form>
 
-<select id="cityCode" name="cityCode">
-    <option value="">시군구 선택</option>
-</select>
+                        <!-- 일정 가져오기 폼 -->
+                        <form action="/schedule/makeTrip" id="fetchScheduleForm" method="post">
+                            <input name="tripType" type="hidden" value="/schedule/selectTripList"/>
+                            <input id="stateCodeHiddenFetch" name="stateCode" type="hidden">
+                            <input id="stateNameHiddenFetch" name="stateName" type="hidden">
+                            <input id="cityCodeHiddenFetch" name="cityCode" type="hidden">
+                            <input id="cityNameHiddenFetch" name="cityName" type="hidden">
+                            <button class="btn btn-secondary" type="submit">일정가져오기</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-<!-- 일정 생성 폼 -->
-<form action="/schedule/selectLocation" id="createScheduleForm" method="post">
-    <input name="tripType" type="hidden" value="/schedule/selectLocation"/>
-    <input id="cityCodeHidden" name="cityCode" type="hidden">
-    <div class="btn btn-mint">
-        <button class="custom-btn custom-btn-white" type="submit">일정생성</button>
+        <!-- 오른쪽 컨테이너 -->
+        <div class="col-md-6">
+            <div class="border rounded p-3">
+                <!-- 여기에 오른쪽 컨텐츠를 넣으세요 -->
+                <h3>오른쪽 컨텐츠</h3>
+                <p>여기에 원하는 내용을 넣을 수 있습니다.</p>
+            </div>
+        </div>
     </div>
-</form>
-
-<!-- 일정 가져오기 폼 -->
-<form action="/schedule/makeTrip" id="fetchScheduleForm" method="post">
-    <input name="tripType" type="hidden" value="/schedule/selectTripList"/>
-    <input id="stateCodeHiddenFetch" name="stateCode" type="hidden">
-    <input id="stateNameHiddenFetch" name="stateName" type="hidden">
-    <input id="cityCodeHiddenFetch" name="cityCode" type="hidden">
-    <input id="cityNameHiddenFetch" name="cityName" type="hidden">
-    <div class="btn btn-black">
-        <button class="custom-btn custom-btn-white" type="submit">일정가져오기</button>
-    </div>
-</form>
+</div>
 
 <script>
     // 변환된 JSON 데이터 사용 예시
@@ -110,78 +131,7 @@
         }
         document.getElementById('cityCodeHiddenFetch').value = selectedCity;
     });
-
-
-    // document.getElementById('createScheduleForm').addEventListener('submit', function (event) {
-    //     document.getElementById('stateCodeHidden').value = document.getElementById('stateCode').value;
-    //     document.getElementById('cityCodeHidden').value = document.getElementById('cityCode').value;
-    // });
-    //
-    // document.getElementById('fetchScheduleForm').addEventListener('submit', function (event) {
-    //     document.getElementById('stateCodeHiddenFetch').value = document.getElementById('stateCode').value;
-    //     document.getElementById('cityCodeHiddenFetch').value = document.getElementById('cityCode').value;
-    // });
-    //
-    // // 시도 선택 시 시군구 리스트를 불러오는 함수 (POST 요청)
-    // function fetchCityList() {
-    //     // 선택된 옵션 요소 가져오기
-    //     const selectedOption = document.getElementById('stateCode').selectedOptions[0];
-    //
-    //     // 선택된 옵션에서 data-state 속성 값 가져오기
-    //     const stateData = selectedOption.getAttribute('data-state');
-    //
-    //     if (stateData) {
-    //         const state = JSON.parse(stateData);
-    //
-    //         fetch('/schedule/selectCity', {
-    //             method: 'POST',
-    //             headers: {
-    //                 'Content-Type': 'application/json'  // JSON 형식으로 전송
-    //             },
-    //             body: JSON.stringify(state)  // State 객체를 JSON 문자열로 변환하여 전송
-    //         })
-    //             .then(response => response.json())
-    //             .then(data => {
-    //                 const citySelect = document.getElementById('cityCode');
-    //                 citySelect.innerHTML = ''; // 기존 옵션 초기화
-    //
-    //                 data.forEach(city => {
-    //                     const option = document.createElement('option');
-    //                     option.value = city.cityCode;
-    //                     option.textContent = city.cityName;
-    //                     citySelect.appendChild(option); // 새로운 옵션 추가
-    //                 });
-    //             })
-    //             .catch(error => console.error('Error fetching city list:', error));
-    //     }
-    // }
 </script>
 
 </body>
 </html>
-<!--stateList.forEach(state => {-->
-<!--const option = document.createElement('option');-->
-<!--option.value = state.code;-->
-<!--option.textContent = state.name;-->
-<!--stateSelect.appendChild(option);-->
-<!--});-->
-
-<!--document.getElementById('createScheduleForm').addEventListener('submit', function (event) {-->
-<!--const selectedState = document.getElementById('stateCode').selectedOptions[0];-->
-<!--const selectedCity = document.getElementById('cityCode').selectedOptions[0];-->
-<!--document.getElementById('stateCodeHidden').value = selectedState.value;-->
-<!--document.getElementById('stateNameHidden').value = selectedState.textContent; // stateName 설정-->
-<!--document.getElementById('cityCodeHidden').value = selectedCity.value;-->
-<!--document.getElementById('cityNameHidden').value = selectedCity.textContent;-->
-
-
-<!--});-->
-
-<!--document.getElementById('fetchScheduleForm').addEventListener('submit', function (event) {-->
-<!--const selectedState = document.getElementById('stateCode').selectedOptions[0];-->
-<!--const selectedCity = document.getElementById('cityCode').selectedOptions[0];-->
-<!--document.getElementById('stateCodeHiddenFetch').value = selectedState.value;-->
-<!--document.getElementById('stateNameHiddenFetch').value = selectedState.textContent; // stateName 설정-->
-<!--document.getElementById('cityCodeHiddenFetch').value = selectedCity.value;-->
-<!--document.getElementById('cityNameHiddenFetch').value = selectedCity.textContent;-->
-<!--});-->

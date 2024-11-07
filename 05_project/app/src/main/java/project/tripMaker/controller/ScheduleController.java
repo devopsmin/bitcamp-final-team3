@@ -202,9 +202,12 @@ public class ScheduleController {
   public String update(
       @RequestBody JsonNode schedules,
       @ModelAttribute("tripScheduleList") List<Schedule> tripScheduleList,
-      @ModelAttribute Trip trip) {
+      @ModelAttribute Trip trip,
+      Model model) {
+
     try {
       for (JsonNode scheduleNode : schedules) {
+        System.out.println("============" + scheduleNode);
         Schedule searchSchedule = new Schedule();
         searchSchedule.setScheduleNo(scheduleNode.get("scheduleNo").asInt());
         Schedule schedule = tripScheduleList.get(tripScheduleList.indexOf(searchSchedule));
@@ -214,6 +217,7 @@ public class ScheduleController {
 
       tripScheduleList = scheduleService.orderSchedule(tripScheduleList);
       trip.setScheduleList(tripScheduleList);
+      model.addAttribute("Trip", trip);
       return "success";
     } catch (Exception e) {
       return "error: " + e.getMessage();
@@ -227,12 +231,12 @@ public class ScheduleController {
       HttpSession session,
       SessionStatus sessionStatus) throws Exception {
 
-    //    User loginUser = (User) session.getAttribute("loginUser");
-    //    if (loginUser == null) {
-    //      throw new Exception("로그인이 필요합니다.");
-    //    }
+    User loginUser = (User) session.getAttribute("loginUser");
+    if (loginUser == null) {
+      throw new Exception("로그인이 필요합니다.");
+    }
 
-    //    trip.setUserNo(loginUser.getUserNo());
+    trip.setUserNo(loginUser.getUserNo());
     //    Thema thema = scheduleService.getThema(themaNo);
     //    trip.setThema(thema);
     System.out.println("==========================================");

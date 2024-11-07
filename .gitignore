@@ -325,3 +325,7 @@ gradle-app.setting
 *.hprof
 
 # End of https://www.toptal.com/developers/gitignore/api/gradle,java,intellij,eclipse,windows,macos,linux
+
+
+# Ignore application.properties file to prevent pushing to Git
+src/main/resources/application.properties
