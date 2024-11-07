@@ -59,27 +59,82 @@
 }
 
 /* 카드 크기와 스타일 조정 */
-.card h-100{
-  max-width: 1000px; /* 카드 너비를 이미지에 맞춰 500px로 설정 */
-  margin: auto;
+.card-img-wrapper {
+  position: relative;
+  padding-top: 56.25%; /* 16:9 비율 */
+  overflow: hidden;
 }
 
-.card-img-top {
+.card-img-wrapper img {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
-  height: 150px; /* 이미지 높이를 150px로 설정 */
+  height: 100%;
   object-fit: cover;
 }
 
-.card-body {
-  padding: 20px; /* 카드 본문 영역의 패딩 */
-  font-size: 14px;
+.card {
+  height: 100%;
+  transition: transform 0.2s;
 }
 
-.card-footer {
-  padding: 15px 20px; /* 카드 푸터 영역의 패딩 */
-  font-size: 12px;
-  text-align: center;
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
+
+.card-title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+/* .card {*/
+/*   height: 100%;*/
+/*   transition: transform 0.2s;*/
+/* }*/
+
+/*.card:hover {*/
+/*  transform: translateY(-5px);*/
+/*  box-shadow: 0 4px 8px rgba(0,0,0,0.1);*/
+/*}*/
+
+/*.card-title {*/
+/*  height: 1.5rem;*/
+/*  overflow: hidden;*/
+/*  text-overflow: ellipsis;*/
+/*  white-space: nowrap;*/
+/*}*/
+
+/*.card-text {*/
+/*  flex-grow: 1;*/
+/*}*/
+
+/*.card-footer {*/
+/*  border-top: 1px solid rgba(0,0,0,0.125);*/
+/*}*/
+
+/*.card h-100{*/
+/*  max-width: 1000px; !* 카드 너비를 이미지에 맞춰 500px로 설정 *!*/
+/*  margin: auto;*/
+/*}*/
+
+/*.card-img-top {*/
+/*  width: 100%;*/
+/*  height: 150px; !* 이미지 높이를 150px로 설정 *!*/
+/*  object-fit: cover;*/
+/*}*/
+
+/*.card-body {*/
+/*  padding: 20px; !* 카드 본문 영역의 패딩 *!*/
+/*  font-size: 14px;*/
+/*}*/
+
+/*.card-footer {*/
+/*  padding: 15px 20px; !* 카드 푸터 영역의 패딩 *!*/
+/*  font-size: 12px;*/
+/*  text-align: center;*/
+/*}*/
 
 .box {
   border: 1px solid #ddd;
