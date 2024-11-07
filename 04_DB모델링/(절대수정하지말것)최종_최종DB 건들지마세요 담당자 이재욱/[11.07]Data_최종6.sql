@@ -12,23 +12,21 @@ INSERT INTO sns (sns_name) VALUES
 
 -- 관리자유저 [1]
 INSERT INTO user (user_lastest_login, user_email, user_password, user_tel, user_nickname, user_role, user_block) VALUES
-    (NOW(), 'admin@test.com', '$2a$10$q51Tp9BYIdat6sQoiv3F8.nDhcxazqzex8I1y19.bR1Q.rARDkL7e ', '010-1234-5678', '관리자', 'ROLE_ADMIN', 0);
+    (NOW(), 'admin@test.com', '$2a$10$FVRfGpKHg1rMCVlz6lULmuIHOWZkC9G0D91B5tV0xREKhl6kOn7ye','010-1225-5678', '관리자1', 'ROLE_ADMIN', 0);
 -- 일반유저 [2~6]
 INSERT INTO user (user_lastest_login, user_email, user_password, user_tel, user_nickname, user_role, user_block) VALUES
-                                                                                                                     (NOW(), 'user1@test.com', '$2a$10$q51Tp9BYIdat6sQoiv3F8.nDhcxazqzex8I1y19.bR1Q.rARDkL7e ', '010-1111-1111', '회원1', 'ROLE_USER', 0),
-                                                                                                                     (NOW(), 'user2@test.com', '$2a$10$q51Tp9BYIdat6sQoiv3F8.nDhcxazqzex8I1y19.bR1Q.rARDkL7e ', '010-1212-1212', '회원2', 'ROLE_USER', 1),
-                                                                                                                     (NOW(), 'user3@test.com', '$2a$10$q51Tp9BYIdat6sQoiv3F8.nDhcxazqzex8I1y19.bR1Q.rARDkL7e ', '010-1313-1313', '회원3', 'ROLE_USER', 0),
-                                                                                                                     (NOW(), 'user4@test.com', '$2a$10$q51Tp9BYIdat6sQoiv3F8.nDhcxazqzex8I1y19.bR1Q.rARDkL7e ', '010-1414-1414', '회원4', 'ROLE_USER', 1),
-                                                                                                                     (NOW(), 'user5@test.com', '$2a$10$q51Tp9BYIdat6sQoiv3F8.nDhcxazqzex8I1y19.bR1Q.rARDkL7e ', '010-1515-1515', '회원5', 'ROLE_USER', 0);
-
+                                                                                                                     (NOW(), 'test1@test.com', '$2a$10$45oJp9KqYEAaH1AjhSVu0OJzTpmHNzMnDwpNyPJW3IJ.SN9KOfnsy','010-1234-5678', '회원1', 'ROLE_USER', 0),
+                                                                                                                     (NOW(), 'test2@test.com', '$2a$10$wJrNcsYzep91d2ZDhwnPbO99wqjvlGnFyvRfJDfNQ3onnp/0etBbC','010-1234-5679', '회원2', 'ROLE_USER', 1),
+                                                                                                                     (NOW(), 'test3@test.com', '$2a$10$WwygO.ZaRMDLqnk9oCYn9ug/pwH6XGMo8oTCr4cvbCg7aymHkriqi','010-1234-5680', '회원3', 'ROLE_USER', 0),
+                                                                                                                     (NOW(), 'test4@test.com', '$2a$10$X4ARaX0yemiZjD3fNhR.5eFO11a3QzbZCo6EEwVaHWo6sc7YehfGa','010-1234-5681', '회원4', 'ROLE_USER', 1),
+                                                                                                                     (NOW(), 'test5@test.com', '$2a$10$wKaLLEPmsNpr.VXe5ewRve6ZVJK1VlPebV.//SwqKsJ7m0AFf89ce','010-1234-5682', '회원5', 'ROLE_USER', 0);
 -- 소셜유저 [7~12]
 INSERT INTO user (user_lastest_login, user_email, user_password, user_tel, user_nickname, user_role, user_block, sns_no) VALUES
-                                                                                                                             (NOW(), 'google1@google.com',  '$2a$10$q51Tp9BYIdat6sQoiv3F8.nDhcxazqzex8I1y19.bR1Q.rARDkL7e ', '010-1234-5678', '구글1', 'ROLE_USER', 0, 1),
-                                                                                                                             (NOW(), 'google2@google.com', '$2a$10$q51Tp9BYIdat6sQoiv3F8.nDhcxazqzex8I1y19.bR1Q.rARDkL7e ', '010-2345-6789', '구글2', 'ROLE_USER', 1, 1),
-                                                                                                                             (NOW(), 'naver1@naver.com', '$2a$10$q51Tp9BYIdat6sQoiv3F8.nDhcxazqzex8I1y19.bR1Q.rARDkL7e ', '010-1234-1234', '네이버1', 'ROLE_USER', 0, 2),
-                                                                                                                             (NOW(), 'naver2@naver.com', '$2a$10$q51Tp9BYIdat6sQoiv3F8.nDhcxazqzex8I1y19.bR1Q.rARDkL7e ', '010-2345-2345', '네이버2', 'ROLE_USER', 1, 2),
-                                                                                                                             (NOW(), 'kakao1@kakao.com', '$2a$10$q51Tp9BYIdat6sQoiv3F8.nDhcxazqzex8I1y19.bR1Q.rARDkL7e ', '010-3456-3456', '카카오1', 'ROLE_USER', 0, 3);
-
+                                                                                                                     (NOW(), 'google1@google.com', '$2a$10$Ea8zaW8Wml0G7AesIPiZPOcqCvo.6NZofNnwLsFEoao4yCdD4Q3lq','010-2234-5678', '구글1', 'ROLE_USER', 0, 1),
+                                                                                                                     (NOW(), 'google2@google.com', '$2a$10$ypswcLAUlL7JOAkpYU2fl.1UeUUGSPBLnsChdAn/fjVn3ehJmkVuy','010-2234-5679', '구글2', 'ROLE_USER', 0, 1),
+                                                                                                                     (NOW(), 'naver1@naver.com', '$2a$10$8Pai21OsWONVcLQLL4vfx.g5ZEDwPZ7zVXEJ8WHa88O2ckVv4k6DO','010-3234-5679', '네이버1', 'ROLE_USER', 0, 2),
+                                                                                                                     (NOW(), 'naver2@naver.com', '$2a$10$S6hyEeHWTueE4JR/Vb6mJuJXjeq8IIDqSiJgZuN8rE6iTg.82LTuu','010-3234-5680', '네이버2', 'ROLE_USER', 0, 2),
+                                                                                                                     (NOW(), 'kakao1@kakao.com', '$2a$10$YZsU6VeMUj1ubfTpkSajPuYYwTr2ZL4jUwLUfH/HiI9YcVyFS0OyS','010-4234-5680', '카카오1', 'ROLE_USER', 0, 3);
 
 
 -- 차단분류 테이블 더미 데이터

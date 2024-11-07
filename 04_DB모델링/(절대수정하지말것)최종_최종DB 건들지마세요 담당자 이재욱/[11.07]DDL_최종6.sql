@@ -75,6 +75,12 @@ DROP TABLE IF EXISTS companioninfo RESTRICT;
 -- 댓글 좋아요
 DROP TABLE IF EXISTS commentlike RESTRICT;
 
+-- 동행테이블
+DROP TABLE IF EXISTS companionrecruit RESTRICT;
+
+-- 동행신청 테이블
+DROP TABLE IF EXISTS companionapply RESTRICT;
+
 
 -- View 삭제
 DROP VIEW boardlike_count_view;
