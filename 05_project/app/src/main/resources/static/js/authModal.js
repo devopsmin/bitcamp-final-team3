@@ -893,6 +893,50 @@ function initializeLoginForm() {
        }, 1000);
    }
 
+
+   // 소셜 회원가입 sms 인증
+   async function sendSocialSMSVerification() {
+       const phoneInput = document.getElementById('userTel');
+       const phoneNumber = phoneInput.value;
+       const sendSmsBtn = document.getElementById('sendSmsBtn');
+
+       if (!phoneNumber.match(/^[0-9]{3}-[0-9]{4}-[0-9]{4}$/)) {
+           alert('올바른 전화번호 형식이 아닙니다.');
+           return;
+       }
+
+       try {
+           sendSmsBtn.disabled = true;
+           sendSmsBtn.textContent = "전송중...";
+
+           const response = await fetch('/verify/send-sms', {
+               method: 'POST',
+               headers: {
+                   'Content-Type': 'application/x-www-form-urlencoded',
+               },
+               body: `phoneNumber=${encodeURIComponent(phoneNumber)}`
+           });
+
+           const result = await response.text();
+
+           if (result === "SMS 전송에 실패했습니다.") {
+               alert(result);
+               return;
+           }
+
+           document.getElementById('smsVerificationDiv').style.display = 'block';
+           startSocialVerificationTimer();  // 함수명 변경
+           alert('인증번호가 전송되었습니다.');
+
+       } catch (error) {
+           console.error('Error:', error);
+           alert('인증번호 전송 중 오류가 발생했습니다.');
+       } finally {
+           sendSmsBtn.disabled = false;
+           sendSmsBtn.textContent = "인증번호 전송";
+       }
+   }
+
    // 소셜 회원가입 sms 인증
    async function sendVerificationEmail() {
        const emailInput = document.getElementById('registerUserEmail');
