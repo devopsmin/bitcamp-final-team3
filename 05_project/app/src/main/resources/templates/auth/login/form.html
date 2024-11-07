@@ -20,7 +20,17 @@
         <input name="saveEmail" type="checkbox" class="form-check-input" id="saveEmail">
         <label class="form-check-label" for="saveEmail">이메일 저장</label>
       </div>
-      <a href="/auth/find/id" class="text-decoration-none">아이디/비밀번호 찾기</a>
+      <div class="btn-group">
+        <button type="button" class="btn btn-link p-0 text-decoration-none"
+                data-bs-toggle="modal" data-bs-target="#findIdModal" data-bs-dismiss="modal">
+          아이디 찾기
+        </button>
+        <span class="mx-2">/</span>
+        <button type="button" class="btn btn-link p-0 text-decoration-none"
+                data-bs-toggle="modal" data-bs-target="#resetPasswordModal" data-bs-dismiss="modal">
+          비밀번호 찾기
+        </button>
+      </div>
     </div>
 
     <button type="submit" class="btn btn-primary w-100 py-2 mb-3">로그인</button>

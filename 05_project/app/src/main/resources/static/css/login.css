@@ -69,3 +69,109 @@
     padding: 0.75rem;
   }
 }
+
+/* 아이디/비밀번호 찾기 모달 스타일 */
+#findIdModal .container,
+#resetPasswordModal .container {
+    width: 100%;
+    max-width: 400px;
+    padding: 1.5rem;
+}
+
+#findIdModal .form-control,
+#resetPasswordModal .form-control {
+    border: 1px solid #dee2e6;
+}
+
+#findIdModal .form-control:focus,
+#resetPasswordModal .form-control:focus {
+    border-color: #4DCFBD;
+    box-shadow: 0 0 0 0.25rem rgba(77, 207, 189, 0.25);
+}
+
+#findIdModal .btn-primary,
+#resetPasswordModal .btn-primary {
+    background-color: #4DCFBD;
+    border-color: #4DCFBD;
+}
+
+#findIdModal .btn-primary:hover,
+#resetPasswordModal .btn-primary:hover {
+    background-color: #3db9a9;
+    border-color: #3db9a9;
+}
+
+#findIdModal .input-group .btn,
+#resetPasswordModal .input-group .btn {
+    background-color: #4DCFBD;
+    border-color: #4DCFBD;
+}
+
+#findIdModal .btn-link,
+#resetPasswordModal .btn-link {
+    color: #4DCFBD;
+    text-decoration: none;
+}
+
+#findIdModal .btn-link:hover,
+#resetPasswordModal .btn-link:hover {
+    color: #3db9a9;
+    text-decoration: underline;
+}
+
+#loginModalContent .find-account-links {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+#loginModalContent .find-account-links button {
+    background: none;
+    border: none;
+    padding: 0;
+    color: #4DCFBD;
+    font-size: 0.875rem;
+    cursor: pointer;
+}
+
+@media (max-width: 768px) {
+    #findIdModal .container,
+    #resetPasswordModal .container {
+        padding: 1rem;
+    }
+
+    #findIdModal .form-control-lg,
+    #resetPasswordModal .form-control-lg {
+        font-size: 1rem;
+        padding: 0.5rem 1rem;
+    }
+
+    #findIdModal .btn-lg,
+    #resetPasswordModal .btn-lg {
+        padding: 0.5rem 1rem;
+        font-size: 1rem;
+    }
+}
+
+#findIdResultModal .modal-body {
+    padding: 2rem;
+}
+
+#findIdResult {
+    font-size: 1.1rem;
+    margin-bottom: 1.5rem;
+}
+
+#findIdResultModal .btn-primary {
+  min-width: 120px;
+  padding: 0.5rem 1.5rem;
+  background-color: #4DCFBD;
+  border-color: #4DCFBD;
+  color: white;
+}
+
+#findIdResultModal .btn-primary:hover {
+  background-color: #3bb89d;
+  border-color: #3bb89d;
+}

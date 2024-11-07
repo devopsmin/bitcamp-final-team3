@@ -15,7 +15,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
+import project.tripMaker.service.MailService;
 import project.tripMaker.service.SMSService;
 import project.tripMaker.service.StorageService;
 import project.tripMaker.service.UserService;
@@ -29,6 +31,7 @@ public class AuthController {
   private final UserService userService;
   private final SMSService smsService;
   private final StorageService storageService;
+  private final MailService mailService;
 
   private final String folderName = "user/";
 
@@ -139,21 +142,68 @@ public class AuthController {
     }
   }
 
-  @GetMapping("/find/id")
-  public String showFindIdForm(Model model) {
-    return "auth/find/id-form";
+  @PostMapping("/find/password")
+  @ResponseBody
+  public String findPassword(@RequestParam String userEmail) throws Exception {
+    User user = userService.getByEmail(userEmail);
+    if (user == null) {
+      return "존재하지 않는 이메일입니다.";
+    }
+
+    // 이메일 인증번호 발송
+    int verificationCode = mailService.sendMail(userEmail);
+    return String.valueOf(verificationCode);
   }
 
-  @PostMapping("/find/id/result")
-  public String findUserByTel(@RequestParam String userTel, Model model) throws Exception {
-    User user = userService.findByTel(userTel);
+  @PostMapping("/reset/password")
+  @ResponseBody
+  public String resetPassword(
+      @RequestParam String userEmail,
+      @RequestParam String userTel,
+      @RequestParam String newPassword) throws Exception {
 
+    User user = userService.getByEmail(userEmail);
     if (user == null) {
-      model.addAttribute("message", "존재하지 않는 유저입니다.");
-      return "auth/find/id-form";
+      return "존재하지 않는 이메일입니다.";
+    }
+
+    if (!user.getUserTel().equals(userTel)) {
+      return "이메일과 전화번호가 일치하지 않습니다.";
+    }
+
+    user.setUserPassword(newPassword);
+    if (userService.update(user)) {
+      return "success";
     } else {
-      model.addAttribute("message", "아이디 : " + user.getUserEmail());
-      return "auth/find/id-result";
+      return "비밀번호 변경에 실패했습니다.";
     }
   }
+
+  @PostMapping("/find/id")
+  @ResponseBody
+  public String findId(@RequestParam String userTel) throws Exception {
+    User user = userService.findByTel(userTel);
+    if (user == null) {
+      return "존재하지 않는 회원입니다.";
+    }
+
+    String email = user.getUserEmail();
+    String maskedEmail = maskEmail(email);
+    return "회원님의 아이디는 " + maskedEmail + " 입니다.";
+  }
+
+  private String maskEmail(String email) {
+    int atIndex = email.indexOf('@');
+    if (atIndex <= 1) return email;
+
+    String local = email.substring(0, atIndex);
+    String domain = email.substring(atIndex);
+
+    int visibleLength = Math.min(3, local.length());
+    String visiblePart = local.substring(0, visibleLength);
+    String maskedPart = "*".repeat(local.length() - visibleLength);
+
+    return visiblePart + maskedPart + domain;
+  }
+
 }

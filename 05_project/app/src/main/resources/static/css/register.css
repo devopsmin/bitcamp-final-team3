@@ -198,3 +198,87 @@
 #customAlertCloseBtn:hover {
  background-color: #3db9a9;
 }
+
+/* 타이머 스타일 */
+#findIdTimer,
+#resetPasswordTimer {
+    font-size: 0.875rem;
+    color: #dc3545;
+    margin-top: 0.5rem;
+}
+
+/* 비밀번호 표시 체크박스 스타일 */
+#findIdModal .form-check,
+#resetPasswordModal .form-check {
+    margin-top: 25px;
+}
+
+#findIdModal .password-error-message,
+#resetPasswordModal .password-error-message {
+    color: red;
+    font-size: 12px;
+    margin-top: 5px;
+}
+
+#findIdModal .modal-content,
+#resetPasswordModal .modal-content {
+    border-radius: 0.5rem;
+    border: none;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+}
+
+#findIdModal .modal-header,
+#resetPasswordModal .modal-header {
+    border-bottom: none;
+    padding: 1.5rem;
+}
+
+#findIdModal .modal-body,
+#resetPasswordModal .modal-body {
+    padding: 1.5rem;
+}
+
+#findIdModal .form-control,
+#resetPasswordModal .form-control {
+    height: 48px;
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    font-size: 0.875rem;
+}
+
+#findIdModal .input-group,
+#resetPasswordModal .input-group {
+    margin-bottom: 5px;
+    width: 100%;
+    position: relative;
+}
+
+#findIdModal .btn,
+#resetPasswordModal .btn {
+    transition: all 0.2s ease-in-out;
+}
+
+#findIdModal .form-control,
+#resetPasswordModal .form-control {
+    transition: border-color 0.2s ease-in-out;
+}
+
+@media (max-width: 768px) {
+    #findIdModal .modal-header,
+    #findIdModal .modal-body,
+    #resetPasswordModal .modal-header,
+    #resetPasswordModal .modal-body {
+        padding: 1rem;
+    }
+
+#findIdModal .form-control,
+#resetPasswordModal .form-control {
+    height: 42px;
+    font-size: 0.875rem;
+}
+
+#findIdModal .btn,
+#resetPasswordModal .btn {
+    padding: 0.75rem 1rem;
+    }
+}
