@@ -12,9 +12,9 @@
 </div>
 <div data-th-if="${user}" data-th-object="${user}">
     <form enctype="multipart/form-data" method="post" data-th-action="@{/user/profile/{userNo}(userNo=${user.userNo})}" onsubmit="return validateForm()">
-        <a data-th-href="@{https://kr.object.ncloudstorage.com/bitcamp-bucket088a/user/} + *{userPhoto == null ? 'default.png' : userPhoto}"
+        <a data-th-href="@{https://kr.object.ncloudstorage.com/bitcamp-bucket088a/user/profile/} + *{userPhoto == null ? 'default.png' : userPhoto}"
            href="/images/default.png">
-            <img data-th-src="@{https://dgg7dnk35523.edge.naverncp.com/HZiW9aEJy7/user/} + *{userPhoto == null ? 'default.png' : userPhoto} + '?type=f&w=100&h=100'"
+            <img data-th-src="@{https://dgg7dnk35523.edge.naverncp.com/HZiW9aEJy7/user/profile/} + *{userPhoto == null ? 'default.png' : userPhoto} + '?type=f&w=100&h=100'"
                  src="/images/default.png">
         </a><input name="file" type="file"><br>
         번호: <input data-th-value="*{userNo}" readonly type="text" value='100'><br>

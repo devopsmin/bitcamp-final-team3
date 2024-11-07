@@ -83,6 +83,7 @@
     <select id="findBy" resultMap="UserMap" parameterType="Long">
         select
           user_No,
+          user_photo,
           user_Email,
           user_Tel,
           user_NickName,
@@ -132,7 +133,8 @@
         update user set
             user_nickname = #{userNickname},
             user_tel = #{userTel},
-            user_password = #{userPassword}
+            user_password = #{userPassword},
+            user_photo = #{userPhoto}
         where
             user_no=#{userNo}
     </update>

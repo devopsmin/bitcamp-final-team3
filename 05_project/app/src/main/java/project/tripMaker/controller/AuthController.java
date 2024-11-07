@@ -33,7 +33,7 @@ public class AuthController {
   private final StorageService storageService;
   private final MailService mailService;
 
-  private final String folderName = "user/";
+  private final String folderName = "user/profile/";
 
   @GetMapping("/login/form")
   public void form(@CookieValue(name = "userEmail", required = false) String userEmail, Model model) {
@@ -188,22 +188,24 @@ public class AuthController {
     }
 
     String email = user.getUserEmail();
-    String maskedEmail = maskEmail(email);
-    return "회원님의 아이디는 " + maskedEmail + " 입니다.";
+//    String maskedEmail = maskEmail(email);
+      return "회원님의 아이디는 " + email + " 입니다.";
+    //    return "회원님의 아이디는 " + maskedEmail + " 입니다.";
   }
 
-  private String maskEmail(String email) {
-    int atIndex = email.indexOf('@');
-    if (atIndex <= 1) return email;
-
-    String local = email.substring(0, atIndex);
-    String domain = email.substring(atIndex);
-
-    int visibleLength = Math.min(3, local.length());
-    String visiblePart = local.substring(0, visibleLength);
-    String maskedPart = "*".repeat(local.length() - visibleLength);
-
-    return visiblePart + maskedPart + domain;
-  }
+  // 아이디 별표 쳐서 보여줌
+//  private String maskEmail(String email) {
+//    int atIndex = email.indexOf('@');
+//    if (atIndex <= 1) return email;
+//
+//    String local = email.substring(0, atIndex);
+//    String domain = email.substring(atIndex);
+//
+//    int visibleLength = Math.min(3, local.length());
+//    String visiblePart = local.substring(0, visibleLength);
+//    String maskedPart = "*".repeat(local.length() - visibleLength);
+//
+//    return visiblePart + maskedPart + domain;
+//  }
 
 }

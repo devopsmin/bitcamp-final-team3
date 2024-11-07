@@ -22,7 +22,7 @@ public class UserController {
   private final UserService userService;
   private final StorageService storageService;
 
-  private final String folderName = "user/";
+  private final String folderName = "user/profile/";
 
   @GetMapping("/profile")
   public String myInfo(

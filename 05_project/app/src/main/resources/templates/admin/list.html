@@ -26,11 +26,11 @@
   <tr data-th-each="user : ${list}">
     <td data-th-text="${user.userNo}"></td>
     <td>
-      <img data-th-src="@{https://dgg7dnk35523.edge.naverncp.com/HZiW9aEJy7/user/default.png(type=f,w=20,h=20)}"
+      <img data-th-src="@{https://dgg7dnk35523.edge.naverncp.com/HZiW9aEJy7/user/profile/default.png(type=f,w=20,h=20)}"
            data-th-unless="${user.userPhoto}"
            src="/images/default.png">
       <img data-th-if="${user.userPhoto}"
-           data-th-src="@{https://dgg7dnk35523.edge.naverncp.com/HZiW9aEJy7/user/} + ${user.userPhoto} + '?type=f&w=20&h=20'"
+           data-th-src="@{https://dgg7dnk35523.edge.naverncp.com/HZiW9aEJy7/user/profile/} + ${user.userPhoto} + '?type=f&w=20&h=20'"
            src="/images/default.png">
     </td>
     <td>
