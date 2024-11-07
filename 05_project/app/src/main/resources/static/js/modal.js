@@ -23,51 +23,68 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
         });
     }
-
-    initializeCustomAlert();
 });
 
 function initializeScheduleForm() {
     const scheduleForm = document.querySelector('#scheduleModalContent form');
+    const stateSelect = document.querySelector('#scheduleModalContent #stateCode');
+
+    // 시도 선택 이벤트 리스너
+    if (stateSelect) {
+        stateSelect.addEventListener('change', function() {
+            const stateCode = this.value;
+
+            if (stateCode) {
+                fetch('/schedule/selectCity', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'text/plain',
+                    },
+                    body: stateCode
+                })
+                    .then(response => response.json())
+                    .then(cityList => {
+                        const citySelect = document.querySelector('#scheduleModalContent #cityCode');
+                        citySelect.innerHTML = '<option value="">시군구 선택</option>';
+
+                        cityList.forEach(city => {
+                            const option = document.createElement('option');
+                            option.value = city.cityCode;
+                            option.textContent = city.cityName;
+                            citySelect.appendChild(option);
+                        });
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('시군구 목록을 불러오는데 실패했습니다.');
+                    });
+            } else {
+                const citySelect = document.querySelector('#scheduleModalContent #cityCode');
+                citySelect.innerHTML = '<option value="">시군구 선택</option>';
+            }
+        });
+    }
+
+    // 폼 제출 이벤트 리스너
     if (scheduleForm) {
         scheduleForm.addEventListener('submit', function(e) {
             e.preventDefault();
-            const formData = new FormData(this);
 
-            fetch(this.action, {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.text())
-            .then(html => {
-                document.getElementById('scheduleModalContent').innerHTML = html;
-                initializeScheduleForm();
-            })
-            .catch(error => {
-                console.error('Error submitting schedule form:', error);
-                showCustomAlert('오류', '일정 생성 중 오류가 발생했습니다.');
-            });
+            const selectedCity = document.querySelector('#scheduleModalContent #cityCode').value;
+            if (!selectedCity) {
+                alert('시군구를 선택해주세요.');
+                return;
+            }
+
+            const cityCodeHidden = document.querySelector('#scheduleModalContent #cityCodeHidden');
+            if (cityCodeHidden) {
+                cityCodeHidden.value = selectedCity;
+            }
+
+            // Form을 직접 제출하는 방식으로 변경
+            this.method = 'POST';  // POST 방식으로 설정
+            this.action = '/schedule/selectLocation';  // action URL 설정
+            this.submit();  // 폼 제출
         });
     }
-}
-
-function initializeCustomAlert() {
-    const customAlertModal = document.getElementById('customAlertModal');
-    const customAlertCloseBtn = document.getElementById('customAlertCloseBtn');
-
-    if (customAlertCloseBtn) {
-        customAlertCloseBtn.onclick = function() {
-            customAlertModal.style.display = "none";
-        }
-    }
-}
-
-function showCustomAlert(title, message) {
-    const customAlertModal = document.getElementById('customAlertModal');
-    const customAlertTitle = document.getElementById('customAlertTitle');
-    const customAlertMessage = document.getElementById('customAlertMessage');
-
-    if (customAlertTitle) customAlertTitle.textContent = title;
-    if (customAlertMessage) customAlertMessage.textContent = message;
-    if (customAlertModal) customAlertModal.style.display = "block";
 }
