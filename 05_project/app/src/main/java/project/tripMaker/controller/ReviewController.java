@@ -271,18 +271,24 @@ public class ReviewController {
   // 수정 페이지 정보전달
   @PostMapping("update")
   public String update(
-      @RequestParam("no") Integer boardNo,
+      @RequestParam("boardNo") Integer boardNo,
       @RequestParam("title") String title,
       @RequestParam("content") String content,
       @RequestParam(value = "deletedImages", required = false) String deletedImages,
       MultipartFile[] files
   ) throws Exception {
 
+    try{
     Board board = reviewService.get(boardNo);
     board.setBoardTitle(title);
     board.setBoardContent(content);
 
-    // 삭제된 이미지 파일 처리
+    if (files == null) {
+      files = new MultipartFile[0];
+    }
+
+
+      // 삭제된 이미지 파일 처리
     if (deletedImages != null && !deletedImages.isEmpty()) {
       String[] imageIds = deletedImages.split(",");
       for (String imageId : imageIds) {
@@ -308,12 +314,16 @@ public class ReviewController {
     board.setBoardImages(attachedFiles);
 
     reviewService.update(board);
+    } catch (Exception e){
+      e.printStackTrace();
+    }
+
     return "redirect:view?boardNo=" + boardNo;
   }
 
   // 수정 후 SQL Update 실행
   @PostMapping("modify")
-  public String modify(@RequestParam("no") int boardNo, Model model) throws Exception {
+  public String modify(@RequestParam("boardNo") int boardNo, Model model) throws Exception {
     Board board = reviewService.get(boardNo);
     if (board == null) {
       throw new Exception("게시글이 존재하지 않습니다.");

@@ -23,10 +23,10 @@
     <div class="alert alert-danger mt-4" data-th-unless="${board}">없는 게시글입니다.</div>
 
     <!-- 게시글이 있을 경우 -->
-    <form data-th-if="${board}" data-th-action="@{update}" method="post" class="mt-4">
+    <form id="update-form" data-th-if="${board}" data-th-action="@{update}" method="post" class="mt-4">
         <div class="mb-3">
-            <label for="no" class="form-label">게시글 번호</label>
-            <input id="no" name="no" type="text" class="form-control" readonly th:value="${board.boardNo}">
+            <label for="boardNo" class="form-label">게시글 번호</label>
+            <input id="boardNo" name="boardNo" type="text" class="form-control" readonly th:value="${board.boardNo}">
         </div>
 
         <div class="mb-3">
@@ -63,7 +63,7 @@
                         <span class="me-3">순서: <span data-th-text="*{scheduleRoute}">순서</span></span>
                         <textarea name="scheduleContents" class="form-control" rows="3" placeholder="내용을 입력하세요"
                                   data-th-text="${#lists.size(board.boardContent.split('\n')) > status.index ? board.boardContent.split('\n')[status.index] : ''}">
-          </textarea>
+                        </textarea>
                     </div>
                 </div>
             </div>
@@ -84,7 +84,7 @@
                 <img data-th-src="@{'https://dgg7dnk35523.edge.naverncp.com/HZiW9aEJy7/review/' + ${image.boardimageName} + '?type=u&w=100&h=100'}" class="img-thumbnail">
                 <p class="text-center mt-1" data-th-text="${image.boardimageDefaultName}"></p>
                 <!-- 이미지 ID를 사용하여 함수 호출 -->
-                <button type="button" class="btn-close position-absolute top-0 start-80" onclick="removeExistingImage([[${image.boardimageNo}]])"></button>
+                <button type="button" class="btn-close position-absolute top-0 start-80" onclick="removeExistingImage(this.closest('[data-image-id]').getAttribute('data-image-id'))"></button>
             </div>
         </div>
 
@@ -99,8 +99,6 @@
 
         <input type="hidden" name="deletedImages" id="deletedImages">
         <button type="button" onclick="resetChanges()" class="btn btn-secondary me-2">취소</button>
-
-<!--        <button type="button" onclick="history.back()" class="btn btn-secondary me-2">취소</button>-->
         <button type="submit" class="btn btn-primary">변경</button>
     </form>
 </div>
@@ -116,7 +114,6 @@
     let hiddenImages = new Map();
 
     function removeExistingImage(imageId) {
-        console.log("실행됬니?")
         const imageElement = document.querySelector(`[data-image-id="${imageId}"]`);
         if (imageElement) {
             // 이미지 요소를 숨기고, 삭제할 목록에 추가
@@ -149,13 +146,16 @@
     }
 
     // 폼 제출 전 처리
-    document.querySelector('form').addEventListener('submit', function(event) {
+    document.getElementById('update-form').addEventListener('submit', function(event) {
         // 기존 scheduleContents 처리 유지
         const scheduleContents = Array.from(document.getElementsByName('scheduleContents')).map(textarea => textarea.value);
         document.getElementById('boardContent').value = scheduleContents.join('\n');
 
         // 삭제된 이미지 목록 최종 업데이트
         document.getElementById('deletedImages').value = Array.from(deletedImages).join(',');
+
+        // 폼 제출 후 리다이렉트
+        window.location.href = 'view?boardNo=' + document.getElementById('boardNo').value;
     });
 
     // 새 이미지 미리보기 기능

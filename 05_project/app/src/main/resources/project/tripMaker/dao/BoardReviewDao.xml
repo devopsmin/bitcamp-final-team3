@@ -134,7 +134,7 @@
       WHERE
         b.boardtype_no = 3
       ORDER BY
-        b.board_no ASC
+        b.board_no DESC
       LIMIT
         #{rowNo}, #{length} -- 페이지 보여줄 갯수용 변수
     </select>

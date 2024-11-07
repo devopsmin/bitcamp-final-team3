@@ -37,13 +37,14 @@
     <hr/>
 
     <form data-th-action="@{modify}" method="post">
-        번호: <input readonly name="no" type="text" data-th-value="${board.boardNo}"><br>
+        <div>
+        번호: <input readonly name="boardNo" type="text" data-th-value="${board.boardNo}"><br>
         제목: <input readonly name="title" type="text" data-th-value="${board.boardTitle}" size="50"><br><br>
         작성일: <input readonly type="text"
                     data-th-value="${#dates.format(board.boardCreatedDate, 'yyyy-MM-dd')}"><br>
         조회수: <input readonly type="text" data-th-value="${board.boardCount}"><br>
         작성자: <input readonly type="text" data-th-value="${board.writer.userNickname}"><br>
-
+        </div>
         <hr/>
 
         <br><h2>여행 데이터</h2><br>
@@ -98,19 +99,6 @@
         </table>
         <br>
 
-        <div class="boardImages">
-            <div data-th-each="image : ${board.boardImages}">
-                <a data-th-href="${image != null && image.boardimageName != null ? 'https://kr.object.ncloudstorage.com/bitcamp-bucket088a/review/' + image.boardimageName : 'https://kr.object.ncloudstorage.com/bitcamp-bucket088a/review/default.jpg'}"
-                   href="/images/default.png">
-                    <img data-th-src="${image != null && image.boardimageName != null ? 'https://dgg7dnk35523.edge.naverncp.com/HZiW9aEJy7/review/' + image.boardimageName + '?type=u&w=600&h=400' : 'https://dgg7dnk35523.edge.naverncp.com/HZiW9aEJy7/review/default.jpg?type=u&w=600&h=400'}"
-                         src="/images/default.png" class="img-thumbnail">
-                </a>
-            </div>
-        </div>
-
-<!--디버깅-->
-        <p>디버깅용 : 로그인 유저: <span data-th-text="${session.loginUser.userNo}"></span></p>
-        <p>디버깅용 : 게시글 작성자: <span data-th-text="${board.writer.userNo}"></span></p>
 
         <button type="button" onclick="location.href='list'">목록</button>
         <button type="submit"
@@ -119,6 +107,46 @@
                 data-th-if="${session.loginUser != null and session.loginUser.userNo == board.writer.userNo}"
                 data-th-onclick="|deleteBoard(${board.boardNo})|">삭제</button>
     </form>
+
+
+    <div class="boardImages">
+        <button class="prev" onclick="changeSlide(-1)">❮</button>
+        <button class="next" onclick="changeSlide(1)">❯</button>
+        <div th:each="image, iter : ${board.boardImages}" class="slide" th:attr="data-index=${iter.index}">
+            <a th:href="${image != null && image.boardimageName != null ? 'https://kr.object.ncloudstorage.com/bitcamp-bucket088a/review/' + image.boardimageName : 'https://kr.object.ncloudstorage.com/bitcamp-bucket088a/review/default.jpg'}">
+                <img th:src="${image != null && image.boardimageName != null ? 'https://dgg7dnk35523.edge.naverncp.com/HZiW9aEJy7/review/' + image.boardimageName + '?type=u&w=600&h=400' : 'https://dgg7dnk35523.edge.naverncp.com/HZiW9aEJy7/review/default.jpg?type=u&w=600&h=400'}" class="img-thumbnail">
+            </a>
+        </div>
+    </div>
+
+    <script>
+        const slides = document.querySelectorAll('.slide');
+        let currentSlideIndex = 0;
+
+        // 첫 번째 이미지만 보여주기
+        showSlides(currentSlideIndex);
+
+        // 슬라이드를 보여주는 함수
+        function showSlides(index) {
+            // 순환 처리: 마지막 이미지를 넘어서면 처음으로, 첫 이미지를 넘어서면 마지막으로 돌아가기
+            currentSlideIndex = (index + slides.length) % slides.length;
+
+            slides.forEach((slide, i) => {
+                slide.style.display = (i === currentSlideIndex) ? 'block' : 'none';
+            });
+        }
+
+        // 슬라이드를 변경하는 함수
+        function changeSlide(n) {
+            showSlides(currentSlideIndex + n);
+        }
+    </script>
+
+<!--디버깅-->
+        <p>디버깅용 : 로그인 유저: <span data-th-text="${session.loginUser.userNo}"></span></p>
+        <p>디버깅용 : 게시글 작성자: <span data-th-text="${board.writer.userNo}"></span></p>
+
+
 
     <hr/>
     <br> 댓글: <br>
