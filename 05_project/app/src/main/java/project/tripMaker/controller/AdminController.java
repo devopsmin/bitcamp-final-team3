@@ -24,6 +24,7 @@ public class AdminController {
   private final UserService userService;
   private final StorageService storageService;
 
+
   private final String folderName = "user/profile/";
 
   @GetMapping
