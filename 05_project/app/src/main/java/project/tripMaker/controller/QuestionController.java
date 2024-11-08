@@ -70,7 +70,7 @@ public class QuestionController {
   @GetMapping("list")
   public String list(
           @RequestParam(defaultValue = "1") int pageNo,
-          @RequestParam(defaultValue = "5") int pageSize,
+          @RequestParam(defaultValue = "12") int pageSize,
           Model model,
           @RequestParam(required = false, defaultValue = "latest") String sort,
           @RequestParam(required = false) String search
