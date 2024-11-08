@@ -1,91 +1,78 @@
+<div class="container my-2" style="width: 1200px; margin: 0 auto;">
+    <form data-th-action="@{/comment/add}" method="post" class="mb-3">
+        <textarea name="commentContent" class="form-control mb-1"  rows="5" style="width: 100%; resize: none;" placeholder="댓글을 입력하세요"></textarea>
+        <input type="hidden" name="boardType" value="1">
+        <input type="hidden" name="boardNo" data-th-value="${board.boardNo}">
+        <button type="submit" class="btn btn-secondary">댓글 등록</button>
+    </form>
 
+    <div class="mb-3">
+        <select id="commentSort" class="form-select w-auto" onchange="changeCommentSort()">
+            <option value="registered" data-th-selected="${sort == 'registered'}">등록순</option>
+            <option value="likes" data-th-selected="${sort == 'likes'}">좋아요순</option>
+        </select>
+    </div>
 
-<h3>댓글 작성</h3>
-<form data-th-action="@{/comment/add}" method="post">
-    <textarea name="commentContent" rows="4" cols="100" placeholder="댓글을 입력하세요"></textarea>
-    <input type="hidden" name="boardType" value="1">
-    <input type="hidden" name="boardNo" data-th-value="${board.boardNo}"> <br>
-    <button type="submit">댓글 등록</button>
-</form>
+    <p data-th-unless="${commentList}">댓글이 없습니다.</p>
 
-<br> 댓글 목록 <br>
+    <ul class="list-unstyled" data-th-if="${commentList != null and commentList.size() > 0}">
+        <li class="mb-1" data-th-each="comment : ${commentList}">
+            <div class="p-3 border rounded shadow-sm bg-white"> <!-- 박스를 위한 스타일 -->
+                <div class="d-flex align-items-center mb-2">
+                    <img data-th-src="${board.writer.userPhoto != null ? board.writer.userPhoto : 'https://via.placeholder.com/60x60'}"
+                         alt="User Photo" class="rounded-circle me-3" style="width: 60px; height: 60px;">
+                    <strong class="me-2" data-th-text="${board.writer.userNickname}">닉네임</strong>
+                    <small class="text-muted" data-th-text="${#calendars.format(comment.commentCreatedDate, 'yyyy년 MM월 dd일 HH:mm')}">작성일</small>
+                </div>
 
-<select id="commentSort" onchange="changeCommentSort()">
-    <option value="registered" data-th-selected="${sort == 'registered'}">등록순</option>
-    <option value="likes" data-th-selected="${sort == 'likes'}">좋아요순</option>
-</select>
+                <textarea class="form-control mb-2" readonly rows="1" style="overflow: hidden; resize: none; border: none; background-color: transparent;"
+                          data-th-text="${comment.commentContent}"
+                          oninput="adjustTextareaHeight(this)">댓글 내용</textarea>
 
-<p data-th-unless="${commentList}">댓글이 없습니다.</p>
+                <div class="d-flex align-items-center">
+                    <button type="button"
+                            class="btn btn-outline-danger btn-sm me-2"
+                            data-th-id="'commentLikeButton-' + ${comment.commentNo}"
+                            data-th-onclick="|toggleCommentLike(${comment.commentNo})|"
+                            data-th-text="${commentLikedMap[comment.commentNo] != null && commentLikedMap[comment.commentNo] ? '❤️ 좋아요 취소' : '🤍 좋아요'}">
+                    </button>
+                    <span data-th-id="'commentLikeCount-' + ${comment.commentNo}" class="me-2" data-th-text="${comment.commentLike}">0</span>
+                    <div data-th-if="${isLoggedIn and comment.userNo == loginUserNo}">
+                        <button type="button" class="btn btn-outline-secondary btn-sm me-1" onclick="enableEdit(this)">수정</button>
+                        <button type="button" class="btn btn-outline-secondary btn-sm me-1" data-th-onclick="|updateComment(${comment.commentNo}, ${board.boardNo}, this)|" style="display: none;">저장</button>
+                        <button type="button" class="btn btn-outline-secondary btn-sm me-1" onclick="cancelEdit(this)" style="display: none;">취소</button>
+                        <button type="button" class="btn btn-outline-secondary btn-sm" data-th-onclick="|deleteComment(${comment.commentNo}, ${board.boardNo})|">삭제</button>
+                    </div>
+                </div>
+            </div>
+        </li>
+    </ul>
 
-<ul data-th-if="${commentList != null and commentList.size() > 0}">
-    <li data-th-each="comment : ${commentList}">
-
-        유저 포토: <img data-th-src="@{/images/default.png}"
-                    data-th-unless="${board.writer.userPhoto}"
-                    src="/images/default.png"
-                    style="width: 40px; height: 35px;"> <br>
-        유저 닉네임: <td data-th-text="${board.writer.userNickname}">닉네임</td><br>
-        내용: <br>
-        <textarea name="commentContent" readonly rows="5" cols="50" data-th-text="${comment.commentContent}"></textarea><br>
-        작성일: <input readonly data-th-value="${#calendars.format(comment.commentCreatedDate,'yyyy년 MM월 dd일 HH:mm') }" size="20"> <br>
-
-        <!--        <div>-->
-        <!--            <button type="button" data-th-onclick="|toggleCommentLike(${comment.commentNo})|"-->
-        <!--                    data-th-text="${comment.isCommentLiked ? '좋아요 취소' : '좋아요'}">-->
-        <!--            </button>-->
-        <!--            <span data-th-text="${comment.commentLikeCount}">0</span>-->
-        <!--        </div>-->
-
-        <!-- 좋아요 버튼 -->
-        <div>
-            <button type="button"
-                    data-th-id="'commentLikeButton-' + ${comment.commentNo}"
-                    data-th-onclick="|toggleCommentLike(${comment.commentNo})|"
-                    data-th-text="${commentLikedMap[comment.commentNo] != null && commentLikedMap[comment.commentNo] ? '❤️ 좋아요 취소' : '🤍 좋아요'}">
-            </button>
-            <input type="text"
-                   readonly
-                   data-th-id="'commentLikeCount-' + ${comment.commentNo}"
-                   data-th-value="${comment.commentLike}">
-        </div>
-
-        <div data-th-if="${isLoggedIn and comment.userNo == loginUserNo}">
-            <button type="button" onclick="enableEdit(this)">수정</button>
-            <button type="button" data-th-onclick="|updateComment(${comment.commentNo}, ${board.boardNo}, this)|"
-                    style="display: none;">저장
-            </button>
-            <button type="button" onclick="cancelEdit(this)" style="display: none;">취소</button>
-            <button type="button" data-th-onclick="|deleteComment(${comment.commentNo}, ${board.boardNo})|">삭제</button>
-        </div>
-    </li>
-</ul>
-
-<div>
-
+    <div class="text-center">
     <span data-th-if="${currentPage > 1}">
-        <a data-th-href="@{|?boardNo=${board.boardNo}&page=${currentPage - 1}|}">
+        <a class="btn btn-outline-secondary btn-sm" data-th-href="@{|?boardNo=${board.boardNo}&page=${currentPage - 1}|}">
             [이전]
         </a>
     </span>
-    <span data-th-unless="${currentPage > 1}">[이전]</span>
+        <span data-th-unless="${currentPage > 1}" class="btn btn-outline-secondary btn-sm disabled">[이전]</span>
 
-
-    <span data-th-each="i : ${#numbers.sequence(1, totalPages)}">
-        <a data-th-href="@{|?boardNo=${board.boardNo}&page=${i}|}"
-           data-th-classappend="${i == currentPage} ? 'active' : ''"
+        <span data-th-each="i : ${#numbers.sequence(1, totalPages)}">
+        <a class="btn btn-outline-secondary btn-sm"
+           data-th-href="@{|?boardNo=${board.boardNo}&page=${i}|}"
+           data-th-classappend="${i == currentPage} ? ' active' : ''"
            data-th-text="${i}">
-
            1
         </a>
     </span>
 
-
-    <span data-th-if="${currentPage < totalPages}">
-        <a data-th-href="@{|?boardNo=${board.boardNo}&page=${currentPage + 1}|}">
+        <span data-th-if="${currentPage < totalPages}">
+        <a class="btn btn-outline-secondary btn-sm" data-th-href="@{|?boardNo=${board.boardNo}&page=${currentPage + 1}|}">
             [다음]
         </a>
     </span>
-    <span data-th-unless="${currentPage < totalPages}">[다음]</span>
+        <span data-th-unless="${currentPage < totalPages}" class="btn btn-outline-secondary btn-sm disabled">[다음]</span>
+    </div>
+
 </div>
 
 <script>
@@ -187,4 +174,20 @@
         urlParams.set('page', '1');  // 페이지를 1로 초기화
         window.location.search = urlParams.toString();
     }
+</script>
+
+<script>
+    function adjustTextareaHeight(element) {
+        // 기존 높이를 초기화하여 높이 재조정
+        element.style.height = 'auto';
+        // 스크롤 높이를 기준으로 높이를 다시 설정
+        element.style.height = (element.scrollHeight) + 'px';
+    }
+
+    // 모든 textarea 요소의 높이를 페이지 로드 시 조정
+    document.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('textarea').forEach(textarea => {
+            adjustTextareaHeight(textarea);
+        });
+    });
 </script>

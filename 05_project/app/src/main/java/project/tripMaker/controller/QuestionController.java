@@ -131,7 +131,7 @@ public class QuestionController {
   @GetMapping("view")
   public void view(@RequestParam("boardNo") int boardNo,
                    @RequestParam(value = "page", defaultValue = "1") int page,
-                   @RequestParam(value = "pageSize", defaultValue = "3") int pageSize,
+                   @RequestParam(value = "pageSize", defaultValue = "5") int pageSize,
                    @RequestParam(value = "sort", defaultValue = "registered") String sort,
                    Model model,
                    HttpSession session) throws Exception {
