@@ -5,131 +5,93 @@
 <header data-th-replace="~{header :: #page-header}"></header>
 
 <body>
-<h1>일정 질문 게시판</h1>
+<div class="container my-5">
+    <h1 class="text-center mb-4">일정 질문 게시판</h1>
 
+    <div data-th-if="${board}" class="border-bottom pb-3 mb-4">
+        <div class="d-flex align-items-center mb-3">
+            <img data-th-src="${board.writer.userPhoto != null ? board.writer.userPhoto : 'https://via.placeholder.com/400x150'}"
+                 alt="User Photo" class="rounded-circle me-3" style="width: 60px; height: 60px;">
+            <div>
+                <h5 class="mb-1" data-th-text="${board.writer.userNickname}">닉네임</h5>
+                <small class="text-muted">
+                    작성일: <span data-th-text="${#calendars.format(board.boardCreatedDate, 'yyyy.MM.dd HH:mm')}">날짜</span>
+                    • 조회: <span data-th-text="${board.boardCount}">조회수</span>
+                </small>
+            </div>
+            <div class="ms-auto">
+                <button type="button" class="btn btn-outline-secondary btn-sm" data-th-if="${isUserAuthorized}" data-th-onclick="document.getElementById('myForm').submit();">수정</button>
+                <button class="btn btn-outline-secondary btn-sm" data-th-if="${isUserAuthorized}" data-th-onclick="|if(confirm('게시글을 삭제하시겠습니까?'))location.href='@{delete(boardNo=${board.boardNo})}'|">삭제</button>
+            </div>
+        </div>
 
-<div data-th-unless="${board}">
-    <p>없는 게시글입니다.</p>
+        <!-- 좋아요 및 즐겨찾기 버튼 -->
+        <div class="d-flex align-items-center">
+            <button type="button" id="likeButton" class="btn btn-outline-danger btn-sm me-2"
+                    data-th-onclick="|toggleLike(${board.boardNo})|"
+                    data-th-text="${isLiked != null and isLiked ? '❤️ 좋아요 취소' : '🤍 좋아요'}"></button>
+            <span id="likeCount" class="me-3" data-th-text="${board.boardLike}">0</span>
 
-</div>
-
-<div data-th-if="${board}">
-    <!-- 좋아요 버튼 -->
-    <button type="button" id="likeButton"
-            data-th-onclick="|toggleLike(${board.boardNo})|"
-            data-th-text="${isLiked != null and isLiked ? '❤️ 좋아요 취소' : '🤍 좋아요'}"></button>
-    <input id="likeCount" readonly data-th-value="${board.boardLike}"><br>
-
-    <!-- 즐겨찾기 버튼 -->
-    <button type="button" id="favorButton"
-            data-th-onclick="|toggleFavor(${board.boardNo})|"
-            data-th-text="${isFavored != null and isFavored ? '⭐ 즐겨찾기 취소' : '⚪ 즐겨찾기'}"></button>
-    <input id="favorCount" readonly data-th-value="${board.boardFavor}"><br>
-</div>
-
-<form action="view2" method="post" enctype="multipart/form-data">
-    <input type="hidden" name="boardNo" data-th-value='${board.boardNo}'>
-    포토: <img data-th-src="@{/images/default.png}"
-             data-th-unless="${board.writer.userPhoto}"
-             src="/images/default.png"
-             style="width: 40px; height: 35px;"> <br/>
-    닉네임: <input name="userNickname" readonly type="text" data-th-value='${board.writer.userNickname}'>
-    <button type="button">쪽지</button><br/>
-    제목: <input name="boardTitle" readonly type="text" data-th-value='${board.boardTitle}'><br/>
-    작성일: <input readonly data-th-value="${#calendars.format(board.boardCreatedDate, 'yyyy년 MM월 dd일 HH:mm')}" size="20"><br>
-
-    조회수: <input readonly data-th-value="${board.boardCount}"><br>
-    내용: <br>
-    <textarea name="boardContent" readonly rows="10" cols="100" data-th-text="${board.boardContent}"></textarea><br>
-    태그: <input name="boardTag" readonly type="text" data-th-value="${board.boardTag}"><br/>
-    <button type="button" data-th-onclick="|location.href='@{list}'|">목록</button>
-
-    <div data-th-if="${isUserAuthorized}">
-        <button>수정</button>
-        <button type="button" data-th-onclick="|if(confirm('게시글을 삭제하시겠습니까?'))location.href='@{delete(boardNo=${board.boardNo})}'|">삭제</button>
+            <button type="button" id="favorButton" class="btn btn-outline-warning btn-sm me-2"
+                    data-th-onclick="|toggleFavor(${board.boardNo})|"
+                    data-th-text="${isFavored != null and isFavored ? '⭐ 즐겨찾기 취소' : '⚪ 즐겨찾기'}"></button>
+            <span id="favorCount" data-th-text="${board.boardFavor}">0</span>
+        </div>
     </div>
-</form>
+
+    <form id="myForm" action="view2" method="post" enctype="multipart/form-data">
+        <input type="hidden" name="boardNo" data-th-value='${board.boardNo}'>
+        <div class="mb-3">
+            <label class="form-label">제목:</label>
+            <input name="boardTitle" readonly type="text" class="form-control" data-th-value='${board.boardTitle}'>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">내용:</label>
+            <textarea name="boardContent" readonly class="form-control" rows="10" data-th-text="${board.boardContent}"></textarea>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">태그:</label>
+            <input name="boardTag" readonly type="text" class="form-control" data-th-value="${board.boardTag}">
+        </div>
+
+        <div class="d-flex justify-content-between">
+            <button type="button" class="btn btn-secondary" data-th-onclick="|location.href='@{list}'|">목록</button>
+        </div>
+    </form>
 </div>
 
-<br><h2>여행 데이터</h2><br>
-<!--&lt;!&ndash; 데이터 확인용 &ndash;&gt;-->
-<!--<span data-th-if="${trips}"-->
-<!--      data-th-data="${trips.size()}">-->
-<!--          <p>디버깅용 : Trip 데이터가 존재합니다.</p>-->
-<!--        </span>-->
-<!--<span data-th-unless="${trips}">-->
-<!--          <p>디버깅용 : Trip  데이터가 없습니다.</p>-->
-<!--        </span>-->
+<!--<tr data-th-each="trip : ${trips}" data-th-object="${trip}">-->
+<!--    <td><span data-th-text="*{tripTitle}">제목</span></td>-->
 
-<table border="1">
-    <thead>
-    <tr>
-        <th>여행번호</th>
-        <th>여행제목</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr data-th-each="trip : ${trips}" data-th-object="${trip}">
-        <td><span data-th-text="*{tripNo}">번호</span></td>
-        <td><span data-th-text="*{tripTitle}">제목</span></td>
-    </tr>
-    </tbody>
-</table>
+<div class="container my-5">
+    <div data-th-each="entry : ${groupedSchedules}">
+        <h5 class="mb-3" data-th-text="'Day ' + ${entry.key}">1일차</h5>
 
-<br><h2>일정 데이터</h2><br>
-<!-- 데이터 확인용 -->
-<!--<span data-th-if="${schedule}"-->
-<!--      data-th-data="${schedule.size()}">-->
-<!--          <p>디버깅용 : Schedule 데이터가 존재합니다.</p>-->
-<!--        </span>-->
-<!--<span data-th-unless="${schedule}">-->
-<!--          <p>디버깅용 : Schedule 데이터가 없습니다.</p>-->
-<!--        </span>-->
-
-<div data-th-each="entry : ${groupedSchedules}">
-    <h3 data-th-text="'Day ' + ${entry.key}">Day</h3>
-
-    <table border="1">
-        <thead>
-        <tr>
-            <th>일정번호</th>
-            <th>일정제목</th>
-            <th>일정날짜[Day]</th>
-            <th>일정순서</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr data-th-each="schedule : ${entry.value}" data-th-object="${schedule}">
-            <td><span data-th-text="*{scheduleNo}">번호</span></td>
-            <td><span data-th-text="*{location.locationName}">제목</span></td>
-            <td><span data-th-text="*{scheduleDay}">Day</span></td>
-            <td><span data-th-text="*{scheduleRoute}">순서</span></td>
-        </tr>
-        </tbody>
-    </table>
-
-    <!--<br>-->
-    <!--<div class="box">-->
-    <!--    <i class="fa-regular fa-image"></i>-->
-    <!--    이미지 예정-->
-    <!--</div>-->
-    <!--<br>-->
-    <!--내용: <textarea readonly name="content" data-th-text="${board.boardContent}" rows="8" cols="70"></textarea><br>-->
-
-    <!--&lt;!&ndash;디버깅&ndash;&gt;-->
-    <!--<p>디버깅용 : 로그인 유저: <span data-th-text="${session.loginUser.userNo}"></span></p>-->
-    <!--<p>디버깅용 : 게시글 작성자: <span data-th-text="${board.writer.userNo}"></span></p>-->
-
-    <!--<button type="button" onclick="location.href='list'">목록</button>-->
-    <!--<button type="submit"-->
-    <!--        data-th-if="${session.loginUser != null and session.loginUser.userNo == board.writer.userNo}">수정</button>-->
-    <!--<button type="button"-->
-    <!--        data-th-if="${session.loginUser != null and session.loginUser.userNo == board.writer.userNo}"-->
-    <!--        data-th-onclick="|deleteBoard(${board.boardNo})|">삭제</button>-->
+        <div class="timeline">
+            <div class="timeline-item col-md-4 mb-4" data-th-each="schedule, iter : ${entry.value}" data-th-object="${schedule}">
+                <div class="timeline-item p-3 border rounded shadow-sm">
+                    <div class="d-flex align-items-center mb-2">
+                        <div class="me-3">
+                            <div class="badge bg-warning text-dark me-2" style="font-size: 1.25rem;" data-th-text="${iter.index + 1}">1</div>
+                        </div>
+                        <div>
+                            <div class="text-muted small"><i class="bi bi-clock"></i>16:30 ~ 17:15</div>
+                            <p class="mb-1 text-primary" data-th-text="*{location.locationName}">제목</p>
+                            <!--                                <p class="mb-0" data-th-text="*{location.locationDescription}">합덕 화산</p>-->
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <img data-th-src="${schedule.location.locationPhoto != null ? schedule.location.locationPhoto : 'https://via.placeholder.com/100x100'}"
+                             alt="Location Photo" class="img-thumbnail" style="width: 100px; height: 100px;">
+                    </div>
+                </div>
+                <div class="timeline-line mt-2" style="border-left: 2px dotted #ddd; height: 20px; margin-left: 20px;"></div>
+            </div>
+        </div>
+    </div>
 </div>
-</form>
-
-<hr/>
 
 <div data-th-replace="~{question/comment}"></div>
 
@@ -139,7 +101,6 @@
 </button>
 
 <script defer>
-    // 좋아요 버튼 클릭 이벤트
     function toggleLike(boardNo) {
         fetch(`/question/toggleLike?boardNo=${boardNo}`, {
             method: 'POST',
@@ -147,14 +108,13 @@
         })
         .then(response => response.json())
         .then(data => {
-            document.getElementById('likeCount').value = data.likeCount;
+            document.getElementById('likeCount').textContent = data.likeCount;
             document.getElementById('likeButton').textContent = data.isLiked ? '❤️ 좋아요 취소' : '🤍 좋아요';
             alert(data.message);
         })
         .catch(error => console.error('Error:', error));
     }
 
-    // 즐겨찾기 버튼 클릭 이벤트
     function toggleFavor(boardNo) {
         fetch(`/question/toggleFavor?boardNo=${boardNo}`, {
             method: 'POST',
@@ -162,7 +122,7 @@
         })
         .then(response => response.json())
         .then(data => {
-            document.getElementById('favorCount').value = data.favorCount;
+            document.getElementById('favorCount').textContent = data.favorCount;
             document.getElementById('favorButton').textContent = data.isFavored ? '⭐ 즐겨찾기 취소' : '⚪ 즐겨찾기';
             alert(data.message);
         })
