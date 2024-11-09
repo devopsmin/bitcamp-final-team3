@@ -128,30 +128,27 @@
         <div class="card-list">
             <a data-th-each="board : ${topBoards}" href="#" data-th-href="@{view(boardNo=${board.boardNo})}" class="card mb-4 shadow-sm p-1 text-decoration-none" style="width: 100%; width: 400px; margin: 0 auto; display: block; color: inherit;">
 
-                <!-- 카드 헤더: 유저 포토와 닉네임 -->
                 <div class="card-header d-flex align-items-center bg-white border-bottom-0">
                     <img data-th-src="${board.writer.userPhoto != null ? board.writer.userPhoto : 'https://via.placeholder.com/50x50'}"
                          alt="User Photo" class="rounded-circle me-2" style="width: 50px; height: 50px;">
                     <div class="user-info" data-th-text="${board.writer.userNickname}" style="font-weight: bold; font-size: 1.25rem;">User Name</div>
                 </div>
 
-                <!-- 카드 본문: 시티 포토 및 게시글 정보 -->
                 <div class="card-body d-flex flex-column justify-content-between">
-                    <!-- 시티 포토 -->
+
                     <div class="me-3 mb-3">
                         <img data-th-src="${board.trip.city.cityPhoto != null ? board.trip.city.cityPhoto : 'https://via.placeholder.com/150x150'}"
                              alt="City Photo" class="img-fluid" style="width: 100%; height: auto; object-fit: cover;">
                     </div>
 
-                    <!-- 게시글 정보 -->
                     <div class="mb-2">
-                        <!-- 게시물 제목 -->
+
                         <h5 class="card-title mb-2" data-th-text="${board.boardTitle}" style="font-weight: bold;">제목</h5>
                     </div>
                 </div>
 
                 <div class="card-footer bg-white border-0">
-                <!-- 날짜 및 도시명 -->
+
                     <div class="mb-2 text-muted">
                         <p class="mb-1">
                             <span data-th-text="${#calendars.format(board.boardCreatedDate, 'yyyy-MM-dd')}">날짜</span><br>
@@ -159,7 +156,6 @@
                         </p>
                     </div>
 
-                    <!-- 좋아요, 즐겨찾기, 조회수, 댓글 -->
                     <div class="d-flex justify-content-start align-items-center text-muted small mt-auto">
                         <span class="me-3">❤️ <span data-th-text="${board.boardLike}">0</span></span>
                         <span class="me-3">⭐ <span data-th-text="${board.boardFavor}">0</span></span>
