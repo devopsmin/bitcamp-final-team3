@@ -11,85 +11,131 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/mapUtils.js"></script>
+    <style>
+        .form-control:focus {
+            border-color: #dee2e6 !important;  /* 기본 테두리 색상 유지 */
+            box-shadow: none !important;
+            outline: 0 !important;
+        }
+    </style>
 </head>
 <body>
 <div class="container-fluid" style="height: 100vh;">
     <div class="row" style="height: 100vh;">
         <div class="col-4">
             <div class="row position-relative" style="height: 100vh;">
-                <nav class="col-xl-3 boarder border-dark">
-                    <h4 class="text-dark text-center">모두의<br>여행</h4>
-                    <ul class="nav flex-column">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark text-center" href="/home">메뉴 1</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark text-center" href="#">메뉴 2</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark text-center" href="#">메뉴 3</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark text-center" href="#">메뉴 4</a>
-                        </li>
-                    </ul>
+                <nav class="col-xl-3 pt-3 d-flex flex-column justify-content-between">
+                    <div>
+                        <h4 class="text-dark text-center">
+                            <a href="/home" class="text-decoration-none text-dark">모두의<br>여행</a>
+                        </h4>
+                        <ul class="nav flex-column">
+                            <li class="nav-item">
+                                <a class="nav-link text-center"
+                                   data-th-classappend="${#strings.endsWith(#request.requestURI, '/schedule/selectDate')} ? 'text-primary fw-bolder disabled' : 'text-dark'"
+                                   href="/schedule/selectDate">날짜 선택</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-center"
+                                   data-th-classappend="${#strings.endsWith(#request.requestURI, '/schedule/selectLocation')} ? 'text-primary fw-bolder disabled' : 'text-dark'"
+                                   href="/schedule/selectLocation">일정 선택</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-center"
+                                   data-th-classappend="${#strings.endsWith(#request.requestURI, '/schedule/selectHotel')} ? 'text-primary fw-bolder disabled' : 'text-dark'"
+                                   href="/schedule/selectHotel">숙소 선택</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-center"
+                                   data-th-classappend="${#strings.endsWith(#request.requestURI, '/schedule/createSchdule')} ? 'text-primary fw-bolder disabled' : 'text-dark'"
+                                   href="/schedule/createSchdule">일정 확인</a>
+                            </li>
+                        </ul>
+                    </div>
                     <div class="d-flex justify-content-center mb-4">
                         <button class="btn btn-primary btn-sm" id="nextPageBtn" type="button">다음</button>
                     </div>
                 </nav>
-                <div class="col-xl-9 " style="height: 100vh; overflow-y: auto;">
-                    <button class="btn btn-sm bg-dark text-white"
-                            data-bs-target="#appendMyLocation"
-                            data-bs-toggle="collapse">버튼
-                    </button>
+                <div class="col-xl-9 " style="height: 100vh;">
+                    <div class="d-flex justify-content-between align-items-start p-3">
+                        <!-- 왼쪽 컨테이너: 텍스트 정보 -->
+                        <div class="flex-grow-1">
+                            <p class="fs-4 fw-bold mb-1" data-th-text="${trip.city.state.stateName} + ${trip.city.cityName}">제주도</p>
+                            <p class="text-secondary mb-1" data-th-text="${trip.startDate} +' ~ '+  ${trip.endDate}">2024-01-01 ~ 2024-02-01</p>
+                        </div>
+
+                        <!-- 오른쪽 컨테이너: 버튼 -->
+                        <div class="d-flex align-items-start">
+                            <button class="btn btn-sm bg-dark text-white ms-2"
+                                    data-bs-target="#appendMyLocation"
+                                    data-bs-toggle="collapse">접기
+                            </button>
+                        </div>
+                    </div>
 
                     <div class="container">
                         <div class="row">
                             <div class="col-md-6 d-flex justify-content-center mb-2">
                                 <!-- 장소선택 버튼 -->
-                                <button class="btn custom-btn custom-btn-blue w-100" id="showLocationListBtn"
+                                <button class="btn w-100 rounded-0 border border-top-0 border-start-0 border-end-0 border-primary"
+                                        id="showLocationListBtn"
                                         type="button">숙소선택
                                 </button>
                             </div>
 
                             <div class="col-md-6 d-flex justify-content-center mb-2">
                                 <!-- 장소추가 버튼 -->
-                                <button class="btn custom-btn custom-btn-blue w-100" id="showAddLocationBtn"
+                                <button class="btn w-100 rounded-0 border border-top-0 border-start-0 border-end-0"
+                                        id="showAddLocationBtn"
                                         type="button">숙소추가
                                 </button>
                             </div>
                         </div>
                     </div>
 
+
                     <!-- 위치 리스트 영역 -->
-                    <div class="my-4" id="locationListDiv" style="width: 100%; overflow-y: auto;">
-                        <div class="mb-2" data-th-each="location, status : ${hotelList}"
-                             data-th-object="${location}">
-                            <div class="card" style="width: 100%; height: 100px;">
-                                <div class="card-body d-flex align-items-center justify-content-between border">
-                                    <!-- 이미지 영역 -->
-                                    <img alt="Location Image" class="rounded me-3 h-100"
-                                         data-th-src="${location.locationPhoto} ?: '/images/default.jpg'"
-                                         style="width: 70px; object-fit: cover;">
+                    <div class="my-4" id="locationListDiv" style="width: 100%;">
+                        <!-- 검색창 영역 -->
+                        <div class="input-group mb-3 shadow-sm focus-ring-0">
+                            <span class="input-group-text bg-white border-end-0">
+                                <i class="bi bi-search text-muted"></i>
+                            </span>
+                            <input type="text"
+                                   class="form-control border-start-0 focus-ring-0"
+                                   placeholder="검색어를 입력하세요"
+                                   aria-label="Search">
+                        </div>
+                        <div style="height: calc(100vh - 250px); overflow-y: auto;">
+                            <div class="mb-2" data-th-each="location, status : ${hotelList}"
+                                 data-th-object="${location}">
+                                <div class="card" style="width: 100%; height: 100px;">
+                                    <div class="card-body d-flex align-items-center justify-content-between gap-1 ">
+                                        <!-- 이미지 영역 -->
+                                        <img alt="Location Image" class="rounded me-3"
+                                             data-th-src="${location.locationPhoto} ?: '/images/default.jpg'"
+                                             style="width: 70px; height: 70px; object-fit: cover;">
 
-                                    <!-- 텍스트 정보 영역 -->
-                                    <div class="d-flex flex-column" style="flex: 1;">
-                                        <h5 class="card-title mb-1" data-th-text="*{locationName}"
-                                            style="font-size: 16px;">
-                                            여행지이름</h5>
-                                        <p class="card-text text-muted mb-0" data-th-text="*{locationAddr}"
-                                           style="font-size: 12px;">
-                                            주소</p>
+                                        <!-- 텍스트 정보 영역 -->
+                                        <div class="d-flex flex-column" style="flex: 1;">
+                                            <h5 class="card-title mb-1" data-th-text="*{locationName}"
+                                                style="font-size: 16px;">
+                                                여행지이름</h5>
+                                            <p class="card-text text-muted mb-0" data-th-text="*{locationAddr}"
+                                               style="font-size: 12px;">
+                                                주소</p>
+                                        </div>
+
+                                        <!-- 버튼 영역 -->
+                                        <button class="btn btn-outline-secondary btn-location d-flex justify-content-center align-items-center"
+                                                data-th-attr="data-index=${status.index}"
+                                                style="height: 60px; width: 30px;">
+                                            <i class="bi bi-plus-lg"></i>
+                                            <span class="location-x d-none" data-th-text="*{locationX}"></span>
+                                            <span class="location-y d-none" data-th-text="*{locationY}"></span>
+                                        </button>
                                     </div>
-
-                                    <!-- 버튼 영역 -->
-                                    <button class="btn btn-outline-secondary btn-location d-flex justify-content-center align-items-center"
-                                            data-th-attr="data-index=${status.index}"
-                                            style="height: 60px; width: 30px;">
-                                        <i class="bi bi-plus-lg"></i>
-                                        <span class="location-x d-none" data-th-text="*{locationX}"></span>
-                                        <span class="location-y d-none" data-th-text="*{locationY}"></span>
-                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -169,86 +215,23 @@
     let selectedItems = Array(totalDay).fill(null);
     let preSelectedItems = [...selectedItems];
 
-    // 전역 변수로 지도 객체 선언
-    let map = null;
-
-    // 줌 레벨 상수
-    const ZOOM_LEVELS = {
-        'area1': 11,  // 시/도
-        'area2': 13,  // 시/군/구
-        'area3': 15,  // 읍/면/동
-        'area4': 17   // 리
-    };
-
-    // DOM 로드 시 지도 초기화
     document.addEventListener('DOMContentLoaded', () => {
-        // Thymeleaf 변수
         const stateName = /*[[${trip.city.state.stateName}]]*/ '';
         const cityName = /*[[${trip.city.cityName}]]*/ '';
-        let regionType = 'area1';
 
-        // 도시명이 '전체'인 경우 처리
-        const searchQuery = cityName === "전체" ? stateName : cityName;
-
-        // 주소 검색 및 지도 초기화
-        naver.maps.Service.geocode({
-            query: searchQuery
-        }, function (status, response) {
-            if (status !== naver.maps.Service.Status.OK) {
-                console.error('지도 초기화 실패');
-                return;
-            }
-
-            const items = response.v2.addresses;
-            if (items.length === 0) {
-                console.error('주소를 찾을 수 없습니다');
-                return;
-            }
-
-            const {x: mapx, y: mapy} = items[0];
-            const centerPosition = new naver.maps.LatLng(mapy, mapx);
-            const zoomLevel = ZOOM_LEVELS[regionType] || ZOOM_LEVELS.area2;
-
-            // 지도가 없으면 새로 생성, 있으면 위치만 업데이트
-            if (!map) {
-                map = new naver.maps.Map('map', {
-                    center: centerPosition,
-                    zoom: zoomLevel
-                });
-            } else {
-                map.setCenter(centerPosition);
-                map.setZoom(zoomLevel);
-            }
-        });
+        // 지도 초기화
+        initializeMap('map', stateName, cityName);
     });
 
-    let markerList = [];
-
-    function addMarker(locationX, locationY) {
-        let pos = new naver.maps.LatLng(locationY, locationX);
-        let marker = new naver.maps.Marker({
-            position: pos,
-            map: map,
-        });
-
-        // 마커에 위치 속성 추가하여 나중에 참조 가능
-        marker.locationX = locationX;
-        marker.locationY = locationY;
-
-        // markerList에 추가
-        markerList.push(marker);
-    }
-
-    addBtns.forEach(button => {
-        button.addEventListener('click', () => {
+    locationListDiv.addEventListener('click', (event) => {
+        const button = event.target.closest('.btn-location');
+        if (button) {
             const cardBody = button.closest('.card-body');
-            // 카드에서 이미지 URL과 타이틀을 가져옴
             imageUrl = cardBody.querySelector('img').getAttribute('src');
             title = cardBody.querySelector('.card-title').textContent;
             dataIndex = button.getAttribute('data-index');
-
-            openModal(); // 모달 열기
-        });
+            openModal();
+        }
     });
 
     document.addEventListener("DOMContentLoaded", function () {
@@ -558,6 +541,53 @@
                 console.error("Error:", error);
             });
     }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchInput = document.querySelector('#locationListDiv .form-control');
+
+        searchInput.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase().trim();
+            const locationCards = document.querySelectorAll('#locationListDiv .card');
+
+            locationCards.forEach(card => {
+                const locationName = card.querySelector('.card-title').textContent.toLowerCase();
+                const locationAddr = card.querySelector('.card-text').textContent.toLowerCase();
+
+                // 장소 이름이나 주소에 검색어가 포함되어 있는지 확인
+                if (locationName.includes(searchTerm) || locationAddr.includes(searchTerm)) {
+                    card.style.display = ''; // 보이기
+                } else {
+                    card.style.display = 'none'; // 숨기기
+                }
+            });
+        });
+
+        // 검색창 초기화 버튼 추가 (선택적)
+        const inputGroup = searchInput.parentElement;
+        const clearButton = document.createElement('span');
+        clearButton.className = 'input-group-text bg-white border-start-0 cursor-pointer';
+        clearButton.innerHTML = '<i class="bi bi-x-lg text-muted"></i>';
+        clearButton.style.cursor = 'pointer';
+        clearButton.style.display = 'none'; // 초기에는 숨김
+
+        // 입력 그룹에 클리어 버튼 추가
+        inputGroup.appendChild(clearButton);
+
+        // 입력 값이 있을 때만 클리어 버튼 표시
+        searchInput.addEventListener('input', function() {
+            clearButton.style.display = this.value ? 'flex' : 'none';
+        });
+
+        // 클리어 버튼 클릭 시 검색어 초기화 및 모든 카드 표시
+        clearButton.addEventListener('click', function() {
+            searchInput.value = '';
+            clearButton.style.display = 'none';
+            const locationCards = document.querySelectorAll('#locationListDiv .card');
+            locationCards.forEach(card => {
+                card.style.display = '';
+            });
+        });
+    });
 
 
 </script>

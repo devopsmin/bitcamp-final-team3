@@ -36,41 +36,21 @@ public class ScheduleController {
     model.addAttribute("stateList", stateList);
     model.addAttribute("trip", trip);
 
-    //    model.addAttribute("tripType", tripType);
     List<Location> selectLoList = new ArrayList<>();
     model.addAttribute("selectLoList", selectLoList);
+
+    //    model.addAttribute("tripType", tripType);
   }
 
   @PostMapping("selectCity")
   @ResponseBody
   public List<City> selectCity(@RequestBody String stateCode) throws Exception {
+
     return cityService.cityList(stateCode);
   }
 
-  @PostMapping("/saveDates")
-  @ResponseBody
-  public String saveDates(
-      @RequestParam String startDate,
-      @RequestParam String endDate,
-      @ModelAttribute Trip trip,
-      Model model) {
-    Date sqlStartDate = Date.valueOf(startDate);
-    Date sqlEndDate = Date.valueOf(endDate);
-
-    trip.setStartDate(sqlStartDate);
-    trip.setEndDate(sqlEndDate);
-    scheduleService.calculateDay(trip);
-    List<Location> selectHoList = Stream.generate(() -> (Location) null)
-        .limit(trip.getTotalDay())
-        .collect(Collectors.toList());
-    model.addAttribute("selectHoList", selectHoList);
-    model.addAttribute("trip", trip);
-
-    return "success";
-  }
-
-  @PostMapping("selectLocation")
-  public void selectLocation(
+  @PostMapping("selectDate")
+  public void selectDate(
       @ModelAttribute Trip trip,
       String tripType,
       String cityCode,
@@ -81,38 +61,71 @@ public class ScheduleController {
     List<Location> locationList =
         tourAPIService.showLocation(trip.getCity());
 
+
+
     model.addAttribute("needDateSelection", trip.getStartDate() == null);
     model.addAttribute("trip", trip);
     model.addAttribute("locationList", locationList);
   }
 
-  @GetMapping("/appendMyLocation")
-  @ResponseBody
-  public List<Location> appendMyLocation(
-      @RequestParam int index,
-      @ModelAttribute("locationList") List<Location> locationList,
-      @ModelAttribute("selectLoList") List<Location> selectLoList,
-      Model model) {
-    // 인덱스가 리스트 범위 내에 있는지 확인하고 Location 객체를 selectLoList에 추가
-    if (!selectLoList.contains(locationList.get(index))) {
-      selectLoList.add(locationList.get(index));
-      model.addAttribute("selectLoList", selectLoList);
-    }
-    // 변경된 selectLoList 반환
-    return selectLoList;
+  @GetMapping("selectDate")
+  public void selectDate(
+      @ModelAttribute Trip trip,
+      Model model)
+      throws Exception {
+    model.addAttribute("trip", trip);
   }
 
-  @GetMapping("/deletedMyLocation")
-  @ResponseBody
-  public List<Location> deletedMyLocation(
-      @RequestParam int index,
-      @ModelAttribute("selectLoList") List<Location> selectLoList,
-      Model model) {
-    // 인덱스가 리스트 범위 내에 있는지 확인하고 Location 객체를 selectLoList에 추가
-    selectLoList.remove(index);
-    model.addAttribute("selectLoList", selectLoList);
 
-    // 변경된 selectLoList 반환
+  @PostMapping("/saveDates")
+  @ResponseBody
+  public Trip saveDates(
+      @RequestParam String startDate,
+      @RequestParam String endDate,
+      @ModelAttribute Trip trip,
+      Model model) {
+
+    Date sqlStartDate = Date.valueOf(startDate);
+    Date sqlEndDate = Date.valueOf(endDate);
+
+    trip.setStartDate(sqlStartDate);
+    trip.setEndDate(sqlEndDate);
+    scheduleService.calculateDay(trip);
+    List<Location> selectHoList = Stream.generate(() -> (Location) null)
+        .limit(trip.getTotalDay())
+        .collect(Collectors.toList());
+    model.addAttribute("selectHoList", selectHoList);
+    return trip;  // Trip 객체를 직접 반환
+  }
+
+  @RequestMapping("selectLocation")
+  public void selectLocation(
+      @ModelAttribute Trip trip,
+      @ModelAttribute List<Location> selectLoList,
+      Model model)
+      throws Exception {
+    List<Location> locationList =
+        tourAPIService.showLocation(trip.getCity());
+
+    System.out.println("=======================sadfadsfadsfasd========"+selectLoList);
+
+    model.addAttribute("trip", trip);
+    model.addAttribute("locationList", locationList);
+  }
+
+  @PostMapping("/appendMyLocation")
+  @ResponseBody
+  public List<Location> appendMyLocation(
+      @ModelAttribute("locationList") List<Location> locationList,
+      @ModelAttribute("selectLoList") List<Location> selectLoList,
+      @RequestBody List<Integer> dataIndexes,
+      Model model) {
+    selectLoList.clear();
+    for (int index : dataIndexes) {
+      selectLoList.add(locationList.get(index));
+    }
+    System.out.println("================================"+selectLoList);
+    model.addAttribute("selectLoList", selectLoList);
     return selectLoList;
   }
 

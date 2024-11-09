@@ -83,7 +83,7 @@ function initializeScheduleForm() {
 
             // Form을 직접 제출하는 방식으로 변경
             this.method = 'POST';  // POST 방식으로 설정
-            this.action = '/schedule/selectLocation';  // action URL 설정
+            this.action = '/schedule/selectDate';  // action URL 설정
             this.submit();  // 폼 제출
         });
     }
