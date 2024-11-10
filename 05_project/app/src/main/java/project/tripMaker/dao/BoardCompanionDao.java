@@ -36,4 +36,6 @@ public interface BoardCompanionDao extends BoardDao{
   boolean update(Board board) throws Exception;
 
   Board selectIdNoByTripNo(int tripNo, int userNo) throws Exception;
+
+  List<Integer> getRegisteredTripNos() throws Exception;
 }

@@ -67,4 +67,8 @@ public class CompanionService {
   public Board selectIdNoByTripNo(int tripNo, int userNo) throws Exception {
     return boardCompanionDao.selectIdNoByTripNo(tripNo, userNo);
   }
+
+  public List<Integer> getRegisteredTripNos() throws Exception {
+    return boardCompanionDao.getRegisteredTripNos();
+  }
 }

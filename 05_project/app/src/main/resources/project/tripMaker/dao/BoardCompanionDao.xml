@@ -137,6 +137,10 @@
             b.user_no = #{userNo};
     </select>
 
-
+    <select id="getRegisteredTripNos" resultType="int">
+        SELECT DISTINCT trip_no
+        FROM board
+        WHERE boardtype_no = 2
+    </select>
 </mapper>
 

@@ -71,9 +71,21 @@ public class CompanionController {
       throw new Exception("로그인이 필요합니다.");
     }
 
+    // 사용자가 가진 여행 일정 목록을 가져옴
     List<Trip> tripList = scheduleService.getTripsByUserNo(loginUser.getUserNo());
-    logger.info("Trip List: {}", tripList);
-    model.addAttribute("tripList", tripList);
+    logger.info("Original Trip List: {}", tripList);
+
+    // 동행 게시판에 등록된 trip_no 목록을 가져옴
+    List<Integer> registeredTripNos = companionService.getRegisteredTripNos();
+    logger.info("Registered Trip Numbers: {}", registeredTripNos);
+
+    // 등록된 trip_no와 일치하지 않는 trip_no 만 필터링하여 새로운 리스트 생성
+    List<Trip> filteredTripList = tripList.stream()
+            .filter(trip -> !registeredTripNos.contains(trip.getTripNo()))
+            .collect(Collectors.toList());
+    logger.info("Filtered Trip List: {}", filteredTripList);
+
+    model.addAttribute("tripList", filteredTripList);
     return "companion/form";
   }
 
@@ -83,6 +95,7 @@ public class CompanionController {
     List<Schedule> scheduleList = scheduleService.viewSchedule(tripNo);
     logger.info("Schedule List: {}", scheduleList);
     return scheduleList;
+
   }
 
   @PostMapping("add")
