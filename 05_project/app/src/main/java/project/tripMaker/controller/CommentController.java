@@ -51,6 +51,10 @@ public class CommentController {
       throw new Exception("로그인이 필요합니다.");
     }
 
+    if (comment.getCommentContent() == null || comment.getCommentContent().trim().isEmpty()) {
+      throw new IllegalArgumentException("댓글 내용을 입력해주세요.");
+    }
+
     if (boardTypeCode < 1 || boardTypeCode > 3) {
       throw new IllegalArgumentException("유효하지 않은 boardType 값입니다.");
     }

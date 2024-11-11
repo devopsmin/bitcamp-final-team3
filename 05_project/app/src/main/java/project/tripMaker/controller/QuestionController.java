@@ -30,15 +30,12 @@ public class QuestionController {
 
   @GetMapping("form")
   public void form(Model model, HttpSession session) throws Exception {
-    User loginUser = (User) session.getAttribute("loginUser");
-    if (loginUser == null) {
-      throw new Exception("로그인이 필요합니다.");
-    }
-//    User loginUser = new User();
-//    loginUser.setUserNo(1L); // 강제로 userNo를 1로 설정
+
+    User loginUser = getLoginUser(session);
 
     List<Trip> tripList = scheduleService.getTripsByUserNo(loginUser.getUserNo());
     model.addAttribute("trips", tripList);
+
 
   }
 
@@ -46,8 +43,7 @@ public class QuestionController {
   public String add(
           Board board, HttpSession session) throws Exception {
 
-    User loginUser = (User) session.getAttribute("loginUser");
-
+    User loginUser = getLoginUser(session);
     board.setWriter(loginUser);
 
     if ((board.getBoardTitle() == null || board.getBoardTitle().trim().isEmpty()) ||
@@ -59,9 +55,8 @@ public class QuestionController {
                       (board.getBoardContent() == null || board.getBoardContent().trim().isEmpty()) ? "내용을 입력해 주세요." :
                               "태그를 입력해 주세요.");
     }
-    int tripNo = board.getTripNo();
 
-    board.setTripNo(tripNo);
+    board.setTripNo(board.getTripNo());
     questionService.add(board);
 
     return "redirect:list";
@@ -73,8 +68,11 @@ public class QuestionController {
           @RequestParam(defaultValue = "9") int pageSize,
           Model model,
           @RequestParam(required = false, defaultValue = "latest") String sort,
-          @RequestParam(required = false) String search
-  ) throws Exception {
+          @RequestParam(required = false) String search,
+          HttpSession session) throws Exception {
+
+    User loginUser = (User) session.getAttribute("loginUser");
+    boolean isLoggedIn = loginUser != null;
 
     // 상위 4개의 베스트 게시글을 가져오기 위한 리스트
     List<Board> topBoards = questionService.getTopRecommendedBoards(1,4); // 베스트 게시글 상위 4개 가져오기
@@ -125,6 +123,8 @@ public class QuestionController {
     model.addAttribute("pageCount", pageCount);
     model.addAttribute("sort", sort);
     model.addAttribute("search", search);
+    model.addAttribute("isLoggedIn", isLoggedIn);
+
     return "question/list";
   }
 
@@ -137,9 +137,6 @@ public class QuestionController {
                    HttpSession session) throws Exception {
 
     Board board = questionService.get(boardNo);
-    if (board == null) {
-      throw new Exception("게시글이 존재하지 않습니다.");
-    }
 //    System.out.println("===================="+board.toString());
 
     List<Comment> commentList;
@@ -262,13 +259,9 @@ public class QuestionController {
   @GetMapping("delete")
   public String delete(int boardNo, HttpSession session) throws Exception {
 
-    User loginUser = (User) session.getAttribute("loginUser");
+    User loginUser = getLoginUser(session);
 
     Board board = questionService.get(boardNo);
-
-    if (loginUser == null) {
-      throw new Exception("로그인이 필요합니다.");
-    }
 
     if (board == null) {
       throw new Exception("없는 게시글입니다.");
@@ -338,6 +331,14 @@ public class QuestionController {
   public List<Schedule> getScheduleList(@RequestParam("tripNo") int tripNo) {
     System.out.println("Received tripNo: " + tripNo); // 디버깅용 로그
     return scheduleService.getSchedulesByTripNo(tripNo);
+  }
+
+  private User getLoginUser(HttpSession session) {
+    User loginUser = (User) session.getAttribute("loginUser");
+    if (loginUser == null) {
+      return null; // 로그인되지 않은 경우 null 반환
+    }
+    return loginUser;
   }
 
 }

@@ -53,6 +53,24 @@
             </div>
         </div>
 
+        <div class="modal fade" id="checkLoginModal" tabindex="-1" aria-labelledby="checkLoginModalLabel" aria-hidden="true">
+            <div class="modal-dialog" style="margin-top: 300px;">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="checkLoginModalLabel">알림</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        로그인이 필요합니다. 로그인 창으로 이동하시겠습니까?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" id="confirmLoginButton">확인</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="container my-3">
             <div data-th-each="trip : ${trips}" data-th-object="${trip}">
                 <h4 class="mb-2" style="margin-left: 10px; font-size: 1.5rem;">전체 경로</h4>
@@ -60,9 +78,10 @@
             </div>
 
 <!--            <div class="d-flex" style="overflow-x: auto; white-space: nowrap;">-->
-            <div class="d-flex" style="overflow-x: auto; overflow-y: auto; white-space: nowrap; height: 500px;"> <!-- 가로 및 세로 스크롤 -->
+            <div class="d-flex" style="overflow-x: auto; overflow-y: auto; white-space: nowrap;"> <!-- 가로 및 세로 스크롤 -->
                 <div class="col-md-4 mb-3 d-inline-block" style="width: 300px; margin-right: 20px;" data-th-each="entry : ${groupedSchedules}">
                     <h5 class="mb-3 text" style="font-size: 1.2rem;" data-th-text="${entry.key} + '일차'">일차</h5>
+
 
                     <div class="timeline">
                         <div class="timeline-item mb-1" data-th-each="schedule, iter : ${entry.value}" data-th-object="${schedule}">
@@ -160,31 +179,55 @@
 
 <script defer>
     function toggleLike(boardNo) {
-    fetch(`/question/toggleLike?boardNo=${boardNo}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' }
-    })
-    .then(response => response.json())
-    .then(data => {
-        document.getElementById('likeCount').textContent = data.likeCount;
-        document.getElementById('likeButton').textContent = data.isLiked ? '❤️ 좋아요 취소' : '🤍 좋아요';
-        alert(data.message);
-    })
-    .catch(error => console.error('Error:', error));
+    const isLoggedIn = [[${isLoggedIn}]]; // 서버에서 전달받은 로그인 여부
+
+    if (!isLoggedIn) {
+        // 로그인하지 않은 경우 모달 띄우기
+        const checkLoginModal = new bootstrap.Modal(document.getElementById('checkLoginModal'), {
+            backdrop: 'static',
+            keyboard: false
+        });
+        checkLoginModal.show();
+    } else {
+        // 로그인한 경우 좋아요 기능 실행
+        fetch(`/question/toggleLike?boardNo=${boardNo}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+        })
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('likeCount').textContent = data.likeCount;
+            document.getElementById('likeButton').textContent = data.isLiked ? '❤️ 좋아요 취소' : '🤍 좋아요';
+            alert(data.message);
+        })
+        .catch(error => console.error('Error:', error));
+    }
 }
 
 function toggleFavor(boardNo) {
-    fetch(`/question/toggleFavor?boardNo=${boardNo}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' }
-    })
-    .then(response => response.json())
-    .then(data => {
-        document.getElementById('favorCount').textContent = data.favorCount;
-        document.getElementById('favorButton').textContent = data.isFavored ? '⭐ 즐겨찾기 취소' : '⚪ 즐겨찾기';
-        alert(data.message);
-    })
-    .catch(error => console.error('Error:', error));
+    const isLoggedIn = [[${isLoggedIn}]]; // 서버에서 전달받은 로그인 여부
+
+    if (!isLoggedIn) {
+        // 로그인하지 않은 경우 모달 띄우기
+        const checkLoginModal = new bootstrap.Modal(document.getElementById('checkLoginModal'), {
+            backdrop: 'static',
+            keyboard: false
+        });
+        checkLoginModal.show();
+    } else {
+        // 로그인한 경우 즐겨찾기 기능 실행
+        fetch(`/question/toggleFavor?boardNo=${boardNo}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+        })
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('favorCount').textContent = data.favorCount;
+            document.getElementById('favorButton').textContent = data.isFavored ? '⭐ 즐겨찾기 취소' : '⚪ 즐겨찾기';
+            alert(data.message);
+        })
+        .catch(error => console.error('Error:', error));
+    }
 }
 </script>
 

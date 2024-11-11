@@ -6,6 +6,24 @@
         <button type="submit" class="btn btn-secondary">댓글 등록</button>
     </form>
 
+    <div class="modal fade" id="checkLoginModal" tabindex="-1" aria-labelledby="checkLoginModalLabel" aria-hidden="true">
+        <div class="modal-dialog" style="margin-top: 300px;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="checkLoginModalLabel">알림</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    로그인이 필요합니다. 로그인 창으로 이동하시겠습니까?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="confirmLoginButton">확인</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="mb-3">
         <select id="commentSort" class="form-select w-auto" onchange="changeCommentSort()">
             <option value="registered" data-th-selected="${sort == 'registered'}">등록순</option>
@@ -143,33 +161,42 @@
     }
 </script>
 <script>
-
     function toggleCommentLike(commentNo) {
-<!--    console.log(`Toggling like for commentNo: ${commentNo}`);--> 콘솔 로그
-    fetch(`/comment/toggleCommentLike?commentNo=${commentNo}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' }
-    })
-    .then(response => response.json())
-    .then(data => {
-<!--        console.log(`Response data for commentNo ${commentNo}:`, data);--> 콘솔 로그
+        const isLoggedIn = [[${isLoggedIn}]]; // 서버에서 전달받은 로그인 여부
 
-        const likeCountElem = document.getElementById(`commentLikeCount-${commentNo}`);
-        const likeButtonElem = document.getElementById(`commentLikeButton-${commentNo}`);
-
-        if (likeCountElem && likeButtonElem) {
-            likeCountElem.value = data.commentLikeCount;
-            likeButtonElem.textContent = data.isCommentLiked ? '❤️ 좋아요 취소' : '🤍 좋아요';
-            alert(data.message);
-        } else {
-            console.error(`Elements for commentNo ${commentNo} not found.`, {
-                likeCountElem,
-                likeButtonElem
+        if (!isLoggedIn) {
+            // 로그인하지 않은 경우 모달 띄우기
+            const checkLoginModal = new bootstrap.Modal(document.getElementById('checkLoginModal'), {
+                backdrop: 'static',
+                keyboard: false
             });
+            checkLoginModal.show();
+        } else {
+            // 로그인한 경우 좋아요 기능 실행
+            fetch(`/comment/toggleCommentLike?commentNo=${commentNo}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            })
+            .then(response => response.json())
+            .then(data => {
+                const likeCountElem = document.getElementById(`commentLikeCount-${commentNo}`);
+                const likeButtonElem = document.getElementById(`commentLikeButton-${commentNo}`);
+
+                if (likeCountElem && likeButtonElem) {
+                    likeCountElem.textContent = data.commentLikeCount; // 좋아요 개수 업데이트
+                    likeButtonElem.textContent = data.isCommentLiked ? '❤️ 좋아요 취소' : '🤍 좋아요'; // 버튼 텍스트 업데이트
+                    alert(data.message);
+                } else {
+                    console.error(`Elements for commentNo ${commentNo} not found.`, {
+                        likeCountElem,
+                        likeButtonElem
+                    });
+                }
+            })
+            .catch(error => console.error('Error:', error));
         }
-    })
-    .catch(error => console.error('Error:', error));
-}
+    }
+
 
 </script>
 
@@ -197,4 +224,49 @@
             adjustTextareaHeight(textarea);
         });
     });
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+    const submitButton = document.querySelector('button[type="submit"]');
+    const commentForm = document.querySelector('form[data-th-action="@{/comment/add}"]');
+    const isLoggedIn = [[${isLoggedIn}]];
+    const confirmLoginButton = document.getElementById('confirmLoginButton');
+
+    // 중복 리스너 방지용 플래그 설정
+    if (!confirmLoginButton.dataset.listenerAdded) {
+        confirmLoginButton.addEventListener('click', () => {
+            const checkLoginModal = bootstrap.Modal.getInstance(document.getElementById('checkLoginModal'));
+            if (checkLoginModal) {
+                checkLoginModal.hide(); // 로그인 확인 모달 닫기
+            }
+
+            // authModal.js의 loginModal을 표시
+            const loginModalEl = document.getElementById('loginModal');
+            if (loginModalEl) {
+                const loginModal = new bootstrap.Modal(loginModalEl);
+                loginModal.show(); // 로그인 모달을 표시
+            } else {
+                console.error('loginModal 엘리먼트가 존재하지 않습니다.');
+            }
+        });
+
+        // 리스너가 추가되었음을 표시
+        confirmLoginButton.dataset.listenerAdded = 'true';
+    }
+
+    submitButton.addEventListener('click', function(event) {
+        if (!isLoggedIn) {
+            event.preventDefault(); // 폼 제출 방지
+
+            const checkLoginModal = new bootstrap.Modal(document.getElementById('checkLoginModal'), {
+                backdrop: 'static',
+                keyboard: false
+            });
+            checkLoginModal.show(); // 로그인 필요 모달 띄우기
+        } else {
+            commentForm.submit(); // 로그인된 경우 폼 제출
+        }
+    });
+});
 </script>
