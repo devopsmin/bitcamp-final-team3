@@ -38,7 +38,7 @@ public class CompanionRecruitService {
 
     // 동행 모집 삭제
     @Transactional
-    public void deleteRecruit(int companionRecruitNo) throws Exception {
-        companionRecruitDao.deleteCompanionRecruit(companionRecruitNo);
+    public void deleteRecruit(int boardNo) throws Exception {
+        companionRecruitDao.deleteCompanionRecruit(boardNo);
     }
 }

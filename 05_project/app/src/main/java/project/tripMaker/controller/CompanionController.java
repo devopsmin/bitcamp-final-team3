@@ -66,20 +66,22 @@ public class CompanionController {
   @GetMapping("form")
   public String form(Model model, HttpSession session) throws Exception {
 
+    // Login 세션 처리 - 로그인 여부 확인 및 사용자 고유번호 추출
     User loginUser = (User) session.getAttribute("loginUser");
     if (loginUser == null) {
       throw new Exception("로그인이 필요합니다.");
     }
 
-    // 사용자가 가진 여행 일정 목록을 가져옴
+    // 로그인 사용자가 등록한 여행일정 리스트 데이터 추출
     List<Trip> tripList = scheduleService.getTripsByUserNo(loginUser.getUserNo());
     logger.info("Original Trip List: {}", tripList);
 
-    // 동행 게시판에 등록된 trip_no 목록을 가져옴
+    // board 테이블의 trip_no 값 추출
     List<Integer> registeredTripNos = companionService.getRegisteredTripNos();
     logger.info("Registered Trip Numbers: {}", registeredTripNos);
 
-    // 등록된 trip_no와 일치하지 않는 trip_no 만 필터링하여 새로운 리스트 생성
+    // board 테이블의 trip_no 값과 tripList 의 trip_no 값 비교
+    // 최종적으로 board 테이블에 등록 안된 trip_no 값을 가진 tripList 생성
     List<Trip> filteredTripList = tripList.stream()
             .filter(trip -> !registeredTripNos.contains(trip.getTripNo()))
             .collect(Collectors.toList());
@@ -87,8 +89,10 @@ public class CompanionController {
 
     model.addAttribute("tripList", filteredTripList);
     return "companion/form";
+    
   }
 
+  // trip_no 값으로 schedule 정보 데이터 추출
   @PostMapping("selectSchedule")
   @ResponseBody
   public List<Schedule> selectSchedule(@RequestParam int tripNo) throws Exception {
@@ -101,26 +105,29 @@ public class CompanionController {
   @PostMapping("add")
   @ResponseBody
   public void add(@RequestBody AddRequest addRequest, HttpSession session) throws Exception {
+
     User loginUser = (User) session.getAttribute("loginUser");
 
     if (loginUser == null) {
       throw new Exception("로그인이 필요합니다.");
     }
 
+    // Thymeleaf 로 부터 받은 복합 객체중 Board 객체 추출
     Board board = addRequest.getBoard();
 
+    // board 테이블 저장을 위한 userNo 저장
     board.setUserNo(loginUser.getUserNo());
 
-    // Step 3: tripNo 값을 임의의 int 형 변수에 저장
+    // board 테이블 저장을 위한 tripNo 저장
     int tripNo = board.getTripNo();
 
-    // Step 4: companionService 의 add 메서드 호출
+    // board 테이블 데이터 저장 시작
     companionService.add(board);
 
     // Step 5: Long 타입의 임의의 변수에 로그인한 사용자 번호 저장
     int userNo = board.getUserNo().intValue();
 
-    // Step 6: 반환된 값 저장
+    // Step 6: 반환값 저장
     Board findBoard = companionService.selectIdNoByTripNo(tripNo, userNo);
 
     int findBoardId = findBoard.getBoardNo();
@@ -128,26 +135,36 @@ public class CompanionController {
     System.out.println("userNo 값 : " + userNo);
     System.out.println("findBoardId 값 : " + findBoardId);
 
-    // 동행 모집 정보 추가
+    // 동행 모집 정보 데이터 저장
     List<Companionrecruit> companionRecruits = addRequest.getCompanionRecruits();
     for (Companionrecruit recruit : companionRecruits) {
       recruit.setBoardNo(findBoardId);
       companionRecruitService.addRecruit(recruit);
     }
+    
   }
 
   @GetMapping("view")
   public String view(@RequestParam int boardNo, Model model) throws Exception {
+
+    // 게시글 조회수 증가 처리
     companionService.increaseViewCount(boardNo);
+    
+    // 게시글 데이터 로드
     Board board = companionService.findBy(boardNo);
+    
+    // 여행일정(Schedule) 데이터 추출 준비 : trip_no 값 추출
+    int tripNo = board.getTripNo();
+
+    List<Schedule> scheduleList = scheduleService.viewSchedule(tripNo);
+    logger.info("Schedule List: {}", scheduleList);
+    model.addAttribute("scheduleList", scheduleList);
 
     if (board == null) {
       throw new Exception("게시글이 존재하지 않습니다.");
     }
 
-    List<Comment> commentList = commentService.list(boardNo);
     model.addAttribute("board", board);
-    model.addAttribute("commentList", commentList);
 
     return "companion/view";
   }

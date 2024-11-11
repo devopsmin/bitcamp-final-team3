@@ -34,7 +34,7 @@
 
     <!-- Delete -->
     <delete id="deleteCompanionRecruit">
-        DELETE FROM companionrecruit WHERE companion_recruit_no = #{companionrecruitNo}
+        DELETE FROM companionrecruit WHERE board_no = #{boardNo}
     </delete>
 
 </mapper>

@@ -16,5 +16,5 @@ public interface CompanionRecruitDao {
 
     boolean updateCompanionRecruit(Companionrecruit companionrecruit) throws Exception;
 
-    void deleteCompanionRecruit(int companionRecruitNo) throws Exception;
+    void deleteCompanionRecruit(int boardNo) throws Exception;
 }

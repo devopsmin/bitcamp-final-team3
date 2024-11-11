@@ -59,7 +59,7 @@
 
 
     <!-- 동행게시판 - 글등록 -->
-    <insert id="insert" parameterType="board">
+    <insert id="insert" parameterType="board" useGeneratedKeys="true" keyColumn="board_no" keyProperty="boardNo">
         INSERT INTO board (boardtype_no, board_title, board_created_date, user_no, trip_no, board_content, board_tag)
         VALUES (2, #{boardTitle}, NOW(), #{userNo}, #{tripNo}, #{boardContent}, #{boardTag})
     </insert>
