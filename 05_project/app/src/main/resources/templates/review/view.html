@@ -502,14 +502,22 @@
 
     document.addEventListener("DOMContentLoaded", function () {
         // 서버에서 전달된 상태 및 도시 이름을 가져옴 (예: board.trip.city.state.stateName 및 board.trip.city.cityName)
-        const stateName = /*[[${board.trip.city.state.stateName}]]*/ "defaultState";
-        const cityName = /*[[${board.trip.city.cityName}]]*/ "defaultCity";
+        // const stateName = /*[[${board.trip.city.state.stateName}]]*/ "defaultState";
+        // const cityName = /*[[${board.trip.city.cityName}]]*/ "defaultCity";
+
+        const stateName = "제주도";
+        const cityName = "제주시 ";
 
         // 마커리스트 초기화
         markerList = [];
 
+        let locationX=126.545219;
+        let locationY=33.524923;
+        if (locationX && locationY) {
+            addMarker(parseFloat(locationX), parseFloat(locationY));
+        }
         // 마커 좌표 설정
-        addMarker(33.520525, 126.536582);
+
 
         // 지도초기화
         initializeMap("map", stateName, cityName);

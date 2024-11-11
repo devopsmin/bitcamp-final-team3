@@ -44,6 +44,7 @@ function initializeMap(containerId, stateName, cityName) {
             map.setCenter(centerPosition);
             map.setZoom(zoomLevel);
         }
+        pinMarker();
     });
 
     return map;
@@ -57,6 +58,7 @@ function addMarker(locationX, locationY) {
         position: pos,
         map: map,
     });
+    console.log(marker);
 
     console.log(locationX, locationY)
     marker.locationX = locationX;
