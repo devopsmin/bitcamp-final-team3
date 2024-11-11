@@ -344,6 +344,7 @@
                     url: imageUrl
                 };
             }
+            console.log(selectedItems);
         }
     });
 
@@ -389,6 +390,7 @@
         const dataIndexList = selectedItems.map(item => item ? item.dataIndex : null);
 
         // 버튼 초기화 및 선택된 항목 업데이트
+        console.log(selectedItems);
         initializeButtons(addBtns);
         updateSelectedButtons(dataIndexList);
         modifyLocation(dataIndexList);
@@ -515,6 +517,7 @@
             // 인덱스에 따라 selectedItems 업데이트
             selectedItems[index] = null;
             const dataIndexList = selectedItems.map(item => item ? item.dataIndex : null);
+
             initializeButtons(addBtns);
             updateSelectedButtons(dataIndexList);
             modifyLocation(dataIndexList);

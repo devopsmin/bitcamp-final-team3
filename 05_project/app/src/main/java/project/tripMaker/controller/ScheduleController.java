@@ -6,14 +6,13 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.support.SessionStatus;
-import project.tripMaker.service.CityService;
-import project.tripMaker.service.ScheduleService;
-import project.tripMaker.service.TourAPIService;
+import project.tripMaker.service.*;
 import project.tripMaker.vo.*;
 
 import javax.servlet.http.HttpSession;
 import java.sql.Date;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -29,6 +28,8 @@ public class ScheduleController {
   private final CityService cityService;
   private final ScheduleService scheduleService;
   private final TourAPIService tourAPIService;
+  private final DirectionService directionService;
+  private final RouteService routeService;
 
   @RequestMapping("selectState")
   public void selectState(Model model, Trip trip) throws Exception {
@@ -120,6 +121,7 @@ public class ScheduleController {
       @ModelAttribute("selectLoList") List<Location> selectLoList,
       @RequestBody List<Integer> dataIndexes,
       Model model) {
+
     selectLoList.clear();
     for (int index : dataIndexes) {
       selectLoList.add(locationList.get(index));
@@ -147,18 +149,22 @@ public class ScheduleController {
   public List<Location> appendMyHotel(
       @ModelAttribute("hotelList") List<Location> hotelList,
       @ModelAttribute("selectHoList") List<Location> selectHoList,
-      @RequestBody List<Integer> dataIndexes,
+      @RequestBody List<Object> dataIndexes,  // String이나 Integer 대신 Object로 받기
       Model model) {
+
     for (int i = 0; i < dataIndexes.size(); i++) {
-      if (dataIndexes.get(i) != null) {
-        Location location = hotelList.get(dataIndexes.get(i));
+      Object index = dataIndexes.get(i);
+      if (index != null) {
+        // String이든 Integer든 상관없이 처리
+        int idx = Integer.parseInt(index.toString());
+        Location location = hotelList.get(idx);
         selectHoList.set(i, location);
       } else {
         selectHoList.set(i, null);
       }
-      model.addAttribute("selectHoList", selectHoList);
     }
-    System.out.println("Received dataIndexes: " + dataIndexes);
+
+    System.out.println("Returning selectHoList: " + selectHoList);
     return selectHoList;
   }
 
@@ -205,6 +211,31 @@ public class ScheduleController {
       schedule.setScheduleRoute(i + 1);
       tripScheduleList.add(schedule);
     }
+
+//    int totalSize = selectHoList.size() + selectLoList.size();
+//    RouteInfo[][] distances = new RouteInfo[totalSize][totalSize];
+//
+//    for (int start = 0; start < totalSize; start++) {
+//      for (int goal = start; goal < totalSize; goal++) {
+//        if (start != goal) {
+//          System.out.println("=========array===================================="+tripScheduleList.get(start)+tripScheduleList.get(goal));
+//          RouteInfo direction = directionService.getDirection(tripScheduleList.get(start),tripScheduleList.get(goal));
+//          distances[start][goal] = direction;
+//          distances[goal][start] = direction;
+//        }
+//      }
+//    }
+//
+//    int[][] optimalRoutes = routeService.assignTourism(distances, selectHoList.size(), selectLoList.size());
+//    for (int hotel = 0; hotel < selectHoList.size(); hotel++) {
+//      int route = 1;
+//      System.out.println("숙소 " + hotel + "의 관광지: "+ tripScheduleList.get(hotel).getLocation().getLocationName() + Arrays.toString(optimalRoutes[hotel]));
+//      for (int tour = 0 ; tour < optimalRoutes[hotel].length; tour++) {
+//        Schedule schedule = tripScheduleList.get(optimalRoutes[hotel][tour]);
+//        schedule.setScheduleDay(hotel + 1);
+//        schedule.setScheduleRoute(route++);
+//      }
+//    }
 
     tripScheduleList = scheduleService.orderSchedule(tripScheduleList);
     model.addAttribute("tripScheduleList", tripScheduleList);

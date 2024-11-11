@@ -27,71 +27,108 @@
 <body>
 <div class="d-flex" style="width: 100%; height: 100vh;">
     <!-- 왼쪽 리스트 부분 -->
-    <nav class="p-2 text-center "
-         style="width: 100px; flex: 0 0 100px;">
-        <h4 class="text-dark">모두의<br>여행</h4>
-        <ul class="nav flex-column">
-            <li class="nav-item"><a class="nav-link text-dark text-center" href="/home">메뉴 1</a></li>
-            <li class="nav-item"><a class="nav-link text-dark text-center" href="#">메뉴 2</a></li>
-            <li class="nav-item"><a class="nav-link text-dark text-center" href="#">메뉴 3</a></li>
-            <li class="nav-item"><a class="nav-link text-dark text-center" href="#">메뉴 4</a></li>
-        </ul>
-        <div class="d-flex justify-content-center mt-4">
-            <button class="btn btn-primary btn-sm" data-bs-target="#editModal" data-bs-toggle="modal" type="button">
-                일정 편집
-            </button>
+<!--    <div data-th-text="${tripScheduleList}"></div>-->
+        <nav class="p-2 text-center "
+             style="width: 100px; flex: 0 0 100px;">
+        <div>
+            <h4 class="text-dark text-center">
+                <a href="/home" class="text-decoration-none text-dark">모두의<br>여행</a>
+            </h4>
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <button class="btn w-100 text-center border-0">전체 일정</button>
+                </li>
+                <li class="nav-item" data-th-each="i : ${#numbers.sequence(0, totalDay)}">
+                    <button class="btn w-100 text-center border-0" data-th-text="'Day ' + ${i+1}">전체 일정</button>
+                </li>
+            </ul>
         </div>
-        <div class="d-flex justify-content-center mt-4">
-            <button class="btn btn-primary btn-sm" id="nextPageBtn"
-                    type="button">다음
-            </button>
+        <div class="d-flex mb-4">
+            <div class="d-flex flex-column align-items-center mt-4">
+                <div class="mb-2">
+                    <button class="btn btn-primary btn-sm" data-bs-target="#editModal" data-bs-toggle="modal" type="button">
+                        일정 편집
+                    </button>
+                </div>
+                <div>
+                    <button class="btn btn-primary btn-sm" id="nextPageBtn" type="button">다음</button>
+                </div>
+            </div>
         </div>
     </nav>
 
+<!--    <nav class="p-2 text-center "-->
+<!--         style="width: 100px; flex: 0 0 100px;">-->
+<!--        <h4 class="text-dark">모두의<br>여행</h4>-->
+<!--        <ul class="nav flex-column">-->
+<!--            <li class="nav-item"><a class="nav-link text-dark text-center" href="/home">메뉴 1</a></li>-->
+<!--            <li class="nav-item"><a class="nav-link text-dark text-center" href="#">메뉴 2</a></li>-->
+<!--            <li class="nav-item"><a class="nav-link text-dark text-center" href="#">메뉴 3</a></li>-->
+<!--            <li class="nav-item"><a class="nav-link text-dark text-center" href="#">메뉴 4</a></li>-->
+<!--        </ul>-->
+<!--        <div class="d-flex justify-content-center mt-4">-->
+<!--            <button class="btn btn-primary btn-sm" data-bs-target="#editModal" data-bs-toggle="modal" type="button">-->
+<!--                일정 편집-->
+<!--            </button>-->
+<!--        </div>-->
+<!--        <div class="d-flex justify-content-center mt-4">-->
+<!--            <button class="btn btn-primary btn-sm" id="nextPageBtn"-->
+<!--                    type="button">다음-->
+<!--            </button>-->
+<!--        </div>-->
+<!--    </nav>-->
+
 
     <!-- 왼쪽 패널 -->
-    <div class="overflow-auto bg-white h-100" id="left-panel">
+    <div class="bg-white h-100 d-flex flex-column" id="left-panel">
         <div class="flex-column p-3">
             <p class="fs-4 fw-bold mb-1" data-th-text="${stateName} + ${cityName}">제주도</p>
             <p class="text-secondary mb-1" data-th-text="${startDate} +' ~ '+  ${endDate}">2024-01-01 ~ 2024-02-01</p>
         </div>
 
-
-        <div class="d-flex flex-nowrap h-100 overflow-auto" id="columns-container">
-            <!-- Day 컬럼 -->
-            <div class="column-item text-dark p-1" style="width: 300px; min-width: 300px;"
-                 th:each="i : ${#numbers.sequence(1, totalDay)}">
-                <div class="fw-bold mb-2" th:text="'Day ' + ${i}">Day 1</div>
-                <!-- 드래그 앤 드롭을 위한 전용 컨테이너 -->
-                <div class="schedule-container d-flex flex-column gap-1">
-                    <div class="card border-0" style="width: 100%; height: 100px; position: relative;"
-                         th:each="schedule : ${tripScheduleList}"
-                         th:if="${schedule.scheduleDay == i}">
-                        <div class="d-flex align-items-start gap-1 mt-1" style="height: 100%;">
-                            <div class="position-relative d-flex flex-column align-items-center"
-                                 style="height: 100%;">
-                                <div class="m-2 d-flex justify-content-center align-items-center rounded-circle bg-primary text-white"
-                                     data-th-text="${schedule.scheduleRoute}"
-                                     style="width: 20px; height: 20px; font-size: 10px;">
+        <!-- 전체 수직 스크롤을 위한 컨테이너 -->
+        <div class="overflow-auto flex-grow-1">
+            <div class="d-flex flex-nowrap" id="columns-container">
+                <!-- Day 컬럼 -->
+                <div class="column-item text-dark p-1"
+                     style="width: 300px; min-width: 300px;"
+                     th:each="i : ${#numbers.sequence(0, totalDay)}"
+                     th:id="'day-column-' + ${i+1}">
+                <div class="fw-bold mb-2" th:text="'Day ' + ${i+1}">Day 1</div>
+                <!-- 스크롤을 위한 고정 높이 컨테이너 추가 -->
+                <div>
+                    <!-- 드래그 앤 드롭을 위한 전용 컨테이너 -->
+                    <div class="schedule-container d-flex flex-column gap-1">
+                        <div class="card border-0" style="width: 100%; height: 100px; position: relative;"
+                             th:each="schedule : ${tripScheduleList}"
+                             th:if="${schedule.scheduleDay == i+1}">
+                            <div class="d-flex align-items-start gap-1 mt-1" style="height: 100%;">
+                                <div class="position-relative d-flex flex-column align-items-center"
+                                     style="height: 100%;">
+                                    <div class="m-2 d-flex justify-content-center align-items-center rounded-circle bg-primary text-white"
+                                         data-th-text="${schedule.scheduleRoute}"
+                                         style="width: 20px; height: 20px; font-size: 10px;">
+                                    </div>
+                                    <div class="position-absolute bg-secondary"
+                                         style="width: 2px; height: calc(100% - 30px); top: 30px; left: 50%; transform: translateX(-50%);">
+                                    </div>
                                 </div>
-                                <div class="position-absolute bg-secondary"
-                                     style="width: 2px; height: calc(100% - 30px); top: 30px; left: 50%; transform: translateX(-50%);">
+                                <div class="d-flex flex-column align-items-start mt-2">
+                                    <p class="mb-0 bg-info rounded text-white p-1" style="font-size: 12px;">관광명소</p>
+                                    <p class="fs-6 fw-bold mb-0" th:text="${schedule.location.locationName}">
+                                        관광지이름</p>
                                 </div>
+                                <img alt="Location Image" class="rounded me-3 h-100 ms-auto"
+                                     src="image/default.png" style="width: 60px; object-fit: cover;"
+                                     th:src="${schedule.location.locationPhoto}">
+                                <span class="day d-none" th:text="${schedule.scheduleDay}"></span>
+                                <span class="route d-none" th:text="${schedule.scheduleRoute}"></span>
+                                <span class="schedule-no d-none" th:text="${schedule.scheduleNo}"></span>
+                                <span class="location-x d-none" th:text="${schedule.location.locationX}"></span>
+                                <span class="location-y d-none" th:text="${schedule.location.locationY}"></span>
                             </div>
-                            <div class="d-flex flex-column align-items-start mt-2">
-                                <p class="mb-0 bg-info rounded text-white p-1" style="font-size: 12px;">관광명소</p>
-                                <p class="fs-6 fw-bold mb-0" th:text="${schedule.location.locationName}">
-                                    관광지이름</p>
-                            </div>
-                            <img alt="Location Image" class="rounded me-3 h-100 ms-auto"
-                                 src="image/default.png" style="width: 60px; object-fit: cover;"
-                                 th:src="${schedule.location.locationPhoto}">
-                            <span class="day d-none" th:text="${schedule.scheduleDay}"></span>
-                            <span class="route d-none" th:text="${schedule.scheduleRoute}"></span>
-                            <span class="schedule-no d-none" th:text="${schedule.scheduleNo}"></span>
-                            <span class="location-x d-none" th:text="${schedule.location.locationX}"></span>
-                            <span class="location-y d-none" th:text="${schedule.location.locationY}"></span>
                         </div>
+                    </div>
                     </div>
                 </div>
             </div>
@@ -158,6 +195,62 @@
     let isDragging = false;
     const columnWidth = '300';
 
+    // 모든 일정 버튼들과 컬럼들을 가져옵니다
+    const dayButtons = document.querySelectorAll('.nav-item button');
+    const allColumns = document.querySelectorAll('.column-item');
+    const allScheduleBtn = document.querySelector('.nav-item:first-child button');
+
+    // 각 일정 버튼에 클릭 이벤트를 추가합니다
+    dayButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const buttonText = this.textContent.trim();
+
+            // 먼저 모든 버튼의 활성화 스타일을 제거
+            dayButtons.forEach(btn => {
+                btn.classList.remove('active', 'bg-primary', 'text-white');
+            });
+
+            // 클릭된 버튼에 활성화 스타일 추가
+            this.classList.add('active', 'text-primay');
+
+            if (buttonText === '전체 일정') {
+                // 전체 일정 버튼을 클릭한 경우
+                allColumns.forEach(column => {
+                    column.style.display = 'block';
+                });
+                leftPanel.style.width = calculateMaxWidth();
+                rightPanel.style.width = `calc(100% - ${parseInt(calculateMaxWidth()) + 110}px)`;
+                columnsContainer.classList.add('flex-nowrap');
+                columnsContainer.classList.remove('flex-wrap');
+            } else {
+                // Day 버튼을 클릭한 경우
+                const dayNumber = parseInt(buttonText.replace('Day ', ''));
+
+                // 모든 컬럼을 숨기고
+                allColumns.forEach(column => {
+                    column.style.display = 'none';
+                });
+
+                // 선택된 Day의 컬럼만 보이게 함
+                const selectedColumn = document.getElementById(`day-column-${dayNumber}`);
+                if (selectedColumn) {
+                    selectedColumn.style.display = 'block';
+                }
+
+                // 패널 너비를 300px로 조정
+                leftPanel.style.width = '300px';
+                rightPanel.style.width = `calc(100% - 410px)`; // 300px + 왼쪽 리스트 100px + drag-handle 10px
+                columnsContainer.classList.add('flex-wrap');
+                columnsContainer.classList.remove('flex-nowrap');
+            }
+        });
+    });
+    // 처음 로드될 때는 모든 컬럼이 보이도록 설정
+    window.addEventListener('load', () => {
+        allColumns.forEach(column => {
+            column.style.display = 'block';
+        });
+    });
     function calculateMaxWidth() {
         let columnCount = columnsContainer.children.length;
         if (columnCount >= 3) {
@@ -353,23 +446,23 @@
 
         // 모달 내용 설정
         modalContent.innerHTML = `
-    <form action='/schedule/save' id="tripForm" method="post" class="p-4">
-        <div class="row mb-3">
-            <div class="col-md-6">
-                <label for="tripTitle" class="form-label">여행 제목</label>
-                <input type="text" class="form-control form-control-sm" id="tripTitle" name="tripTitle" required>
-            </div>
-            <div class="col-md-6">
-                <label for="themaNo" class="form-label">여행 테마</label>
-                <select name="themaNo" id="themaNo" class="form-select form-select-sm" required>
-                    <option value="">테마 선택</option>
-                    ${themas.map(thema =>
-            `<option value="${thema.themaNo}">${thema.themaName}</option>`
-        ).join('')}
-                </select>
-            </div>
-        </div>
-    </form>`;
+            <form action='/schedule/save' id="tripForm" method="post" class="p-4">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="tripTitle" class="form-label">여행 제목</label>
+                        <input type="text" class="form-control form-control-sm" id="tripTitle" name="tripTitle" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="themaNo" class="form-label">여행 테마</label>
+                        <select name="themaNo" id="themaNo" class="form-select form-select-sm" required>
+                            <option value="">테마 선택</option>
+                            ${themas.map(thema =>
+                    `<option value="${thema.themaNo}">${thema.themaName}</option>`
+                ).join('')}
+                        </select>
+                    </div>
+                </div>
+            </form>`;
 
         // 저장 버튼 이벤트 리스너 추가
         document.getElementById('saveButton').addEventListener('click', function saveNextModal() {
@@ -439,18 +532,40 @@
         modalContent.innerHTML = '';
         const originalContainer = document.getElementById('columns-container');
         const clonedContainer = originalContainer.cloneNode(true);
+
+        // 모달에서는 모든 컬럼이 보이도록 설정
+        clonedContainer.classList.add('flex-nowrap');
+        clonedContainer.classList.remove('flex-wrap');
+        clonedContainer.querySelectorAll('.column-item').forEach(column => {
+            column.style.display = 'block';
+        });
+
         modalContent.appendChild(clonedContainer);
         initializeDragAndDrop(modalContent);
 
         document.getElementById('saveButton').addEventListener('click', function saveEditModal() {
-            const modalContainer = document.querySelector('#modalContent #columns-container');
-            const originalContainer = document.getElementById('columns-container');
-            originalContainer.innerHTML = modalContainer.innerHTML;
+            const modalScheduleContainers = document.querySelectorAll('#modalContent .schedule-container');
+            const originalScheduleContainers = document.querySelectorAll('#columns-container .schedule-container');
+
+            // schedule-container의 내용만 업데이트
+            modalScheduleContainers.forEach((container, index) => {
+                originalScheduleContainers[index].innerHTML = container.innerHTML;
+            });
+
             pinMarker();
             bootstrap.Modal.getInstance(editModal).hide();
-
             document.getElementById('saveButton').removeEventListener('click', saveEditModal);
         });
+
+        // document.getElementById('saveButton').addEventListener('click', function saveEditModal() {
+        //     const modalContainer = document.querySelector('#modalContent #columns-container');
+        //     const originalContainer = document.getElementById('columns-container');
+        //     originalContainer.innerHTML = modalContainer.innerHTML;
+        //     pinMarker();
+        //     bootstrap.Modal.getInstance(editModal).hide();
+        //
+        //     document.getElementById('saveButton').removeEventListener('click', saveEditModal);
+        // });
     });
 
     function initializeDragAndDrop(modalContent) {
