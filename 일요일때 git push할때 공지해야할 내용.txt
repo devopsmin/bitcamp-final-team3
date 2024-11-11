@@ -1,0 +1,51 @@
+1. 데이터 베이스 컬럼 추가
+
+-- User 테이블에 필드 추가
+ALTER TABLE user 
+ADD COLUMN deleted_date DATETIME DEFAULT NULL;
+
+2. 유저vo 수정
+
+@Getter
+@Setter
+@NoArgsConstructor
+public class User {
+    private Long userNo;
+    private String userPhoto;
+    private LocalDateTime userLastestLogin;
+    private String userEmail;
+    private String userPassword;
+    private String userTel;
+    private LocalDateTime userCreatedDate;
+    private String userNickname;
+    private UserRole userRole;
+    private Integer userBlock;
+    private Integer snsNo;
+    private String snsName;
+    private LocalDateTime deletedDate;
+    
+    @Builder
+    public User(Long userNo, String userPhoto, LocalDateTime userLastestLogin,
+               String userEmail, String userPassword, String userTel,
+               LocalDateTime userCreatedDate, String userNickname,
+               UserRole userRole, Integer userBlock, Integer snsNo,
+               String snsName, LocalDateTime deletedDate) {
+        this.userNo = userNo;
+        this.userPhoto = userPhoto;
+        this.userLastestLogin = userLastestLogin;
+        this.userEmail = userEmail;
+        this.userPassword = userPassword;
+        this.userTel = userTel;
+        this.userCreatedDate = userCreatedDate;
+        this.userNickname = userNickname;
+        this.userRole = userRole;
+        this.userBlock = userBlock;
+        this.snsNo = snsNo;
+        this.snsName = snsName;
+        this.deletedDate = deletedDate;
+    }
+
+    public boolean isSocialUser() {
+        return this.snsNo != null;
+    }
+}

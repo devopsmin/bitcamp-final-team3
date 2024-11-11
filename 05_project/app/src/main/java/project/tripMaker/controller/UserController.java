@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import project.tripMaker.config.PasswordEncoderConfig;
 import project.tripMaker.service.StorageService;
 import project.tripMaker.service.UserService;
 import project.tripMaker.vo.User;
@@ -22,6 +23,7 @@ public class UserController {
 
     private final UserService userService;
     private final StorageService storageService;
+    private final PasswordEncoderConfig passwordEncoderConfig;
 
     private final String folderName = "user/profile/";
 
@@ -92,7 +94,7 @@ public class UserController {
       // 사용자 정보 익명화
       loginUser.setUserPhoto(null);
       loginUser.setUserEmail("알수없음_" + System.currentTimeMillis());
-      loginUser.setUserNickname("알수없음_" + System.currentTimeMillis());
+      loginUser.setUserNickname("알수없음" + System.currentTimeMillis());
       loginUser.setUserPassword(null);
       loginUser.setUserTel("탈퇴한 사용자");
       loginUser.setSnsNo(null);
@@ -108,6 +110,36 @@ public class UserController {
       }
     } catch (Exception e) {
       return "회원 탈퇴 처리 중 오류가 발생했습니다.";
+    }
+  }
+
+
+
+  @PostMapping("/change-password")
+  @ResponseBody
+  public String changePassword(
+      @RequestParam String currentPassword,
+      @RequestParam String newPassword,
+      HttpSession session) {
+    try {
+      User loginUser = (User) session.getAttribute("loginUser");
+      if (loginUser == null) {
+        return "로그인이 필요합니다.";
+      }
+
+      User currentUser = userService.get(loginUser.getUserNo());
+
+      if (!passwordEncoderConfig.passwordEncoder().matches(currentPassword, currentUser.getUserPassword())) {
+        return "현재 비밀번호가 일치하지 않습니다.";
+      }
+
+      currentUser.setUserPassword(passwordEncoderConfig.passwordEncoder().encode(newPassword));
+      userService.update(currentUser);
+
+      return "비밀번호가 성공적으로 변경되었습니다.";
+    } catch (Exception e) {
+      e.printStackTrace();
+      return "비밀번호 변경 중 오류가 발생했습니다.";
     }
   }
 }

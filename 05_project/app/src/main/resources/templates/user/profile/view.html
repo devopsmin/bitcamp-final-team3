@@ -57,7 +57,7 @@
             confirmPasswordInput.type = checkbox.checked ? "text" : "password";
         }
 
-        function deleteAccount() {
+             function deleteAccount() {
     if (confirm('정말 탈퇴하시겠습니까? 이 작업은 되돌릴 수 없습니다.\n소셜 로그인으로 가입한 경우, 연동된 소셜 계정 정보도 함께 삭제됩니다.')) {
         fetch('/user/profile/delete', {
             method: 'POST',
@@ -82,6 +82,7 @@
         });
     }
 }
+    </script>
     </script>
 </div>
 

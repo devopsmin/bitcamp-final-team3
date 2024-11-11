@@ -91,6 +91,7 @@
           user_Lastest_Login,
           user_role,
           user_Block,
+          user_password,
           sns_No
         from
           user
