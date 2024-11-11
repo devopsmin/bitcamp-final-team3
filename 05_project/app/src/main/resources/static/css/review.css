@@ -1,3 +1,23 @@
+.card-list-container {
+  display: flex;
+  justify-content: center;
+  padding: 20px;
+}
+
+.card-list {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* 3개의 열 */
+  gap: 20px; /* 카드들 사이의 간격 */
+  max-width: 1700px; /* 카드 목록의 최대 너비 */
+}
+
+.card-bestList {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); /* 4개의 열 */
+  gap: 20px; /* 카드들 사이의 간격 */
+  max-width: 1700px; /* 카드 목록의 최대 너비 */
+}
+
 .text-center {
   text-align: center;
   margin-bottom: 20px;
@@ -33,87 +53,6 @@
   gap: 10px;
 }
 
-/* 카드 리스트 컨테이너 스타일 */
-.card-list-container {
-  padding: 20px;
-  margin: 0 auto;
-  max-width: 1700px;
-}
-
-.card-list {
-  margin: 0 -10px;  /* 네거티브 마진으로 카드 간격 조정 */
-}
-
-/* 카드 스타일 */
-.card {
-  margin: 10px;
-  border-radius: 15px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  transition: box-shadow 0.2s ease;
-  height: 100%;
-}
-
-.card:hover {
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  cursor: pointer;
-}
-
-/* 카드 이미지 래퍼 */
-.card-img-wrapper {
-  position: relative;
-  padding-top: 56.25%; /* 16:9 비율 */
-  border-top-left-radius: 15px;
-  border-top-right-radius: 15px;
-  overflow: hidden;
-}
-
-.card-img-top {
-  object-fit: cover;
-}
-
-/* 카드 본문 */
-.card-body {
-  padding: 1.25rem;
-}
-
-.card-title {
-  font-size: 1.1rem;
-  font-weight: bold;
-  margin-bottom: 0.75rem;
-}
-
-.card-title a {
-  color: inherit;
-  text-decoration: none;
-}
-
-.card-text {
-  font-size: 0.9rem;
-  color: #666;
-}
-
-/* 카드 푸터 */
-.card-footer {
-  padding: 0.75rem 1.25rem;
-  background-color: transparent;
-  border-top: 1px solid rgba(0,0,0,0.125);
-}
-
-.card-footer .text-muted {
-  font-size: 0.85rem;
-}
-
-/* 반응형 그리드 조정 */
-@media (max-width: 768px) {
-  .card-list-container {
-    padding: 10px;
-  }
-
-  .card {
-    margin: 5px;
-  }
-}
-
 /* 페이지네이션 스타일 */
 .pagination {
   margin-top: 2rem;
@@ -144,11 +83,32 @@
   border-radius: 0.375rem;
 }
 
-/* 아이콘 스타일 */
-.card-footer span {
-  margin-right: 8px;
+.pagination {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
-.card-footer span:last-child {
-  margin-right: 0;
+.pagination button {
+  background-color: transparent;
+  border: none;
+  font-size: 24px;
+  color: #555;
+  cursor: pointer;
+  transition: color 0.3s;
+}
+
+.pagination button:hover {
+  color: #000;
+}
+
+.pagination #pagination-dots i {
+  font-size: 14px;
+  color: #aaa;
+  transition: color 0.3s;
+}
+
+.pagination #pagination-dots i.bi-circle-fill {
+  font-size: 18px;
+  color: #333;
 }

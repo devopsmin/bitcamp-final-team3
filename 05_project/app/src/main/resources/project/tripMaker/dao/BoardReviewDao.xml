@@ -29,6 +29,10 @@
                   <result property="stateName" column="state_name"/>
                 </association>
             </association>
+            <association property="thema" javaType="project.tripMaker.vo.Thema">
+              <id property="themaNo" column="thema_no"/>
+              <result property="themaName" column="thema_name"/>
+            </association>
         </association>
 
         <association property="writer" javaType="project.tripMaker.vo.User">
@@ -184,6 +188,7 @@
       COALESCE(fv.favor_count, 0) AS favor_count,
       COALESCE(bl.like_count, 0) AS like_count,
       t.trip_title,
+      th.thema_name,             <!-- Thema Name 추가 -->
       cy.city_name, -- 시도명
       s.state_name -- 주 이름 추가
     from
@@ -194,6 +199,8 @@
     LEFT JOIN boardlike_count_view bl ON b.board_no = bl.board_no
     LEFT JOIN
     trip t ON b.trip_no = t.trip_no -- Trip과 Board 조인 추가
+    LEFT JOIN
+    thema th ON t.thema_no = th.thema_no -- Trip과 Thema 조인 추가
     LEFT JOIN
     city cy ON t.city_code = cy.city_code -- Trip과 City 조인
     LEFT JOIN

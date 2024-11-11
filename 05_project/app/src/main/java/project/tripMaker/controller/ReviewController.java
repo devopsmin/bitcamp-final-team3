@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import javax.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -51,9 +52,9 @@ public class ReviewController {
   public String list(
       // 페이지 설정
       // pageNo (페이지번호)      Default 1 = 1페이지
-      // pageSize (화면출력 갯수) Default 8 = 8개의 게시글
+      // pageSize (화면출력 갯수) Default 9 = 9개의 게시글
       @RequestParam(defaultValue = "1") int pageNo,
-      @RequestParam(defaultValue = "8") int pageSize,
+      @RequestParam(defaultValue = "9") int pageSize,
       Model model,
       @RequestParam(required = false, defaultValue = "latest") String sort
   ) throws Exception {
@@ -178,8 +179,14 @@ public class ReviewController {
   @GetMapping("view")
   public String view(
       @RequestParam int boardNo,
-      @SessionAttribute("loginUser") User user,
+      @SessionAttribute(value = "loginUser") User user,
       Model model) throws Exception {
+
+    // 로그인 유저가 아닌 경우 처리 (나중에 처리해야지)
+    if (user == null) {
+      model.addAttribute("errorMessage", "로그인을 해야 합니다.");
+      return "redirect:/home";
+    }
 
     Board board = reviewService.get(boardNo);
     if (board == null) {
@@ -211,6 +218,10 @@ public class ReviewController {
     }
 
     board.setBoardImages(images);
+
+    Map<Integer, List<Schedule>> groupedSchedules = scheduleList.stream()
+        .collect(Collectors.groupingBy(Schedule::getScheduleDay));
+    model.addAttribute("groupedSchedules", groupedSchedules);
 
     model.addAttribute("board", board);
     model.addAttribute("writer", writer);
@@ -405,7 +416,7 @@ public class ReviewController {
       @RequestParam(value = "option", required = false, defaultValue = "title") String option,
       @RequestParam("query") String query,
       @RequestParam(defaultValue = "1") int pageNo,
-      @RequestParam(defaultValue = "8") int pageSize,
+      @RequestParam(defaultValue = "9") int pageSize,
       Model model
   ) {
     String decodedQuery = URLDecoder.decode(query, StandardCharsets.UTF_8);

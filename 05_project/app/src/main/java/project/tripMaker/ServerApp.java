@@ -25,6 +25,7 @@ import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
+import project.tripMaker.Interceptor.LoginInterceptor;
 
 @SpringBootApplication
 @PropertySource("file:${user.home}/config/ncp.properties")
@@ -33,6 +34,7 @@ public class ServerApp implements WebMvcConfigurer {
 
     @Autowired
     ApplicationContext appCtx;
+    // private LoginInterceptor loginInterceptor;
 
     public ServerApp() {
         // AWS 경고 메시지 로깅 비활성화
@@ -43,9 +45,13 @@ public class ServerApp implements WebMvcConfigurer {
         SpringApplication.run(ServerApp.class, args);
     }
 
-//    @Override
-//    public void addInterceptors(InterceptorRegistry registry) {
-//        registry.addInterceptor(new AdminInterceptor())
-//            .addPathPatterns("/users*");
-//    }
+   // @Override
+   // public void addInterceptors(InterceptorRegistry registry) {
+   //     // loginInterceptor가 null이 아닌지 확인 후 추가
+   //     if (loginInterceptor != null) {
+   //         registry.addInterceptor(loginInterceptor).addPathPatterns("/review/view");
+   //     } else {
+   //         throw new IllegalArgumentException("Interceptor is required");
+   //     }
+   // }
 }
