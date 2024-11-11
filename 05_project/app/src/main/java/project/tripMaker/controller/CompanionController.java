@@ -96,7 +96,7 @@ public class CompanionController {
   @PostMapping("selectSchedule")
   @ResponseBody
   public List<Schedule> selectSchedule(@RequestParam int tripNo) throws Exception {
-    List<Schedule> scheduleList = scheduleService.viewSchedule(tripNo);
+    List<Schedule> scheduleList = scheduleService.getSchedulesByTripNo(tripNo);
     logger.info("Schedule List: {}", scheduleList);
     return scheduleList;
 
@@ -112,7 +112,7 @@ public class CompanionController {
       throw new Exception("로그인이 필요합니다.");
     }
 
-    // Thymeleaf 로 부터 받은 복합 객체중 Board 객체 추출
+    // Thymeleaf 으로 부터 받은 복합 객체중 Board 객체 추출
     Board board = addRequest.getBoard();
 
     // board 테이블 저장을 위한 userNo 저장
@@ -149,15 +149,17 @@ public class CompanionController {
 
     // 게시글 조회수 증가 처리
     companionService.increaseViewCount(boardNo);
-    
+
     // 게시글 데이터 로드
     Board board = companionService.findBy(boardNo);
-    
-    // 여행일정(Schedule) 데이터 추출 준비 : trip_no 값 추출
-    int tripNo = board.getTripNo();
 
+    // 여행일정(Schedule) 데이터 추출 : trip_no 값 추출(Schedule List 데이터 추출시 필요)
+    int tripNo = board.getTripNo();
+    // 여행일정(Schedule) 데이터 추출 : schedule List 데이터 추출(scheduleService viewSchedule 메서드를 이용)
     List<Schedule> scheduleList = scheduleService.viewSchedule(tripNo);
+    // 여행일정(Schedule) 데이터 추출 : schedule List 데이터 확인
     logger.info("Schedule List: {}", scheduleList);
+    // 여행일정(Schedule) 데이터 추출 : view.html 속성 설정으로 List 전달(view.html 에서 scheduleList 명칭으로 사용)
     model.addAttribute("scheduleList", scheduleList);
 
     if (board == null) {
@@ -167,6 +169,7 @@ public class CompanionController {
     model.addAttribute("board", board);
 
     return "companion/view";
+
   }
 
   @PostMapping("modify")

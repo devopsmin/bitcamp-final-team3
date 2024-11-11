@@ -1,27 +1,47 @@
 <!DOCTYPE html>
 <html>
-    <head data-th-replace="~{header :: head}"></head>
-    <body>
-        <header data-th-replace="~{header :: #page-header}"></header>
-        <a data-th-href="@{/companion/form}" href="form.html">글쓰기</a>
-        <form data-th-action ="@{modify}" method="post">
-            <h1 data-th-text="*{board.boardTitle}"></h1>
-            <input readonly name='boardNo'type="text"  data-th-value="*{board.boardNo}" style="border:none; display: none"><br>
-            작성자: <input data-th-value="*{board.writer.userNickname}" name="writer" style="border:none;" readonly><br>
-            작성일: <input data-th-value="*{board.boardCreatedDate}" name="boardCreatedDate" style="border:none;" readonly><br>
-            조회수: <input data-th-value="*{board.boardCount}" name = boardCount style="border:none;" readonly><br>
-            내용: <input data-th-value="*{board.boardContent}" name = boardContent style="border:none;" readonly><br>
-            <button type="submit">수정</button>
-        </form>
-        <button type="button" onclick="location.href='list'">목록</button>
-        <button data-th-onclick="|deleteBoard(${board.boardNo})|">삭제</button>
-        <br>
+<head data-th-replace="~{header :: head}"></head>
+<body>
+<header data-th-replace="~{header :: #page-header}"></header>
+<a data-th-href="@{/companion/form}" href="form.html">글쓰기</a>
 
-        <script>
-            function deleteBoard(no) {
-                location.href = "delete?boardNo=" + no
-                location.redirect
-            }
-        </script>
-    </body>
+<!-- 동행모집 데이터 -->
+<form name="Companionrecruit" id="Companionrecruit">
+    <div id="scheduleListContainer" style="display: flex;">
+        <div data-th-each="schedule, iterStat : ${scheduleList}">
+            <div data-th-if="${iterStat.index == 0} or (${schedule.scheduleDay != scheduleList[iterStat.index - 1].scheduleDay})">
+                <div style="margin-right: 20px;">
+                    <label data-th-text="${schedule.scheduleDay} + ' 일차'"></label>
+                    <div data-th-each="innerSchedule : ${scheduleList}" data-th-if="${innerSchedule.scheduleDay == schedule.scheduleDay}">
+                        <input name="scheduleNo" type="hidden" data-th-value="${innerSchedule.scheduleNo}">
+                        <input name="scheduleRoute" type="text" data-th-value="${innerSchedule.scheduleRoute}" style="border: none; outline: none; padding: 0;" readonly>
+                        <input name="locationName" type="text" data-th-value="${innerSchedule.location.locationName}" style="border: none; outline: none; padding: 0;" readonly>
+                        <br>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form><br><br>
+
+<!-- 일반 게시판 데이터 -->
+<form name="Board" id="Board">
+    <label>제목</label>
+    <input name="boardTitle" type="text" data-th-value="${board.boardTitle}" style="border: none; outline: none;"><br><br>
+    <label>내용</label><br>
+    <textarea name="boardContent" data-th-text="${board.boardContent}"style="border: none; outline: none;"></textarea><br><br>
+    <label>태그</label><br>
+    <input name="boardTag" type="text" data-th-value="${board.boardTag}"style="border: none; outline: none;"><br><br>
+</form>
+
+<button type="button" onclick="location.href='list'">목록</button>
+<button data-th-onclick="|deleteBoard(${board.boardNo})|">삭제</button>
+<br>
+
+<script>
+    function deleteBoard(no) {
+        location.href = "delete?boardNo=" + no;
+    }
+</script>
+</body>
 </html>
