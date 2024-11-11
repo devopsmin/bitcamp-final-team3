@@ -3,7 +3,7 @@
 <head data-th-replace="~{header :: head}">
 </head>
 <header data-th-replace="~{header :: #page-header}"></header>
-<h1 class="text-center mb-4">일정 질문 게시판</h1>
+<h1 class="text-center  my-5 mb-4">일정 질문 게시판</h1>
 
 <body>
 <div class="container my-5" style="max-width: 1200px; margin: 0 auto;">
@@ -49,7 +49,7 @@
         <div class="container my-3">
             <div data-th-each="trip : ${trips}" data-th-object="${trip}">
                 <h4 class="mb-2" style="margin-left: 10px; font-size: 1.5rem;">전체 경로</h4>
-                <p class="text-muted mb-3" style="margin-left: 10px; font-size: 0.9rem;" data-th-text="${#dates.format(trip.startDate, 'yyyy.MM.dd(E)')} + ' ~ ' + ${#dates.format(trip.endDate, 'yyyy.MM.dd(E)')}">2024.09.18(수) ~ 2024.09.21(토)</p>
+                <p class="text-muted mb-3" style="margin-left: 10px; font-size: 0.9rem;" data-th-text="${#dates.format(trip.startDate, 'yyyy.MM.dd(E)')} + ' ~ ' + ${#dates.format(trip.endDate, 'yyyy.MM.dd(E)')}">일자</p>
             </div>
 
 <!--            <div class="d-flex" style="overflow-x: auto; white-space: nowrap;">-->
@@ -60,7 +60,7 @@
                     <div class="timeline">
                         <div class="timeline-item mb-1" data-th-each="schedule, iter : ${entry.value}" data-th-object="${schedule}">
                             <div class="p-3 border rounded shadow-sm d-flex justify-content-between align-items-center">
-                                <!-- 일정 정보 -->
+
                                 <div class="me-2 align-items=start">
                                     <div class="d-flex">
                                         <div class="badge bg-warning text-white" style="font-size: 1rem; border-radius: 50%; width: 25px; height: 25px; display: flex; align-items: center; justify-content: center;" data-th-text="${iter.index + 1}">일정 순서</div>
@@ -71,13 +71,13 @@
                                         </div>
                                     </div>
                                 </div>
-                                <!-- 이미지 -->
+
                                 <div>
                                     <img data-th-src="${schedule.location.locationPhoto != null ? schedule.location.locationPhoto : 'https://via.placeholder.com/70x70'}"
                                          alt="Location Photo" class="img-thumbnail" style="width: 70px; height: 70px;">
                                 </div>
                             </div>
-                            <!-- 타임라인 점선과 시간 정보 -->
+
                             <div class="d-flex align-items-center" style="height: 20px;">
                                 <div class="timeline-line mt-2" style="border-left: 2px dotted #ddd; height: 70%; margin-left: 15px;"></div>
                                 <div class="text-muted small ms-2" style="font-size: 0.8rem; margin-top: 6px;"><i class="bi bi-car-front"></i> 45분</div>
@@ -129,7 +129,6 @@
 <!--                        </div>-->
 <!--                    </div>-->
 <!--                </div>-->
-
 
         <div class="mb-2">
             <textarea readonly class="form-control border-0 p-2" style="resize: none; overflow: hidden; font-size: 1rem;" data-th-text="${board.boardContent}" oninput="this.style.height = ''; this.style.height = this.scrollHeight + 'px';">내용</textarea>

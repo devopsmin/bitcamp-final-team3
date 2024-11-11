@@ -70,7 +70,7 @@ public class QuestionController {
   @GetMapping("list")
   public String list(
           @RequestParam(defaultValue = "1") int pageNo,
-          @RequestParam(defaultValue = "12") int pageSize,
+          @RequestParam(defaultValue = "9") int pageSize,
           Model model,
           @RequestParam(required = false, defaultValue = "latest") String sort,
           @RequestParam(required = false) String search
@@ -336,7 +336,7 @@ public class QuestionController {
   @GetMapping("getScheduleList")
   @ResponseBody
   public List<Schedule> getScheduleList(@RequestParam("tripNo") int tripNo) {
-    System.out.println(tripNo);
+    System.out.println("Received tripNo: " + tripNo); // 디버깅용 로그
     return scheduleService.getSchedulesByTripNo(tripNo);
   }
 
