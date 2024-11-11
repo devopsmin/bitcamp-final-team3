@@ -52,11 +52,13 @@ function initializeMap(containerId, stateName, cityName) {
 // 마커 추가 함수
 function addMarker(locationX, locationY) {
     let pos = new naver.maps.LatLng(locationY, locationX);
+    console.log(pos)
     let marker = new naver.maps.Marker({
         position: pos,
         map: map,
     });
 
+    console.log(locationX, locationY)
     marker.locationX = locationX;
     marker.locationY = locationY;
     markerList.push(marker);

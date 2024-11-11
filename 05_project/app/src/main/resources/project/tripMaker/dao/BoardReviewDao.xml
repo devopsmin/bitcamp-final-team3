@@ -24,6 +24,10 @@
             <result property="tripTitle" column="trip_title"/>
             <association property="city" javaType="project.tripMaker.vo.City">
                <result property="cityName" column="city_name"/>
+                <association property="state" javaType="project.tripMaker.vo.State">
+                  <id property="stateCode" column="state_code"/>
+                  <result property="stateName" column="state_name"/>
+                </association>
             </association>
         </association>
 
@@ -117,7 +121,8 @@
         u.user_nickname,
         COALESCE(fv.favor_count, 0) AS favor_count,
         COALESCE(bl.like_count, 0) AS like_count,
-        c.city_name -- 시도명
+        c.city_name, -- 시도명
+        s.state_name -- 주 이름 추가
       FROM
         (SELECT @rownum := 0) r,  -- 변수 초기화
         board b
@@ -131,6 +136,8 @@
         trip t ON b.trip_no = t.trip_no -- Trip과 Board 조인 추가
           LEFT JOIN
         city c ON t.city_code = c.city_code -- Trip과 City 조인
+          LEFT JOIN
+        state s ON c.state_code = s.state_code -- City와 State 조인
       WHERE
         b.boardtype_no = 3
       ORDER BY
@@ -177,7 +184,8 @@
       COALESCE(fv.favor_count, 0) AS favor_count,
       COALESCE(bl.like_count, 0) AS like_count,
       t.trip_title,
-      cy.city_name -- 시도명
+      cy.city_name, -- 시도명
+      s.state_name -- 주 이름 추가
     from
     board b
     inner join user u on b.user_no=u.user_no
@@ -188,8 +196,10 @@
     trip t ON b.trip_no = t.trip_no -- Trip과 Board 조인 추가
     LEFT JOIN
     city cy ON t.city_code = cy.city_code -- Trip과 City 조인
+    LEFT JOIN
+    state s ON cy.state_code = s.state_code -- City와 State 조인
     where
-        b.board_no=#{boardNo}
+    b.board_no=#{boardNo}
   </select>
 
   <update id="updateViewCount">
@@ -229,7 +239,8 @@
         u.user_nickname,
         COALESCE(fv.favor_count, 0) AS favor_count,
         COALESCE(bl.like_count, 0) AS like_count,
-        c.city_name -- 시도명
+        c.city_name, -- 시도명
+        s.state_name -- 주 이름 추가
     FROM
       (SELECT @rownum := 0) r,  -- 변수 초기화
       board b
@@ -243,6 +254,8 @@
       trip t ON b.trip_no = t.trip_no -- Trip과 Board 조인 추가
       LEFT JOIN
       city c ON t.city_code = c.city_code -- Trip과 City 조인
+      LEFT JOIN
+      state s ON c.state_code = s.state_code -- City와 State 조인
     WHERE
       b.boardtype_no = 3
     ORDER BY
@@ -264,7 +277,8 @@
         u.user_nickname,
         COALESCE(fv.favor_count, 0) AS favor_count,
         COALESCE(bl.like_count, 0) AS like_count,
-        c.city_name -- 시도명
+        c.city_name, -- 시도명
+        s.state_name -- 주 이름 추가
     FROM
       (SELECT @rownum := 0) r,  -- 변수 초기화
       board b
@@ -278,6 +292,8 @@
       trip t ON b.trip_no = t.trip_no -- Trip과 Board 조인 추가
       LEFT JOIN
       city c ON t.city_code = c.city_code -- Trip과 City 조인
+      LEFT JOIN
+      state s ON c.state_code = s.state_code -- City와 State 조인
     WHERE
       b.boardtype_no = 3
     ORDER BY
@@ -299,7 +315,8 @@
         u.user_nickname,
         COALESCE(fv.favor_count, 0) AS favor_count,
         COALESCE(bl.like_count, 0) AS like_count,
-        c.city_name -- 시도명
+        c.city_name, -- 시도명
+        s.state_name -- 주 이름 추가
     FROM
       (SELECT @rownum := 0) r,  -- 변수 초기화
       board b
@@ -313,6 +330,8 @@
       trip t ON b.trip_no = t.trip_no -- Trip과 Board 조인 추가
       LEFT JOIN
       city c ON t.city_code = c.city_code -- Trip과 City 조인
+      LEFT JOIN
+      state s ON c.state_code = s.state_code -- City와 State 조인
     WHERE
       b.boardtype_no = 3
     ORDER BY
@@ -352,7 +371,9 @@
       l.city_code,
       l.location_name,
       l.location_desc,
-      l.location_photo
+      l.location_photo,
+      l.location_x,
+      l.location_y
     FROM
       trip t
         LEFT OUTER JOIN thema th ON t.thema_no = th.thema_no
@@ -424,7 +445,8 @@
       COALESCE(fv.favor_count, 0) AS favor_count,
       COALESCE(bl.like_count, 0) AS like_count,
       t.trip_title,
-      c.city_name -- 시도명
+      c.city_name, -- 시도명
+      s.state_name -- 주 이름 추가
     FROM
       board b
         INNER JOIN
@@ -437,6 +459,8 @@
       trip t ON b.trip_no = t.trip_no -- Trip과 Board 조인 추가
         LEFT JOIN
       city c ON t.city_code = c.city_code -- Trip과 City 조인
+        LEFT JOIN
+      state s ON c.state_code = s.state_code -- City와 State 조인
     WHERE
       b.boardtype_no = 3
       AND b.board_title LIKE CONCAT('%', #{title}, '%')
@@ -457,7 +481,8 @@
       COALESCE(fv.favor_count, 0) AS favor_count,
       COALESCE(bl.like_count, 0) AS like_count,
       t.trip_title,
-      c.city_name -- 시도명
+      c.city_name, -- 시도명
+      s.state_name -- 주 이름 추가
     FROM
       board b
         INNER JOIN
@@ -470,6 +495,8 @@
       trip t ON b.trip_no = t.trip_no -- Trip과 Board 조인 추가
         LEFT JOIN
       city c ON t.city_code = c.city_code -- Trip과 City 조인
+        LEFT JOIN
+      state s ON c.state_code = s.state_code -- City와 State 조인
     WHERE
       b.boardtype_no = 3
       AND u.user_nickname LIKE CONCAT('%', #{writer}, '%')
@@ -490,7 +517,8 @@
       COALESCE(fv.favor_count, 0) AS favor_count,
       COALESCE(bl.like_count, 0) AS like_count,
       t.trip_title,
-      c.city_name -- 시도명
+      c.city_name, -- 시도명
+      s.state_name -- 주 이름 추가
     FROM
       board b
         INNER JOIN
@@ -503,6 +531,8 @@
       trip t ON b.trip_no = t.trip_no -- Trip과 Board 조인 추가
         LEFT JOIN
       city c ON t.city_code = c.city_code -- Trip과 City 조인
+        LEFT JOIN
+      state s ON c.state_code = s.state_code -- City와 State 조인
     WHERE
       b.boardtype_no = 3
       AND b.board_tag LIKE CONCAT('%', #{tag}, '%')
@@ -523,7 +553,8 @@
       COALESCE(fv.favor_count, 0) AS favor_count,
       COALESCE(bl.like_count, 0) AS like_count,
       t.trip_title,
-      c.city_name -- 시도명
+      c.city_name, -- 시도명
+      s.state_name -- 주 이름 추가
     FROM
       board b
         INNER JOIN user u ON b.user_no = u.user_no
@@ -531,6 +562,8 @@
         LEFT JOIN boardlike_count_view bl ON b.board_no = bl.board_no
         LEFT JOIN trip t ON b.trip_no = t.trip_no
         LEFT JOIN city c ON t.city_code = c.city_code
+        LEFT JOIN
+      state s ON c.state_code = s.state_code -- City와 State 조인
     WHERE
       b.boardtype_no = 3
       AND c.city_name LIKE CONCAT('%', #{city}, '%')

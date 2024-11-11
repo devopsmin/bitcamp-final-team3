@@ -42,22 +42,6 @@
             <a data-th-href="@{form}" class="btn btn-secondary">글쓰기</a>
         </div>
     </div>
-
-<!--            <input class="search-txt" type="text" name="query" placeholder="검색어를 입력하세요">-->
-<!--            <button class="search-btn" type="submit">-->
-<!--                <i class="fa-solid fa-magnifying-glass"></i>-->
-<!--            </button>-->
-
-
-<!--    <div class="d-flex align-items-right">-->
-<!--        <label for="sort" class="me-2" style="font-size: 14px;">정렬</label>-->
-<!--        <select id="sort" name="sort" class="form-select form-select-sm" style="width: auto;" onchange="changeSort(this.value)">-->
-<!--            <option value="latest" data-th-selected="${sort == 'latest' || sort == null}">최신순</option>-->
-<!--            <option value="likes" data-th-selected="${sort == 'likes'}">좋아요</option>-->
-<!--            <option value="favorites" data-th-selected="${sort == 'favorites'}">즐겨찾기</option>-->
-<!--            <option value="views" data-th-selected="${sort == 'views'}">조회수</option>-->
-<!--        </select>-->
-<!--    </div>-->
 </div>
 
 <div class="card-list-container">
@@ -105,82 +89,6 @@
     </div>
 </div>
 
-<!--<div class="container">-->
-<!--    <div class="row">-->
-<!--        &lt;!&ndash; 카드 목록 영역 &ndash;&gt;-->
-<!--        <div class="col-12">-->
-<!--            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">-->
-<!--                <div class="col" data-th-each="board : ${list}">-->
-<!--                    <div class="card">-->
-<!--                        <div class="card-img-wrapper" style="position: relative; padding-top: 56.25%;">-->
-<!--                            <img src="https://via.placeholder.com/400x150"-->
-<!--                                 class="card-img-top"-->
-<!--                                 alt="게시글 이미지"-->
-<!--                                 style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;">-->
-<!--                        </div>-->
-<!--                        <div class="card-body d-flex flex-column">-->
-<!--                            <h6 class="card-title">-->
-<!--                                <a data-th-href="@{view(boardNo=${board.boardNo})}"-->
-<!--                                   data-th-text="${board.boardTitle}"-->
-<!--                                   class="text-decoration-none text-truncate"></a>-->
-<!--                            </h6>-->
-<!--                            <div class="card-text small">-->
-<!--                                <p class="mb-1">작성자: <span data-th-text="${board.writer.userNickname}"></span></p>-->
-<!--                                <p class="mb-1">작성일: <span data-th-text="${#dates.format(board.boardCreatedDate, 'yyyy-MM-dd')}"></span></p>-->
-<!--                                <p class="mb-1">태그: <span data-th-text="${board.boardTag}"></span></p>-->
-<!--                                <p class="mb-1">위치: <span data-th-text="${board.trip.city.cityName}"></span></p>-->
-<!--                            </div>-->
-<!--                        </div>-->
-<!--                        <div class="card-footer bg-transparent">-->
-<!--                            <div class="d-flex justify-content-between align-items-center small text-muted">-->
-<!--                                <span>👍 <span data-th-text="${board.boardLike}"></span></span>-->
-<!--                                <span>⭐ <span data-th-text="${board.boardFavor}"></span></span>-->
-<!--                                <span>👀 <span data-th-text="${board.boardCount}"></span></span>-->
-<!--                                <span>💬 <span data-th-text="${board.commentCount}"></span></span>-->
-<!--                            </div>-->
-<!--                        </div>-->
-<!--                    </div>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--        </div>-->
-<!--    </div>-->
-<!--</div>-->
-
-<!--<div class="container">-->
-<!--    <div class="row justify-content-center">-->
-<!--        &lt;!&ndash; 카드 목록 영역 &ndash;&gt;-->
-<!--        <div class="col-md-16">-->
-<!--            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-3"> &lt;!&ndash; 반응형으로 한 줄에 여러 개 배치 &ndash;&gt;-->
-<!--                <div class="col" data-th-each="board : ${list}">-->
-<!--                    <div class="card h-100">-->
-<!--                        <img src="https://via.placeholder.com/400x150" class="card-img-top" alt="게시글 이미지">-->
-<!--                        <div class="card-body">-->
-<!--                            <h6 class="card-title">-->
-<!--                                <a data-th-href="@{view(boardNo=${board.boardNo})}" data-th-text="${board.boardTitle}"></a>-->
-<!--                            </h6>-->
-<!--                            <p class="card-text">-->
-<!--                                작성자: <span data-th-text="${board.writer.userNickname}"></span><br>-->
-<!--                                작성일: <span data-th-text="${#dates.format(board.boardCreatedDate, 'yyyy-MM-dd')}"></span><br>-->
-<!--                                태그: <span data-th-text="${board.boardTag}"></span><br>-->
-<!--                                위치: <span data-th-text="${board.trip.city.cityName}"></span><br>-->
-<!--                            </p>-->
-<!--                        </div>-->
-<!--                        <div class="card-footer">-->
-<!--                            <small class="text-muted">-->
-<!--                                좋아요: <span data-th-text="${board.boardLike}"></span> |-->
-<!--                                즐겨찾기: <span data-th-text="${board.boardFavor}"></span> |-->
-<!--                                조회수: <span data-th-text="${board.boardCount}"></span> |-->
-<!--                                댓글수: <span data-th-text="${board.commentCount}"></span>-->
-<!--                            </small>-->
-<!--                        </div>-->
-<!--                    </div>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--        </div>-->
-<!--    </div>-->
-<!--</div>-->
-
-
 <!-- 페이지 네비게이션 -->
 <div class="container mt-4">
     <nav aria-label="Page navigation">
@@ -188,7 +96,7 @@
             <li class="page-item" data-th-classappend="${pageNo <= 1 ? 'disabled' : ''}">
                 <a class="page-link" data-th-href="@{'list'(sort=${sort}, option=${option}, query=${query}, pageNo=${pageNo - 1}, pageSize=${pageSize})}"
                    aria-label="Previous">
-                    <span aria-hidden="true">&laquo;</span>
+                    <span aria-hidden="true">[이전]</span>
                 </a>
             </li>
             <li class="page-item" data-th-each="i : ${#numbers.sequence(1, pageCount)}"
@@ -198,15 +106,16 @@
             <li class="page-item" data-th-classappend="${pageNo >= pageCount ? 'disabled' : ''}">
                 <a class="page-link" data-th-href="@{'list'(sort=${sort}, option=${option}, query=${query}, pageNo=${pageNo + 1}, pageSize=${pageSize})}"
                    aria-label="Next">
-                    <span aria-hidden="true">&raquo;</span>
+                    <span aria-hidden="true">[다음]</span>
                 </a>
             </li>
         </ul>
     </nav>
 </div>
 
-<!--정렬변경-->
+
 <script>
+    <!--정렬변경-->
     function changeSort(sortType) {
         window.location.href = 'list?sort=' + sortType;
     }

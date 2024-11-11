@@ -219,6 +219,7 @@ public class ReviewController {
     model.addAttribute("schedule", scheduleList);
     model.addAttribute("isLiked", isLiked);
     model.addAttribute("isFavored", isFavored);
+
     return "review/view";
   }
 

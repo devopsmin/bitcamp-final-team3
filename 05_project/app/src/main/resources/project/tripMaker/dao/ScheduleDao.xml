@@ -61,6 +61,8 @@
         <association property="location" javaType="Location">
             <id column="location_no" property="locationNo"/>
             <result column="location_name" property="locationName"/>
+            <result column="location_x" property="locationX"/>
+            <result column="location_y" property="locationY"/>
         </association>
     </resultMap>
 
@@ -297,7 +299,9 @@
             s.schedule_day,
             s.schedule_route,
             l.location_no,
-            l.location_name
+            l.location_name,
+            l.location_x,
+            l.location_y
         FROM
             schedule s
                 LEFT JOIN location l ON s.location_no = l.location_no

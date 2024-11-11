@@ -102,7 +102,6 @@ public class ScheduleService {
     return scheduleDao.findTripsByUserNo(userNo);
   }
 
-
   // user_no로 trip_no 리스트 가져오기
   public List<Integer> getTripNosByUserNo(Long userNo) {
     return scheduleDao.findTripNosByUserNo(userNo);
