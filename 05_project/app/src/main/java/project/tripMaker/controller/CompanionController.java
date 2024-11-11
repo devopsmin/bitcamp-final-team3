@@ -203,10 +203,8 @@ public class CompanionController {
 
   @GetMapping("delete")
   public String delete(int boardNo, HttpSession session) throws Exception {
-
     User loginUser = (User) session.getAttribute("loginUser");
     int sessionUserNo = loginUser.getUserNo().intValue();
-
     Board board = companionService.findBy(boardNo);
     int userno = board.getUserNo().intValue();
 
@@ -214,14 +212,12 @@ public class CompanionController {
       throw new Exception("없는 게시글입니다.");
     }
 
+    companionService.delete(boardNo);
     if (sessionUserNo == userno) {
       companionService.delete(boardNo);
     } else {
       throw new Exception("삭제 권한이 없습니다.");
     }
-
     return "redirect:list";
-
   }
-
 }
