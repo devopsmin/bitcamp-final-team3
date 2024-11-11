@@ -19,8 +19,15 @@
         <li class="mb-1" data-th-each="comment : ${commentList}">
             <div class="p-3 border rounded shadow-sm bg-white"> <!-- 박스를 위한 스타일 -->
                 <div class="d-flex align-items-center mb-2">
-                    <img data-th-src="${board.writer.userPhoto != null ? board.writer.userPhoto : 'https://via.placeholder.com/60x60'}"
-                         alt="User Photo" class="rounded-circle me-3" style="width: 60px; height: 60px;">
+                    <img data-th-src="@{https://dgg7dnk35523.edge.naverncp.com/HZiW9aEJy7/user/profile/default.png(type=f,w=20,h=20)}"
+                         data-th-unless="${board.writer.userPhoto}"
+                         src="/images/default.png"
+                         class="rounded-circle me-2" style="width: 40px; height: 40px;">
+
+                    <img data-th-if="${board.writer.userPhoto}"
+                         data-th-src="@{https://dgg7dnk35523.edge.naverncp.com/HZiW9aEJy7/user/profile/} + ${board.writer.userPhoto} + '?type=f&w=100&h=100'"
+                         src="/images/default.png"
+                         class="rounded-circle me-2" style="width: 40px; height: 40px;">
                     <strong class="me-2" data-th-text="${board.writer.userNickname}">닉네임</strong>
                     <small class="text-muted" data-th-text="${#calendars.format(comment.commentCreatedDate, 'yyyy년 MM월 dd일 HH:mm')}">작성일</small>
                 </div>
