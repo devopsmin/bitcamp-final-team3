@@ -50,38 +50,24 @@
         </div>
     </form>
 
-    <div class="d-flex justify-content-center align-items-start gap-3 my-3" style="margin-left: 100px;">
-        <!-- 지도 보여주기 -->
-        <div>
-            <div id="map" style="width: 600px; height: 400px;"></div>
-            <!-- 일정 복사하기 버튼 -->
-            <div class="d-flex justify-content-center align-items-end mt-3">
-                <button class="btn btn-primary">일정 복사하기</button>
-            </div>
-        </div>
+    <div class="d-flex justify-content-center align-items-center gap-3 my-3" style="margin-left: 100px;">
+            <!-- 지도 보여주기 -->
+            <div id="map" style="width: 600px; height: 360px;"></div>
 
-        <!-- 이미지 보여주기 -->
-        <div class="boardImages">
-            <div th:each="image, iter : ${board.boardImages}" class="slide" th:attr="data-index=${iter.index}" style="width: 600px; height: 400px;">
-                <a th:href="${image != null && image.boardimageName != null ? 'https://kr.object.ncloudstorage.com/bitcamp-bucket088a/review/' + image.boardimageName : 'https://kr.object.ncloudstorage.com/bitcamp-bucket088a/review/default.jpg'}">
-                    <img th:src="${image != null && image.boardimageName != null ? 'https://dgg7dnk35523.edge.naverncp.com/HZiW9aEJy7/review/' + image.boardimageName + '?type=u&w=600&h=400' : 'https://dgg7dnk35523.edge.naverncp.com/HZiW9aEJy7/review/default.jpg?type=u&w=600&h=400'}" class="img-thumbnail">
-                </a>
+            <!-- 이미지 보여주기 -->
+            <div class="boardImages">
+                <div th:each="image, iter : ${board.boardImages}" class="slide" th:attr="data-index=${iter.index}">
+                    <a th:href="${image != null && image.boardimageName != null ? 'https://kr.object.ncloudstorage.com/bitcamp-bucket088a/review/' + image.boardimageName : 'https://kr.object.ncloudstorage.com/bitcamp-bucket088a/review/default.jpg'}">
+                        <img th:src="${image != null && image.boardimageName != null ? 'https://dgg7dnk35523.edge.naverncp.com/HZiW9aEJy7/review/' + image.boardimageName + '?type=u&w=600&h=400' : 'https://dgg7dnk35523.edge.naverncp.com/HZiW9aEJy7/review/default.jpg?type=u&w=600&h=400'}" class="img-thumbnail">
+                    </a>
+                </div>
+                <!-- 이미지 네비게이션-->
+                <ul class="pagination justify-content-center">
+                    <button class="prev btn btn-outline-secondary btn-sm" onclick="changeSlide(-1)">❮</button>
+                    <div id="pagination-dots" class="d-inline"></div>
+                    <button class="next btn btn-outline-secondary btn-sm" onclick="changeSlide(1)">❯</button>
+                </ul>
             </div>
-            <!-- 이미지 네비게이션-->
-            <ul class="pagination justify-content-center">
-                <button class="prev btn btn-outline-secondary btn-sm" onclick="changeSlide(-1)">❮</button>
-                <div id="pagination-dots" class="d-inline "></div>
-                <button class="next btn btn-outline-secondary btn-sm" onclick="changeSlide(1)">❯</button>
-            </ul>
-        </div>
-    </div>
-
-    <br>
-    <div class="container my-3">
-        <div data-th-each="trip : ${trips}" data-th-object="${trip}">
-            <h4 class="mb-2" style="margin-left: 10px; font-size: 1.5rem;">전체 경로</h4>
-            <p class="text-muted mb-3" style="margin-left: 10px; font-size: 0.9rem;" data-th-text="${#dates.format(trip.startDate, 'yyyy.MM.dd(E)')} + ' ~ ' + ${#dates.format(trip.endDate, 'yyyy.MM.dd(E)')}">일자</p>
-        </div>
     </div>
 
         <br><h2>여행 데이터</h2><br>
@@ -141,6 +127,68 @@
         <br>
 
 
+    <script>
+        // const slides = document.querySelectorAll('.slide');
+        // let currentSlideIndex = 0;
+        //
+        // // 첫 번째 이미지만 보여주기
+        // showSlides(currentSlideIndex);
+        //
+        // // 슬라이드를 보여주는 함수
+        // function showSlides(index) {
+        //     // 순환 처리: 마지막 이미지를 넘어서면 처음으로, 첫 이미지를 넘어서면 마지막으로 돌아가기
+        //     currentSlideIndex = (index + slides.length) % slides.length;
+        //
+        //     slides.forEach((slide, i) => {
+        //         slide.style.display = (i === currentSlideIndex) ? 'block' : 'none';
+        //     });
+        // }
+        //
+        // // 슬라이드를 변경하는 함수
+        // function changeSlide(n) {
+        //     showSlides(currentSlideIndex + n);
+        // }
+
+        const slides = document.querySelectorAll('.slide');
+        const paginationDots = document.getElementById('pagination-dots');
+        let currentSlideIndex = 0;
+
+        // 페이지 로드 시 네비게이션 점 생성
+        slides.forEach((_, index) => {
+            const dot = document.createElement('span');
+            dot.innerText = '• ';
+            dot.classList.add('pagination-dot');
+            dot.style.cursor = 'pointer';
+            dot.style.fontWeight = index === currentSlideIndex ? 'bold' : 'normal';  // 현재 슬라이드에 볼드 적용
+            dot.onclick = () => showSlides(index);  // 클릭 시 해당 슬라이드로 이동
+            paginationDots.appendChild(dot);
+        });
+
+        // 슬라이드를 보여주는 함수
+        function showSlides(index) {
+            currentSlideIndex = (index + slides.length) % slides.length;
+
+            // 슬라이드 표시
+            slides.forEach((slide, i) => {
+                slide.style.display = (i === currentSlideIndex) ? 'block' : 'none';
+            });
+
+            // 네비게이션 점 스타일 업데이트
+            const dots = document.querySelectorAll('.pagination-dot');
+            dots.forEach((dot, i) => {
+                dot.style.fontWeight = i === currentSlideIndex ? 'bold' : 'normal';
+            });
+        }
+
+        // 슬라이드를 변경하는 함수
+        function changeSlide(n) {
+            showSlides(currentSlideIndex + n);
+        }
+
+        // 초기 슬라이드 설정
+        showSlides(currentSlideIndex);
+    </script>
+
 <!--디버깅-->
         <p>디버깅용 : 로그인 유저: <span data-th-text="${session.loginUser.userNo}"></span></p>
         <p>디버깅용 : 게시글 작성자: <span data-th-text="${board.writer.userNo}"></span></p>
@@ -191,29 +239,6 @@
     댓글 내용 작성: <textarea name="commentContent" id="commentContent" placeholder="댓글을 입력하세요"></textarea><br>
     <button type="submit">댓글 작성</button>
 </form>
-
-<!-- 상단 이동 버튼 -->
-<button id="scrollTopButton" onclick="scrollToTop()" class="btn btn-secondary btn-sm" style="position: fixed; bottom: 20px; left: 77%; transform: translateX(-50%); visibility: hidden; padding: 7px 10px;">
-    <i class="bi bi-arrow-up"></i> 상단으로 이동
-</button>
-
-<script>
-    // 상단 이동 함수
-    function scrollToTop() {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-
-    // 스크롤 이벤트 감지하여 버튼 표시
-    window.addEventListener('scroll', function() {
-        const scrollTopButton = document.getElementById('scrollTopButton');
-        if (window.scrollY > 500) {
-            scrollTopButton.style.visibility = "visible";
-        } else {
-            scrollTopButton.style.visibility = "hidden";
-        }
-    });
-</script>
-
 <!--댓글 빈칸방지-->
 <script>
     function validateCommentForm() {
@@ -239,70 +264,6 @@
 
 <!--fontawesome-->
 <script src="https://kit.fontawesome.com/ecaa6a7d50.js" crossorigin="anonymous"></script>
-
-<!-- 이미지 -->
-
-
-<script>
-    // const slides = document.querySelectorAll('.slide');
-    // let currentSlideIndex = 0;
-    //
-    // // 첫 번째 이미지만 보여주기
-    // showSlides(currentSlideIndex);
-    //
-    // // 슬라이드를 보여주는 함수
-    // function showSlides(index) {
-    //     // 순환 처리: 마지막 이미지를 넘어서면 처음으로, 첫 이미지를 넘어서면 마지막으로 돌아가기
-    //     currentSlideIndex = (index + slides.length) % slides.length;
-    //
-    //     slides.forEach((slide, i) => {
-    //         slide.style.display = (i === currentSlideIndex) ? 'block' : 'none';
-    //     });
-    // }
-    //
-    // // 슬라이드를 변경하는 함수
-    // function changeSlide(n) {
-    //     showSlides(currentSlideIndex + n);
-    // }
-    const slides = document.querySelectorAll('.slide');
-    const paginationDots = document.getElementById('pagination-dots');
-    let currentSlideIndex = 0;
-
-    // 페이지 로드 시 네비게이션 점 생성
-    slides.forEach((_, index) => {
-        const dot = document.createElement('i');
-        dot.classList.add('bi', index === currentSlideIndex ? 'bi-circle-fill' : 'bi-circle', 'mx-1');
-        dot.style.cursor = 'pointer';
-        dot.onclick = () => showSlides(index);  // 클릭 시 해당 슬라이드로 이동
-        paginationDots.appendChild(dot);
-    });
-
-    // 슬라이드를 보여주는 함수
-    function showSlides(index) {
-        currentSlideIndex = (index + slides.length) % slides.length;
-
-        // 슬라이드 표시
-        slides.forEach((slide, i) => {
-            slide.style.display = (i === currentSlideIndex) ? 'block' : 'none';
-        });
-
-        // 네비게이션 점 스타일 업데이트
-        const dots = document.querySelectorAll('#pagination-dots i');
-        dots.forEach((dot, i) => {
-            dot.classList.toggle('bi-circle-fill', i === currentSlideIndex);
-            dot.classList.toggle('bi-circle', i !== currentSlideIndex);
-        });
-    }
-
-    // 슬라이드를 변경하는 함수
-    function changeSlide(n) {
-        showSlides(currentSlideIndex + n);
-    }
-
-    // 초기 슬라이드 설정
-    showSlides(currentSlideIndex);
-
-</script>
 
 <script data-th-inline="javascript">
     <!-- 게시글삭제 -->

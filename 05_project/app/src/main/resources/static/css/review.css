@@ -152,33 +152,3 @@
 .card-footer span:last-child {
   margin-right: 0;
 }
-
-.pagination {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.pagination button {
-  background-color: transparent;
-  border: none;
-  font-size: 24px;
-  color: #555;
-  cursor: pointer;
-  transition: color 0.3s;
-}
-
-.pagination button:hover {
-  color: #000;
-}
-
-.pagination #pagination-dots i {
-  font-size: 14px;
-  color: #aaa;
-  transition: color 0.3s;
-}
-
-.pagination #pagination-dots i.bi-circle-fill {
-  font-size: 18px;
-  color: #333;
-}
