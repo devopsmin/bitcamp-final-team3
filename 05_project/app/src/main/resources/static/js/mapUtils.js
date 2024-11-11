@@ -2,8 +2,8 @@
 
 // 줌 레벨 상수
 const ZOOM_LEVELS = {
-    'area1': 11,  // 시/도
-    'area2': 13,  // 시/군/구
+    'area1': 12,  // 시/도
+    'area2': 14,  // 시/군/구
     'area3': 15,  // 읍/면/동
     'area4': 17   // 리
 };
@@ -44,7 +44,6 @@ function initializeMap(containerId, stateName, cityName) {
             map.setCenter(centerPosition);
             map.setZoom(zoomLevel);
         }
-        pinMarker();
     });
 
     return map;

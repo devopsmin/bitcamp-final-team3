@@ -212,30 +212,30 @@ public class ScheduleController {
       tripScheduleList.add(schedule);
     }
 
-//    int totalSize = selectHoList.size() + selectLoList.size();
-//    RouteInfo[][] distances = new RouteInfo[totalSize][totalSize];
-//
-//    for (int start = 0; start < totalSize; start++) {
-//      for (int goal = start; goal < totalSize; goal++) {
-//        if (start != goal) {
-//          System.out.println("=========array===================================="+tripScheduleList.get(start)+tripScheduleList.get(goal));
-//          RouteInfo direction = directionService.getDirection(tripScheduleList.get(start),tripScheduleList.get(goal));
-//          distances[start][goal] = direction;
-//          distances[goal][start] = direction;
-//        }
-//      }
-//    }
-//
-//    int[][] optimalRoutes = routeService.assignTourism(distances, selectHoList.size(), selectLoList.size());
-//    for (int hotel = 0; hotel < selectHoList.size(); hotel++) {
-//      int route = 1;
-//      System.out.println("숙소 " + hotel + "의 관광지: "+ tripScheduleList.get(hotel).getLocation().getLocationName() + Arrays.toString(optimalRoutes[hotel]));
-//      for (int tour = 0 ; tour < optimalRoutes[hotel].length; tour++) {
-//        Schedule schedule = tripScheduleList.get(optimalRoutes[hotel][tour]);
-//        schedule.setScheduleDay(hotel + 1);
-//        schedule.setScheduleRoute(route++);
-//      }
-//    }
+    int totalSize = selectHoList.size() + selectLoList.size();
+    RouteInfo[][] distances = new RouteInfo[totalSize][totalSize];
+
+    for (int start = 0; start < totalSize; start++) {
+      for (int goal = start; goal < totalSize; goal++) {
+        if (start != goal) {
+          System.out.println("=========array===================================="+tripScheduleList.get(start)+tripScheduleList.get(goal));
+          RouteInfo direction = directionService.getDirection(tripScheduleList.get(start),tripScheduleList.get(goal));
+          distances[start][goal] = direction;
+          distances[goal][start] = direction;
+        }
+      }
+    }
+
+    int[][] optimalRoutes = routeService.assignTourism(distances, selectHoList.size(), selectLoList.size());
+    for (int hotel = 0; hotel < selectHoList.size(); hotel++) {
+      int route = 1;
+      System.out.println("숙소 " + hotel + "의 관광지: "+ tripScheduleList.get(hotel).getLocation().getLocationName() + Arrays.toString(optimalRoutes[hotel]));
+      for (int tour = 0 ; tour < optimalRoutes[hotel].length; tour++) {
+        Schedule schedule = tripScheduleList.get(optimalRoutes[hotel][tour]);
+        schedule.setScheduleDay(hotel + 1);
+        schedule.setScheduleRoute(route++);
+      }
+    }
 
     tripScheduleList = scheduleService.orderSchedule(tripScheduleList);
     model.addAttribute("tripScheduleList", tripScheduleList);
