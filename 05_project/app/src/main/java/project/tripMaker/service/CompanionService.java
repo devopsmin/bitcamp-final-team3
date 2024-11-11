@@ -4,6 +4,7 @@ import lombok.Data;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import project.tripMaker.dao.BoardCompanionDao;
+import project.tripMaker.dao.CompanionRecruitDao;
 import project.tripMaker.vo.Board;
 
 import java.util.HashMap;
@@ -14,6 +15,7 @@ import java.util.List;
 public class CompanionService {
 
   private final BoardCompanionDao boardCompanionDao;
+  private final CompanionRecruitDao companionRecruitDao;
   private static final int BOARD_TYPE_COMPANION = 2;
 
   // 게시글 작성
@@ -61,6 +63,7 @@ public class CompanionService {
   // 게시글 삭제
   @Transactional
   public void delete(int boardNo) throws Exception {
+    companionRecruitDao.deleteCompanionRecruit(boardNo);
     boardCompanionDao.delete(boardNo);
   }
 
