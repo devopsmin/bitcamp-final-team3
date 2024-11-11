@@ -139,4 +139,10 @@ public class DefaultUserService implements UserService {
   public void updateLastLogin(Long userNo) throws Exception {
     userDao.updateLastLogin(userNo);
   }
+
+  @Transactional
+  public boolean realDelete(Long userNo, User user) throws Exception {
+    return userDao.realDelete(userNo, user);
+  }
+
 }

@@ -149,4 +149,17 @@
         where user_no=#{userNo}
     </delete>
 
+    <update id="realDelete" parameterType="map">
+        update user set
+             user_block = 2,
+             deleted_date = NOW(),
+             user_email = #{user.userEmail},
+             user_nickname = #{user.userNickname},
+             user_photo = #{user.userPhoto},
+             user_tel = #{user.userTel},
+             sns_no = #{user.snsNo}
+        where
+             user_no = #{userNo}
+    </update>
+
 </mapper>

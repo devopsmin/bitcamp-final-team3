@@ -37,4 +37,6 @@ public interface UserDao {
   void updateLastLogin(Long userNo) throws Exception;
 
   boolean delete(Long userNo) throws Exception;
+
+  boolean realDelete(Long userNo, User user) throws Exception;
 }

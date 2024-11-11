@@ -30,4 +30,6 @@ public interface UserService {
   boolean existsByNickname(String userNickname) throws Exception;
 
   void updateLastLogin(Long userNo) throws Exception;
+
+  boolean realDelete(Long userNo, User user) throws Exception;
 }
