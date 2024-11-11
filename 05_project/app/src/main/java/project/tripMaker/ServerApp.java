@@ -25,7 +25,6 @@ import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
-import project.tripMaker.Interceptor.LoginInterceptor;
 
 @SpringBootApplication
 @PropertySource("file:${user.home}/config/ncp.properties")

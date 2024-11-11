@@ -94,10 +94,10 @@
                     <h5 class="mb-3 text" style="font-size: 1.2rem;" data-th-text="${entry.key} + '일차'">일차</h5>
 
                     <div class="timeline">
-                        <div class="timeline-item mb-1" id="locationId" data-th-each="schedule, iter : ${entry.value}" data-th-object="${schedule}">
-                            <div id="location">
-                            <span data-th-text="*{location.locationX}"></span>
-                            <span data-th-text="*{location.locationY}"></span>
+                        <div id="review-location" class="timeline-item mb-1" data-th-each="schedule, iter : ${entry.value}" data-th-object="${schedule}">
+                            <div class="location">
+                                <span class="location-x" data-th-text="*{location.locationX}"></span>
+                                <span class="location-y" data-th-text="*{location.locationY}"></span>
                             </div>
                             <!-- 카드와 textarea를 감싸는 wrapper 추가 -->
                             <div class="d-flex gap-3">
@@ -526,7 +526,7 @@
         }
 
         document.addEventListener('DOMContentLoaded', async () => {
-            console.log(document.querySelectorAll('#locationId').length);
+            console.log(document.querySelectorAll('#review-location').length);
 
             const stateName = /*[[${board.trip.city.state.stateName}]]*/ "defaultState";
             const cityName = /*[[${board.trip.city.cityName}]]*/ "defaultCity";
@@ -536,30 +536,26 @@
                 await initializeMap("map", stateName, cityName);
 
                 // addMarker(126.545219, 33.524923);
+                const locationInfos = document.querySelectorAll('#review-location');
+                console.log(locationInfos);
+
+                locationInfos.forEach(locationInfo => {
+                    // card 내부의 x와 y 좌표 추출
+                    const locationX = locationInfo.querySelector('.location-x').textContent.trim();
+                    const locationY = locationInfo.querySelector('.location-y').textContent.trim();
+
+                    // x, y 좌표가 잘 가져와졌는지 출력합니다.
+                    console.log(`Location X: ${locationX}, Location Y: ${locationY}`);
+
+                    // 유효한 x, y 좌표가 있는 경우 addMarker 함수 호출
+                    if (locationX && locationY) {
+                        addMarker(parseFloat(locationX), parseFloat(locationY));
+                    }
+                });
             } catch (error) {
                 console.error('실행 중 오류 발생:', error);
             }
         });
-
-        document.addEventListener('DOMContentLoaded', () => {
-            const locationInfos = document.querySelectorAll('.timeline-item .mb-1');
-            const locationIds = locationInfos.querySelectorAll('#location')
-            console.log(locationIds);
-
-            locationInfos.forEach(locationInfo => {
-                // card 내부의 x와 y 좌표 추출
-                const locationX = locationInfo.querySelector('.location-x').textContent;
-                const locationY = locationInfo.querySelector('.location-y').textContent;
-
-                console.log(locationX,locationY );
-
-                // 유효한 x, y 좌표가 있는 경우 addMarker 함수 호출
-                // if (locationX && locationY) {
-                //     addMarker(parseFloat(locationX), parseFloat(locationY));
-                // }
-            });
-        })
-
 
     </script>
 
