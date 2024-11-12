@@ -174,3 +174,19 @@
     align-items: center;
     justify-content: center;
 }
+
+#alertMessage {
+    background-color: white !important;
+    color: black;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    width: 230px;
+    height: 46px;
+    padding: 10px;
+
+    /* 박스 안의 메시지를 가운데 정렬 */
+    display: flex;
+    align-items: center; /* 수직 가운데 정렬 */
+    justify-content: center; /* 수평 가운데 정렬 */
+}

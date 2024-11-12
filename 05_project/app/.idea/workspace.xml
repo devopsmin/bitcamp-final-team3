@@ -4,7 +4,16 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="3a30c965-a95c-407d-b091-24ff92e1d5d0" name="변경" comment="" />
+    <list default="true" id="3a30c965-a95c-407d-b091-24ff92e1d5d0" name="변경" comment="">
+      <change beforePath="$PROJECT_DIR$/../.idea/05_project.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/project/tripMaker/controller/QuestionController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/project/tripMaker/controller/QuestionController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/project/tripMaker/service/TourAPIService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/project/tripMaker/service/TourAPIService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/static/css/question.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/static/css/question.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/static/css/style.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/static/css/style.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/question/comment.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/question/comment.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/question/view.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/question/view.html" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -13,22 +22,22 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../.." />
   </component>
-  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
-  "lastFilter": {
-    "state": "OPEN",
-    "assignee": "Baekhyungi"
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;Baekhyungi&quot;
   }
-}]]></component>
-  <component name="GithubPullRequestsUISettings"><![CDATA[{
-  "selectedUrlAndAccountId": {
-    "url": "https://github.com/devopsmin/bitcamp-final-team3",
-    "accountId": "da8cb846-f062-4a77-b585-31ccba2f8a29"
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/devopsmin/bitcamp-final-team3&quot;,
+    &quot;accountId&quot;: &quot;da8cb846-f062-4a77-b585-31ccba2f8a29&quot;
   }
-}]]></component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "customColor": "",
-  "associatedIndex": 8
-}]]></component>
+}</component>
+  <component name="ProjectColorInfo">{
+  &quot;customColor&quot;: &quot;&quot;,
+  &quot;associatedIndex&quot;: 8
+}</component>
   <component name="ProjectId" id="2njqzLi3BLHLJr5hI41SrYtgI4u" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
@@ -39,7 +48,7 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "git-widget-placeholder": "main",
     "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Users/BITCAMP/git/login/bitcamp-final-team3/05_project/settings.gradle"
+    "last_opened_file_path": "C:/Users/kim/git/bitcamp-final-team3/05_project/app"
   }
 }]]></component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="애플리케이션 수준" UseSingleDictionary="true" transferred="true" />

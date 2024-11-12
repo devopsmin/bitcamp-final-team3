@@ -170,7 +170,10 @@ public class QuestionController {
     } else {
       // 비로그인 상태에서도 commentLikedMap을 초기화
       for (Comment comment : commentList) {
+        int commentLikeCount = commentService.getCommentLikeCount(comment.getCommentNo());
+        comment.setCommentLike(commentLikeCount);
         commentLikedMap.put(comment.getCommentNo(), false);
+
       }
     }
 
