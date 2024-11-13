@@ -93,7 +93,11 @@
                                     <div class="d-flex">
                                         <div class="badge bg-warning text-white" style="font-size: 1rem; border-radius: 50%; width: 25px; height: 25px; display: flex; align-items: center; justify-content: center;" data-th-text="${iter.index + 1}">일정 순서</div>
                                         <div class="ms-2">
-                                            <p class="mb-1 text-primary" style="font-size: 0.9rem;" data-th-text="*{location.locationName}">지역</p>
+                                            <p class="text-primary" style="font-size: 0.9rem;"
+                                               data-th-if="${board.trip != null and board.trip.thema != null}"
+                                               data-th-text="${board.trip.thema.themaName}">
+                                                Thema Name
+                                            </p>
                                             <p class="mb-1 text-primary" style="font-size: 0.9rem;" data-th-text="*{location.locationName}">지역</p>
                                             <p class="mb-1 text-primary" style="font-size: 0.9rem;" data-th-text="*{location.locationName}">지역</p>
                                         </div>

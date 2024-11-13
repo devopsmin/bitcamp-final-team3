@@ -81,7 +81,7 @@
     </div>
 
     <div class="text-center mb-4">
-    <span data-th-if="${pageNo > 1}">
+        <span data-th-if="${pageNo > 1}">
         <a class="btn btn-outline-secondary btn-sm" data-th-href="@{'list'(sort=${param.sort}, search=${search}, pageNo=${pageNo - 1}, pageSize=${pageSize})}">
             [이전]
         </a>
@@ -90,10 +90,9 @@
 
         <span data-th-each="i : ${#numbers.sequence(1, pageCount)}">
         <a class="btn btn-outline-secondary btn-sm"
-           data-th-href="@{'list'(pageNo=${i}, sort=${param.sort}, search=${search})}"
+           data-th-href="@{'list'(pageNo=${i}, sort=${param.sort}, search=${search}, pageSize=${pageSize})}"
            data-th-classappend="${i == pageNo} ? ' active' : ''"
            data-th-text="${i}">
-           1
         </a>
     </span>
 
