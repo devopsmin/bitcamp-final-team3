@@ -329,3 +329,5 @@ gradle-app.setting
 
 # Ignore application.properties file to prevent pushing to Git
 src/main/resources/application.properties
+
+05_project/app/bin/main/application.properties

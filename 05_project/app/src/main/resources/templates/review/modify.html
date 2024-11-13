@@ -32,7 +32,7 @@
 
         <div class="mb-3">
             <label for="title" class="form-label">제목</label>
-            <input id="title" name="title" type="text" class="form-control" th:value="${board.boardTitle}">
+            <input id="title" name="title" type="text" class="form-control" th:value="${board.boardTitle}" required maxlength="150" placeholder="제목을 입력해 주세요.">
         </div>
 
 
@@ -72,7 +72,7 @@
 
         <div class="mb-3">
             <label for="boardTag" class="form-label">태그</label>
-            <input id="boardTag" name="boardTag" type="text" class="form-control" data-th-value="${board.boardTag}">
+            <input id="boardTag" name="boardTag" type="text" class="form-control" data-th-value="${board.boardTag}" placeholder="#태그를 입력해 주세요." maxlength="15">
         </div>
 
         <textarea name="content" id="boardContent" style="display:none;" th:text="${board.boardContent}"></textarea>

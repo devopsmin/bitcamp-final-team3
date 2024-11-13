@@ -67,11 +67,12 @@ public interface BoardReviewDao extends BoardDao{
   // 2. 작성자  Writer(Nickname)
   // 3. 시도    City
   // 4. 태그    Tag
+  // 5. 테마    Thema
   List<Board> findByTitle(String title);
   List<Board> findByWriter(String writer);
   List<Board> findByCity(String city);
   List<Board> findByTag(String tag);
-
+  List<Board> findByThema(String themaName);
   // 첨부파일용
   // 1. 첨부
   // 2. 가져오기

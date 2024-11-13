@@ -16,13 +16,13 @@
     <form id="reviewForm" action="add" method="post" onsubmit="combineContent()" enctype="multipart/form-data">
       <div class="mb-3">
         <label for="boardTitle" class="form-label">제목</label>
-        <input id="boardTitle" name="boardTitle" type="text" class="form-control">
+        <input id="boardTitle" name="boardTitle" type="text" class="form-control" placeholder="제목을 입력해 주세요." required maxlength="150">
       </div>
 
       <!-- 여행 선택 -->
       <div class="mb-4">
         <label for="tripSelect" class="form-label">여행 선택</label>
-        <select id="tripSelect" class="form-select" onchange="loadScheduleList(this.value)">
+        <select id="tripSelect" class="form-select" onchange="loadScheduleList(this.value)" required>
           <option value="">여행을 선택하세요</option>
           <option data-th-each="trip : ${trips}" data-th-value="${trip.tripNo}" data-th-text="${trip.tripTitle}"></option>
         </select>
@@ -36,7 +36,7 @@
 
       <div class="mb-3">
         <label for="boardTag" class="form-label" >태그</label>
-        <input id="boardTag" name="boardTag" type="text" class="form-control" placeholder="#태그를 입력해 주세요." maxlength="15">
+        <input id="boardTag" name="boardTag" type="text" class="form-control" placeholder="#태그를 입력해 주세요." required maxlength="15">
       </div>
 
       <!-- 숨겨진 boardContent 입력 필드 -->

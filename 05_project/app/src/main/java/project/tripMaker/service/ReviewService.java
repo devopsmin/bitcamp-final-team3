@@ -183,6 +183,7 @@ public class ReviewService implements BoardService {
   // 2. 작성자 Writer
   // 3. 시도   City
   // 4. 태그   Tag
+  // 5. 테마   Thema
   public List<Board> findByTitle(String title) {
     return boardReviewDao.findByTitle(title);
   }
@@ -197,6 +198,10 @@ public class ReviewService implements BoardService {
 
   public List<Board> findByTag(String tag) {
     return boardReviewDao.findByTag(tag);
+  }
+
+  public List<Board> findByThema(String themaName) {
+    return boardReviewDao.findByThema(themaName);
   }
 
   // 댓글 수

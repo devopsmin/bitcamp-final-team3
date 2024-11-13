@@ -475,6 +475,7 @@ public class ReviewController {
   // 2. 작성자 writer
   // 3. 시도   city
   // 4. 태그   tag
+  // 5. 테마   themaName
   @GetMapping("search")
   public String search(
       @RequestParam(value = "option", required = false, defaultValue = "title") String option,
@@ -498,6 +499,9 @@ public class ReviewController {
         break;
       case "tag":
         searchResults = reviewService.findByTag(decodedQuery);
+        break;
+      case "themaName":
+        searchResults = reviewService.findByThema(decodedQuery);
         break;
       default:
         searchResults = List.of();

@@ -105,6 +105,8 @@
                             <div class="location">
                                 <span class="location-x" data-th-text="*{location.locationX}" style="display: none;"></span>
                                 <span class="location-y" data-th-text="*{location.locationY}" style="display: none;"></span>
+                                <span class="scheduleRoute" data-th-text="*{scheduleRoute}" style="display: none;"></span>
+                                <span class="scheduleDay" data-th-text="*{scheduleDay}" style="display: none;"></span>
                             </div>
                             <!-- 카드와 textarea를 감싸는 wrapper 추가 -->
                             <div class="d-flex gap-3">
@@ -115,7 +117,7 @@
                                             <div class="d-flex">
                                                 <div class="badge bg-warning text-white"
                                                      style="font-size: 1rem; border-radius: 50%; width: 25px; height: 25px; display: flex; align-items: center; justify-content: center;"
-                                                     data-th-text="${iter.index + 1}">일정 순서</div>
+                                                     data-th-text="${iter.index}">일정 순서</div>
                                                 <div class="ms-2">
                                                     <p class="mb-1 text-primary" style="font-size: 0.9rem;"
                                                        data-th-text="*{location.locationName}">지역</p>
@@ -260,7 +262,7 @@
             showCancelButton: true, // cancel버튼 보이기. 기본은 원래 없음
             confirmButtonColor: '#3085d6', // confrim 버튼 색깔 지정
             cancelButtonColor: '#d33', // cancel 버튼 색깔 지정
-            confirmButtonText: '승인', // confirm 버튼 텍스트 지정
+            confirmButtonText: '확인', // confirm 버튼 텍스트 지정
             cancelButtonText: '취소', // cancel 버튼 텍스트 지정
 
             // reverseButtons: true, // 버튼 순서 거꾸로
@@ -272,6 +274,9 @@
                     title: '삭제 완료되었습니다.',
                     text: '후기 삭제완료~!',
                     icon: 'success',
+
+                    confirmButtonColor: '#3085d6', // confrim 버튼 색깔 지정
+                    confirmButtonText: '확인', // confirm 버튼 텍스트 지정
                 }).then(result => {
                     location.href = "delete?boardNo=" + no;
                 });
@@ -398,6 +403,8 @@
         const stateName = /*[[${board.trip.city.state.stateName}]]*/ "defaultState";
         const cityName = /*[[${board.trip.city.cityName}]]*/ "defaultCity";
 
+        const colors = ["primary", "warning", "danger", "info", "secondary", "success"];
+
         try {
             // 지도초기화
             await initializeMap("map", stateName, cityName);
@@ -410,13 +417,17 @@
                 // card 내부의 x와 y 좌표 추출
                 const locationX = locationInfo.querySelector('.location-x').textContent.trim();
                 const locationY = locationInfo.querySelector('.location-y').textContent.trim();
+                const scheduleRoute = locationInfo.querySelector('.scheduleRoute').textContent.trim();
+                const scheduleDay = locationInfo.querySelector('.scheduleDay').textContent.trim();
+
+                const color = colors[(scheduleDay - 1) % colors.length];
 
                 // x, y 좌표가 잘 가져와졌는지 출력합니다.
                 console.log(`Location X: ${locationX}, Location Y: ${locationY}`);
 
                 // 유효한 x, y 좌표가 있는 경우 addMarker 함수 호출
                 if (locationX && locationY) {
-                    addMarker(parseFloat(locationX), parseFloat(locationY));
+                    addMarker(parseFloat(locationX), parseFloat(locationY), parseInt(scheduleRoute), `text-${color}`);
                 }
             });
         } catch (error) {
