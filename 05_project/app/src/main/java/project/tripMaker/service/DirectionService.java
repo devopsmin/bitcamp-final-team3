@@ -33,8 +33,27 @@ public class DirectionService {
       String params = String.format("start=%.7f,%.7f&goal=%.7f,%.7f&option=trafast",
           startLon, startLat, goalLon, goalLat);
 
-      JsonNode result = requestApi(BASE_URL, params);
-      return parseResponse(result);
+      JsonNode response = requestApi(BASE_URL, params);
+      int code = response.get("code").asInt();
+
+      // code가 1인 경우 기본값을 가진 RouteInfo 반환
+      if (code == 1) {
+        System.out.println("시작과 종료가 같음!!!!!!!!!!!!!!!!");
+        RouteInfo info = new RouteInfo(
+            new RouteInfo.Coordinates(startLon, startLat),  // 시작 좌표
+            new RouteInfo.Coordinates(goalLon, goalLat),    // 도착 좌표
+            0,       // distance = 0
+            0,       // duration = 0
+            null    // path = null
+        );
+
+
+        System.out.println(info.toString());
+        return info;
+      }
+
+      // code가 1이 아닌 경우 정상적으로 파싱
+      return parseResponse(response);
 
     } catch (Exception e) {
       throw new RuntimeException("Failed to get direction", e);
@@ -42,21 +61,15 @@ public class DirectionService {
   }
 
   private RouteInfo parseResponse(JsonNode responseJson) {
-    if (responseJson.get("code").equals("1")) {
-      return new RouteInfo();
-    }
-
     try {
       JsonNode route = responseJson.get("route").get("trafast").get(0);
-      RouteInfo routeInfo = new RouteInfo();
+      JsonNode summary = route.get("summary");
 
       // Start Coordinates
-      JsonNode summary = route.get("summary");
       JsonNode startLocation = summary.get("start").get("location");
-
       RouteInfo.Coordinates start = new RouteInfo.Coordinates(
-          startLocation.get(0).asDouble(), // longitude
-          startLocation.get(1).asDouble()  // latitude
+          startLocation.get(0).asDouble(),
+          startLocation.get(1).asDouble()
       );
 
       // Goal Coordinates
@@ -112,7 +125,11 @@ public class DirectionService {
     }
     rd.close();
     conn.disconnect();
-    System.out.println(sb.toString());
+
     return objectMapper.readTree(sb.toString());
   }
 }
+
+
+
+

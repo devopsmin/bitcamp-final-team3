@@ -3,6 +3,9 @@
 // 줌 레벨 상수
 let map = null;
 let markerList = [];
+let polylineList = [];
+
+
 
 const ZOOM_LEVELS = {
     'area1': 12,  // 시/도
@@ -55,11 +58,24 @@ async function initializeMap(containerId, stateName, cityName) {
     }
 }
 
-function addMarker(locationX, locationY) {
+function addMarker(locationX, locationY, index, textColor) {
+    console.log(textColor);
     let pos = new naver.maps.LatLng(locationY, locationX);
     let marker = new naver.maps.Marker({
         position: pos,
         map: map,
+        icon: {
+            content: `
+                <div class="position-relative d-flex justify-content-center align-items-center" style="width: 40px; height: 40px;">
+                    <i class="position-absolute bottom-0 bi bi-geo-alt-fill ${textColor}" style="font-size: 36px;"></i>
+                    <div class="position-absolute top-0 d-flex justify-content-center align-items-center rounded-circle bg-white text-dark fw-bold" style="width: 20px; height: 20px; font-size: 15px;">
+                        ${index}
+                    </div>
+                </div>
+            `,
+            size: new naver.maps.Size(100, 100),
+            anchor: new naver.maps.Point(12, 30)
+        }
     });
     markerList.push(marker);
     return marker;
@@ -83,3 +99,51 @@ function clearAllMarkers() {
     });
     markerList = [];
 }
+
+function drawPath(pathCoordinates, color) {
+    const path = pathCoordinates.map(coord =>
+        new naver.maps.LatLng(coord.latitude, coord.longitude)
+    );
+
+    const newPolyline = new naver.maps.Polyline({
+        map: map,
+        path: path,
+        strokeColor: color,
+        strokeOpacity: 1,
+        strokeWeight: 3
+    });
+
+    polylineList.push(newPolyline);
+}
+
+// 특정 폴리라인 제거 함수
+function removePolyline(index) {
+    if (polylineList[index]) {
+        polylineList[index].setMap(null);
+        polylineList.splice(index, 1);
+    }
+}
+
+// 모든 폴리라인 제거 함수
+function clearAllPolylines() {
+    polylineList.forEach(polyline => {
+        polyline.setMap(null);
+    });
+    polylineList = [];
+}
+
+// 특정 구간의 폴리라인 숨기기/보이기
+function togglePolyline(index, visible) {
+    if (polylineList[index]) {
+        polylineList[index].setMap(visible ? map : null);
+    }
+}
+
+// 폴리라인 스타일 변경
+function updatePolylineStyle(index, options) {
+    if (polylineList[index]) {
+        polylineList[index].setOptions(options);
+    }
+}
+
+

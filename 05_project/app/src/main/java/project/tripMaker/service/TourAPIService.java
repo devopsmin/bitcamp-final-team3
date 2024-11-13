@@ -38,7 +38,7 @@ public class TourAPIService {
 
     BufferedReader rd;
     if (conn.getResponseCode() >= 200 && conn.getResponseCode() <= 300) {
-      rd = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
+      rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
     } else {
       rd = new BufferedReader(new InputStreamReader(conn.getErrorStream()));
     }

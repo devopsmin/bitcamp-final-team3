@@ -14,6 +14,7 @@ import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -200,6 +201,17 @@ public class ScheduleController {
       tripScheduleList.add(schedule);
     }
 
+    Schedule LastHotel = new Schedule();
+    Location Lastlocation = selectHoList.get(selectHoList.size()-1);
+    LastHotel.setScheduleNo(index);
+    Lastlocation.setLocationNo(index++);
+    Lastlocation.setCityCode(trip.getCity().getCityCode());
+    LastHotel.setLocation(Lastlocation);
+
+    LastHotel.setScheduleDay(selectHoList.size()+1);
+    LastHotel.setScheduleRoute(0);
+    tripScheduleList.add(LastHotel);
+
     for (int i = 0; i < selectLoList.size(); i++) {
       Schedule schedule = new Schedule();
       Location location = selectLoList.get(i);
@@ -212,21 +224,33 @@ public class ScheduleController {
       tripScheduleList.add(schedule);
     }
 
-    int totalSize = selectHoList.size() + selectLoList.size();
+    int totalSize = selectHoList.size() + selectLoList.size() + 1;
     RouteInfo[][] distances = new RouteInfo[totalSize][totalSize];
 
     for (int start = 0; start < totalSize; start++) {
       for (int goal = start; goal < totalSize; goal++) {
         if (start != goal) {
-          System.out.println("=========array===================================="+tripScheduleList.get(start)+tripScheduleList.get(goal));
+//          System.out.println("=========array===================================="+tripScheduleList.get(start)+tripScheduleList.get(goal));
           RouteInfo direction = directionService.getDirection(tripScheduleList.get(start),tripScheduleList.get(goal));
+          System.out.println(direction.toString());
           distances[start][goal] = direction;
           distances[goal][start] = direction;
         }
       }
     }
 
-    int[][] optimalRoutes = routeService.assignTourism(distances, selectHoList.size(), selectLoList.size());
+    for(int i = 0; i < distances.length; i++) {
+      for(int j = 0; j < distances[i].length; j++) {
+        if (distances[i][j] == null){
+          System.out.print("000000 ");
+          continue;
+        }
+        System.out.print(distances[i][j].getDuration()+"    ");
+      }
+      System.out.println(" ");
+    }
+
+    int[][] optimalRoutes = routeService.assignTourism(distances, selectHoList.size()+1, selectLoList.size());
     for (int hotel = 0; hotel < selectHoList.size(); hotel++) {
       int route = 1;
       System.out.println("숙소 " + hotel + "의 관광지: "+ tripScheduleList.get(hotel).getLocation().getLocationName() + Arrays.toString(optimalRoutes[hotel]));
@@ -236,8 +260,15 @@ public class ScheduleController {
         schedule.setScheduleRoute(route++);
       }
     }
+    model.addAttribute("distances", distances);
 
     tripScheduleList = scheduleService.orderSchedule(tripScheduleList);
+
+    Map<Integer, List<Schedule>> groupedSchedules = tripScheduleList.stream()
+        .collect(Collectors.groupingBy(Schedule::getScheduleDay));
+    model.addAttribute("groupedSchedules", groupedSchedules);
+
+
     model.addAttribute("tripScheduleList", tripScheduleList);
   }
 
