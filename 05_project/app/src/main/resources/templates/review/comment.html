@@ -1,7 +1,7 @@
 <div class="container my-2" style="width: 1200px; margin: 0 auto;">
     <form data-th-action="@{/comment/add}" method="post" class="mb-3">
         <textarea name="commentContent" class="form-control mb-1"  rows="5" style="width: 100%; resize: none;" placeholder="댓글을 입력하세요"></textarea>
-        <input type="hidden" name="boardType" value="1">
+        <input type="hidden" name="boardType" value="3">
         <input type="hidden" name="boardNo" data-th-value="${board.boardNo}">
         <button type="submit" class="btn btn-secondary">댓글 등록</button>
     </form>
@@ -20,15 +20,15 @@
             <div class="p-3 border rounded shadow-sm bg-white"> <!-- 박스를 위한 스타일 -->
                 <div class="d-flex align-items-center mb-2">
                     <img data-th-src="@{https://dgg7dnk35523.edge.naverncp.com/HZiW9aEJy7/user/profile/default.png(type=f,w=20,h=20)}"
-                         data-th-unless="${board.writer.userPhoto}"
+                         data-th-unless="${comment.writer.userPhoto}"
                          src="/images/default.png"
                          class="rounded-circle me-2" style="width: 40px; height: 40px;">
 
                     <img data-th-if="${board.writer.userPhoto}"
-                         data-th-src="@{https://dgg7dnk35523.edge.naverncp.com/HZiW9aEJy7/user/profile/} + ${board.writer.userPhoto} + '?type=f&w=100&h=100'"
+                         data-th-src="@{https://dgg7dnk35523.edge.naverncp.com/HZiW9aEJy7/user/profile/} + ${comment.writer.userPhoto} + '?type=f&w=100&h=100'"
                          src="/images/default.png"
                          class="rounded-circle me-2" style="width: 40px; height: 40px;">
-                    <strong class="me-2" data-th-text="${board.writer.userNickname}">닉네임</strong>
+                    <strong class="me-2" data-th-text="${comment.writer.userNickname}">닉네임</strong>
                     <small class="text-muted" data-th-text="${#calendars.format(comment.commentCreatedDate, 'yyyy년 MM월 dd일 HH:mm')}">작성일</small>
                 </div>
 
@@ -109,7 +109,7 @@
             fetch(`../comment/update`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: `commentNo=${commentNo}&commentContent=${encodeURIComponent(commentContent)}&boardType=1&boardNo=${boardNo}`
+                body: `commentNo=${commentNo}&commentContent=${encodeURIComponent(commentContent)}&boardType=3&boardNo=${boardNo}`
             }).then(response => {
                 if (response.ok) {
                     alert('댓글이 수정되었습니다.');
@@ -138,38 +138,38 @@
 
     function deleteComment(commentNo, no) {
         if (confirm('댓글을 삭제하시겠습니까?')) {
-            location.href = '../comment/delete?commentNo=' + commentNo + '&boardNo=' + no +'&boardType=1';
+            location.href = '../comment/delete?commentNo=' + commentNo + '&boardNo=' + no +'&boardType=3';
         }
     }
 </script>
 <script>
 
     function toggleCommentLike(commentNo) {
-<!--    console.log(`Toggling like for commentNo: ${commentNo}`);--> 콘솔 로그
-    fetch(`/comment/toggleCommentLike?commentNo=${commentNo}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' }
-    })
-    .then(response => response.json())
-    .then(data => {
-<!--        console.log(`Response data for commentNo ${commentNo}:`, data);--> 콘솔 로그
+        <!--    console.log(`Toggling like for commentNo: ${commentNo}`);--> 콘솔 로그
+        fetch(`/comment/toggleCommentLike?commentNo=${commentNo}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+        })
+        .then(response => response.json())
+        .then(data => {
+            <!--        console.log(`Response data for commentNo ${commentNo}:`, data);--> 콘솔 로그
 
-        const likeCountElem = document.getElementById(`commentLikeCount-${commentNo}`);
-        const likeButtonElem = document.getElementById(`commentLikeButton-${commentNo}`);
+            const likeCountElem = document.getElementById(`commentLikeCount-${commentNo}`);
+            const likeButtonElem = document.getElementById(`commentLikeButton-${commentNo}`);
 
-        if (likeCountElem && likeButtonElem) {
-            likeCountElem.value = data.commentLikeCount;
-            likeButtonElem.textContent = data.isCommentLiked ? '❤️ 좋아요 취소' : '🤍 좋아요';
-            alert(data.message);
-        } else {
-            console.error(`Elements for commentNo ${commentNo} not found.`, {
-                likeCountElem,
-                likeButtonElem
-            });
-        }
-    })
-    .catch(error => console.error('Error:', error));
-}
+            if (likeCountElem && likeButtonElem) {
+                likeButtonElem.textContent = data.isCommentLiked ? '❤️ 좋아요 취소' : '🤍 좋아요';
+                likeCountElem.textContent = data.commentLikeCount;
+                alert(data.message);
+            } else {
+                console.error(`Elements for commentNo ${commentNo} not found.`, {
+                    likeCountElem,
+                    likeButtonElem
+                });
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    }
 
 </script>
 

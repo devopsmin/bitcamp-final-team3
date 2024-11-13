@@ -152,7 +152,7 @@
   // 각 일정의 textarea 내용을 합쳐서 boardContent에 저장하는 함수
   function combineContent() {
     const noteFields = document.querySelectorAll('.schedule-note');
-    const combinedContent = Array.from(noteFields).map(note => note.value).join('\n');
+    const combinedContent = Array.from(noteFields).map(note => note.value).join('&%');
     document.getElementById('boardContent').value = combinedContent;
   }
 </script>

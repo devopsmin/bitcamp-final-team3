@@ -124,7 +124,7 @@ public class ReviewController {
     }
 
     // 로그인 유저의 Trip List 찾아서 List 전달
-    List<Trip> tripList = scheduleService.getTripsByUserNo(loginUser.getUserNo());
+    List<Trip> tripList = scheduleService.getSchedulesByTripNoExcludeBoard(loginUser.getUserNo());
     model.addAttribute("trips", tripList);
 
     return "review/form";
@@ -180,7 +180,11 @@ public class ReviewController {
   public String view(
       @RequestParam int boardNo,
       @SessionAttribute(value = "loginUser") User user,
-      Model model) throws Exception {
+      @RequestParam(value = "page", defaultValue = "1") int page,
+      @RequestParam(value = "pageSize", defaultValue = "5") int pageSize,
+      @RequestParam(value = "sort", defaultValue = "registered") String sort,
+      Model model,
+      HttpSession session) throws Exception {
 
     // 로그인 유저가 아닌 경우 처리 (나중에 처리해야지)
     if (user == null) {
@@ -204,16 +208,48 @@ public class ReviewController {
     boolean isFavored = reviewService.isFavored(boardNo, userNo);
 
     // 특정 Board의 Comment, Trip, Schedule 리스트 전달
-    List<Comment> commentList = commentService.list(boardNo);
+    List<Comment> commentList;
+    if ("likes".equals(sort)) {
+      commentList = commentService.listByLikes(boardNo, page, pageSize);
+    } else {
+      commentList = commentService.listByPage(boardNo, page, pageSize);
+    }
+
     List<Trip> tripList = reviewService.getTripsByBoardNo(board.getTripNo());
     List<Schedule> scheduleList = scheduleService.getSchedulesByTripNo(board.getTripNo());
+
+    int totalComments = commentService.list(boardNo).size();
+    int totalPages = (int) Math.ceil((double) totalComments / pageSize);
+
+    User loginUser = (User) session.getAttribute("loginUser");
+    boolean isLoggedIn = loginUser != null;
+
+    Map<Integer, Boolean> commentLikedMap = new HashMap<>();
+    if (isLoggedIn) {
+      for (Comment comment : commentList) {
+        int commentLikeCount = commentService.getCommentLikeCount(comment.getCommentNo());
+        comment.setCommentLike(commentLikeCount);
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("commentNo", comment.getCommentNo());
+        params.put("userNo", loginUser.getUserNo());
+        boolean isCommentLiked = commentService.isCommentLiked(params);
+        commentLikedMap.put(comment.getCommentNo(), isCommentLiked);
+      }
+    } else {
+      // 비로그인 상태에서도 commentLikedMap을 초기화
+      for (Comment comment : commentList) {
+        commentLikedMap.put(comment.getCommentNo(), false);
+      }
+    }
+
 
     // 기본 이미지 설정
     List<BoardImage> images = board.getBoardImages();
     if (images == null || images.isEmpty()) {
       images = new ArrayList<>();
       BoardImage defaultImage = new BoardImage();
-      defaultImage.setBoardimageName("default.jpg"); // 기본 이미지 파일명
+      defaultImage.setBoardimageName("default.png"); // 기본 이미지 파일명
       images.add(defaultImage);
     }
 
@@ -230,6 +266,15 @@ public class ReviewController {
     model.addAttribute("schedule", scheduleList);
     model.addAttribute("isLiked", isLiked);
     model.addAttribute("isFavored", isFavored);
+
+    model.addAttribute("commentList", commentList);
+    model.addAttribute("commentLikedMap", commentLikedMap);
+    model.addAttribute("currentPage", page);
+    model.addAttribute("pageSize", pageSize);
+    model.addAttribute("totalPages", totalPages);
+    model.addAttribute("sort", sort);
+    model.addAttribute("isLoggedIn", isLoggedIn);
+    model.addAttribute("loginUserNo", isLoggedIn ? loginUser.getUserNo() : null); // 로그인 유저의 번호 추가
 
     return "review/view";
   }
@@ -287,51 +332,65 @@ public class ReviewController {
       @RequestParam("title") String title,
       @RequestParam("content") String content,
       @RequestParam(value = "deletedImages", required = false) String deletedImages,
-      MultipartFile[] files
+      @RequestParam(value = "imageFiles", required = false) MultipartFile[] files
   ) throws Exception {
 
-    try{
-    Board board = reviewService.get(boardNo);
-    board.setBoardTitle(title);
-    board.setBoardContent(content);
+    try {
+      Board board = reviewService.get(boardNo);
+      board.setBoardTitle(title);
+      board.setBoardContent(content);
 
-    if (files == null) {
-      files = new MultipartFile[0];
-    }
+      if (files == null) {
+        files = new MultipartFile[0];
+      }
 
+      // 기존 이미지를 모두 삭제
+      reviewService.deleteAllFiles(boardNo);
 
       // 삭제된 이미지 파일 처리
-    if (deletedImages != null && !deletedImages.isEmpty()) {
-      String[] imageIds = deletedImages.split(",");
-      for (String imageId : imageIds) {
-        reviewService.deleteAttachedFile(Integer.parseInt(imageId));
+      List<BoardImage> existingImages = board.getBoardImages();
+      if (deletedImages != null && !deletedImages.isEmpty()) {
+        String[] imageIds = deletedImages.split(",");
+        for (String imageId : imageIds) {
+          int imageIdInt = Integer.parseInt(imageId);
+          reviewService.deleteAttachedFile(imageIdInt);
+
+          // existingImages 리스트에서 삭제된 이미지를 제거
+          existingImages.removeIf(image -> image.getBoardimageNo() == imageIdInt);
+        }
       }
-    }
 
-    // 새로 추가된 이미지 파일 처리
-    List<BoardImage> attachedFiles = new ArrayList<>();
-    for (MultipartFile file : files) {
-      if (file.getSize() == 0) continue;
+      // 새로 추가된 이미지 파일 처리
+      List<BoardImage> attachedFiles = new ArrayList<>();
+      if (files.length > 0) {
+        for (MultipartFile file : files) {
+          if (!file.isEmpty()) { // 파일이 존재하는 경우
+            BoardImage boardImage = new BoardImage();
+            boardImage.setBoardimageName(UUID.randomUUID().toString());
+            boardImage.setBoardimageDefaultName(file.getOriginalFilename());
 
-      BoardImage boardImage = new BoardImage();
-      boardImage.setBoardimageName(UUID.randomUUID().toString());
-      boardImage.setBoardimageDefaultName(file.getOriginalFilename());
+            // 파일 업로드 서비스 호출
+            HashMap<String, Object> options = new HashMap<>();
+            options.put(StorageService.CONTENT_TYPE, file.getContentType());
+            storageService.upload("review/" + boardImage.getBoardimageName(), file.getInputStream(), options);
 
-      HashMap<String, Object> options = new HashMap<>();
-      options.put(StorageService.CONTENT_TYPE, file.getContentType());
-      storageService.upload(folderName + boardImage.getBoardimageName(), file.getInputStream(), options);
+            attachedFiles.add(boardImage);
+          }
+        }
+      }
 
-      attachedFiles.add(boardImage);
-    }
-    board.setBoardImages(attachedFiles);
+      // 삭제되지 않은 기존 이미지와 새로 추가된 이미지를 결합하여 설정
+      attachedFiles.addAll(existingImages); // 기존 이미지는 삭제된 이미지를 제외한 상태
+      board.setBoardImages(attachedFiles);  // 결합된 파일들을 게시글에 설정
 
-    reviewService.update(board);
-    } catch (Exception e){
+      reviewService.update(board); // 변경 사항 저장
+    } catch (Exception e) {
       e.printStackTrace();
     }
 
     return "redirect:view?boardNo=" + boardNo;
   }
+
 
   // 수정 후 SQL Update 실행
   @PostMapping("modify")

@@ -309,4 +309,49 @@
         ORDER BY s.schedule_day, s.schedule_route
     </select>
 
+    <!--이미 게시글이 있는경우 제외하고 trip_no로 schedule 리스트 찾기-->
+    <select id="findSchedulesByTripNoExcludeBoard" resultMap="TripResultMap" parameterType="Long">
+        SELECT
+            t.trip_no,
+            t.user_no,
+            th.thema_no,
+            th.thema_name,
+            t.trip_title,
+            t.start_date,
+            t.end_date,
+            t.trip_created_date,
+            t.total_day,
+            st.state_code,
+            st.state_name,
+            c.city_code,
+            c.city_name,
+            s.schedule_no,
+            s.trip_no AS schedule_trip_no,
+            s.schedule_day,
+            s.schedule_route,
+            l.thirdclass_code,
+            l.city_code AS location_city_code,
+            l.location_name,
+            l.location_desc,
+            l.location_photo,
+            l.location_tel,
+            l.location_addr,
+            l.location_x,
+            l.location_y,
+            l.locationtype_no
+        FROM
+            trip t
+                LEFT JOIN thema th ON t.thema_no = th.thema_no
+                LEFT JOIN city c ON t.city_code = c.city_code
+                LEFT JOIN state st ON st.state_code = c.state_code
+                JOIN schedule s ON t.trip_no = s.trip_no
+                LEFT JOIN location l ON s.location_no = l.location_no
+        WHERE
+            t.user_no = #{userNo}
+          AND NOT EXISTS (
+            SELECT 1
+            FROM board b
+            WHERE b.trip_no = t.trip_no
+        );
+    </select>
 </mapper>

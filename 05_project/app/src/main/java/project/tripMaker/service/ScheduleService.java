@@ -111,6 +111,11 @@ public class ScheduleService {
   public List<Schedule> getSchedulesByTripNo(int tripNo) {
     return scheduleDao.findSchedulesByTripNo(tripNo);
   }
+
+  // 게시글이 있는경우 제외하고 schedule 리스트 가져오기
+  public List<Trip> getSchedulesByTripNoExcludeBoard(Long userNo) {
+    return scheduleDao.findSchedulesByTripNoExcludeBoard(userNo);
+  }
 }
 
 

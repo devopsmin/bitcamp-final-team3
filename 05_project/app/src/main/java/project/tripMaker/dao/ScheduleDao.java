@@ -40,4 +40,6 @@ public interface ScheduleDao {
   List<Integer> findTripNosByUserNo(Long userNo);
 
   List<Schedule> findSchedulesByTripNo(int tripNo);
+
+  List<Trip> findSchedulesByTripNoExcludeBoard(Long userNo);
 }

@@ -70,8 +70,8 @@
         <!-- 이미지 보여주기 -->
         <div class="boardImages">
             <div th:each="image, iter : ${board.boardImages}" class="slide" th:attr="data-index=${iter.index}" style="width: 600px; height: 400px;">
-                <a th:href="${image != null && image.boardimageName != null ? 'https://kr.object.ncloudstorage.com/bitcamp-bucket088a/review/' + image.boardimageName : 'https://kr.object.ncloudstorage.com/bitcamp-bucket088a/review/default.jpg'}">
-                    <img th:src="${image != null && image.boardimageName != null ? 'https://dgg7dnk35523.edge.naverncp.com/HZiW9aEJy7/review/' + image.boardimageName + '?type=u&w=600&h=400' : 'https://dgg7dnk35523.edge.naverncp.com/HZiW9aEJy7/review/default.jpg?type=u&w=600&h=400'}" class="img-thumbnail">
+                <a th:href="${image != null && image.boardimageName != null ? 'https://kr.object.ncloudstorage.com/bitcamp-bucket088a/review/' + image.boardimageName : 'https://kr.object.ncloudstorage.com/bitcamp-bucket088a/review/default.png'}">
+                    <img th:src="${image != null && image.boardimageName != null ? 'https://dgg7dnk35523.edge.naverncp.com/HZiW9aEJy7/review/' + image.boardimageName + '?type=u&w=600&h=400' : 'https://dgg7dnk35523.edge.naverncp.com/HZiW9aEJy7/review/default.png?type=u&w=600&h=400'}" class="img-thumbnail">
                 </a>
             </div>
             <!-- 이미지 네비게이션-->
@@ -85,7 +85,7 @@
 
     <div>
         <h4 class="mb-2" style="margin-left: 10px; font-size: 1.5rem;" data-th-text="${board.trip.tripTitle}">여행제목</h4>
-<!--        <p class="text-muted mb-3" style="margin-left: 10px; font-size: 0.9rem;" data-th-text="${board.trip.thema.themaName}">테마</p>-->
+        <!--        <p class="text-muted mb-3" style="margin-left: 10px; font-size: 0.9rem;" data-th-text="${board.trip.thema.themaName}">테마</p>-->
         <p class="text-muted mb-3" style="margin-left: 10px; font-size: 0.9rem;"
            data-th-text="${board.trip != null && board.trip.thema != null ? board.trip.thema.themaName : 'No Thema'}">테마명 없음</p>
         <div class="container my-3">
@@ -96,8 +96,8 @@
                     <div class="timeline">
                         <div id="review-location" class="timeline-item mb-1" data-th-each="schedule, iter : ${entry.value}" data-th-object="${schedule}">
                             <div class="location">
-                                <span class="location-x" data-th-text="*{location.locationX}"></span>
-                                <span class="location-y" data-th-text="*{location.locationY}"></span>
+                                <span class="location-x" data-th-text="*{location.locationX}" style="display: none;"></span>
+                                <span class="location-y" data-th-text="*{location.locationY}" style="display: none;"></span>
                             </div>
                             <!-- 카드와 textarea를 감싸는 wrapper 추가 -->
                             <div class="d-flex gap-3">
@@ -141,7 +141,7 @@
                                    <textarea readonly
                                              class="form-control"
                                              style="height: 87%; width: 830px; background-color: #f8f9fa;"
-                                             data-th-text="${#lists.size(board.boardContent.split('\n')) > iter.index ? board.boardContent.split('\n')[iter.index] : ''}">
+                                             data-th-text="${#lists.size(board.boardContent.split('&%')) > iter.index ? board.boardContent.split('&%')[iter.index] : ''}">
                                     </textarea>
                                 </div>
                             </div>
@@ -156,416 +156,276 @@
             <input readonly type="text" class="form-control border-0 p-2" style="font-size: 1rem;" data-th-value="${board.boardTag}">
         </div>
 
+        <div class="d-flex justify-content-between">
+            <button type="button" class="btn btn-secondary" data-th-onclick="|location.href='@{list}'|">목록</button>
+        </div>
+
+
         <br> 댓글: <br>
 
-        <!-- 댓글이 없는 경우 -->
-        <p data-th-unless="${commentList}" data-th-text="${'댓글이 없습니다.'}">댓글이 없습니다.</p>
-
-        <!-- 댓글이 있는 경우 -->
-        <ul data-th-if="${commentList}">
-            <li data-th-each="comment : ${commentList}">
-                댓글 번호: <input readonly type="text" data-th-value="${comment.commentNo}" size="3">
-                작성자 : <input readonly type="text" data-th-value="${comment.writer.userNickname}"><br>
-                작성일: <input readonly type="text"
-                            data-th-value="${#dates.format(comment.commentCreatedDate, 'yyyy-MM-dd HH:mm')}"><br>
-
-                댓글: <input readonly type="text" data-th-value="${comment.commentContent}" size="50"><br>
-
-                <button type="button"
-                        data-th-if="${session.loginUser != null and session.loginUser.userNo == comment.userNo}"
-                        data-th-onclick="updateComment([[${comment.commentNo}]], [[${comment.commentContent}]])">
-                    수정
-                </button>
-
-                <button type="button"
-                        data-th-if="${session.loginUser != null and session.loginUser.userNo == comment.userNo}"
-                        data-th-onclick="deleteComment([[${comment.commentNo}]], [[${board.boardNo}]], '3')">
-                    삭제
-                </button>
-                <br>
-                <!--            <button type="hidden">수정[예정(비활성화)]</button>-->
-            </li>
-        </ul>
+        <div data-th-replace="~{review/comment}"></div>
     </div>
 </div>
 
-    <form id="commentForm" data-th-action="@{/comment/add}" method="post" onsubmit="return validateCommentForm()">
-        <input type="hidden" name="boardType" value="3">
-        <input type="hidden" name="userNo" data-th-value="${#httpSession.getAttribute('loginUser').userNo}">
+<!-- 상단 이동 버튼 -->
+<button id="scrollTopButton" onclick="scrollToTop()" class="btn btn-secondary btn-sm" style="position: fixed; bottom: 20px; left: 77%; transform: translateX(-50%); visibility: hidden; padding: 7px 10px;">
+    <i class="bi bi-arrow-up"></i> 상단으로 이동
+</button>
 
-        게시글 번호: <input type="text" readonly name="boardNo" data-th-value="${board.boardNo}"><br>
-        작성자 : <input type="text" readonly name="userNickname" data-th-value="${#httpSession.getAttribute('loginUser').userNickname}"><br>
-        댓글 내용 작성: <textarea name="commentContent" id="commentContent" placeholder="댓글을 입력하세요"></textarea><br>
-        <button type="submit">댓글 작성</button>
-    </form>
+<script>
+    // 상단 이동 함수
+    function scrollToTop() {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
 
-    <!-- 상단 이동 버튼 -->
-    <button id="scrollTopButton" onclick="scrollToTop()" class="btn btn-secondary btn-sm" style="position: fixed; bottom: 20px; left: 77%; transform: translateX(-50%); visibility: hidden; padding: 7px 10px;">
-        <i class="bi bi-arrow-up"></i> 상단으로 이동
-    </button>
-
-    <script>
-        // 상단 이동 함수
-        function scrollToTop() {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+    // 스크롤 이벤트 감지하여 버튼 표시
+    window.addEventListener('scroll', function() {
+        const scrollTopButton = document.getElementById('scrollTopButton');
+        if (window.scrollY > 500) {
+            scrollTopButton.style.visibility = "visible";
+        } else {
+            scrollTopButton.style.visibility = "hidden";
         }
+    });
+</script>
 
-        // 스크롤 이벤트 감지하여 버튼 표시
-        window.addEventListener('scroll', function() {
-            const scrollTopButton = document.getElementById('scrollTopButton');
-            if (window.scrollY > 500) {
-                scrollTopButton.style.visibility = "visible";
+
+<!--Script-->
+<!--SweetAlert2 무조건 포함되어야함-->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.3/dist/sweetalert2.min.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
+
+<!--fontawesome-->
+<script src="https://kit.fontawesome.com/ecaa6a7d50.js" crossorigin="anonymous"></script>
+
+<!-- 이미지 -->
+
+
+<script>
+    const slides = document.querySelectorAll('.slide');
+    const paginationDots = document.getElementById('pagination-dots');
+    let currentSlideIndex = 0;
+
+    // 페이지 로드 시 네비게이션 점 생성
+    slides.forEach((_, index) => {
+        const dot = document.createElement('i');
+        dot.classList.add('bi', index === currentSlideIndex ? 'bi-circle-fill' : 'bi-circle', 'mx-1');
+        dot.style.cursor = 'pointer';
+        dot.onclick = () => showSlides(index);  // 클릭 시 해당 슬라이드로 이동
+        paginationDots.appendChild(dot);
+    });
+
+    // 슬라이드를 보여주는 함수
+    function showSlides(index) {
+        currentSlideIndex = (index + slides.length) % slides.length;
+
+        // 슬라이드 표시
+        slides.forEach((slide, i) => {
+            slide.style.display = (i === currentSlideIndex) ? 'block' : 'none';
+        });
+
+        // 네비게이션 점 스타일 업데이트
+        const dots = document.querySelectorAll('#pagination-dots i');
+        dots.forEach((dot, i) => {
+            dot.classList.toggle('bi-circle-fill', i === currentSlideIndex);
+            dot.classList.toggle('bi-circle', i !== currentSlideIndex);
+        });
+    }
+
+    // 슬라이드를 변경하는 함수
+    function changeSlide(n) {
+        showSlides(currentSlideIndex + n);
+    }
+
+    // 초기 슬라이드 설정
+    showSlides(currentSlideIndex);
+
+</script>
+
+<script data-th-inline="javascript">
+    <!-- 게시글삭제 -->
+    function deleteBoard(no) {
+        Swal.fire({
+            title: '해당글을 삭제하시겠습니까?',
+            text: '다시 되돌릴 수 없습니다. 신중하세요.',
+            icon: 'warning',
+
+            showCancelButton: true, // cancel버튼 보이기. 기본은 원래 없음
+            confirmButtonColor: '#3085d6', // confrim 버튼 색깔 지정
+            cancelButtonColor: '#d33', // cancel 버튼 색깔 지정
+            confirmButtonText: '승인', // confirm 버튼 텍스트 지정
+            cancelButtonText: '취소', // cancel 버튼 텍스트 지정
+
+            // reverseButtons: true, // 버튼 순서 거꾸로
+
+        }).then(result => { // 만약 Promise리턴을 받으면,
+            if (result.isConfirmed) { // 만약 모달창에서 confirm 버튼을 눌렀다면
+
+                Swal.fire({
+                    title: '삭제 완료되었습니다.',
+                    text: '후기 삭제완료~!',
+                    icon: 'success',
+                }).then(result => {
+                    location.href = "delete?boardNo=" + no;
+                });
+            }
+        });
+    }
+
+    // 좋아요 토글 함수
+    function toggleLike(boardNo) {
+        fetch(`like/${boardNo}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+        })
+        .then(response => {
+            return response.json().then(result => ({ status: response.ok, data: result}));
+        })
+        .then(({status, data}) => {
+            if (status) {
+                // UI 업데이트: 좋아요 버튼 및 카운트 변경
+                const likeButton = document.getElementById('likeButton');
+                const likeCount = document.getElementById('likeCount');
+
+                likeButton.textContent = data.isLiked ? '❤️ 좋아요 취소' : '🤍 좋아요';
+                likeCount.textContent = data.likeCount;
+
+                // 성공 토스트 메시지
+                Swal.fire({
+                    toast: true,
+                    position: 'top-start',
+                    icon: 'success',
+                    title: '좋아요 상태가 변경되었습니다.',
+                    showConfirmButton: false,
+                    timer: 1500,
+                    timerProgressBar: true,
+                });
             } else {
-                scrollTopButton.style.visibility = "hidden";
-            }
-        });
-    </script>
-
-    <!--댓글 빈칸방지-->
-    <script>
-        function validateCommentForm() {
-            const commentContent = document.getElementById('commentContent').value.trim();
-
-            if (commentContent === "") {
-                Swal.fire({
-                    icon: 'error',
-                    title: '댓글 내용이 비어 있습니다',
-                    text: '댓글 내용을 입력하세요.',
-                    confirmButtonText: '확인'
-                });
-                return false; // 폼 제출을 막습니다.
-            }
-            return true; // 폼을 제출합니다.
-        }
-    </script>
-
-    <!--Script-->
-    <!--SweetAlert2 무조건 포함되어야함-->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.3/dist/sweetalert2.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
-
-    <!--fontawesome-->
-    <script src="https://kit.fontawesome.com/ecaa6a7d50.js" crossorigin="anonymous"></script>
-
-    <!-- 이미지 -->
-
-
-    <script>
-        const slides = document.querySelectorAll('.slide');
-        const paginationDots = document.getElementById('pagination-dots');
-        let currentSlideIndex = 0;
-
-        // 페이지 로드 시 네비게이션 점 생성
-        slides.forEach((_, index) => {
-            const dot = document.createElement('i');
-            dot.classList.add('bi', index === currentSlideIndex ? 'bi-circle-fill' : 'bi-circle', 'mx-1');
-            dot.style.cursor = 'pointer';
-            dot.onclick = () => showSlides(index);  // 클릭 시 해당 슬라이드로 이동
-            paginationDots.appendChild(dot);
-        });
-
-        // 슬라이드를 보여주는 함수
-        function showSlides(index) {
-            currentSlideIndex = (index + slides.length) % slides.length;
-
-            // 슬라이드 표시
-            slides.forEach((slide, i) => {
-                slide.style.display = (i === currentSlideIndex) ? 'block' : 'none';
-            });
-
-            // 네비게이션 점 스타일 업데이트
-            const dots = document.querySelectorAll('#pagination-dots i');
-            dots.forEach((dot, i) => {
-                dot.classList.toggle('bi-circle-fill', i === currentSlideIndex);
-                dot.classList.toggle('bi-circle', i !== currentSlideIndex);
-            });
-        }
-
-        // 슬라이드를 변경하는 함수
-        function changeSlide(n) {
-            showSlides(currentSlideIndex + n);
-        }
-
-        // 초기 슬라이드 설정
-        showSlides(currentSlideIndex);
-
-    </script>
-
-    <script data-th-inline="javascript">
-        <!-- 게시글삭제 -->
-        function deleteBoard(no) {
-            Swal.fire({
-                title: '해당글을 삭제하시겠습니까?',
-                text: '다시 되돌릴 수 없습니다. 신중하세요.',
-                icon: 'warning',
-
-                showCancelButton: true, // cancel버튼 보이기. 기본은 원래 없음
-                confirmButtonColor: '#3085d6', // confrim 버튼 색깔 지정
-                cancelButtonColor: '#d33', // cancel 버튼 색깔 지정
-                confirmButtonText: '승인', // confirm 버튼 텍스트 지정
-                cancelButtonText: '취소', // cancel 버튼 텍스트 지정
-
-                // reverseButtons: true, // 버튼 순서 거꾸로
-
-            }).then(result => { // 만약 Promise리턴을 받으면,
-                if (result.isConfirmed) { // 만약 모달창에서 confirm 버튼을 눌렀다면
-
-                    Swal.fire({
-                        title: '삭제 완료되었습니다.',
-                        text: '후기 삭제완료~!',
-                        icon: 'success',
-                    }).then(result => {
-                        location.href = "delete?boardNo=" + no;
-                    });
-                }
-            });
-        }
-
-        <!-- 댓글 업데이트 -->
-        function updateComment(commentNo, currentContent) {
-            Swal.fire({
-                title: '댓글 수정',
-                input: 'textarea',
-                inputLabel: '수정할 내용을 입력하세요',
-                inputValue: currentContent,
-                showCancelButton: true,
-                confirmButtonText: '수정',
-                cancelButtonText: '취소',
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                inputValidator: (value) => {
-                    if (!value) {
-                        return '내용을 입력해주세요!';
-                    }
-                }
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    // 댓글 업데이트 요청
-                    fetch(`../comment/update`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({
-                            commentNo: commentNo,
-                            content: result.value
-                        }),
-                    })
-                    .then((response) => response.json())
-                    .then((data) => {
-                        if (data.success) {
-                            Swal.fire({
-                                icon: 'success',
-                                title: '댓글이 수정되었습니다.',
-                                showConfirmButton: false,
-                                timer: 1500
-                            }).then(() => {
-                                // 페이지 새로고침
-                                location.reload();
-                            });
-                        } else {
-                            Swal.fire({
-                                icon: 'error',
-                                title: '댓글 수정에 실패했습니다.',
-                                text: data.message,
-                            });
-                        }
-                    })
-                    .catch((error) => {
-                        console.error('댓글 수정 실패:', error);
-                        Swal.fire({
-                            icon: 'error',
-                            title: '댓글 수정 중 오류가 발생했습니다.',
-                            text: '다시 시도해 주세요.',
-                        });
-                    });
-                }
-            });
-        }
-
-        <!-- 댓글 삭제 -->
-        function deleteComment(commentNo, boardNo, boardType) {
-            Swal.fire({
-                title: '댓글을 삭제하시겠습니까?',
-                text: '다시 되돌릴 수 없습니다. 신중하세요.',
-                icon: 'warning',
-
-                showCancelButton: true, // cancel버튼 보이기. 기본은 원래 없음
-                confirmButtonColor: '#3085d6', // confrim 버튼 색깔 지정
-                cancelButtonColor: '#d33', // cancel 버튼 색깔 지정
-                confirmButtonText: '승인', // confirm 버튼 텍스트 지정
-                cancelButtonText: '취소', // cancel 버튼 텍스트 지정
-
-                // reverseButtons: true, // 버튼 순서 거꾸로
-
-            }).then(result => { // 만약 Promise리턴을 받으면,
-                if (result.isConfirmed) { // 만약 모달창에서 confirm 버튼을 눌렀다면
-
-                    Swal.fire({
-                        title: '삭제 완료되었습니다.',
-                        text: '댓글삭제완료~!',
-                        icon: 'success',
-                    }).then(result => {
-                        location.href = `../comment/delete?commentNo=${commentNo}&boardNo=${boardNo}&boardType=${boardType}`;
-                    });
-                }
-            });
-        }
-
-        // 좋아요 토글 함수
-        function toggleLike(boardNo) {
-            fetch(`like/${boardNo}`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-            })
-            .then(response => {
-                return response.json().then(result => ({ status: response.ok, data: result}));
-            })
-            .then(({status, data}) => {
-                if (status) {
-                    // UI 업데이트: 좋아요 버튼 및 카운트 변경
-                    const likeButton = document.getElementById('likeButton');
-                    const likeCount = document.getElementById('likeCount');
-
-                    likeButton.textContent = data.isLiked ? '❤️ 좋아요 취소' : '🤍 좋아요';
-                    likeCount.textContent = data.likeCount;
-
-                    // 성공 토스트 메시지
-                    Swal.fire({
-                        toast: true,
-                        position: 'top-start',
-                        icon: 'success',
-                        title: '좋아요 상태가 변경되었습니다.',
-                        showConfirmButton: false,
-                        timer: 1500,
-                        timerProgressBar: true,
-                    });
-                } else {
-                    // 오류 토스트 메시지
-                    Swal.fire({
-                        toast: true,
-                        position: 'top-start',
-                        icon: 'error',
-                        title: result.message || '좋아요 처리 중 오류가 발생했습니다.',
-                        showConfirmButton: false,
-                        timer: 1500,
-                        timerProgressBar: true,
-                    });
-                }
-            })
-            .catch (error => {
-                console.error('좋아요 요청 실패:', error);
-                // alert('네트워크 오류가 발생했습니다. 다시 시도해 주세요.');
-                // 네트워크 오류 토스트 메시지
+                // 오류 토스트 메시지
                 Swal.fire({
                     toast: true,
                     position: 'top-start',
                     icon: 'error',
-                    title: '네트워크 오류가 발생했습니다. 다시 시도해 주세요.',
+                    title: result.message || '좋아요 처리 중 오류가 발생했습니다.',
                     showConfirmButton: false,
                     timer: 1500,
                     timerProgressBar: true,
                 });
+            }
+        })
+        .catch (error => {
+            console.error('좋아요 요청 실패:', error);
+            // alert('네트워크 오류가 발생했습니다. 다시 시도해 주세요.');
+            // 네트워크 오류 토스트 메시지
+            Swal.fire({
+                toast: true,
+                position: 'top-start',
+                icon: 'error',
+                title: '네트워크 오류가 발생했습니다. 다시 시도해 주세요.',
+                showConfirmButton: false,
+                timer: 1500,
+                timerProgressBar: true,
             });
-        }
+        });
+    }
 
-        // 즐겨찾기 토글 함수
-        function toggleFavor(boardNo) {
-            fetch(`favor/${boardNo}`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-            })
-            .then(response => {
-                return response.json().then(result => ({ status: response.ok, data: result }));
-            })
-            .then(({ status, data }) => {
-                if (status) {
-                    // UI 업데이트: 좋아요 버튼 및 카운트 변경
-                    const favorButton = document.getElementById('favorButton');
-                    const favorCount = document.getElementById('favorCount');
+    // 즐겨찾기 토글 함수
+    function toggleFavor(boardNo) {
+        fetch(`favor/${boardNo}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+        })
+        .then(response => {
+            return response.json().then(result => ({ status: response.ok, data: result }));
+        })
+        .then(({ status, data }) => {
+            if (status) {
+                // UI 업데이트: 좋아요 버튼 및 카운트 변경
+                const favorButton = document.getElementById('favorButton');
+                const favorCount = document.getElementById('favorCount');
 
-                    favorButton.textContent = data.isFavored ? '⭐ 즐겨찾기 취소' : '⚪ 즐겨찾기';
-                    favorCount.textContent = data.favorCount;
+                favorButton.textContent = data.isFavored ? '⭐ 즐겨찾기 취소' : '⚪ 즐겨찾기';
+                favorCount.textContent = data.favorCount;
 
-                    // 성공 토스트 메시지
-                    Swal.fire({
-                        toast: true,
-                        position: 'top-start',
-                        icon: 'success',
-                        title: '즐겨찾기 상태가 변경되었습니다.',
-                        showConfirmButton: false,
-                        timer: 1500,
-                        timerProgressBar: true,
-                    });
-                } else {
-                    // 오류 토스트 메시지
-                    Swal.fire({
-                        toast: true,
-                        position: 'top-start',
-                        icon: 'error',
-                        title: data.message || '즐겨찾기 처리 중 오류가 발생했습니다.',
-                        showConfirmButton: false,
-                        timer: 1500,
-                        timerProgressBar: true,
-                    });
-                }
-            })
-            .catch(error => {
-                console.error('즐겨찾기 요청 실패:', error);
-                // 네트워크 오류 토스트 메시지
+                // 성공 토스트 메시지
+                Swal.fire({
+                    toast: true,
+                    position: 'top-start',
+                    icon: 'success',
+                    title: '즐겨찾기 상태가 변경되었습니다.',
+                    showConfirmButton: false,
+                    timer: 1500,
+                    timerProgressBar: true,
+                });
+            } else {
+                // 오류 토스트 메시지
                 Swal.fire({
                     toast: true,
                     position: 'top-start',
                     icon: 'error',
-                    title: '네트워크 오류가 발생했습니다. 다시 시도해 주세요.',
+                    title: data.message || '즐겨찾기 처리 중 오류가 발생했습니다.',
                     showConfirmButton: false,
                     timer: 1500,
                     timerProgressBar: true,
                 });
-            });
-        }
-
-        document.addEventListener('DOMContentLoaded', async () => {
-            console.log(document.querySelectorAll('#review-location').length);
-
-            const stateName = /*[[${board.trip.city.state.stateName}]]*/ "defaultState";
-            const cityName = /*[[${board.trip.city.cityName}]]*/ "defaultCity";
-
-            try {
-                // 지도초기화
-                await initializeMap("map", stateName, cityName);
-
-                // addMarker(126.545219, 33.524923);
-                const locationInfos = document.querySelectorAll('#review-location');
-                console.log(locationInfos);
-
-                locationInfos.forEach(locationInfo => {
-                    // card 내부의 x와 y 좌표 추출
-                    const locationX = locationInfo.querySelector('.location-x').textContent.trim();
-                    const locationY = locationInfo.querySelector('.location-y').textContent.trim();
-
-                    // x, y 좌표가 잘 가져와졌는지 출력합니다.
-                    console.log(`Location X: ${locationX}, Location Y: ${locationY}`);
-
-                    // 유효한 x, y 좌표가 있는 경우 addMarker 함수 호출
-                    if (locationX && locationY) {
-                        addMarker(parseFloat(locationX), parseFloat(locationY));
-                    }
-                });
-            } catch (error) {
-                console.error('실행 중 오류 발생:', error);
             }
+        })
+        .catch(error => {
+            console.error('즐겨찾기 요청 실패:', error);
+            // 네트워크 오류 토스트 메시지
+            Swal.fire({
+                toast: true,
+                position: 'top-start',
+                icon: 'error',
+                title: '네트워크 오류가 발생했습니다. 다시 시도해 주세요.',
+                showConfirmButton: false,
+                timer: 1500,
+                timerProgressBar: true,
+            });
         });
+    }
 
-    </script>
+    document.addEventListener('DOMContentLoaded', async () => {
+        console.log(document.querySelectorAll('#review-location').length);
 
-    <!-- Bootstrap JS 및 종속성 -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+        const stateName = /*[[${board.trip.city.state.stateName}]]*/ "defaultState";
+        const cityName = /*[[${board.trip.city.cityName}]]*/ "defaultCity";
 
-    <!--Naver MAP API-->
-    <script src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=0zojwabqn9&submodules=geocoder"></script>
-    <script data-th-src="@{/js/mapUtils.js}"></script>
+        try {
+            // 지도초기화
+            await initializeMap("map", stateName, cityName);
+
+            // addMarker(126.545219, 33.524923);
+            const locationInfos = document.querySelectorAll('#review-location');
+            console.log(locationInfos);
+
+            locationInfos.forEach(locationInfo => {
+                // card 내부의 x와 y 좌표 추출
+                const locationX = locationInfo.querySelector('.location-x').textContent.trim();
+                const locationY = locationInfo.querySelector('.location-y').textContent.trim();
+
+                // x, y 좌표가 잘 가져와졌는지 출력합니다.
+                console.log(`Location X: ${locationX}, Location Y: ${locationY}`);
+
+                // 유효한 x, y 좌표가 있는 경우 addMarker 함수 호출
+                if (locationX && locationY) {
+                    addMarker(parseFloat(locationX), parseFloat(locationY));
+                }
+            });
+        } catch (error) {
+            console.error('실행 중 오류 발생:', error);
+        }
+    });
+
+</script>
+
+<!-- Bootstrap JS 및 종속성 -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<!--Naver MAP API-->
+<script src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=0zojwabqn9&submodules=geocoder"></script>
+<script data-th-src="@{/js/mapUtils.js}"></script>
 </body>
 </html>

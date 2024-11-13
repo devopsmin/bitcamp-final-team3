@@ -8,6 +8,7 @@
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
 <body>
+
 <div class="container mt-5">
     <h1 class="mb-4">게시글 수정</h1>
 
@@ -23,7 +24,7 @@
     <div class="alert alert-danger mt-4" data-th-unless="${board}">없는 게시글입니다.</div>
 
     <!-- 게시글이 있을 경우 -->
-    <form id="update-form" data-th-if="${board}" data-th-action="@{update}" method="post" class="mt-4">
+    <form id="update-form" data-th-if="${board}" data-th-action="@{update}" method="post" class="mt-4" enctype="multipart/form-data">
         <div class="mb-3">
             <label for="boardNo" class="form-label">게시글 번호</label>
             <input id="boardNo" name="boardNo" type="text" class="form-control" readonly th:value="${board.boardNo}">
@@ -62,7 +63,7 @@
                         <span class="me-3">Day: <span data-th-text="*{scheduleDay}">Day</span></span>
                         <span class="me-3">순서: <span data-th-text="*{scheduleRoute}">순서</span></span>
                         <textarea name="scheduleContents" class="form-control" rows="3" placeholder="내용을 입력하세요"
-                                  data-th-text="${#lists.size(board.boardContent.split('\n')) > status.index ? board.boardContent.split('\n')[status.index] : ''}">
+                                  data-th-text="${#lists.size(board.boardContent.split('&%')) > status.index ? board.boardContent.split('&%')[status.index] : ''}">
                         </textarea>
                     </div>
                 </div>
@@ -84,14 +85,14 @@
                 <img data-th-src="@{'https://dgg7dnk35523.edge.naverncp.com/HZiW9aEJy7/review/' + ${image.boardimageName} + '?type=u&w=100&h=100'}" class="img-thumbnail">
                 <p class="text-center mt-1" data-th-text="${image.boardimageDefaultName}"></p>
                 <!-- 이미지 ID를 사용하여 함수 호출 -->
-                <button type="button" class="btn-close position-absolute top-0 start-80" onclick="removeExistingImage(this.closest('[data-image-id]').getAttribute('data-image-id'))"></button>
+                <button type="button" class="btn-close position-absolute top-0 start-80" data-th-onclick="|removeExistingImage([[${image.boardimageNo}]])|"></button>
             </div>
         </div>
 
         <!-- 새 파일 첨부 버튼 -->
         <div class="mb-3">
-            <label for="file-upload" class="form-label">파일 첨부</label>
-            <input id="file-upload" name="imageFile" type="file" class="form-control" multiple onchange="previewImages()">
+            <label for="file-update" class="form-label">파일 첨부</label>
+            <input id="file-update" name="imageFiles" type="file" class="form-control" multiple onchange="previewImages()">
         </div>
 
         <!-- 미리보기 컨테이너 -->
@@ -107,26 +108,56 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 
+
+
 <script>
     // 삭제된 이미지들을 저장할 Set
     let deletedImages = new Set();
     // 숨겨진 이미지들을 저장할 Map (취소를 위해)
     let hiddenImages = new Map();
 
-    function removeExistingImage(imageId) {
-        const imageElement = document.querySelector(`[data-image-id="${imageId}"]`);
-        if (imageElement) {
-            // 이미지 요소를 숨기고, 삭제할 목록에 추가
-            imageElement.style.display = 'none';
-            hiddenImages.set(imageId, imageElement);
-            deletedImages.add(imageId); // Set에 이미지 ID 추가
-            document.getElementById('deletedImages').value = Array.from(deletedImages).join(','); // 업데이트
-        }
-    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+        window.removeExistingImage = function(imageId) {  // 함수를 전역 범위에 설정
+            console.log(`Deleting image with ID: ${imageId}`);
+
+            deletedImages.add(imageId);
+            document.getElementById('deletedImages').value = Array.from(deletedImages).join(',');
+            console.log(deletedImages);
+
+            // 이미지의 div 컨테이너 요소 선택
+            const imageElement = document.querySelector(`[data-image-id="${imageId}"]`);
+            console.log(imageElement);
+
+            if (imageElement) {
+                // div 내부의 img 요소 선택
+                const imgElement = imageElement.querySelector('.img-thumbnail');
+
+                if (imgElement) {
+                    // img 요소를 숨기기
+                    imgElement.style.display = 'none';
+                    imgElement.style.visibility = 'hidden';
+                    imgElement.style.opacity = '0';
+
+                    // 삭제할 목록에 추가
+                    hiddenImages.set(imageId, imageElement);
+                    deletedImages.add(imageId);
+
+                    // 삭제된 이미지 ID를 hidden input에 업데이트
+                    document.getElementById('deletedImages').value = Array.from(deletedImages).join(',');
+                } else {
+                    console.error("Image element with class 'img-thumbnail' not found.");
+                }
+            } else {
+                console.error(`Image container with ID ${imageId} not found.`);
+            }
+        };
+    });
 
 
     // 취소 버튼 처리
     function resetChanges() {
+        console.log("취소버튼누름");
         // 숨겨진 이미지들 복원
         hiddenImages.forEach((element) => {
             element.style.display = 'inline-block';
@@ -139,7 +170,7 @@
 
         // 새로 추가된 이미지 미리보기 초기화
         document.getElementById('previewContainer').innerHTML = '';
-        document.getElementById('file-upload').value = '';
+        document.getElementById('file-update').value = '';
 
         // 이전 페이지로 돌아가기
         history.back();
@@ -149,7 +180,7 @@
     document.getElementById('update-form').addEventListener('submit', function(event) {
         // 기존 scheduleContents 처리 유지
         const scheduleContents = Array.from(document.getElementsByName('scheduleContents')).map(textarea => textarea.value);
-        document.getElementById('boardContent').value = scheduleContents.join('\n');
+        document.getElementById('boardContent').value = scheduleContents.join('&%');
 
         // 삭제된 이미지 목록 최종 업데이트
         document.getElementById('deletedImages').value = Array.from(deletedImages).join(',');
@@ -163,7 +194,7 @@
         const previewContainer = document.getElementById('previewContainer');
         previewContainer.innerHTML = '';
 
-        const files = document.getElementById('file-upload').files;
+        const files = document.getElementById('file-update').files;
         Array.from(files).forEach((file, index) => {
             const reader = new FileReader();
             reader.onload = (e) => {
@@ -182,7 +213,7 @@
     }
 
     function removeImage(index) {
-        const fileInput = document.getElementById('file-upload');
+        const fileInput = document.getElementById('file-update');
         const dt = new DataTransfer();
 
         Array.from(fileInput.files).forEach((file, i) => {
