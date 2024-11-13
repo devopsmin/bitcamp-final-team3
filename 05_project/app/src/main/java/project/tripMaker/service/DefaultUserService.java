@@ -99,8 +99,9 @@ public class DefaultUserService implements UserService {
 
   @Transactional
   public boolean update(User user) throws Exception {
-    if (user.getUserPassword() != null && !user.getUserPassword().trim().isEmpty()) {
-      user.setUserPassword(passwordEncoder.encode(user.getUserPassword()));
+    User oldUser = userDao.findBy(user.getUserNo());
+    if (oldUser != null && user.getUserPassword() == null) {
+      user.setUserPassword(oldUser.getUserPassword());
     }
     return userDao.update(user);
   }

@@ -7,7 +7,7 @@
   <form action="/auth/login" method="post" class="needs-validation" novalidate>
     <div class="mb-3">
       <label for="userEmail" class="form-label">이메일</label>
-      <input id="userEmail" name="userEmail" type="email" class="form-control form-control-lg" placeholder="이메일을 입력하세요" required>
+      <input id="userEmail" name="userEmail" type="email" class="form-control form-control-lg" placeholder="이메일을 입력하세요" th:value="${userEmail}"required>
     </div>
 
     <div class="mb-3">
@@ -17,9 +17,10 @@
 
     <div class="d-flex justify-content-between align-items-center mb-3">
       <div class="form-check">
-        <input name="saveEmail" type="checkbox" class="form-check-input" id="saveEmail">
+        <input checked data-th-checked="${userEmail}" name="saveEmail" type="checkbox" class="form-check-input" id="saveEmail">
         <label class="form-check-label" for="saveEmail">이메일 저장</label>
       </div>
+
       <div class="btn-group">
         <button type="button" class="btn btn-link p-0 text-decoration-none"
                 data-bs-toggle="modal" data-bs-target="#findIdModal" data-bs-dismiss="modal">
