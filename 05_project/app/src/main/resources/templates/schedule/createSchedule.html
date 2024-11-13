@@ -438,7 +438,7 @@
             const scheduleContainers = document.querySelectorAll('#columns-container .schedule-container');
 
             scheduleContainers.forEach((container, dayIndex) => {
-                const cards = container.querySelectorAll('.card');
+                const cards = container.querySelectorAll('#locationCard');
                 cards.forEach((card) => {
                     const schedule = {
                         scheduleNo: parseInt(card.querySelector('.schedule-no').textContent),

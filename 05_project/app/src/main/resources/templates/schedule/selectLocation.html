@@ -149,7 +149,8 @@
                             <input type="text" class="form-control border-start-0" placeholder="새로운 숙소를 검색해보세요" aria-label="Search">
                         </div>
                         <div class="d-flex justify-content-center mb-3">
-                            <div id="addLocationMap" style="width: 500px; height: 300px;" class="border rounded shadow-sm"><p>지도영역</p></div>
+                            <div id="addLocationMap" style="width: 500px; height: 300px;" class="border rounded shadow-sm">
+                            </div>
                         </div>
                         <div class="mb-2">
                             <!-- 검색 결과가 여기에 표시될 것입니다 -->
@@ -230,12 +231,17 @@
 
     let selectedItems = [];
 
-    document.addEventListener('DOMContentLoaded', () => {
-        const stateName = /*[[${trip.city.state.stateName}]]*/ '';
-        const cityName = /*[[${trip.city.cityName}]]*/ '';
 
-        // 지도 초기화
-        initializeMap('map', stateName, cityName);
+    document.addEventListener('DOMContentLoaded', async () => {
+        try {
+            const stateName = /*[[${trip.city.state.stateName}]]*/ '';
+            const cityName = /*[[${trip.city.cityName}]]*/ '';
+
+            await initializeMap('map', stateName, cityName);
+            await searchMap('addLocationMap',stateName, cityName);
+        } catch (error) {
+            console.error('실행 중 오류 발생:', error);
+        }
     });
 
     document.addEventListener('DOMContentLoaded', function() {
@@ -282,26 +288,6 @@
         });
     });
 
-    // // 페이지 로드 시 초기 selectedItems 설정
-    // document.addEventListener('DOMContentLoaded', function() {
-    //     // Thymeleaf로 전달된 selectLoList의 인덱스들을 selectedItems에 추가
-    //     const initialSelectedButtons = document.querySelectorAll('#locationListDiv .btn-location[data-index]');
-    //     initialSelectedButtons.forEach(button => {
-    //         const index = button.getAttribute('data-index');
-    //         if(index) {
-    //             selectedItems.push(index);
-    //             // 버튼 스타일도 선택된 상태로 변경
-    //             button.classList.remove("btn-outline-secondary");
-    //             button.classList.add("btn-primary");
-    //             const icon = button.querySelector('i');
-    //             if(icon) {
-    //                 icon.classList.remove("bi-plus-lg");
-    //                 icon.classList.add("bi-check-lg");
-    //             }
-    //         }
-    //     });
-    // });
-
     addBtns.forEach(button => {
         button.addEventListener('click', () => {
             const locationX = button.querySelector('.location-x').textContent;
@@ -314,6 +300,10 @@
 
             icon.classList.remove("bi-plus-lg");
             icon.classList.add("bi-check-lg");
+
+            // 버튼 비활성화
+            button.disabled = true;
+            button.style.pointerEvents = 'none'; // 클릭 이벤트 완전히 차단
 
             selectedItems.push(index);
             modifyLocation(selectedItems);
@@ -468,6 +458,9 @@
             // 버튼 스타일 변경
             button.classList.remove("btn-primary");
             button.classList.add("btn-outline-secondary");
+            // disabled 해제
+            button.disabled = false;
+            button.style.pointerEvents = ''; // 클릭 이벤트 완전히 차단
 
             // 아이콘 변경
             const icon = button.querySelector('i');

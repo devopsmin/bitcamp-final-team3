@@ -2,10 +2,10 @@
 
 // 줌 레벨 상수
 let map = null;
+let minimap = null;
+
 let markerList = [];
 let polylineList = [];
-
-
 
 const ZOOM_LEVELS = {
     'area1': 12,  // 시/도
@@ -18,7 +18,6 @@ async function initializeMap(containerId, stateName, cityName) {
     try {
         let regionType = 'area1';
         const searchQuery = cityName === "전체" ? stateName : stateName + cityName;
-        console.log(searchQuery);
 
         const response = await new Promise((resolve, reject) => {
             naver.maps.Service.geocode({
@@ -52,6 +51,49 @@ async function initializeMap(containerId, stateName, cityName) {
         }
 
         return map;
+    } catch (error) {
+        console.error('지도 초기화 중 오류:', error);
+        throw error;
+    }
+}
+
+async function searchMap(containerId, stateName, cityName) {
+    try {
+        let regionType = 'area1';
+        const searchQuery = cityName === "전체" ? stateName : stateName + cityName;
+
+        const response = await new Promise((resolve, reject) => {
+            naver.maps.Service.geocode({
+                query: searchQuery
+            }, function(status, response) {
+                if (status === naver.maps.Service.Status.OK) {
+                    resolve(response);
+                } else {
+                    reject('지도 초기화 실패');
+                }
+            });
+        });
+
+        const items = response.v2.addresses;
+        if (items.length === 0) {
+            throw new Error('주소를 찾을 수 없습니다');
+        }
+
+        const {x: mapx, y: mapy} = items[0];
+        const centerPosition = new naver.maps.LatLng(mapy, mapx);
+        const zoomLevel = ZOOM_LEVELS[regionType] || ZOOM_LEVELS.area2;
+
+        if (!minimap) {
+            minimap = new naver.maps.Map(containerId, {
+                center: centerPosition,
+                zoom: zoomLevel
+            });
+        } else {
+            minimap.setCenter(centerPosition);
+            minimap.setZoom(zoomLevel);
+        }
+
+        return minimap;
     } catch (error) {
         console.error('지도 초기화 중 오류:', error);
         throw error;
