@@ -56,8 +56,12 @@ public class ReviewController {
       @RequestParam(defaultValue = "1") int pageNo,
       @RequestParam(defaultValue = "9") int pageSize,
       Model model,
-      @RequestParam(required = false, defaultValue = "latest") String sort
+      @RequestParam(required = false, defaultValue = "latest") String sort,
+      HttpSession session
   ) throws Exception {
+
+    User loginUser = (User) session.getAttribute("loginUser");
+    boolean isLoggedIn = loginUser != null;
 
     List<Board> boardList;
 
@@ -111,6 +115,7 @@ public class ReviewController {
     model.addAttribute("pageNo", pageNo);
     model.addAttribute("pageSize", pageSize);
     model.addAttribute("pageCount", pageCount);
+    model.addAttribute("isLoggedIn", isLoggedIn);
 
     return "review/list";
   }

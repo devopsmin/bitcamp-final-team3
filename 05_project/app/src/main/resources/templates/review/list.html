@@ -44,7 +44,7 @@
                 <option value="favorites" data-th-selected="${sort == 'favorites'}">즐겨찾기</option>
                 <option value="views" data-th-selected="${sort == 'views'}">조회수</option>
             </select>
-            <a data-th-if="${session.loginUser}" data-th-href="@{form}" class="btn btn-secondary">글쓰기</a>
+            <a data-th-if="${isLoggedIn}" data-th-href="@{form}" class="btn btn-secondary">글쓰기</a>
         </div>
     </div>
 </div>

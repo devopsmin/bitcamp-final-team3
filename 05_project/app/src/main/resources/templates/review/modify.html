@@ -81,11 +81,11 @@
         <!-- 기존 첨부 이미지 미리보기 -->
         <div id="existingImagesContainer" class="mb-3">
             <h5>기존 첨부 이미지</h5>
-            <div data-th-each="image : ${board.boardImages}" class="d-inline-block position-relative m-2" data-image-id="[[${image.boardimageNo}]]">
+            <div data-th-each="image : ${board.boardImages}" class="d-inline-block position-relative m-2" data-th-attr="data-image-id=${image.boardimageNo}">
                 <img data-th-src="@{'https://dgg7dnk35523.edge.naverncp.com/HZiW9aEJy7/review/' + ${image.boardimageName} + '?type=u&w=100&h=100'}" class="img-thumbnail">
                 <p class="text-center mt-1" data-th-text="${image.boardimageDefaultName}"></p>
                 <!-- 이미지 ID를 사용하여 함수 호출 -->
-                <button type="button" class="btn-close position-absolute top-0 start-80" data-th-onclick="|removeExistingImage([[${image.boardimageNo}]])|"></button>
+                <button type="button" class="btn-close position-absolute top-0 start-80" data-th-onclick="|removeExistingImage(${image.boardimageNo})|"></button>
             </div>
         </div>
 
@@ -116,35 +116,37 @@
     // 숨겨진 이미지들을 저장할 Map (취소를 위해)
     let hiddenImages = new Map();
 
-
     document.addEventListener("DOMContentLoaded", () => {
-        window.removeExistingImage = function(imageId) {  // 함수를 전역 범위에 설정
-            console.log(`Deleting image with ID: ${imageId}`);
+        // 삭제된 이미지들의 ID를 저장할 Set
+        window.removeExistingImage = function(imageId) {
+            console.log(`Attempting to hide image with ID: ${imageId}`);
 
+            // 삭제된 이미지 ID 추가
             deletedImages.add(imageId);
             document.getElementById('deletedImages').value = Array.from(deletedImages).join(',');
-            console.log(deletedImages);
+            console.log("Deleted images:", deletedImages);
 
             // 이미지의 div 컨테이너 요소 선택
             const imageElement = document.querySelector(`[data-image-id="${imageId}"]`);
-            console.log(imageElement);
 
             if (imageElement) {
                 // div 내부의 img 요소 선택
                 const imgElement = imageElement.querySelector('.img-thumbnail');
+                const pElement = imageElement.querySelector('p');
+                const buttonElement = imageElement.querySelector('button');
 
+                if (pElement) pElement.style.display = 'none';
+                if (buttonElement) buttonElement.style.display = 'none';
                 if (imgElement) {
-                    // img 요소를 숨기기
+                    // img 요소를 숨기기 (시각적으로만 안 보이게)
                     imgElement.style.display = 'none';
-                    imgElement.style.visibility = 'hidden';
-                    imgElement.style.opacity = '0';
 
-                    // 삭제할 목록에 추가
+                    // 숨겨진 이미지 목록에 추가
                     hiddenImages.set(imageId, imageElement);
-                    deletedImages.add(imageId);
 
                     // 삭제된 이미지 ID를 hidden input에 업데이트
                     document.getElementById('deletedImages').value = Array.from(deletedImages).join(',');
+                    console.log(`Successfully hid image with ID: ${imageId}`);
                 } else {
                     console.error("Image element with class 'img-thumbnail' not found.");
                 }
@@ -153,6 +155,7 @@
             }
         };
     });
+
 
 
     // 취소 버튼 처리
