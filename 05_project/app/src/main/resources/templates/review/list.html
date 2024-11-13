@@ -85,8 +85,9 @@
 
                     <div class="mt-auto">
                         <p class="text-muted mb-1">
-                            <span data-th-text="${board.trip.city.cityName}">도시명</span><br>
-                            <span data-th-text="${board.boardTag}">태그</span>
+                            <span data-th-text="${board.trip.city.state.stateName}+' '+${board.trip.city.cityName}">도시명</span><br>
+                            <span data-th-text="'✈️'+${board.trip?.thema?.themaName?:' '}">테마</span><br>
+                            <span data-th-text="'#'+${board.boardTag}">태그</span>
                         </p>
 
                         <div class="d-flex justify-content-start align-items-center text-muted small">
