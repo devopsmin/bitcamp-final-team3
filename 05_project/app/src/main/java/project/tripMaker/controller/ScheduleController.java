@@ -31,6 +31,7 @@ public class ScheduleController {
   private final TourAPIService tourAPIService;
   private final DirectionService directionService;
   private final RouteService routeService;
+  private final SearchAPIService searchAPIService;
 
   @RequestMapping("selectState")
   public void selectState(Model model, Trip trip) throws Exception {
@@ -109,8 +110,6 @@ public class ScheduleController {
     List<Location> locationList =
         tourAPIService.showLocation(trip.getCity());
 
-    System.out.println("=======================sadfadsfadsfasd========"+selectLoList);
-
     model.addAttribute("trip", trip);
     model.addAttribute("locationList", locationList);
   }
@@ -127,9 +126,21 @@ public class ScheduleController {
     for (int index : dataIndexes) {
       selectLoList.add(locationList.get(index));
     }
-    System.out.println("================================"+selectLoList);
     model.addAttribute("selectLoList", selectLoList);
     return selectLoList;
+  }
+
+  @GetMapping("/searchLocation")
+  @ResponseBody
+  public JsonNode searchLocation(
+      @ModelAttribute Trip trip,
+      String searchText
+  ){
+    String text = String.format("%s %s %s",
+        trip.getCity().getState().getStateName(),
+        trip.getCity().getCityName().equals("전체")? "" : trip.getCity().getCityName(),
+        searchText);
+    return searchAPIService.search(text);
   }
 
   @RequestMapping("selectHotel")
