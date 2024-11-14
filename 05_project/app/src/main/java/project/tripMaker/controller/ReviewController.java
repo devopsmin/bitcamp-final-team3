@@ -10,6 +10,9 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -19,8 +22,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.multipart.MultipartFile;
+import project.tripMaker.dto.ReviewDto;
 import project.tripMaker.service.CommentService;
 import project.tripMaker.service.ReviewService;
 import project.tripMaker.service.ScheduleService;
@@ -568,4 +573,16 @@ public class ReviewController {
     model.addAttribute("pageCount", pageCount);
     return "review/list"; // 게시글 목록을 출력하는 Thymeleaf 템플릿 파일 이름
   }
+
+  @GetMapping("api/list")
+  public ResponseEntity<List<ReviewDto>> getReviewList(@RequestParam int page) {
+    try {
+      List<ReviewDto> reviews = reviewService.getReviews(page);
+      return new ResponseEntity<>(reviews, HttpStatus.OK);
+    } catch (Exception e) {
+      e.printStackTrace();
+      return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
 }
