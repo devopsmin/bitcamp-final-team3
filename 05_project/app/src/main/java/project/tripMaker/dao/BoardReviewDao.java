@@ -87,4 +87,7 @@ public interface BoardReviewDao extends BoardDao{
   boolean deleteFiles(int boardNo) throws Exception;
 
   List<BoardImage> findImagesByBoardNo(int boardNo);
+
+  // 전체 게시물 수 조회
+  List<Board> listBoard(@Param("boardtypeNo") int boardtypeNo) throws Exception;
 }

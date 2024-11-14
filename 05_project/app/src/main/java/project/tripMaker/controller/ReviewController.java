@@ -63,6 +63,8 @@ public class ReviewController {
     User loginUser = (User) session.getAttribute("loginUser");
     boolean isLoggedIn = loginUser != null;
 
+    List<Board> topBoards = reviewService.getTopRecommendedBoards(3,4); // 베스트 게시글 상위 4개 가져오기
+
     List<Board> boardList;
 
     // 게시물 목록 조회
@@ -105,18 +107,27 @@ public class ReviewController {
       pageNo = pageCount;
     }
 
+
     for (Board board : boardList) {
+      // 직접 첫번째 이미지 Board객체 추가 
+      if (board.getBoardImages() != null && !board.getBoardImages().isEmpty()) {
+        board.setFirstImageName(board.getBoardImages().get(0).getBoardimageName());
+      } else {
+        board.setFirstImageName("default.png");
+      }
+
+      // 댓글 갯수
       int commentCount = reviewService.getCommentCount(board.getBoardNo());
       board.setCommentCount(commentCount); // 댓글 개수 설정
     }
 
+    model.addAttribute("topBoards", topBoards);
     model.addAttribute("list", boardList);
     model.addAttribute("sort", sort);
     model.addAttribute("pageNo", pageNo);
     model.addAttribute("pageSize", pageSize);
     model.addAttribute("pageCount", pageCount);
     model.addAttribute("isLoggedIn", isLoggedIn);
-
     return "review/list";
   }
 
