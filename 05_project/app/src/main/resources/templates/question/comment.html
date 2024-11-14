@@ -56,19 +56,19 @@
                     <span data-th-id="'commentLikeCount-' + ${comment.commentNo}" class="me-2" data-th-text="${comment.commentLike}">0</span>
                     <div class="d-flex align-items-center">
                         <button type="button" class="btn btn-outline-secondary btn-sm me-1 edit-button"
-                                data-th-if="${isUserAuthorized}" onclick="enableEdit(this)">수정</button>
+                                data-th-if="${isUserAuthorizedMap[comment.commentNo]}" onclick="enableEdit(this)">수정</button>
 
                         <button type="button" class="btn btn-outline-secondary btn-sm me-1 save-button"
-                                data-th-if="${isUserAuthorized}"
+                                data-th-if="${isUserAuthorizedMap[comment.commentNo]}"
                                 data-th-onclick="|handleSave(${comment.commentNo}, ${board.boardNo}, this)|"
                                 style="display: none;">저장</button>
 
                         <button type="button" class="btn btn-outline-secondary btn-sm me-1 cancel-button"
-                                data-th-if="${isUserAuthorized}"
+                                data-th-if="${isUserAuthorizedMap[comment.commentNo]}"
                                 onclick="cancelEdit(this)" style="display: none;">취소</button>
 
                         <button type="button" class="btn btn-outline-secondary btn-sm delete-button"
-                                data-th-if="${isUserAuthorized}"
+                                data-th-if="${isUserAuthorizedMap[comment.commentNo]}"
                                 data-th-onclick="|handleDelete(${comment.commentNo}, ${board.boardNo})|">삭제</button>
                     </div>
                 </div>

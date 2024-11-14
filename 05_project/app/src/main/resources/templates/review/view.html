@@ -39,22 +39,40 @@
                 </div>
                 <div class="ms-auto">
                     <button type="button" class="btn btn-outline-secondary btn-sm" onclick="location.href='list'">목록</button>
-                    <button type="button" class="btn btn-outline-secondary btn-sm" data-th-if="${session.loginUser != null and session.loginUser.userNo == board.writer.userNo}" data-th-onclick="document.getElementById('myForm').submit();">수정</button>
-                    <button type="button" class="btn btn-outline-secondary btn-sm" data-th-if="${session.loginUser != null and session.loginUser.userNo == board.writer.userNo}" data-th-onclick="|deleteBoard(${board.boardNo})|">삭제</button>
+                    <button type="button" class="btn btn-outline-secondary btn-sm" data-th-if="${isUserAuthorized}" data-th-onclick="document.getElementById('myForm').submit();">수정</button>
+                    <button type="button" class="btn btn-outline-secondary btn-sm" data-th-if="${isUserAuthorized}" data-th-onclick="|deleteBoard(${board.boardNo})|">삭제</button>
                 </div>
             </div>
 
             <!-- 좋아요 및 즐겨찾기 버튼 -->
             <div class="d-flex align-items-center" >
                 <button type="button" id="likeButton" class="btn btn-outline-danger btn-sm me-2"
-                        data-th-text="${isLiked ? '❤️ 좋아요 취소' : '🤍 좋아요'}"
+                        data-th-text="${isLiked != null and isLiked ? '❤️ 좋아요 취소' : '🤍 좋아요'}"
                         data-th-onclick="toggleLike([[${board.boardNo}]])"></button><br>
                 <span id="likeCount" class="me-3" data-th-text="${board.boardLike}">0</span>
 
                 <button type="button" id="favorButton" class="btn btn-outline-warning btn-sm me-2"
-                        data-th-text="${isFavored ? '⭐ 즐겨찾기 취소' : '⚪ 즐겨찾기'}"
+                        data-th-text="${isFavored != null and isFavored ? '⭐ 즐겨찾기 취소' : '⚪ 즐겨찾기'}"
                         data-th-onclick="toggleFavor([[${board.boardNo}]])"></button>
                 <span id="favorCount" class="me-3" data-th-text="${board.boardFavor}">0</span><br>
+            </div>
+        </div>
+
+        <div class="modal fade" id="checkLoginModal" tabindex="-1" aria-labelledby="checkLoginModalLabel" aria-hidden="true">
+            <div class="modal-dialog" style="margin-top: 300px;">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="checkLoginModalLabel">알림</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        로그인이 필요합니다. 로그인 창으로 이동하시겠습니까?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" id="confirmLoginButton">확인</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+                    </div>
+                </div>
             </div>
         </div>
     </form>
@@ -96,10 +114,9 @@
         <p class="text-muted mb-3" style="margin-left: 10px; font-size: 0.9rem;"
            data-th-text="${board.trip != null && board.trip.thema != null ? board.trip.thema.themaName : 'No Thema'}">테마명 없음</p>
         <div class="container my-3">
-            <div>
+            <div data-th-with="totalIndex=${new java.util.concurrent.atomic.AtomicInteger(0)}">
                 <div class="col-md-8 mb-3" data-th-each="entry : ${groupedSchedules}">
                     <h5 class="mb-3 text" style="font-size: 1.2rem;" data-th-text="${entry.key} + '일차'">일차</h5>
-
                     <div class="timeline">
                         <div id="review-location" class="timeline-item mb-1" data-th-each="schedule, iter : ${entry.value}" data-th-object="${schedule}">
                             <div class="location">
@@ -121,10 +138,6 @@
                                                 <div class="ms-2">
                                                     <p class="mb-1 text-primary" style="font-size: 0.9rem;"
                                                        data-th-text="*{location.locationName}">지역</p>
-<!--                                                    <p class="mb-1 text-primary" style="font-size: 0.9rem;"-->
-<!--                                                       data-th-text="*{location.locationName}">지역</p>-->
-<!--                                                    <p class="mb-1 text-primary" style="font-size: 0.9rem;"-->
-<!--                                                       data-th-text="*{location.locationName}">지역</p>-->
                                                 </div>
                                             </div>
                                         </div>
@@ -135,14 +148,14 @@
                                         </div>
                                     </div>
 
-                                    <div class="d-flex align-items-center" style="height: 20px;">
-                                        <div class="timeline-line mt-2"
-                                             style="border-left: 2px dotted #ddd; height: 70%; margin-left: 15px;"></div>
-                                        <div class="text-muted small ms-2"
-                                             style="font-size: 0.8rem; margin-top: 6px;">
-                                            <i class="bi bi-car-front"></i> 45분
-                                        </div>
-                                    </div>
+                                    <!--                                    <div class="d-flex align-items-center" style="height: 20px;">-->
+                                    <!--                                        <div class="timeline-line mt-2"-->
+                                    <!--                                             style="border-left: 2px dotted #ddd; height: 70%; margin-left: 15px;"></div>-->
+                                    <!--                                        <div class="text-muted small ms-2"-->
+                                    <!--                                             style="font-size: 0.8rem; margin-top: 6px;">-->
+                                    <!--                                            <i class="bi bi-car-front"></i> 45분-->
+                                    <!--                                        </div>-->
+                                    <!--                                    </div>-->
                                 </div>
 
                                 <!-- textarea 추가 -->
@@ -150,7 +163,7 @@
                                    <textarea readonly
                                              class="form-control"
                                              style="height: 99px; width: 830px; background-color: #f8f9fa;"
-                                             data-th-text="${#lists.size(board.boardContent.split('&%')) > iter.index ? board.boardContent.split('&%')[iter.index] : ''}">
+                                             data-th-text="${#lists.size(board.boardContent.split('&%')) > totalIndex.get() ? board.boardContent.split('&%')[totalIndex.getAndIncrement()] : ''}">
                                     </textarea>
                                 </div>
                             </div>
@@ -286,115 +299,135 @@
 
     // 좋아요 토글 함수
     function toggleLike(boardNo) {
-        fetch(`like/${boardNo}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-        })
-        .then(response => {
-            return response.json().then(result => ({ status: response.ok, data: result}));
-        })
-        .then(({status, data}) => {
-            if (status) {
-                // UI 업데이트: 좋아요 버튼 및 카운트 변경
-                const likeButton = document.getElementById('likeButton');
-                const likeCount = document.getElementById('likeCount');
+        const isLoggedIn = [[${isLoggedIn}]];
 
-                likeButton.textContent = data.isLiked ? '❤️ 좋아요 취소' : '🤍 좋아요';
-                likeCount.textContent = data.likeCount;
+        if (!isLoggedIn) {
+            const checkLoginModal = new bootstrap.Modal(document.getElementById('checkLoginModal'), {
+                backdrop: 'static',
+                keyboard: false
+            });
+            checkLoginModal.show();
+        } else {
+            fetch(`like/${boardNo}`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+            })
+            .then(response => {
+                return response.json().then(result => ({status: response.ok, data: result}));
+            })
+            .then(({status, data}) => {
+                if (status) {
+                    // UI 업데이트: 좋아요 버튼 및 카운트 변경
+                    const likeButton = document.getElementById('likeButton');
+                    const likeCount = document.getElementById('likeCount');
 
-                // 성공 토스트 메시지
-                Swal.fire({
-                    toast: true,
-                    position: 'top-start',
-                    icon: 'success',
-                    title: '좋아요 상태가 변경되었습니다.',
-                    showConfirmButton: false,
-                    timer: 1500,
-                    timerProgressBar: true,
-                });
-            } else {
-                // 오류 토스트 메시지
+                    likeButton.textContent = data.isLiked ? '❤️ 좋아요 취소' : '🤍 좋아요';
+                    likeCount.textContent = data.likeCount;
+
+                    // 성공 토스트 메시지
+                    Swal.fire({
+                        toast: true,
+                        position: 'top-start',
+                        icon: 'success',
+                        title: '좋아요 상태가 변경되었습니다.',
+                        showConfirmButton: false,
+                        timer: 1500,
+                        timerProgressBar: true,
+                    });
+                } else {
+                    // 오류 토스트 메시지
+                    Swal.fire({
+                        toast: true,
+                        position: 'top-start',
+                        icon: 'error',
+                        title: result.message || '좋아요 처리 중 오류가 발생했습니다.',
+                        showConfirmButton: false,
+                        timer: 1500,
+                        timerProgressBar: true,
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('좋아요 요청 실패:', error);
+                // alert('네트워크 오류가 발생했습니다. 다시 시도해 주세요.');
+                // 네트워크 오류 토스트 메시지
                 Swal.fire({
                     toast: true,
                     position: 'top-start',
                     icon: 'error',
-                    title: result.message || '좋아요 처리 중 오류가 발생했습니다.',
+                    title: '네트워크 오류가 발생했습니다. 다시 시도해 주세요.',
                     showConfirmButton: false,
                     timer: 1500,
                     timerProgressBar: true,
                 });
-            }
-        })
-        .catch (error => {
-            console.error('좋아요 요청 실패:', error);
-            // alert('네트워크 오류가 발생했습니다. 다시 시도해 주세요.');
-            // 네트워크 오류 토스트 메시지
-            Swal.fire({
-                toast: true,
-                position: 'top-start',
-                icon: 'error',
-                title: '네트워크 오류가 발생했습니다. 다시 시도해 주세요.',
-                showConfirmButton: false,
-                timer: 1500,
-                timerProgressBar: true,
             });
-        });
+        }
     }
 
     // 즐겨찾기 토글 함수
     function toggleFavor(boardNo) {
-        fetch(`favor/${boardNo}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-        })
-        .then(response => {
-            return response.json().then(result => ({ status: response.ok, data: result }));
-        })
-        .then(({ status, data }) => {
-            if (status) {
-                // UI 업데이트: 좋아요 버튼 및 카운트 변경
-                const favorButton = document.getElementById('favorButton');
-                const favorCount = document.getElementById('favorCount');
+        const isLoggedIn = [[${isLoggedIn}]];
 
-                favorButton.textContent = data.isFavored ? '⭐ 즐겨찾기 취소' : '⚪ 즐겨찾기';
-                favorCount.textContent = data.favorCount;
+        if (!isLoggedIn) {
+            const checkLoginModal = new bootstrap.Modal(document.getElementById('checkLoginModal'), {
+                backdrop: 'static',
+                keyboard: false
+            });
+            checkLoginModal.show();
+        } else {
+            fetch(`favor/${boardNo}`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+            })
+            .then(response => {
+                return response.json().then(result => ({status: response.ok, data: result}));
+            })
+            .then(({status, data}) => {
+                if (status) {
+                    // UI 업데이트: 좋아요 버튼 및 카운트 변경
+                    const favorButton = document.getElementById('favorButton');
+                    const favorCount = document.getElementById('favorCount');
 
-                // 성공 토스트 메시지
-                Swal.fire({
-                    toast: true,
-                    position: 'top-start',
-                    icon: 'success',
-                    title: '즐겨찾기 상태가 변경되었습니다.',
-                    showConfirmButton: false,
-                    timer: 1500,
-                    timerProgressBar: true,
-                });
-            } else {
-                // 오류 토스트 메시지
+                    favorButton.textContent = data.isFavored ? '⭐ 즐겨찾기 취소' : '⚪ 즐겨찾기';
+                    favorCount.textContent = data.favorCount;
+
+                    // 성공 토스트 메시지
+                    Swal.fire({
+                        toast: true,
+                        position: 'top-start',
+                        icon: 'success',
+                        title: '즐겨찾기 상태가 변경되었습니다.',
+                        showConfirmButton: false,
+                        timer: 1500,
+                        timerProgressBar: true,
+                    });
+                } else {
+                    // 오류 토스트 메시지
+                    Swal.fire({
+                        toast: true,
+                        position: 'top-start',
+                        icon: 'error',
+                        title: data.message || '즐겨찾기 처리 중 오류가 발생했습니다.',
+                        showConfirmButton: false,
+                        timer: 1500,
+                        timerProgressBar: true,
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('즐겨찾기 요청 실패:', error);
+                // 네트워크 오류 토스트 메시지
                 Swal.fire({
                     toast: true,
                     position: 'top-start',
                     icon: 'error',
-                    title: data.message || '즐겨찾기 처리 중 오류가 발생했습니다.',
+                    title: '네트워크 오류가 발생했습니다. 다시 시도해 주세요.',
                     showConfirmButton: false,
                     timer: 1500,
                     timerProgressBar: true,
                 });
-            }
-        })
-        .catch(error => {
-            console.error('즐겨찾기 요청 실패:', error);
-            // 네트워크 오류 토스트 메시지
-            Swal.fire({
-                toast: true,
-                position: 'top-start',
-                icon: 'error',
-                title: '네트워크 오류가 발생했습니다. 다시 시도해 주세요.',
-                showConfirmButton: false,
-                timer: 1500,
-                timerProgressBar: true,
             });
-        });
+        }
     }
 
     document.addEventListener('DOMContentLoaded', async () => {

@@ -184,7 +184,7 @@ public class ReviewController {
   @GetMapping("view")
   public String view(
       @RequestParam int boardNo,
-      @SessionAttribute(value = "loginUser") User user,
+      // @SessionAttribute(value = "loginUser") User user,
       @RequestParam(value = "page", defaultValue = "1") int page,
       @RequestParam(value = "pageSize", defaultValue = "5") int pageSize,
       @RequestParam(value = "sort", defaultValue = "registered") String sort,
@@ -192,25 +192,15 @@ public class ReviewController {
       HttpSession session) throws Exception {
 
     // 로그인 유저가 아닌 경우 처리 (나중에 처리해야지)
-    if (user == null) {
-      model.addAttribute("errorMessage", "로그인을 해야 합니다.");
-      return "redirect:/home";
-    }
+    // if (user == null) {
+    //   model.addAttribute("errorMessage", "로그인을 해야 합니다.");
+    //   return "redirect:/home";
+    // }
 
     Board board = reviewService.get(boardNo);
     if (board == null) {
       throw new Exception("게시글이 존재하지 않습니다.");
     }
-    // 조회수 증가
-    reviewService.increaseBoardCount(board.getBoardNo());
-    // 작성자 확인
-    User writer = board.getWriter();
-    // 로그인 유저 확인
-    Long userNo = user.getUserNo();
-    // 좋아요 여부 확인
-    boolean isLiked = reviewService.isLiked(boardNo, userNo);
-    // 즐겨찾기 여부 확인
-    boolean isFavored = reviewService.isFavored(boardNo, userNo);
 
     // 특정 Board의 Comment, Trip, Schedule 리스트 전달
     List<Comment> commentList;
@@ -230,7 +220,11 @@ public class ReviewController {
     boolean isLoggedIn = loginUser != null;
 
     Map<Integer, Boolean> commentLikedMap = new HashMap<>();
+    Map<Integer, Boolean> isUserAuthorizedMap = new HashMap<>();
+
     if (isLoggedIn) {
+      Long sessionUserNo = loginUser.getUserNo();
+
       for (Comment comment : commentList) {
         int commentLikeCount = commentService.getCommentLikeCount(comment.getCommentNo());
         comment.setCommentLike(commentLikeCount);
@@ -238,16 +232,36 @@ public class ReviewController {
         Map<String, Object> params = new HashMap<>();
         params.put("commentNo", comment.getCommentNo());
         params.put("userNo", loginUser.getUserNo());
+
         boolean isCommentLiked = commentService.isCommentLiked(params);
         commentLikedMap.put(comment.getCommentNo(), isCommentLiked);
+
+        boolean isCommentOwner = sessionUserNo.equals(comment.getWriter().getUserNo());
+        isUserAuthorizedMap.put(comment.getCommentNo(), isCommentOwner);
       }
     } else {
       // 비로그인 상태에서도 commentLikedMap을 초기화
       for (Comment comment : commentList) {
+        int commentLikeCount = commentService.getCommentLikeCount(comment.getCommentNo());
+        comment.setCommentLike(commentLikeCount);
         commentLikedMap.put(comment.getCommentNo(), false);
       }
     }
 
+    // 조회수 증가
+    reviewService.increaseBoardCount(board.getBoardNo());
+
+    boolean isUserAuthorized = loginUser != null && loginUser.getUserNo() == board.getUserNo();
+
+    // 로그인 유저만 좋아요/즐겨찾기 여부 확인
+    boolean isLiked = false;
+    boolean isFavored = false;
+
+    if (isLoggedIn) {
+      Long userNo = loginUser.getUserNo();
+      isLiked = reviewService.isLiked(boardNo, userNo);
+      isFavored = reviewService.isFavored(boardNo, userNo);
+    }
 
     // 기본 이미지 설정
     List<BoardImage> images = board.getBoardImages();
@@ -264,11 +278,13 @@ public class ReviewController {
         .collect(Collectors.groupingBy(Schedule::getScheduleDay));
     model.addAttribute("groupedSchedules", groupedSchedules);
 
+
+
     model.addAttribute("board", board);
-    model.addAttribute("writer", writer);
     model.addAttribute("commentList", commentList);
     model.addAttribute("trip", tripList);
     model.addAttribute("schedule", scheduleList);
+    model.addAttribute("isUserAuthorized", isUserAuthorized);
     model.addAttribute("isLiked", isLiked);
     model.addAttribute("isFavored", isFavored);
 
@@ -281,6 +297,7 @@ public class ReviewController {
     model.addAttribute("isLoggedIn", isLoggedIn);
     model.addAttribute("loginUserNo", isLoggedIn ? loginUser.getUserNo() : null); // 로그인 유저의 번호 추가
 
+    model.addAttribute("isUserAuthorizedMap", isUserAuthorizedMap);
     return "review/view";
   }
 
@@ -399,20 +416,23 @@ public class ReviewController {
 
   // 수정 후 SQL Update 실행
   @PostMapping("modify")
-  public String modify(@RequestParam("boardNo") int boardNo, Model model) throws Exception {
-    Board board = reviewService.get(boardNo);
-    if (board == null) {
-      throw new Exception("게시글이 존재하지 않습니다.");
-    }
-    User writer = board.getWriter();
+  public String modify(@RequestParam("boardNo") int boardNo, Model model, HttpSession session) throws Exception {
 
+    User loginUser = (User) session.getAttribute("loginUser");
+
+    Board board = reviewService.get(boardNo);
+
+    if (board == null) {
+      throw new Exception("없는 게시글입니다.");
+    } else if (loginUser.getUserNo() > 10 && board.getWriter().getUserNo() != loginUser.getUserNo()) {
+      throw new Exception("변경 권한이 없습니다.");
+    }
     List<Trip> tripList = reviewService.getTripsByBoardNo(board.getTripNo());
     List<Schedule> scheduleList = scheduleService.getSchedulesByTripNo(board.getTripNo());
 
 
 
     model.addAttribute("board", board);
-    model.addAttribute("writer", writer);
     model.addAttribute("trips", tripList);
     model.addAttribute("schedule", scheduleList);
     return "review/modify";

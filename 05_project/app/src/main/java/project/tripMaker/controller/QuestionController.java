@@ -156,7 +156,11 @@ public class QuestionController {
     boolean isLoggedIn = loginUser != null;
 
     Map<Integer, Boolean> commentLikedMap = new HashMap<>();
+    Map<Integer, Boolean> isUserAuthorizedMap = new HashMap<>();
+
     if (isLoggedIn) {
+      Long sessionUserNo = loginUser.getUserNo();
+
       for (Comment comment : commentList) {
         int commentLikeCount = commentService.getCommentLikeCount(comment.getCommentNo());
         comment.setCommentLike(commentLikeCount);
@@ -166,6 +170,9 @@ public class QuestionController {
         params.put("userNo", loginUser.getUserNo());
         boolean isCommentLiked = commentService.isCommentLiked(params);
         commentLikedMap.put(comment.getCommentNo(), isCommentLiked);
+
+        boolean isCommentOwner = sessionUserNo.equals(comment.getWriter().getUserNo());
+        isUserAuthorizedMap.put(comment.getCommentNo(), isCommentOwner);
       }
     } else {
       // 비로그인 상태에서도 commentLikedMap을 초기화
@@ -216,6 +223,7 @@ public class QuestionController {
     model.addAttribute("likeCount", likeCount);
     model.addAttribute("favorCount", favorCount);
 
+    model.addAttribute("isUserAuthorizedMap", isUserAuthorizedMap);
   }
 
   @PostMapping("view2")

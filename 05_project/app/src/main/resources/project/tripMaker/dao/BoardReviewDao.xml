@@ -13,6 +13,7 @@
         <result property="boardCount" column="board_count"/>
         <result property="boardCreatedDate" column="board_created_date"/>
         <result property="tripNo" column="trip_no"/>
+        <result property="userNo" column="user_no"/>
         <result property="boardContent" column="board_content"/>
         <result property="boardTag" column="board_tag"/>
         <result property="boardLike" column="like_count"/>
@@ -36,7 +37,7 @@
         </association>
 
         <association property="writer" javaType="project.tripMaker.vo.User">
-            <id property="userNo" column="writer_user_no" javaType="java.lang.Long"/>
+            <id property="userNo" column="user_no" javaType="java.lang.Long"/>
             <result property="userNickname" column="user_nickname"/>
             <result property="userPhoto" column="user_photo"/>
         </association>
@@ -121,7 +122,7 @@
         b.board_tag,
         b.trip_no,
         t.trip_title,
-        th.thema_name,             <!-- Thema Name 추가 -->
+        th.thema_name,
         u.user_no,
         u.user_nickname,
         u.user_photo,
@@ -182,7 +183,7 @@
       b.trip_no,
       b.board_content,
       b.board_tag,
-      b.user_no as writer_user_no, <!--작성자-->
+      b.user_no,
       u.user_photo,
       u.user_nickname,
       c.user_no,
@@ -469,7 +470,7 @@
     b.trip_no,
     b.board_content,
     b.board_tag,
-    b.user_no as writer_user_no, <!--작성자-->
+    b.user_no,
     u.user_photo,
     u.user_nickname,
     c.user_no,
@@ -514,7 +515,7 @@
     b.trip_no,
     b.board_content,
     b.board_tag,
-    b.user_no as writer_user_no, <!--작성자-->
+    b.user_no,
     u.user_photo,
     u.user_nickname,
     c.user_no,
@@ -559,7 +560,7 @@
     b.trip_no,
     b.board_content,
     b.board_tag,
-    b.user_no as writer_user_no, <!--작성자-->
+    b.user_no,
     u.user_photo,
     u.user_nickname,
     c.user_no,
@@ -604,7 +605,7 @@
     b.trip_no,
     b.board_content,
     b.board_tag,
-    b.user_no as writer_user_no, <!--작성자-->
+    b.user_no,
     u.user_photo,
     u.user_nickname,
     c.user_no,
@@ -648,7 +649,7 @@
     b.trip_no,
     b.board_content,
     b.board_tag,
-    b.user_no as writer_user_no, <!--작성자-->
+    b.user_no,
     u.user_photo,
     u.user_nickname,
     c.user_no,
