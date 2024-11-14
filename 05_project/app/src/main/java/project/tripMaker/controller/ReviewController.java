@@ -108,8 +108,19 @@ public class ReviewController {
     }
 
 
+    // 베스트 게시물 목록
+    for (Board board : topBoards) {
+      // 직접 첫번째 이미지 Board객체 추가
+      if (board.getBoardImages() != null && !board.getBoardImages().isEmpty()) {
+        board.setFirstImageName(board.getBoardImages().get(0).getBoardimageName());
+      } else {
+        board.setFirstImageName("default.png");
+      }
+    }
+
+    // 일반 게시물 목록
     for (Board board : boardList) {
-      // 직접 첫번째 이미지 Board객체 추가 
+      // 직접 첫번째 이미지 Board객체 추가
       if (board.getBoardImages() != null && !board.getBoardImages().isEmpty()) {
         board.setFirstImageName(board.getBoardImages().get(0).getBoardimageName());
       } else {
