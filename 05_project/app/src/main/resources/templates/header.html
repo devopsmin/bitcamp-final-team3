@@ -97,20 +97,20 @@
 
 <header id="page-header">
     <div class="fram-topbanner">
-        <div class="frame-427318169">
-
+        <ul class="nav d-flex align-items-center justify-content-between bg-body-tertiary shadow-sm px-3 py-2">
+            <li class="nav-item">
             <nav class="navbar bg-body-tertiary">
                 <div class="container-fluid">
                     <a class="navbar-brand" href="/">
-                        <img data-th-src="@{https://dgg7dnk35523.edge.naverncp.com/HZiW9aEJy7/user/profile/default.png(type=f,w=20,h=20)}", alt="Logo" class="d-inline-block align-text-top">
+                        <img data-th-src="@{https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQsgudtCzK4Lwk3lVoJXEhsEHIxCUj1fsMOAg&s}", style="width: 50px; height: 50px" alt="Logo" class="d-inline-block align-text-top">
 
                         <div class="div3"><a href="/home">모두의 여행</a></div>
                     </a>
                 </div>
             </nav>
-        </div>
+            </li>
 
-        <ul class="nav justify-content-end">
+        <div class="d-flex ms-auto">
             <li class="nav-item">
                 <a class="nav-link active div2" data-bs-target="#scheduleModal" data-bs-toggle="modal">여행시작</a>
             </li>
@@ -131,10 +131,9 @@
             </li>
 
             <li>
-            <div class="button-02-s3">
                 <div class='login-state' data-th-if="${session.loginUser == null}">
                     <div class="div">
-                        <button class="div2" data-bs-target="#loginModal" data-bs-toggle="modal">로그인</button>
+                        <a class="nav-item div2" data-bs-target="#loginModal" data-bs-toggle="modal">로그인</a>
                     </div>
                 </div>
                 <div class='login-state' data-th-unless="${session.loginUser == null}">
@@ -159,9 +158,9 @@
                             </ul>
                         </div>
                     </div>
-                </div>
             </div>
             </li>
+        </div>
         </ul>
 
 
