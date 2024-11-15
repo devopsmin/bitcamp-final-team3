@@ -1,20 +1,15 @@
 package project.tripMaker.controller;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.UUID;
 import javax.servlet.http.HttpSession;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import project.tripMaker.config.PasswordEncoderConfig;
 import project.tripMaker.service.StorageService;
 import project.tripMaker.service.UserService;
 import project.tripMaker.vo.User;

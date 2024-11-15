@@ -3,6 +3,8 @@ package project.tripMaker.service;
 import java.util.Collections;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
@@ -23,7 +25,9 @@ import project.tripMaker.vo.User;
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
   private final UserDao userDao;
-  private final UserService userService;
+
+  @Autowired
+  private ObjectProvider<UserService> userServiceProvider;
 
   @Override
   public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
@@ -48,7 +52,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     try {
       user = userDao.findByEmail(email);
       if (user == null) {
-        user = userService.addSocialUser(email, name, registrationId);
+        user = userServiceProvider.getObject().addSocialUser(email, name, registrationId);
       }
     } catch (Exception e) {
       throw new OAuth2AuthenticationException(

@@ -6,7 +6,6 @@
     background: #ffffff;
     height: 131px;
     position: relative;
-    overflow: hidden;
 }
 .button-02-s {
     background: var(--black-and-white-black, #000000);
@@ -137,21 +136,45 @@
     left: calc(50% - -11px);
     top: calc(50% - 2.5px);
 }
+
 .button-02-s3 {
     background: var(--black-and-white-black, #000000);
+    background: transparent;
     border-radius: 5px;
-    padding: 10px 20px 10px 20px;
+    padding: 8px 12px;
     display: flex;
     flex-direction: row;
     gap: 10px;
     align-items: center;
     justify-content: center;
-    width: 80px;
     position: absolute;
-    /*left: 1405px;*/
     right: 0;
     top: 63px;
+    min-width: 140px;
+    z-index: 1000;
 }
+
+.button-02-s3 .div2 {
+    color: #ffffff;
+    font-size: 16px;
+    font-family: "Noto Sans KR", sans-serif;
+    font-weight: 400;
+    background: #000000;
+    border: none;
+    padding: 8px 16px;
+    cursor: pointer;
+    min-width: 100px;
+    height: 40px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.button-02-s3 .div2:hover {
+    background: #333333;
+}
+
 .frame-427318169 {
     padding: 10px;
     display: flex;
@@ -189,4 +212,127 @@
     display: flex;
     align-items: center; /* 수직 가운데 정렬 */
     justify-content: center; /* 수평 가운데 정렬 */
+}
+
+/* 프로필 관련 스타일 추가 */
+.user-profile-container {
+    display: flex;
+    align-items: center;
+}
+
+.profile-image-wrapper {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    overflow: hidden;
+}
+
+.profile-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.dropdown {
+    position: relative;
+}
+
+.dropdown-toggle {
+    background: none;
+    border: none;
+    padding: 4px 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+}
+
+.dropdown-toggle span {
+    color: #000000;
+    font-size: 16px;
+    font-family: "Noto Sans KR", sans-serif;
+    font-weight: 500;
+    letter-spacing: -0.5px;
+}
+
+.dropdown-toggle::after {
+    display: inline-block;
+    margin-left: 4px;
+    vertical-align: middle;
+    content: "";
+    border-top: 4px solid #000;
+    border-right: 4px solid transparent;
+    border-bottom: 0;
+    border-left: 4px solid transparent;
+}
+
+.dropdown-menu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    min-width: 120px;
+    background: #ffffff;
+    border: 1px solid rgba(0,0,0,0.1);
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    margin-top: 8px;
+    z-index: 1000;
+    display: none;
+}
+
+
+.dropdown-menu.show {
+    display: block !important;
+}
+
+
+.dropdown-item {
+    padding: 8px 16px;
+    color: #333;
+    font-size: 14px;
+    font-family: "Noto Sans KR", sans-serif;
+    text-decoration: none;
+    display: block;
+}
+
+.dropdown-item:hover {
+    background-color: #f8f9fa;
+}
+
+.login-state {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.login-state .div {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
+.user-menu-button {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+}
+
+.profile-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.user-nickname {
+    color: #000000;
+    font-size: 14px;
+    font-family: "Noto Sans KR", sans-serif;
+    font-weight: 400;
 }

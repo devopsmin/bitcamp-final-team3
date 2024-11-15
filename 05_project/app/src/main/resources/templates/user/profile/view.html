@@ -55,8 +55,10 @@
 
                             <div data-th-if="${user.snsNo == null}" class="mb-3">
                                 <label class="form-label">현재 비밀번호</label>
-                                <input type="password" name="currentPassword" class="form-control" required>
-                                <button data-th-if="${user.snsNo == null}" type="button" class="btn btn-secondary" onclick="openPasswordModal()">비밀번호 변경</button>
+                                <div class="input-group">
+                                    <input type="password" name="currentPassword" class="form-control" required>
+                                    <button data-th-if="${user.snsNo == null}" type="button" class="btn btn-secondary" onclick="openPasswordModal()">비밀번호 변경</button>
+                                </div>
                             </div>
 
                             <div class="mb-3">
@@ -65,7 +67,7 @@
                                     <input data-th-value="*{userTel}" name="userTel" type="tel"
                                            class="form-control" readonly>
                                     <button type="button" class="btn btn-primary" id="changePhoneBtn">
-                                        전화번호 변경
+                                        연락처 변경
                                     </button>
                                 </div>
                             </div>
@@ -86,7 +88,6 @@
     </div>
 </div>
 
-<!-- 비밀번호 변경 모달 -->
 <div class="modal fade" id="passwordChangeModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -108,17 +109,22 @@
                         <label for="confirmNewPassword" class="form-label">새 비밀번호 확인</label>
                         <input type="password" class="form-control" id="confirmNewPassword" required>
                     </div>
-                    <button type="submit" class="btn btn-primary">변경</button>
+                    <div class="d-flex justify-content-end">  <!-- 여기를 수정 -->
+                        <button type="submit" class="btn btn-primary" style="width: 120px;">변경</button>
+                    </div>
                 </form>
             </div>
         </div>
     </div>
 </div>
 
-<!-- 전화번호 변경 모달 -->
 <div class="modal fade" id="changePhoneModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">전화번호 변경</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
             <div class="modal-body">
                 <div class="mb-3">
                     <div class="input-group">
@@ -141,8 +147,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
-                <button type="button" class="btn btn-primary" id="updatePhoneBtn" disabled>
+                <button type="button" class="btn btn-primary w-100" id="updatePhoneBtn" disabled>
                     변경하기
                 </button>
             </div>

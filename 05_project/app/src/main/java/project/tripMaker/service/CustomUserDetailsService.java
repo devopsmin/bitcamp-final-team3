@@ -1,5 +1,6 @@
 package project.tripMaker.service;
 
+import java.util.Collections;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -8,8 +9,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import project.tripMaker.dao.UserDao;
 import project.tripMaker.vo.User;
-
-import java.util.Collections;
 
 @Service
 @RequiredArgsConstructor
