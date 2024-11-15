@@ -1,6 +1,3 @@
-typingText.js
-
-
 // 번갈아가며 표시할 텍스트 배열
 const textArray = [
   "고민만 하던 여행 계획",

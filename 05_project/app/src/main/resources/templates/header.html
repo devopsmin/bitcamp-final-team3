@@ -115,9 +115,6 @@
                     <a class="nav-link active div2" data-bs-target="#scheduleModal" data-bs-toggle="modal">여행시작</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link active div2">여행추천</a>
-                </li>
-                <li class="nav-item">
                     <a class="nav-link active div2" data-th-href="@{/question/list}">여행질문</a>
                 </li>
                 <li class="nav-item">
@@ -126,9 +123,22 @@
                 <li class="nav-item">
                     <a class="nav-link active div2" data-th-href="@{/companion/list}">동행구하기</a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link active div2" data-th-href="@{/admin}">마이페이지(관리자)</a>
+
+                <li>
+                    <a class="nav-link active div2" data-th-href="@{/mypage/userpage}">마이페이지(임시)</a>
                 </li>
+
+<!--                <li class="nav-item" data-th-if="${session.loginUser == null}">-->
+<!--                    <a class="nav-link active div2" data-bs-target="#loginModal" data-bs-toggle="modal">마이페이지</a>-->
+<!--                </li>-->
+
+<!--                <li class="nav-item" data-th-if="${session.loginUser != null and session.loginUser.getUserRole() == ('ROLE_USER')}">-->
+<!--                    <a class="nav-link active div2" data-th-href="@{mypage/userpage.html}">마이페이지</a>-->
+<!--                </li>-->
+
+<!--                <li class="nav-item" data-th-if="${session.loginUser != null and session.loginUser.getUserRole() == ('ROLE_ADMIN')}">-->
+<!--                    <a class="nav-link active div2" data-th-href="@{/admin}">마이페이지(관리자)</a>-->
+<!--                </li>-->
 
                 <li>
                     <div class='login-state' data-th-if="${session.loginUser == null}">
