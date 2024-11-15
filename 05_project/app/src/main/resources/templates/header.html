@@ -18,33 +18,119 @@
     <script data-th-src="@{/js/authModal.js}"></script>
 </head>
 <body>
+<style>
+    /* 기본 스타일 */
+    .navbar {
+        padding: 1rem;
+    }
+
+    .navbar-brand {
+        display: flex;
+        align-items: center;
+        font-weight: bold;
+        font-size: 1.2rem;
+    }
+
+    .navbar-brand img {
+        width: 30px;
+        height: 30px;
+        margin-right: 8px;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+
+    /* 메뉴 스타일 */
+    .nav {
+        background-color: #f8f9fa;
+        padding: 0.5rem 1rem;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .nav-item .nav-link {
+        font-weight: 500;
+        color: #333;
+        transition: color 0.3s ease, background-color 0.3s ease;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+    }
+
+    /* 메뉴 호버 스타일 */
+    .nav-item .nav-link:hover {
+        color: #007bff;
+        background-color: rgba(0, 123, 255, 0.1);
+        text-decoration: none;
+    }
+
+    /* 로그인 버튼 및 프로필 이미지 스타일 */
+    .button-02-s3 .div2,
+    .profile-image-wrapper img {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+
+    .dropdown-toggle {
+        display: flex;
+        align-items: center;
+        padding: 0.5rem;
+        border: none;
+        background-color: transparent;
+    }
+
+    .user-profile-container .dropdown-toggle:hover {
+        background-color: rgba(0, 123, 255, 0.1);
+        border-radius: 8px;
+    }
+
+    .dropdown-menu {
+        min-width: 180px;
+        border-radius: 8px;
+    }
+
+    .dropdown-menu .dropdown-item:hover {
+        background-color: #f1f1f1;
+    }
+
+</style>
+
 
 <header id="page-header">
     <div class="fram-topbanner">
         <div class="frame-427318169">
-            <div class="div3"><a href="/home">모두의 여행</a></div>
+
+            <nav class="navbar bg-body-tertiary">
+                <div class="container-fluid">
+                    <a class="navbar-brand" href="/">
+                        <img data-th-src="@{https://dgg7dnk35523.edge.naverncp.com/HZiW9aEJy7/user/profile/default.png(type=f,w=20,h=20)}", alt="Logo" class="d-inline-block align-text-top">
+
+                        <div class="div3"><a href="/home">모두의 여행</a></div>
+                    </a>
+                </div>
+            </nav>
         </div>
 
-        <div class="menu-area">
-            <div class="button-03-s6">
-                <button class="div2" data-bs-target="#scheduleModal" data-bs-toggle="modal">여행시작</button>
-            </div>
-            <div class="button-03-s">
-                <div class="div2">여행추천</div>
-            </div>
-            <div class="button-03-s2">
-                <div class="div2"><a data-th-href="@{/question/list}">여행질문</a></div>
-            </div>
-            <div class="button-03-s3">
-                <div class="div2"><a data-th-href="@{/review/list}">여행후기</a></div>
-            </div>
-            <div class="button-03-s4">
-                <div class="div2"><a data-th-href="@{/companion/list}">동행구하기</a></div>
-            </div>
-            <div class="button-03-s5">
-                <div class="div2"><a data-th-href="@{/admin}">마이페이지</a></div>
-            </div>
+        <ul class="nav justify-content-end">
+            <li class="nav-item">
+                <a class="nav-link active div2" data-bs-target="#scheduleModal" data-bs-toggle="modal">여행시작</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link active div2">여행추천</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link active div2" data-th-href="@{/question/list}">여행질문</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link active div2" data-th-href="@{/review/list}">여행후기</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link active div2" data-th-href="@{/companion/list}">동행구하기</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link active div2" data-th-href="@{/admin}">마이페이지(관리자)</a>
+            </li>
 
+            <li>
             <div class="button-02-s3">
                 <div class='login-state' data-th-if="${session.loginUser == null}">
                     <div class="div">
@@ -75,8 +161,9 @@
                     </div>
                 </div>
             </div>
+            </li>
+        </ul>
 
-        </div>
 
         <!-- 여행시작 모달 -->
         <div aria-hidden="true" aria-labelledby="scheduleModalLabel" class="modal fade" id="scheduleModal" tabindex="-1">
