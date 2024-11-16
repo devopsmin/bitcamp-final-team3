@@ -3,6 +3,8 @@ package project.tripMaker.vo;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import java.util.Random;
+
 @Data
 @EqualsAndHashCode(of ={"locationName","locationDesc"})
 public class Location {
@@ -17,4 +19,17 @@ public class Location {
   private Double locationX;        // 위도
   private Double locationY;        // 경도
   private Integer locationtypeNo;
+
+  public Location() {
+    long timestamp = System.currentTimeMillis() % 100000; // 5자리
+    int random = new Random().nextInt(1000); // 3자리
+    this.locationNo =  (int)(timestamp * 1000 + random); // 8자리
+  }
 }
+
+
+//function generateUniqueId() {
+//  const timestamp = Date.now() % 100000; // 5자리
+//  const random = Math.floor(Math.random() * 1000); // 3자리
+//  return timestamp * 1000 + random; // 8자리
+//}

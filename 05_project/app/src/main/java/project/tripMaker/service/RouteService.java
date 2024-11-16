@@ -3,182 +3,142 @@ package project.tripMaker.service;
 import lombok.Data;
 import org.springframework.stereotype.Service;
 import project.tripMaker.vo.RouteInfo;
+import project.tripMaker.vo.Schedule;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Data
 @Service
+
 public class RouteService {
-  static class Edge implements Comparable<Edge> {
-    int src, dest;
-    long duration;
-
-    Edge(int src, int dest, long duration) {
-      this.src = src;
-      this.dest = dest;
-      this.duration = duration;
-    }
-
-    @Override
-    public int compareTo(Edge other) {
-      return Long.compare(this.duration, other.duration);
-    }
-  }
-
-  static class UnionFind {
-    int[] parent;
-
-    UnionFind(int n) {
-      parent = new int[n];
-      for (int i = 0; i < n; i++) {
-        parent[i] = i;
-      }
-    }
-
-    int find(int x) {
-      if (parent[x] != x) {
-        parent[x] = find(parent[x]);
-      }
-      return parent[x];
-    }
-
-    void union(int x, int y) {
-      int px = find(x);
-      int py = find(y);
-      if (px != py) {
-        parent[px] = py;
-      }
-    }
-  }
-
   public int[][] assignTourism(RouteInfo[][] routeInfos, int accommodationCount, int tourismCount) {
-    int[][] result = new int[accommodationCount][];  // assignments.length 대신 accommodationCount 사용
-    List<List<Integer>> assignments = new ArrayList<>(accommodationCount);  // 크기 명시
+    int[][] result = new int[accommodationCount][];
+    int totalLocations = accommodationCount + tourismCount;
 
+    int maxLocationsPerDay = (int) Math.ceil((double) tourismCount / accommodationCount);
+
+    System.out.println("====================================================");
+    System.out.println("==================================숙소 갯수 : " + accommodationCount);
+    System.out.println("일별 최대 관광지 수: " + maxLocationsPerDay);
+
+    List<List<Integer>> assignments = new ArrayList<>(accommodationCount);
     for (int i = 0; i < accommodationCount; i++) {
       assignments.add(new ArrayList<>());
     }
 
-    // 각 관광지의 배정 여부를 추적
-    boolean[] assignedTourism = new boolean[tourismCount];
-
-    // 1. 각 숙소에 가장 가까운 관광지 하나씩 우선 배정
-    for (int i = 0; i < accommodationCount; i++) {
-      int nearestTourism = findNearestUnassignedTourism(routeInfos, i, accommodationCount, assignedTourism);
-      if (nearestTourism != -1) {
-        assignments.get(i).add(nearestTourism);
-        assignedTourism[nearestTourism - accommodationCount] = true;
-      }
+    List<Integer> unassignedTourism = new ArrayList<>();
+    for (int i = accommodationCount; i < totalLocations; i++) {
+      unassignedTourism.add(i);
     }
 
-    // 2. 남은 관광지들을 가장 가까운 숙소에 배정
-    for (int j = 0; j < tourismCount; j++) {
-      if (!assignedTourism[j]) {
-        int tourismIndex = j + accommodationCount;
-        int bestAccommodation = findClosestAccommodation(routeInfos, tourismIndex, accommodationCount);
-        if (bestAccommodation != -1) {
-          assignments.get(bestAccommodation).add(tourismIndex);
-          assignedTourism[j] = true;
+    for (int day = 0; day < accommodationCount; day++) {
+      int currentAccommodation = (day < accommodationCount - 1) ? day : accommodationCount - 2;
+      int nextAccommodation = (day < accommodationCount - 1) ? day + 1 : day;
+
+      int remainingDays = accommodationCount - day;
+      int remainingTourism = unassignedTourism.size();
+      int currentDayMax = Math.min(maxLocationsPerDay,
+          (int) Math.ceil((double) remainingTourism / remainingDays));
+
+      if (day == accommodationCount - 1) {
+        currentDayMax = remainingTourism; // 마지막 날은 모든 관광지를 배정
+      }
+
+      while (!unassignedTourism.isEmpty() && assignments.get(day).size() < currentDayMax) {
+        int bestTourism = -1;
+        long bestScore = Long.MAX_VALUE;
+
+        for (int tourism : unassignedTourism) {
+          long totalTime = routeInfos[currentAccommodation][tourism].getDuration() +
+              routeInfos[tourism][nextAccommodation].getDuration();
+
+          if (totalTime < bestScore) {
+            bestScore = totalTime;
+            bestTourism = tourism;
+          }
+        }
+
+        if (bestTourism != -1) {
+          assignments.get(day).add(bestTourism);
+          unassignedTourism.remove(Integer.valueOf(bestTourism));
+        } else {
+          break;
         }
       }
+
+      List<Integer> dayRoute = optimizeRouteForDay(
+          routeInfos,
+          currentAccommodation,
+          nextAccommodation,
+          assignments.get(day)
+      );
+
+      result[day] = dayRoute.stream().mapToInt(Integer::intValue).toArray();
+
+      // 누락된 관광지 확인 및 디버깅
+      System.out.println("Day " + (day + 1) + ": Assigned " + dayRoute);
+      System.out.println("Remaining unassigned tourism: " + unassignedTourism);
     }
 
-    // List를 배열로 변환할 때도 accommodationCount 사용
-    for (int i = 0; i < accommodationCount; i++) {
-      List<Integer> tourismList = assignments.get(i);
-      result[i] = tourismList.stream().mapToInt(Integer::intValue).toArray();
+    // 마지막으로 남은 관광지가 있다면 배정
+    if (!unassignedTourism.isEmpty()) {
+      System.out.println("Unassigned tourism spots after all days: " + unassignedTourism);
+
+      // 남은 관광지를 마지막 날에 배정
+      result[accommodationCount - 1] = unassignedTourism.stream()
+          .mapToInt(Integer::intValue) // Integer -> int 변환
+          .toArray();
     }
 
     return result;
   }
 
-  public int[][] findOptimalRoutes(RouteInfo[][] routeInfos, int accommodationCount, int tourismCount) {
-    int[][] assignments = assignTourism(routeInfos, accommodationCount, tourismCount);
-    int[][] routes = new int[accommodationCount][];  // 명시적으로 accommodationCount 사용
+  private void updateScheduleRoutes(List<Schedule> tripScheduleList) {
+    Map<Integer, List<Schedule>> daySchedules = tripScheduleList.stream()
+        .collect(Collectors.groupingBy(Schedule::getScheduleDay));
 
-    for (int i = 0; i < accommodationCount; i++) {
-      routes[i] = findOptimalRouteForAccommodation(routeInfos, i, assignments[i]);
+    for (List<Schedule> daySchedule : daySchedules.values()) {
+      int route = 0;
+      for (Schedule schedule : daySchedule) {
+        schedule.setScheduleRoute(route++);
+      }
     }
-
-    return routes;
   }
 
-  private int[] findOptimalRouteForAccommodation(RouteInfo[][] routeInfos, int accommodation, int[] assignedTourism) {
-    int n = assignedTourism.length + 1; // 숙소 + 배정된 관광지
-    List<Integer> route = new ArrayList<>();
-    route.add(accommodation);
+  private List<Integer> optimizeRouteForDay(RouteInfo[][] routeInfos, int startAccommodation,
+      int endAccommodation, List<Integer> tourismSpots) {
+    List<Integer> optimizedRoute = new ArrayList<>();
+    if (tourismSpots.isEmpty()) {
+      return optimizedRoute;
+    }
 
-    // 현재 위치에서 가장 가까운 다음 관광지를 찾아가는 방식
-    boolean[] visited = new boolean[assignedTourism.length];
-    int currentLocation = accommodation;
+    int currentLocation = startAccommodation;
+    Set<Integer> unvisited = new HashSet<>(tourismSpots);
 
-    while (route.size() < n) {
-      int nextLocation = findNearestLocation(routeInfos, currentLocation, assignedTourism, visited);
+    while (!unvisited.isEmpty()) {
+      int nextLocation = -1;
+      long bestScore = Long.MAX_VALUE;
+
+      for (int tourism : unvisited) {
+        long currentToTourism = routeInfos[currentLocation][tourism].getDuration();
+        long tourismToNext = unvisited.size() == 1 ?
+            routeInfos[tourism][endAccommodation].getDuration() : 0;
+        long totalTime = currentToTourism + tourismToNext;
+
+        if (totalTime < bestScore) {
+          bestScore = totalTime;
+          nextLocation = tourism;
+        }
+      }
+
       if (nextLocation != -1) {
-        route.add(nextLocation);
-        visited[Arrays.binarySearch(assignedTourism, nextLocation)] = true;
+        optimizedRoute.add(nextLocation);
+        unvisited.remove(nextLocation);
         currentLocation = nextLocation;
       }
     }
 
-    // 다시 시작 숙소로 돌아가기
-    route.add(accommodation);
-
-    return route.stream().mapToInt(Integer::intValue).toArray();
-  }
-
-  private int findNearestUnassignedTourism(RouteInfo[][] routeInfos, int accommodation,
-      int accommodationCount, boolean[] assignedTourism) {
-    int nearest = -1;
-    long minDuration = Long.MAX_VALUE;
-
-    for (int i = accommodationCount; i < routeInfos.length; i++) {
-      if (!assignedTourism[i - accommodationCount] && routeInfos[accommodation][i] != null) {
-        long duration = routeInfos[accommodation][i].getDuration();
-        if (duration < minDuration) {
-          minDuration = duration;
-          nearest = i;
-        }
-      }
-    }
-
-    return nearest;
-  }
-
-  private int findClosestAccommodation(RouteInfo[][] routeInfos, int tourism, int accommodationCount) {
-    int closest = -1;
-    long minDuration = Long.MAX_VALUE;
-
-    for (int i = 0; i < accommodationCount; i++) {
-      if (routeInfos[i][tourism] != null) {
-        long duration = routeInfos[i][tourism].getDuration();
-        if (duration < minDuration) {
-          minDuration = duration;
-          closest = i;
-        }
-      }
-    }
-
-    return closest;
-  }
-
-  private int findNearestLocation(RouteInfo[][] routeInfos, int current, int[] possibleLocations, boolean[] visited) {
-    int nearest = -1;
-    long minDuration = Long.MAX_VALUE;
-
-    for (int i = 0; i < possibleLocations.length; i++) {
-      if (!visited[i] && routeInfos[current][possibleLocations[i]] != null) {
-        long duration = routeInfos[current][possibleLocations[i]].getDuration();
-        if (duration < minDuration) {
-          minDuration = duration;
-          nearest = possibleLocations[i];
-        }
-      }
-    }
-
-    return nearest;
+    return optimizedRoute;
   }
 }

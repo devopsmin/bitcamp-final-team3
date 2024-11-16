@@ -9,6 +9,7 @@
     <script src="https://oapi.map.naver.com/openapi/v3/maps.js?ncpClientId=0zojwabqn9&submodules=geocoder"
             type="text/javascript"></script>
     <script src="/js/mapUtils.js"></script>
+    <script src="/js/creatSchedule.js"></script>
     <title>Document</title>
     <style>
         #drag-handle {
@@ -28,7 +29,6 @@
 <body>
 <div class="d-flex" style="width: 100%; height: 100vh;">
     <!-- 왼쪽 리스트 부분 -->
-    <!--    <div data-th-text="${tripScheduleList}"></div>-->
     <nav class="p-2 text-center "
          style="width: 100px; flex: 0 0 100px;">
         <div>
@@ -39,7 +39,7 @@
                 <li class="nav-item">
                     <button class="btn w-100 text-center border-0">전체 일정</button>
                 </li>
-                <li class="nav-item" data-th-each="i : ${#numbers.sequence(0, totalDay)}">
+                <li class="nav-item" data-th-each="i : ${#numbers.sequence(0, trip.totalDay)}">
                     <button class="btn w-100 text-center border-0" data-th-text="'Day ' + ${i+1}">전체 일정</button>
                 </li>
             </ul>
@@ -61,8 +61,8 @@
     <!-- 왼쪽 패널 -->
     <div class="bg-white h-100 d-flex flex-column" id="left-panel">
         <div class="flex-column p-3">
-            <p class="fs-4 fw-bold mb-1" data-th-text="${stateName} + ${cityName}">제주도</p>
-            <p class="text-secondary mb-1" data-th-text="${startDate} +' ~ '+  ${endDate}">2024-01-01 ~ 2024-02-01</p>
+            <p class="fs-4 fw-bold mb-1" data-th-text="${trip.city.state.stateName} + ${trip.city.cityName}">제주도</p>
+            <p class="text-secondary mb-1" data-th-text="${trip.startDate} +' ~ '+  ${trip.endDate}">2024-01-01 ~ 2024-02-01</p>
         </div>
 
         <!-- 전체 수직 스크롤을 위한 컨테이너 -->
@@ -192,8 +192,11 @@
     const dragHandle = document.getElementById('drag-handle');
     let isDragging = false;
     const columnWidth = '300';
+    // 패널의 초기 너비 설정
+    let isExpanded = false;  // 상태 추적 변수
 
     const distances = /*[[${distances}]]*/ '';
+    const scheduleKeyMap = /*[[${scheduleKeyMap}]]*/ {};
 
     // 모든 일정 버튼들과 컬럼들을 가져옵니다
     const dayButtons = document.querySelectorAll('.nav-item button');
@@ -224,10 +227,10 @@
                 rightPanel.style.width = `calc(100% - ${parseInt(calculateMaxWidth()) + 110}px)`;
                 columnsContainer.classList.add('flex-nowrap');
                 columnsContainer.classList.remove('flex-wrap');
+                pinMarker();
             } else {
                 // Day 버튼을 클릭한 경우
                 const dayNumber = parseInt(buttonText.replace('Day ', ''));
-                console.log(dayNumber)
 
                 // 모든 컬럼을 숨기고
                 allColumns.forEach(column => {
@@ -236,9 +239,9 @@
 
                 // 선택된 Day의 컬럼만 보이게 함
                 const selectedColumn = document.getElementById(`day-column-${dayNumber}`);
-                console.log(selectedColumn);
                 if (selectedColumn) {
                     selectedColumn.style.display = 'block';
+                    pinMarker([selectedColumn.querySelector('.schedule-container')]);
                 }
 
                 // 패널 너비를 300px로 조정
@@ -321,9 +324,6 @@
         }
     });
 
-    // 패널의 초기 너비 설정
-    let isExpanded = false;  // 상태 추적 변수
-
     dragHandle.addEventListener('click', () => {
         if (isExpanded) {
             // 패널이 확장되어 있을 때 축소
@@ -351,9 +351,7 @@
         document.body.style.cursor = 'default';
     });
 
-    // 페이지 로드 시 초기 너비 설정
     document.addEventListener('DOMContentLoaded', adjustPanelWidth);
-
 
     document.addEventListener('DOMContentLoaded', async () => {
         try {
@@ -362,43 +360,42 @@
 
             await initializeMap('map', stateName, cityName);
             pinMarker();
-            updateDurations(distances);
         } catch (error) {
             console.error('실행 중 오류 발생:', error);
         }
     });
 
-    function pinMarker() {
-        const colors = ["primary", "warning", "danger", "info", "secondary", "success"];
-        // 모든 schedule-container를 순회
-        document.querySelectorAll('.schedule-container').forEach(container => {
-            // 각 컨테이너 내의 모든 card를 처리
-            container.querySelectorAll('#locationCard').forEach(card => {
-                const locationX = card.querySelector('.location-x').textContent;
-                const locationY = card.querySelector('.location-y').textContent;
-                const day = parseInt(card.querySelector('.day').textContent);
-                const route = card.querySelector('.route').textContent;
-                const color = colors[(day - 1) % colors.length];
-
-                // 각 카드 내의 원형찾기
-                card.querySelectorAll('.rounded-circle, .position-absolute').forEach(element => {
-                    element.classList.add(`bg-${color}`);
-                });
-
-
-                const nextTimeCard = card.nextElementSibling;
-                if (nextTimeCard && nextTimeCard.id === 'timeCard') {
-                    // timeCard 내부 요소들 색상 변경
-                    nextTimeCard.querySelector('#carBar .d-flex').classList.add(`bg-${color}`);
-                    nextTimeCard.querySelector('#carIcon').classList.add(`text-${color}`);
-                }
-
-                if (locationX && locationY) {
-                    addMarker(parseFloat(locationX), parseFloat(locationY), parseInt(route), `text-${color}`);
-                }
-            });
-        });
-    }
+    // function pinMarker() {
+    //     const colors = ["primary", "warning", "danger", "info", "secondary", "success"];
+    //     // 모든 schedule-container를 순회
+    //     document.querySelectorAll('.schedule-container').forEach(container => {
+    //         // 각 컨테이너 내의 모든 card를 처리
+    //         container.querySelectorAll('#locationCard').forEach(card => {
+    //             const locationX = card.querySelector('.location-x').textContent;
+    //             const locationY = card.querySelector('.location-y').textContent;
+    //             const day = parseInt(card.querySelector('.day').textContent);
+    //             const route = card.querySelector('.route').textContent;
+    //             const color = colors[(day - 1) % colors.length];
+    //
+    //             // 각 카드 내의 원형찾기
+    //             card.querySelectorAll('.rounded-circle, .position-absolute').forEach(element => {
+    //                 element.classList.add(`bg-${color}`);
+    //             });
+    //
+    //
+    //             const nextTimeCard = card.nextElementSibling;
+    //             if (nextTimeCard && nextTimeCard.id === 'timeCard') {
+    //                 // timeCard 내부 요소들 색상 변경
+    //                 nextTimeCard.querySelector('#carBar .d-flex').classList.add(`bg-${color}`);
+    //                 nextTimeCard.querySelector('#carIcon').classList.add(`text-${color}`);
+    //             }
+    //
+    //             if (locationX && locationY) {
+    //                 addMarker(parseFloat(locationX), parseFloat(locationY), parseInt(route), `text-${color}`);
+    //             }
+    //         });
+    //     });
+    // }
 
     const themas = /*[[${themas}]]*/ [];
     document.getElementById("nextPageBtn").addEventListener("click", function () {
@@ -563,7 +560,6 @@
             });
 
             pinMarker();
-            updateDurations(distances);
             bootstrap.Modal.getInstance(editModal).hide();
             document.getElementById('saveButton').removeEventListener('click', saveEditModal);
         });
@@ -755,69 +751,7 @@
         });
     }
 
-    function updateDurations(distances) {
-        // 기존 폴리라인들 제거
-        clearAllPolylines();
 
-        const bootstrapColors = {
-            'primary': '#0d6efd',   // Bootstrap primary 색상
-            'warning': '#ffc107',   // Bootstrap warning 색상
-            'danger': '#dc3545',    // Bootstrap danger 색상
-            'info': '#0dcaf0',      // Bootstrap info 색상
-            'secondary': '#6c757d', // Bootstrap secondary 색상
-            'success': '#198754'    // Bootstrap success 색상
-        };
-
-        const colors = ["primary", "warning", "danger", "info", "secondary", "success"];
-
-        document.querySelectorAll(".duration").forEach(function (element) {
-            // 위쪽의 schedule-no에서 origin 값 가져오기
-            const originElement = element.closest('.card').previousElementSibling.querySelector('.schedule-no');
-            // 아래쪽의 schedule-no에서 destination 값 가져오기
-            const destinationElement = element.closest('.card').nextElementSibling.querySelector('.schedule-no');
-
-            if (originElement && destinationElement) {
-                const origin = parseInt(originElement.textContent);
-                const destination = parseInt(destinationElement.textContent);
-
-                // distances 배열에서 해당 요소의 duration 값을 가져와서 설정
-                if (distances[origin] && distances[origin][destination]) {
-                    element.textContent = millisToTime(distances[origin][destination].duration);
-                    const day = parseInt(element.closest('.column-item').querySelector('.fw-bold').textContent.replace('Day ', ''));
-                    const colorIndex = (day - 1) % colors.length;
-                    const selectedColor = bootstrapColors[colors[colorIndex]];
-                    console.log(selectedColor);
-
-                    // 경로 추가 (기존 경로 삭제하지 않음)
-                    drawPath(distances[origin][destination].path, selectedColor);
-                } else {
-                    element.textContent = "N/A"; // 데이터가 없을 경우 기본값
-                }
-                console.log(origin, destination, distances[origin][destination].duration);
-            }
-        });
-        console
-    }
-
-    function millisToTime(millis) {
-        // 입력값이 문자열인 경우 숫자로 변환
-        const millisNum = typeof millis === 'string' ? parseInt(millis, 10) : millis;
-
-        // 유효한 숫자가 아닌 경우 체크
-        if (isNaN(millisNum)) {
-            return "Invalid input";
-        }
-
-        const hours = Math.floor(millisNum / 3600000);  // 시간 계산
-        const minutes = Math.floor((millisNum % 3600000) / 60000);  // 분 계산
-
-        // 시간과 분에 따른 문자열 생성
-        if (hours === 0) {
-            return minutes === 0 ? "0분" : `${minutes}분`;
-        } else {
-            return minutes === 0 ? `${hours}시간` : `${hours}시간 ${minutes}분`;
-        }
-    }
 </script>
 </body>
 </html>

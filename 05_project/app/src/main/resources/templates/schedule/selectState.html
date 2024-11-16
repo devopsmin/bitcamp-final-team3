@@ -14,7 +14,7 @@
 <div class="container">
     <div class="row">
         <!-- 왼쪽 컨테이너 -->
-        <div class="col-md-6">
+        <div class="col-md-5">
             <div class="row justify-content-center">
                 <div class="col-auto">
                     <div class="d-flex justify-content-center gap-3">
@@ -33,6 +33,12 @@
                                 <option value="">시군구 선택</option>
                             </select>
                         </div>
+                    </div>
+
+                    <div>
+                        <p class="ps-1" style="height: 200px;">
+                            최적의 여행 계획을 세워보세요!
+                        </p>
                     </div>
 
                     <div class="d-flex justify-content-center gap-3">
@@ -58,80 +64,115 @@
         </div>
 
         <!-- 오른쪽 컨테이너 -->
-        <div class="col-md-6">
-            <div class="border rounded p-3">
-                <!-- 여기에 오른쪽 컨텐츠를 넣으세요 -->
-                <h3>오른쪽 컨텐츠</h3>
-                <p>여기에 원하는 내용을 넣을 수 있습니다.</p>
+        <div class="col-md-7">
+            <div class="border rounded" style="width: 400px; height: 300px;">
+                <div id="imageWrapper" class="text-center">
+                    <!-- 동적으로 이미지가 여기에 삽입됩니다 -->
+                </div>
             </div>
         </div>
     </div>
 </div>
 
-<script>
-    // 변환된 JSON 데이터 사용 예시
-    const stateSelect = document.getElementById('stateCode');
+<!--<script>-->
+<!--    // 변환된 JSON 데이터 사용 예시-->
+<!--    const stateSelect = document.getElementById('stateCode');-->
 
-    function fetchCityList() {
-        const selectedState = document.getElementById('stateCode');
-        const stateCode = selectedState.value;
+<!--    function fetchCityList() {-->
+<!--        const selectedState = document.getElementById('stateCode');-->
+<!--        const stateCode = selectedState.value;-->
 
-        if (stateCode) {
-            fetch('/schedule/selectCity', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'text/plain',  // JSON 대신 text로 변경
-                },
-                body: stateCode  // stateCode만 직접 전송
-            })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    return response.json();
-                })
-                .then(cityList => {
-                    const citySelect = document.getElementById('cityCode');
-                    citySelect.innerHTML = '<option value="">시군구 선택</option>';
+<!--        if (stateCode) {-->
+<!--            fetch('/schedule/selectCity', {-->
+<!--                method: 'POST',-->
+<!--                headers: {-->
+<!--                    'Content-Type': 'text/plain',-->
+<!--                },-->
+<!--                body: stateCode-->
+<!--            })-->
+<!--                .then(response => {-->
+<!--                    if (!response.ok) {-->
+<!--                        throw new Error('Network response was not ok');-->
+<!--                    }-->
+<!--                    return response.json();-->
+<!--                })-->
+<!--                .then(cityList => {-->
+<!--                    const citySelect = document.getElementById('cityCode');-->
+<!--                    citySelect.innerHTML = '<option value="">시군구 선택</option>';-->
 
-                    cityList.forEach(city => {
-                        const option = document.createElement('option');
-                        option.value = city.cityCode;
-                        option.textContent = city.cityName;
-                        citySelect.appendChild(option);
-                    });
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('시군구 목록을 불러오는데 실패했습니다.');
-                });
-        } else {
-            const citySelect = document.getElementById('cityCode');
-            citySelect.innerHTML = '<option value="">시군구 선택</option>';
-        }
-    }
+<!--                    cityList.forEach(city => {-->
+<!--                        const option = document.createElement('option');-->
+<!--                        option.value = city.cityCode;-->
+<!--                        option.textContent = city.cityName;-->
+<!--                        citySelect.appendChild(option);-->
+<!--                    });-->
 
-    // form submit 이벤트 핸들러 추가
-    document.getElementById('createScheduleForm').addEventListener('submit', function (event) {
-        const selectedCity = document.getElementById('cityCode').value;
-        if (!selectedCity) {
-            event.preventDefault(); // 폼 제출 중단
-            alert('시군구를 선택해주세요.');
-            return;
-        }
-        document.getElementById('cityCodeHidden').value = selectedCity;
-    });
+<!--                    console.log("City list updated:", cityList);-->
 
-    document.getElementById('fetchScheduleForm').addEventListener('submit', function (event) {
-        const selectedCity = document.getElementById('cityCode').value;
-        if (!selectedCity) {
-            event.preventDefault(); // 폼 제출 중단
-            alert('시군구를 선택해주세요.');
-            return;
-        }
-        document.getElementById('cityCodeHiddenFetch').value = selectedCity;
-    });
-</script>
+<!--                    // 옵션이 업데이트된 후에 change 이벤트 등록-->
+<!--                    citySelect.addEventListener('change', handleCityCodeChange);-->
+<!--                })-->
+<!--                .catch(error => {-->
+<!--                    console.error('Error:', error);-->
+<!--                    alert('시군구 목록을 불러오는데 실패했습니다.');-->
+<!--                });-->
+<!--        } else {-->
+<!--            const citySelect = document.getElementById('cityCode');-->
+<!--            citySelect.innerHTML = '<option value="">시군구 선택</option>';-->
+<!--        }-->
+<!--    }-->
+
+<!--    // change 이벤트 핸들러-->
+<!--    function handleCityCodeChange() {-->
+<!--        console.log("change!!!");-->
+<!--        const stateSelect = document.getElementById('stateCode');-->
+<!--        const citySelect = document.getElementById('cityCode');-->
+
+<!--        const stateName = stateSelect.options[stateSelect.selectedIndex].text.trim();-->
+<!--        const cityName = citySelect.options[citySelect.selectedIndex].text.trim();-->
+
+<!--        if (stateName && cityName) {-->
+<!--            const imagePath = `/images/${stateName}/${stateName} ${cityName}.jpg`;-->
+
+<!--            // 오른쪽 컨텐츠 영역에 이미지를 삽입-->
+<!--            const imageWrapper = document.getElementById('imageWrapper');-->
+<!--            if (imageWrapper) {-->
+<!--                imageWrapper.innerHTML = `<img src="${imagePath}" alt="${stateName} ${cityName}"-->
+<!--            class="img-fluid rounded border" style="max-width: 100%; max-height: 100%;">`;-->
+<!--            } else {-->
+<!--                console.error('이미지 래퍼를 찾을 수 없습니다.');-->
+<!--            }-->
+<!--        } else {-->
+<!--            // 이미지 제거 (기본 상태로 초기화)-->
+<!--            const imageWrapper = document.getElementById('imageWrapper');-->
+<!--            if (imageWrapper) {-->
+<!--                imageWrapper.innerHTML = `<p>이미지를 선택하려면 시군구를 선택하세요.</p>`;-->
+<!--            }-->
+<!--        }-->
+<!--    }-->
+
+<!--    // form submit 이벤트 핸들러 추가-->
+<!--    document.getElementById('createScheduleForm').addEventListener('submit', function (event) {-->
+<!--        const selectedCity = document.getElementById('cityCode').value;-->
+<!--        if (!selectedCity) {-->
+<!--            event.preventDefault(); // 폼 제출 중단-->
+<!--            alert('시군구를 선택해주세요.');-->
+<!--            return;-->
+<!--        }-->
+<!--        document.getElementById('cityCodeHidden').value = selectedCity;-->
+<!--    });-->
+
+<!--    document.getElementById('fetchScheduleForm').addEventListener('submit', function (event) {-->
+<!--        const selectedCity = document.getElementById('cityCode').value;-->
+<!--        if (!selectedCity) {-->
+<!--            event.preventDefault(); // 폼 제출 중단-->
+<!--            alert('시군구를 선택해주세요.');-->
+<!--            return;-->
+<!--        }-->
+<!--        document.getElementById('cityCodeHiddenFetch').value = selectedCity;-->
+<!--    });-->
+
+<!--</script>-->
 
 </body>
 </html>

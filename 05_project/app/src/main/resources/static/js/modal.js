@@ -28,6 +28,7 @@ document.addEventListener('DOMContentLoaded', function() {
 function initializeScheduleForm() {
     const scheduleForm = document.querySelector('#scheduleModalContent form');
     const stateSelect = document.querySelector('#scheduleModalContent #stateCode');
+    const citySelect = document.querySelector('#scheduleModalContent #cityCode');
 
     // 시도 선택 이벤트 리스너
     if (stateSelect) {
@@ -62,6 +63,36 @@ function initializeScheduleForm() {
                 const citySelect = document.querySelector('#scheduleModalContent #cityCode');
                 citySelect.innerHTML = '<option value="">시군구 선택</option>';
             }
+        });
+    }
+
+    // 시군구 선택 이벤트 리스너
+    if (citySelect) {
+        citySelect.addEventListener('change', function () {
+            const stateName = stateSelect.options[stateSelect.selectedIndex]?.text?.trim() || '';
+            const cityName = this.options[this.selectedIndex]?.text?.trim() || '';
+
+            if (stateName && cityName) {
+                const imagePath = `/images/city/${stateName}/${stateName} ${cityName}.jpg`;
+                console.log(imagePath);
+
+                // 오른쪽 컨텐츠 영역에 이미지를 삽입
+                const imageWrapper = document.getElementById('imageWrapper');
+                if (imageWrapper) {
+                    imageWrapper.innerHTML = `<img src="${imagePath}" alt="${stateName} ${cityName}"
+                    class="img-fluid rounded border" style="width: 400px; height: 300px;">`;
+                } else {
+                    console.error('이미지 래퍼를 찾을 수 없습니다.');
+                }
+            } else {
+                // 이미지 제거 (기본 상태로 초기화)
+                const imageWrapper = document.getElementById('imageWrapper');
+                if (imageWrapper) {
+                    imageWrapper.innerHTML = `<p>이미지를 선택하려면 시군구를 선택하세요.</p>`;
+                }
+            }
+
+            console.log(`Selected City: ${cityName} (State: ${stateName})`);
         });
     }
 

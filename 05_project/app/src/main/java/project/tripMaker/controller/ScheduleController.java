@@ -1,6 +1,7 @@
 package project.tripMaker.controller;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import dto.LocationDTO;
 import lombok.Data;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -11,10 +12,7 @@ import project.tripMaker.vo.*;
 
 import javax.servlet.http.HttpSession;
 import java.sql.Date;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -22,7 +20,7 @@ import java.util.stream.Stream;
 @Controller
 @RequestMapping("/schedule")
 @SessionAttributes(
-    {"locationNos", "trip", "myLocations", "myHotels", "tripType", "locationList", "selectLoList",
+    {"locationNos", "trip", "tripType", "locationList", "selectLoList",
         "hotelList", "selectHoList", "tripScheduleList"})
 public class ScheduleController {
 
@@ -41,6 +39,8 @@ public class ScheduleController {
 
     List<Location> selectLoList = new ArrayList<>();
     model.addAttribute("selectLoList", selectLoList);
+    List<Location> searchLoList = new ArrayList<>();
+    model.addAttribute("searchLoList", searchLoList);
 
     //    model.addAttribute("tripType", tripType);
   }
@@ -109,30 +109,34 @@ public class ScheduleController {
       throws Exception {
     List<Location> locationList =
         tourAPIService.showLocation(trip.getCity());
-
     model.addAttribute("trip", trip);
     model.addAttribute("locationList", locationList);
   }
 
   @PostMapping("/appendMyLocation")
   @ResponseBody
-  public List<Location> appendMyLocation(
-      @ModelAttribute("locationList") List<Location> locationList,
+  public List<LocationDTO> appendMyLocation(
       @ModelAttribute("selectLoList") List<Location> selectLoList,
-      @RequestBody List<Integer> dataIndexes,
+      @RequestBody List<LocationDTO> locations,
       Model model) {
 
     selectLoList.clear();
-    for (int index : dataIndexes) {
-      selectLoList.add(locationList.get(index));
-    }
+    selectLoList.addAll(
+        locations.stream()
+            .map(LocationDTO::toEntity)
+            .collect(Collectors.toList())
+    );
+
     model.addAttribute("selectLoList", selectLoList);
-    return selectLoList;
+
+    return selectLoList.stream()
+        .map(LocationDTO::fromEntity)
+        .collect(Collectors.toList());
   }
 
   @GetMapping("/searchLocation")
   @ResponseBody
-  public JsonNode searchLocation(
+  public List<LocationDTO> searchLocation(
       @ModelAttribute Trip trip,
       String searchText
   ){
@@ -140,45 +144,65 @@ public class ScheduleController {
         trip.getCity().getState().getStateName(),
         trip.getCity().getCityName().equals("전체")? "" : trip.getCity().getCityName(),
         searchText);
-    return searchAPIService.search(text);
+
+    List<Location> searchLoList = searchAPIService.search(text);
+    return searchLoList.stream()
+        .map(LocationDTO::fromEntity)
+        .collect(Collectors.toList());
   }
 
   @RequestMapping("selectHotel")
   public void selectHotel(
       @ModelAttribute Trip trip,
-      @ModelAttribute("selectLoList") List<Location> selectLoList,
+      @ModelAttribute("selectHoList") List<Location> selectHoList,
       Model model)
       throws Exception {
-
-    model.addAttribute("trip", trip);
     List<Location> hotelList =
         tourAPIService.showHotel(trip.getCity());
+    model.addAttribute("trip", trip);
     model.addAttribute("hotelList", hotelList);
   }
 
   @PostMapping("/appendMyHotel")
   @ResponseBody
-  public List<Location> appendMyHotel(
-      @ModelAttribute("hotelList") List<Location> hotelList,
+  public List<LocationDTO> appendMyHotel(
       @ModelAttribute("selectHoList") List<Location> selectHoList,
-      @RequestBody List<Object> dataIndexes,  // String이나 Integer 대신 Object로 받기
+      @RequestBody List<LocationDTO> locations,
       Model model) {
 
-    for (int i = 0; i < dataIndexes.size(); i++) {
-      Object index = dataIndexes.get(i);
-      if (index != null) {
-        // String이든 Integer든 상관없이 처리
-        int idx = Integer.parseInt(index.toString());
-        Location location = hotelList.get(idx);
-        selectHoList.set(i, location);
-      } else {
-        selectHoList.set(i, null);
-      }
+    selectHoList.clear();
+    if (locations != null) {
+      // null 체크하면서 리스트에 추가
+      locations.forEach(dto -> {
+        selectHoList.add(dto != null ? dto.toEntity() : null);
+      });
     }
+    model.addAttribute("selectHoList", selectHoList);
 
-    System.out.println("Returning selectHoList: " + selectHoList);
-    return selectHoList;
+    // null을 포함한 채로 DTO 변환
+    return selectHoList.stream()
+        .map(location -> location != null ? LocationDTO.fromEntity(location) : null)
+        .collect(Collectors.toList());
   }
+
+  @GetMapping("/searchHotel")
+  @ResponseBody
+  public List<LocationDTO> searchHotel(
+      @ModelAttribute Trip trip,
+      String searchText
+  ){
+    String text = String.format("%s %s %s %s",
+        trip.getCity().getState().getStateName(),
+        trip.getCity().getCityName().equals("전체")? "" : trip.getCity().getCityName(),
+        "숙박",
+        searchText);
+
+    List<Location> searchLoList = searchAPIService.search(text);
+    return searchLoList.stream()
+        .map(LocationDTO::fromEntity)
+        .collect(Collectors.toList());
+  }
+
 
   @GetMapping("createSchedule")
   public void createSchedule(
@@ -189,49 +213,39 @@ public class ScheduleController {
 
     List<Thema> themas = scheduleService.themaList();
     model.addAttribute("themas", themas);
-    model.addAttribute("stateName", trip.getCity().getState().getStateName());
-    model.addAttribute("cityName", trip.getCity().getCityName());
-    model.addAttribute("startDate", trip.getStartDate());
-    model.addAttribute("endDate", trip.getEndDate());
-    model.addAttribute("totalDay", trip.getTotalDay());
+    model.addAttribute("Trip", trip);
 
-
-    int index = 0;
 
     List<Schedule> tripScheduleList = new ArrayList<>();
-    for (int i = 0; i < selectHoList.size(); i++) {
+    Map<Integer, Integer> scheduleKeyMap = new HashMap<>();
+    int totalIndex = 0;
+    for (int locationIndex = 0; locationIndex <= selectHoList.size(); locationIndex++) {
       Schedule schedule = new Schedule();
-      Location location = selectHoList.get(i);
-      schedule.setScheduleNo(index);
-      location.setLocationNo(index++);
+      int dayIndex;
+      if(locationIndex == selectHoList.size()) {
+        dayIndex = locationIndex-1;
+      } else {
+        dayIndex = locationIndex;
+      }
+      Location location = selectHoList.get(dayIndex);
+      schedule.setScheduleNo(location.getLocationNo());
       location.setCityCode(trip.getCity().getCityCode());
       schedule.setLocation(location);
-
-      schedule.setScheduleDay(i + 1);
+      schedule.setScheduleDay(locationIndex + 1);
       schedule.setScheduleRoute(0);
+      scheduleKeyMap.put(totalIndex++, schedule.getScheduleNo());
       tripScheduleList.add(schedule);
     }
 
-    Schedule LastHotel = new Schedule();
-    Location Lastlocation = selectHoList.get(selectHoList.size()-1);
-    LastHotel.setScheduleNo(index);
-    Lastlocation.setLocationNo(index++);
-    Lastlocation.setCityCode(trip.getCity().getCityCode());
-    LastHotel.setLocation(Lastlocation);
-
-    LastHotel.setScheduleDay(selectHoList.size()+1);
-    LastHotel.setScheduleRoute(0);
-    tripScheduleList.add(LastHotel);
-
-    for (int i = 0; i < selectLoList.size(); i++) {
+    for (int locationIndex = 0; locationIndex < selectLoList.size(); locationIndex++) {
       Schedule schedule = new Schedule();
-      Location location = selectLoList.get(i);
-      schedule.setScheduleNo(index);
-      location.setLocationNo(index++);
+      Location location = selectLoList.get(locationIndex);
+      schedule.setScheduleNo(location.getLocationNo());
       schedule.setLocation(location);
       location.setCityCode(trip.getCity().getCityCode());
       schedule.setScheduleDay(1);
-      schedule.setScheduleRoute(i + 1);
+      schedule.setScheduleRoute(locationIndex + 1);
+      scheduleKeyMap.put(totalIndex++, schedule.getScheduleNo());
       tripScheduleList.add(schedule);
     }
 
@@ -241,7 +255,6 @@ public class ScheduleController {
     for (int start = 0; start < totalSize; start++) {
       for (int goal = start; goal < totalSize; goal++) {
         if (start != goal) {
-//          System.out.println("=========array===================================="+tripScheduleList.get(start)+tripScheduleList.get(goal));
           RouteInfo direction = directionService.getDirection(tripScheduleList.get(start),tripScheduleList.get(goal));
           System.out.println(direction.toString());
           distances[start][goal] = direction;
@@ -250,37 +263,56 @@ public class ScheduleController {
       }
     }
 
-    for(int i = 0; i < distances.length; i++) {
-      for(int j = 0; j < distances[i].length; j++) {
-        if (distances[i][j] == null){
-          System.out.print("000000 ");
-          continue;
-        }
-        System.out.print(distances[i][j].getDuration()+"    ");
-      }
-      System.out.println(" ");
-    }
-
     int[][] optimalRoutes = routeService.assignTourism(distances, selectHoList.size()+1, selectLoList.size());
-    for (int hotel = 0; hotel < selectHoList.size(); hotel++) {
-      int route = 1;
-      System.out.println("숙소 " + hotel + "의 관광지: "+ tripScheduleList.get(hotel).getLocation().getLocationName() + Arrays.toString(optimalRoutes[hotel]));
-      for (int tour = 0 ; tour < optimalRoutes[hotel].length; tour++) {
+    for (int hotel = 0; hotel < selectHoList.size()+1; hotel++) {
+      for (int tour = 0; tour < optimalRoutes[hotel].length; tour++) {
         Schedule schedule = tripScheduleList.get(optimalRoutes[hotel][tour]);
         schedule.setScheduleDay(hotel + 1);
+        // route는 나중에 한 번에 재설정
+      }
+    }
+
+    // 마지막에 route 번호 순차적으로 재설정
+    Map<Integer, List<Schedule>> daySchedules = tripScheduleList.stream()
+        .collect(Collectors.groupingBy(Schedule::getScheduleDay));
+
+    for (List<Schedule> schedules : daySchedules.values()) {
+      int route = 0;
+      for (Schedule schedule : schedules) {
         schedule.setScheduleRoute(route++);
       }
     }
-    model.addAttribute("distances", distances);
-
+//
+//    int[][] optimalRoutes = routeService.assignTourism(distances, selectHoList.size()+1, selectLoList.size());
+//    for (int hotel = 0; hotel < selectHoList.size(); hotel++) {
+//      int route = 1;
+//      for (int tour = 0 ; tour < optimalRoutes[hotel].length; tour++) {
+//        Schedule schedule = tripScheduleList.get(optimalRoutes[hotel][tour]);
+//        schedule.setScheduleDay(hotel + 1);
+//        schedule.setScheduleRoute(route++);
+//      }
+//    }
     tripScheduleList = scheduleService.orderSchedule(tripScheduleList);
+    model.addAttribute("scheduleKeyMap", scheduleKeyMap);
+    model.addAttribute("distances", distances);
+    model.addAttribute("tripScheduleList", tripScheduleList);
 
     Map<Integer, List<Schedule>> groupedSchedules = tripScheduleList.stream()
         .collect(Collectors.groupingBy(Schedule::getScheduleDay));
+
+
+    System.out.println("=====================================================");
+    groupedSchedules.forEach((day, schedules) -> {
+      System.out.println("Day " + day + ":");
+      schedules.forEach(schedule ->
+          System.out.println("  Schedule No: " + schedule.getScheduleNo()
+              + ", Route: " + schedule.getScheduleRoute()
+              + ", Location: " + schedule.getLocation().getLocationName())
+      );
+    });
+
+
     model.addAttribute("groupedSchedules", groupedSchedules);
-
-
-    model.addAttribute("tripScheduleList", tripScheduleList);
   }
 
   @PostMapping("update")
@@ -293,7 +325,6 @@ public class ScheduleController {
 
     try {
       for (JsonNode scheduleNode : schedules) {
-        System.out.println("============" + scheduleNode);
         Schedule searchSchedule = new Schedule();
         searchSchedule.setScheduleNo(scheduleNode.get("scheduleNo").asInt());
         Schedule schedule = tripScheduleList.get(tripScheduleList.indexOf(searchSchedule));
@@ -313,7 +344,7 @@ public class ScheduleController {
   @PostMapping("save")
   public void save(
       @ModelAttribute Trip trip,
-           // int themaNo,
+      int themaNo,
       HttpSession session,
       SessionStatus sessionStatus) throws Exception {
 
@@ -323,11 +354,8 @@ public class ScheduleController {
     }
 
     trip.setUserNo(loginUser.getUserNo());
-       // Thema thema = scheduleService.getThema(themaNo);
-       // trip.setThema(thema);
-    System.out.println("==========================================");
-    System.out.println(trip.toString());
-    System.out.println("==========================================");
+    Thema thema = scheduleService.getThema(themaNo);
+    trip.setThema(thema);
     scheduleService.saveTrip(trip);
     sessionStatus.setComplete();
   }

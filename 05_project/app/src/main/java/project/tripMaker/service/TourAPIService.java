@@ -116,7 +116,9 @@ public class TourAPIService {
           location.setLocationTel(itemNode.path("tel").asText(null));
           location.setLocationX(itemNode.path("mapx").asDouble());
           location.setLocationY(itemNode.path("mapy").asDouble());
+          location.setLocationtypeNo(1);
           locations.add(location);
+          System.out.println(location);
         }
       }
       return locations;
