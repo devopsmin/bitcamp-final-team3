@@ -51,7 +51,7 @@ public class SearchAPIService {
     return objectMapper.readTree(sb.toString());
   }
 
-  public JsonNode search(String searchText) {
+  public List<Location> search(String searchText) {
     try {
       String text = URLEncoder.encode(searchText, "utf-8");
       String requestAPI = String.format(BASE_URL+"?query='%s'&display=5&sort=random",text);
@@ -62,23 +62,22 @@ public class SearchAPIService {
       requestHeaders.put("X-Naver-Client-Secret", clientSecret);
       JsonNode responseBody = requestApi(url,requestHeaders);
       JsonNode itemsNode = responseBody.path("items");
-//
+
 //      if (itemsNode.isEmpty()) {
 //        return null;
 //      }
-//      List<Location> locations = new ArrayList<>();
-//      for (JsonNode itemNode : itemsNode) {
-//        Location location = new Location();
-//        location.setLocationName(itemNode.path("title").asText());
-//        location.setLocationAddr(itemNode.path("roadAddress").asText());
-//        location.setLocationX(itemNode.path("mapx").asDouble() / 10000000.0);
-//        location.setLocationY(itemNode.path("mapy").asDouble() / 10000000.0);
-//        locations.add(location);
 
-//        System.out.println(itemNode.toString());
-//        System.out.println();
-//      }
-      return itemsNode;
+      List<Location> locations = new ArrayList<>();
+      for (JsonNode itemNode : itemsNode) {
+        Location location = new Location();
+        location.setLocationName(itemNode.path("title").asText());
+        location.setLocationAddr(itemNode.path("roadAddress").asText());
+        location.setLocationX(itemNode.path("mapx").asDouble() / 10000000.0);
+        location.setLocationY(itemNode.path("mapy").asDouble() / 10000000.0);
+        locations.add(location);
+
+      }
+      return locations;
     } catch (Exception e) {
       e.printStackTrace();
     }

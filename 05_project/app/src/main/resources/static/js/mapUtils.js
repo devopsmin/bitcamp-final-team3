@@ -101,7 +101,6 @@ async function searchMap(containerId, stateName, cityName) {
 }
 
 function addMarker(locationX, locationY, index, textColor) {
-    console.log(textColor);
     let pos = new naver.maps.LatLng(locationY, locationX);
     let marker = new naver.maps.Marker({
         position: pos,

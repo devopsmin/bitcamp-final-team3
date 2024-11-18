@@ -3,6 +3,7 @@
 <head data-th-replace="~{header :: head}"></head>
 <header data-th-replace="~{header :: #page-header}"></header>
 
+
 <body>
 <!-- 부트스트랩-->
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
@@ -10,38 +11,61 @@
 <!--손글씨 폰트-->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100..900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Do+Hyeon&display=swap" rel="stylesheet">
 
 
 <style>
-  .typing-text {
-    font-family: "Noto Sans KR", sans-serif;
-    font-size: 2rem;
-    border-right: 3px solid black;
-    animation: blink .5s infinite, typing 2s steps(22);
-    width: 400px;
-    white-space: nowrap;
-    overflow: hidden;
+  @font-face {
+    font-family: 'MaplestoryOTFBold';
+    src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_20-04@2.1/MaplestoryOTFBold.woff') format('woff');
+    font-weight: 300;
+    font-style: normal;
   }
 
+  @font-face {
+    font-family: 'SBAggroB';
+    src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2108@1.1/SBAggroB.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+  }
+
+  .title-text {
+    font-family: 'SBAggroB', sans-serif;
+    font-size: 65px;
+  }
+
+  .typing-text {
+    width: 748px; /* 폰트 크기와 텍스트 길이에 따라 계산 */
+    white-space: nowrap;
+    overflow: hidden;
+    border-right: 2px solid black; /* 검은색 커서 */
+    font-family: "MaplestoryOTFBold", sans-serif;
+    font-size: 48px;
+    text-align: center;
+    margin-left: auto;
+    height: 60px; /* 요소의 높이를 고정 */
+    line-height: 60px; /* 텍스트를 수직으로 중앙 정렬 */
+    animation: blink 0.5s step-end infinite;
+  }
+
+  /* 깜빡이는 커서 애니메이션 */
   @keyframes blink {
-    50%{
+    50% {
       border-color: transparent;
     }
   }
+
 </style>
-
-
-
-
 <div class="container d-flex justify-content-center align-items-center vh-100">
   <div class="row w-100">
-    <div class="col-md-6 d-flex flex-column justify-content-center align-items-start text-start">
-      <h1>기존에 경험하지 못한</h1>
-      <h1>새로운 여행 커뮤니티</h1>
-
-      <p class="typing-text">고민만 하던 여행 계획을 만들고 함께 공유해보세요</p>
-
+    <div class="col-md-6 align-items-start text-start">
+      <p class="title-text">
+        <span>기존에 경험하지 못한</span>
+        <span>새로운 여행 커뮤니티</span>
+      </p>
+      <div style="height: 60px">
+        <p class="typing-text"></p>
+      </div>
       <div class="mt-4">
         <button class="btn btn-primary me-2">나만의 일정 만들기</button>
         <button class="btn btn-outline-secondary">여행일정 확인하기</button>
@@ -51,13 +75,13 @@
     <div class="col-md-6">
       <div id="carouselExampleInterval" class="carousel slide" data-bs-ride="carousel">
         <div class="carousel-inner">
-          <div class="carousel-item active" data-bs-interval="10000">
+          <div class="carousel-item active" data-bs-interval="3500">
             <img data-th-src="@{'https://dgg7dnk35523.edge.naverncp.com/HZiW9aEJy7/review/default.png?type=u&w=600&h=400'}" class="d-block">
           </div>
-          <div class="carousel-item" data-bs-interval="2000">
+          <div class="carousel-item" data-bs-interval="3500">
             <img data-th-src="@{'https://dgg7dnk35523.edge.naverncp.com/HZiW9aEJy7/review/default.png?type=u&w=600&h=400'}" class="d-block">
           </div>
-          <div class="carousel-item">
+          <div class="carousel-item" data-bs-interval="3500">
             <img data-th-src="@{'https://dgg7dnk35523.edge.naverncp.com/HZiW9aEJy7/review/default.png?type=u&w=600&h=400'}" class="d-block">
           </div>
         </div>
@@ -76,14 +100,6 @@
 
 
 <div class="container mt-5">
-  <h1 class="text-center mb-4">어디로 여행을 떠나시나요?</h1>
-  <div class="input-group mb-5">
-    <input type="text" class="form-control" placeholder="일정 및 주제를 입력하세요">
-    <button class="btn btn-outline-secondary" type="button">
-      <i class="bi bi-search"></i>
-    </button>
-  </div>
-
   <div class="container mt-5">
     <h1 class="text-center mb-4">여행 후기 목록</h1>
 
@@ -99,22 +115,22 @@
   </div>
 </div>
 
-  <script>
-    let page = 1;
-    const container = document.getElementById('item-container');
-    const loader = document.querySelector('.loader');
+<script>
+  let page = 1;
+  const container = document.getElementById('item-container');
+  const loader = document.querySelector('.loader');
 
-    async function loadItems() {
-      loader.style.display = 'block';
+  async function loadItems() {
+    loader.style.display = 'block';
 
-      try {
-        const response = await fetch(`/review/api/list?page=${page}`);
-        const data = await response.json();
+    try {
+      const response = await fetch(`/review/api/list?page=${page}`);
+      const data = await response.json();
 
-        data.forEach(item => {
-          const col = document.createElement('div');
-          col.className = 'col';
-          col.innerHTML = `
+      data.forEach(item => {
+        const col = document.createElement('div');
+        col.className = 'col';
+        col.innerHTML = `
           <div class="card shadow-sm">
             <img src="${item.firstImageName ? `https://dgg7dnk35523.edge.naverncp.com/HZiW9aEJy7/review/${item.firstImageName}?type=u&w=150&h=150` : 'https://dgg7dnk35523.edge.naverncp.com/HZiW9aEJy7/review/default.png?type=u&w=150&h=150'}" class="card-img-top" alt="${item.boardTitle}">
             <div class="card-body text-center">
@@ -124,29 +140,43 @@
             </div>
           </div>
         `;
-          container.appendChild(col);
-        });
+        container.appendChild(col);
+      });
 
-        loader.style.display = 'none';
-        page++;
-      } catch (error) {
-        console.error('Error fetching review list:', error);
-        loader.style.display = 'none';
-      }
+      loader.style.display = 'none';
+      page++;
+    } catch (error) {
+      console.error('Error fetching review list:', error);
+      loader.style.display = 'none';
     }
+  }
 
-    function handleScroll() {
-      const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
-      if (scrollTop + clientHeight >= scrollHeight - 5) {
-        loadItems();
-      }
+  function handleScroll() {
+    const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
+    if (scrollTop + clientHeight >= scrollHeight - 5) {
+      loadItems();
     }
+  }
 
-    window.addEventListener('scroll', handleScroll);
+  window.addEventListener('scroll', handleScroll);
 
-    // 초기 로드
-    loadItems();
-  </script>
+  // 초기 로드
+  loadItems();
+</script>
 
+<script>
+  // title-text와 typing-text 요소의 너비를 동기화
+  window.addEventListener('load', function() {
+    const titleText = document.getElementById('title-text');
+    const typingText = document.getElementById('typing-text');
+    const titleTextWidth = titleText.offsetWidth;
+
+// typing-text의 너비를 title-text의 너비로 설정
+    typingText.style.width = `${titleTextWidth}px`;
+  });
+</script>
+
+<!-- 타이핑 텍스트-->
+<script src="/js/typingText.js"></script>
 </body>
 </html>

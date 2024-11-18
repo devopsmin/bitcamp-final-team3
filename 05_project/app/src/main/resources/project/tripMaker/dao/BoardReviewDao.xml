@@ -677,7 +677,7 @@
     boardimage bi ON b.board_no = bi.board_no -- BoardImages 조인
     where
     b.boardtype_no = 3
-    AND c.city_name LIKE CONCAT('%', #{city}, '%')
+    AND cy.city_name LIKE CONCAT('%', #{city}, '%')
     ORDER BY
     b.board_created_date DESC, b.board_no DESC
   </select>

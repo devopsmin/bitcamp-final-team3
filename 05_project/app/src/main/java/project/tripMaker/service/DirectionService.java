@@ -38,7 +38,6 @@ public class DirectionService {
 
       // code가 1인 경우 기본값을 가진 RouteInfo 반환
       if (code == 1) {
-        System.out.println("시작과 종료가 같음!!!!!!!!!!!!!!!!");
         RouteInfo info = new RouteInfo(
             new RouteInfo.Coordinates(startLon, startLat),  // 시작 좌표
             new RouteInfo.Coordinates(goalLon, goalLat),    // 도착 좌표
@@ -47,8 +46,6 @@ public class DirectionService {
             null    // path = null
         );
 
-
-        System.out.println(info.toString());
         return info;
       }
 

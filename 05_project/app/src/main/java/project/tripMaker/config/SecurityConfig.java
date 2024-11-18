@@ -28,7 +28,7 @@ public class SecurityConfig {
   public SecurityFilterChain securityFilterChain(HttpSecurity http, UserService userService) throws Exception {
     http
         .authorizeRequests(authorize -> authorize
-            .antMatchers("/admin/**", "/", "/auth/**", "/oauth2/**", "/verify/**", "/css/**", "/js/**", "/images/**", "/schedule/**", "/user/**", "/home", "/board/**", "/comment/**", "/app/**", "/question/**", "/review/**", "/companion/**").permitAll()
+            .antMatchers("/admin/**", "/", "/auth/**", "/oauth2/**", "/verify/**", "/css/**", "/js/**", "/images/**", "/schedule/**", "/user/**", "/home", "/board/**", "/comment/**", "/app/**", "/question/**", "/review/**", "/companion/**", "/mypage/**").permitAll()
             //            .antMatchers("/admin/**").hasRole("ADMIN")
             //            .antMatchers("/user/**").hasRole("USER")
             .anyRequest().authenticated()
