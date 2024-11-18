@@ -83,7 +83,7 @@
 <!--            <div class="d-flex" style="overflow-x: auto; white-space: nowrap;">-->
             <div class="d-flex" style="overflow-x: auto; overflow-y: auto; white-space: nowrap;"> <!-- 가로 스크롤 -->
                 <div class="col-md-4 mb-3 d-inline-block" style="width: 300px; margin-right: 20px;" data-th-each="entry : ${groupedSchedules}">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
                         <h5 class="text-start"
                             style="font-size: 1.2rem; font-weight: bold;"
                             data-th-text="${entry.key} + '일차'">
@@ -95,7 +95,7 @@
                         </span>
 <!--                        <span class="text-muted text-end"-->
 <!--                              style="font-size: 1rem;"-->
-<!--                              data-th-text="${#dates.format(#dates.addDays(trip.startDate, entry.key - 1), 'yyyy.MM.dd(E)')}">날짜-->
+<!--                              data-th-text="${#dates.format(#dates.addDays(trip.startDate, entry.key), 'yyyy.MM.dd(E)')}">날짜-->
 <!--                        </span>-->
                     </div>
 
@@ -139,9 +139,7 @@
         <p>State: <span data-th-text="${board.trip.city.state.stateName}">서울특별시</span>
             City: <span data-th-text="${board.trip.city.cityName}">강서구</span></p>
 
-        <div>
             <div id="map" style="width: 1175px; height: 600px;"></div>
-        </div>
 
         <div class="mb-2">
             <textarea readonly class="form-control border-0 p-2" style="resize: none; overflow: hidden; font-size: 1rem;" data-th-text="${board.boardContent}" oninput="this.style.height = ''; this.style.height = this.scrollHeight + 'px';">내용</textarea>

@@ -36,7 +36,6 @@ public class QuestionController {
     List<Trip> tripList = scheduleService.getTripsByUserNo(loginUser.getUserNo());
     model.addAttribute("trips", tripList);
 
-
   }
 
   @PostMapping("add")
@@ -56,7 +55,12 @@ public class QuestionController {
                               "태그를 입력해 주세요.");
     }
 
-    board.setTripNo(board.getTripNo());
+    Integer tripNo = board.getTripNo();
+    if (tripNo == null) {
+      tripNo = 1;
+    }
+
+    board.setTripNo(tripNo);
     questionService.add(board);
 
     return "redirect:list";
@@ -74,15 +78,14 @@ public class QuestionController {
     User loginUser = (User) session.getAttribute("loginUser");
     boolean isLoggedIn = loginUser != null;
 
-    // 상위 4개의 베스트 게시글을 가져오기 위한 리스트
-    List<Board> topBoards = questionService.getTopRecommendedBoards(1,4); // 베스트 게시글 상위 4개 가져오기
+    List<Board> topBoards = questionService.getTopRecommendedBoards(1,4);
 
     List<Board> boardList;
     int totalBoardCount;
 
     if (search != null && !search.trim().isEmpty()) {
       boardList = questionService.searchBoards(search, pageNo, pageSize);
-      totalBoardCount = questionService.searchBoardCount(search); // 검색된 게시글 수 계산
+      totalBoardCount = questionService.searchBoardCount(search);
     } else {
 
       switch (sort) {
@@ -340,7 +343,6 @@ public class QuestionController {
   @GetMapping("getScheduleList")
   @ResponseBody
   public List<Schedule> getScheduleList(@RequestParam("tripNo") int tripNo) {
-    System.out.println("Received tripNo: " + tripNo); // 디버깅용 로그
     return scheduleService.getSchedulesByTripNo(tripNo);
   }
 

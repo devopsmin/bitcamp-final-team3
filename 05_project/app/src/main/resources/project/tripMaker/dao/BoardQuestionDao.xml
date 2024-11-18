@@ -19,16 +19,20 @@
         <result property="boardLike" column="like_count"/>
         <result property="boardFavor" column="favor_count"/>
 
+        <!-- Trip 및 City 정보 매핑 -->
         <association property="trip" javaType="project.tripMaker.vo.Trip">
             <id property="tripNo" column="trip_no"/>
-            <association property="city" javaType="City">
-                <id column="city_code" property="cityCode"/>
-                <result column="city_name" property="cityName"/>
-                <result column="city_photo" property="cityPhoto"/>
-                <association property="state" javaType="State">
-                    <id column="state_code" property="stateCode"/>
-                    <result column="state_name" property="stateName"/>
+            <result property="tripTitle" column="trip_title"/>
+            <association property="city" javaType="project.tripMaker.vo.City">
+                <result property="cityName" column="city_name"/>
+                <association property="state" javaType="project.tripMaker.vo.State">
+                    <id property="stateCode" column="state_code"/>
+                    <result property="stateName" column="state_name"/>
                 </association>
+            </association>
+            <association property="thema" javaType="project.tripMaker.vo.Thema">
+                <id property="themaNo" column="thema_no"/>
+                <result property="themaName" column="thema_name"/>
             </association>
         </association>
 
@@ -45,53 +49,60 @@
             <result property="commentContent" column="comment_content"/>
             <result property="commentCreatedDate" column="comment_created_date"/>
         </collection>
+
+        <collection property="boardImages" ofType="project.tripMaker.vo.BoardImage">
+            <id property="boardNo" column="board_no"/>
+            <result property="boardimageNo" column="boardimage_no"/>
+            <result property="boardimageName" column="boardimage_name"/>
+            <result property="boardimageDefaultName" column="boardimage_default_name"/>
+        </collection>
     </resultMap>
 
-    <resultMap id="TripResultMap" type="Trip">
-        <id column="trip_no" property="tripNo"/>
-        <result column="user_no" property="userNo"/>
-        <result column="trip_title" property="tripTitle"/>
-        <result column="start_date" property="startDate"/>
-        <result column="end_date" property="endDate"/>
-        <result column="trip_created_date" property="tripCreatedDate"/>
-        <result column="total_day" property="totalDay"/>
+    <resultMap id="TripMap" type="project.tripMaker.vo.Trip">
+        <id property="tripNo" column="trip_no"/>
+        <result property="userNo" column="user_no"/>
+        <result property="tripTitle" column="trip_title"/>
+        <result property="startDate" column="start_date"/>
+        <result property="endDate" column="end_date"/>
+        <result property="tripCreatedDate" column="trip_created_date"/>
+        <result property="totalDay" column="total_day"/>
 
-        <association property="thema" javaType="Thema">
-            <id column="thema_no" property="themaNo"/>
-            <result column="thema_name" property="themaName"/>
+        <!-- Thema 정보 매핑 -->
+        <association property="thema" javaType="project.tripMaker.vo.Thema">
+            <id property="themaNo" column="thema_no"/>
+            <result property="themaName" column="thema_name"/>
         </association>
 
-        <association property="city" javaType="City">
-            <id column="city_code" property="cityCode"/>
-            <result column="city_name" property="cityName"/>
-            <result column="city_photo" property="cityPhoto"/>
-            <association property="state" javaType="State">
-                <id column="state_code" property="stateCode"/>
-                <result column="state_name" property="stateName"/>
+        <!-- City 및 State 정보 매핑 -->
+        <association property="city" javaType="project.tripMaker.vo.City">
+            <id property="cityCode" column="city_code"/>
+            <result property="cityName" column="city_name"/>
+            <association property="state" javaType="project.tripMaker.vo.State">
+                <id property="stateCode" column="state_code"/>
+                <result property="stateName" column="state_name"/>
             </association>
         </association>
 
-        <collection property="scheduleList" ofType="Schedule">
-            <id column="schedule_no" property="scheduleNo"/>
-            <result column="trip_no" property="tripNo"/>
-            <result column="schedule_day" property="scheduleDay"/>
-            <result column="schedule_route" property="scheduleRoute"/>
+        <!-- Schedule 및 Location 정보 매핑 -->
+        <collection property="scheduleList" ofType="project.tripMaker.vo.Schedule" javaType="java.util.List">
+            <id property="scheduleNo" column="schedule_no"/>
+            <result property="tripNo" column="trip_no"/>
+            <result property="scheduleDay" column="schedule_day"/>
+            <result property="scheduleRoute" column="schedule_route"/>
 
-            <association property="location" javaType="Location">
-                <id column="location_no" property="locationNo"/>
-                <result column="thirdclass_code" property="thirdclassCode"/>
-                <result column="city_code" property="cityCode"/>
-                <result column="location_name" property="locationName"/>
-                <result column="location_desc" property="locationDesc"/>
-                <result column="location_photo" property="locationPhoto"/>
-                <result column="location_tel" property="locationTel"/>
-                <result column="location_addr" property="locationAddr"/>
-                <result column="location_x" property="locationX"/>
-                <result column="location_y" property="locationY"/>
-                <result column="locationtype_no" property="locationtypeNo"/>
+            <association property="location" javaType="project.tripMaker.vo.Location">
+                <id property="locationNo" column="location_no"/>
+                <result property="locationName" column="location_name"/>
+                <result property="locationDesc" column="location_desc"/>
+                <result property="locationPhoto" column="location_photo"/>
+                <result property="cityCode" column="city_code"/>
+                <result property="thirdclassCode" column="thirdclass_code"/>
+                <result property="locationAddr" column="location_addr"/>
+                <result property="locationTel" column="location_tel"/>
+                <result property="locationX" column="location_x"/>
+                <result property="locationY" column="location_y"/>
             </association>
         </collection>
-
     </resultMap>
 
     <select id="list" resultMap="BoardMap">
@@ -397,7 +408,7 @@
     </delete>
 
     <!--    게시글 번호를 통한 Trip 찾기-->
-    <select id="findTripsByBoardNo" parameterType="int" resultMap="TripResultMap">
+    <select id="findTripsByBoardNo" parameterType="int" resultMap="TripMap">
         SELECT
         t.trip_no,
         t.user_no,
