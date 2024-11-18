@@ -7,48 +7,45 @@ const textArray = [
   "두근거리는 새로운 만남"
 ];
 
-// 텍스트 표시를 위한 요소 선택
 const typingTextElement = document.querySelector('.typing-text');
-
 let currentTextIndex = 0;
 
-// 텍스트 타이핑 애니메이션 함수
 function typeText(text, callback) {
   let charIndex = 0;
-  typingTextElement.textContent = ''; // 기존 텍스트 초기화
+  typingTextElement.innerHTML = '<span class="cursor"></span>'; // 커서만 남기고 초기화
 
   const typingInterval = setInterval(() => {
     if (charIndex < text.length) {
-      typingTextElement.textContent += text[charIndex];
+      // 커서 앞에 텍스트 추가
+      typingTextElement.innerHTML = text.substring(0, charIndex + 1) + '<span class="cursor"></span>';
       charIndex++;
     } else {
       clearInterval(typingInterval);
-      setTimeout(callback, 1000); // 다음 텍스트로 넘어가기 전 대기 시간
+      setTimeout(callback, 1000);
     }
-  }, 100); // 타이핑 속도
+  }, 100);
 }
 
-// 텍스트 삭제 애니메이션 함수
 function deleteText(callback) {
   const deleteInterval = setInterval(() => {
-    if (typingTextElement.textContent.length > 0) {
-      typingTextElement.textContent = typingTextElement.textContent.slice(0, -1);
+    const currentText = typingTextElement.innerHTML.replace('<span class="cursor"></span>', '');
+    if (currentText.length > 0) {
+      // 한 글자씩 지우면서 커서 유지
+      typingTextElement.innerHTML = currentText.slice(0, -1) + '<span class="cursor"></span>';
     } else {
       clearInterval(deleteInterval);
-      setTimeout(callback, 500); // 다음 텍스트 타이핑 전 대기 시간
+      setTimeout(callback, 500);
     }
-  }, 50); // 삭제 속도
+  }, 50);
 }
 
-// 텍스트 순환 애니메이션 함수
 function cycleText() {
   typeText(textArray[currentTextIndex], () => {
     deleteText(() => {
-      currentTextIndex = (currentTextIndex + 1) % textArray.length; // 다음 텍스트로 이동
+      currentTextIndex = (currentTextIndex + 1) % textArray.length;
       cycleText();
     });
   });
 }
 
-// 애니메이션 시작
 cycleText();

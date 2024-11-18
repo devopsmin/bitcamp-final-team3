@@ -32,27 +32,34 @@
   .title-text {
     font-family: 'SBAggroB', sans-serif;
     font-size: 65px;
+    position: relative; /* typing-text의 기준점 */
+    display: inline-block; /* inline 요소로 설정 */
   }
 
   .typing-text {
-    width: 748px; /* 폰트 크기와 텍스트 길이에 따라 계산 */
+    display: inline-block; /* 커서와 텍스트를 함께 처리 */
     white-space: nowrap;
     overflow: hidden;
-    border-right: 2px solid black; /* 검은색 커서 */
     font-family: "MaplestoryOTFBold", sans-serif;
-    font-size: 48px;
-    text-align: center;
-    margin-left: auto;
-    height: 60px; /* 요소의 높이를 고정 */
-    line-height: 60px; /* 텍스트를 수직으로 중앙 정렬 */
-    animation: blink 0.5s step-end infinite;
+    font-size: 2rem; /* 적절한 폰트 크기 설정 */
+  }
+
+  .cursor {
+    display: inline-block;
+    margin-left: 2px;  /* 텍스트와 커서 사이 간격 */
+    width: 3px;  /* 커서 너비 */
+    height: 1.2em;  /* 커서 높이 */
+    background-color: black;
+    vertical-align: text-top;  /* 텍스트와 수직 정렬 */
+    animation: blink 0.7s infinite;  /* 깜박임 애니메이션 적용 */
   }
 
   /* 깜빡이는 커서 애니메이션 */
+
   @keyframes blink {
-    50% {
-      border-color: transparent;
-    }
+    0% { opacity: 1; }
+    50% { opacity: 0; }
+    100% { opacity: 1; }
   }
 
   /* 두 번째 슬라이드의 버튼 스타일 변경 */
@@ -72,10 +79,10 @@
   }
 
   @media (max-width: 768px) {
-    #carouselReviews .carousel-control-prev,
-    #carouselReviews .carousel-control-next {
-      left: -30px; /* 모바일 화면에서 버튼 위치 조정 */
-      right: -30px;
+    .typing-text {
+      font-size: 1.5rem; /* 작은 화면에서는 폰트 크기 줄임 */
+      height: 50px; /* 높이 조정 */
+      line-height: 50px; /* 수직 정렬 유지 */
     }
   }
 
@@ -129,9 +136,14 @@
     gap: 20px; /* 카드 간 간격 */
     max-width: 1700px; /* 전체 카드 리스트의 최대 너비 */
     margin: 0 auto; /* 카드 리스트를 중앙 정렬 */
+
+    .container {
+      transition: all 0.5s ease-in-out;
+    }
   }
 </style>
-<div class="container d-flex justify-content-center align-items-center vh-100">
+
+<div class="container d-flex justify-content-center align-items-center vh-99" style="margin-bottom: 400px; margin-top: 150px;">
   <div class="row w-100">
     <div class="col-md-6 align-items-start text-start">
       <p class="title-text">
@@ -139,7 +151,7 @@
         <span>새로운 여행 커뮤니티</span>
       </p>
       <div style="height: 60px">
-        <p class="typing-text"></p>
+        <p class="typing-text"><span class="cursor"></span></p>
       </div>
       <div class="mt-4">
         <button class="btn btn-primary me-2">나만의 일정 만들기</button>
@@ -174,7 +186,7 @@
 </div>
 
 
-<div class="container mt-5">
+<div class="container mt-5" style="margin-bottom: 150px;">
   <h1 class="text-center mb-4">여행 베스트 후기 목록</h1>
 
   <div id="carouselReviews" class="carousel slide" data-bs-ride="carousel">
@@ -261,13 +273,12 @@
 
 <script>
   // title-text와 typing-text 요소의 너비를 동기화
-  window.addEventListener('load', function() {
-    const titleText = document.getElementById('title-text');
-    const typingText = document.getElementById('typing-text');
-    const titleTextWidth = titleText.offsetWidth;
+  window.addEventListener("load", function () {
+    const typingText = document.querySelector(".typing-text");
+    const parentWidth = typingText.parentElement.offsetWidth;
 
-// typing-text의 너비를 title-text의 너비로 설정
-    typingText.style.width = `${titleTextWidth}px`;
+    // 부모 너비에 맞게 조정
+    typingText.style.width = `${parentWidth}px`;
   });
 </script>
 
