@@ -313,7 +313,7 @@ public class ScheduleController {
   @PostMapping("save")
   public void save(
       @ModelAttribute Trip trip,
-           // int themaNo,
+            int themaNo,
       HttpSession session,
       SessionStatus sessionStatus) throws Exception {
 
@@ -323,8 +323,8 @@ public class ScheduleController {
     }
 
     trip.setUserNo(loginUser.getUserNo());
-       // Thema thema = scheduleService.getThema(themaNo);
-       // trip.setThema(thema);
+        Thema thema = scheduleService.getThema(themaNo);
+        trip.setThema(thema);
     System.out.println("==========================================");
     System.out.println(trip.toString());
     System.out.println("==========================================");

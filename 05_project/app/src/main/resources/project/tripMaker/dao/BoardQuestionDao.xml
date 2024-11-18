@@ -103,12 +103,15 @@
         b.board_count,
         b.board_tag,
         b.trip_no,
+        t.trip_title,
+        th.thema_name,
         u.user_no,
         u.user_nickname,
         u.user_photo,
         COALESCE(fv.favor_count, 0) AS favor_count,
         COALESCE(bl.like_count, 0) AS like_count,
-        c.city_name
+        c.city_name,
+        s.state_name
         FROM
         (SELECT @rownum := 0) r,  -- 변수 초기화
         board b
@@ -122,6 +125,8 @@
         trip t ON b.trip_no = t.trip_no -- Trip과 Board 조인 추가
         LEFT JOIN
         city c ON t.city_code = c.city_code -- Trip과 City 조인
+        LEFT JOIN thema th ON t.thema_no = th.thema_no -- Trip과 Thema 조인 추가
+        LEFT JOIN state s ON c.state_code = s.state_code -- City와 State 조인
         WHERE
         b.boardtype_no = 1
         ORDER BY
@@ -167,7 +172,8 @@
         c.comment_created_date,
         COALESCE(fv.favor_count, 0) AS favor_count,
         COALESCE(bl.like_count, 0) AS like_count,
-        cy.city_name
+        cy.city_name,
+        s.state_name -- 주 이름 추가
         from
         board b
         inner join user u on b.user_no=u.user_no
@@ -178,6 +184,8 @@
         trip t ON b.trip_no = t.trip_no -- Trip과 Board 조인 추가
         LEFT JOIN
         city cy ON t.city_code = cy.city_code -- Trip과 City 조인
+        LEFT JOIN
+        state s ON cy.state_code = s.state_code -- City와 State 조인
         where
         b.board_no=#{boardNo}
     </select>
@@ -214,7 +222,8 @@
         u.user_nickname,
         COALESCE(fv.favor_count, 0) AS favor_count,
         COALESCE(bl.like_count, 0) AS like_count,
-        c.city_name -- 시도명
+        c.city_name, -- 시도명
+        s.state_name -- 주 이름 추가
         FROM
         (SELECT @rownum := 0) r,  -- 변수 초기화
         board b
@@ -228,6 +237,7 @@
         trip t ON b.trip_no = t.trip_no -- Trip과 Board 조인 추가
         LEFT JOIN
         city c ON t.city_code = c.city_code -- Trip과 City 조인
+        LEFT JOIN state s ON c.state_code = s.state_code -- City와 State 조인
         WHERE
         b.boardtype_no = 1
         ORDER BY
@@ -248,7 +258,8 @@
         u.user_nickname,
         COALESCE(fv.favor_count, 0) AS favor_count,
         COALESCE(bl.like_count, 0) AS like_count,
-        c.city_name -- 시도명
+        c.city_name, -- 시도명
+        s.state_name -- 주 이름 추가
         FROM
         (SELECT @rownum := 0) r,  -- 변수 초기화
         board b
@@ -262,6 +273,7 @@
         trip t ON b.trip_no = t.trip_no -- Trip과 Board 조인 추가
         LEFT JOIN
         city c ON t.city_code = c.city_code -- Trip과 City 조인
+        LEFT JOIN state s ON c.state_code = s.state_code -- City와 State 조인
         WHERE
         b.boardtype_no = 1
         ORDER BY
@@ -282,7 +294,8 @@
         u.user_nickname,
         COALESCE(fv.favor_count, 0) AS favor_count,
         COALESCE(bl.like_count, 0) AS like_count,
-        c.city_name -- 시도명
+        c.city_name, -- 시도명
+        s.state_name -- 주 이름 추가
         FROM
         (SELECT @rownum := 0) r,  -- 변수 초기화
         board b
@@ -296,6 +309,7 @@
         trip t ON b.trip_no = t.trip_no -- Trip과 Board 조인 추가
         LEFT JOIN
         city c ON t.city_code = c.city_code -- Trip과 City 조인
+        LEFT JOIN state s ON c.state_code = s.state_code -- City와 State 조인
         WHERE
         b.boardtype_no = 1
         ORDER BY
@@ -317,7 +331,8 @@
         u.user_photo,
         COALESCE(fv.favor_count, 0) AS favor_count,
         COALESCE(bl.like_count, 0) AS like_count,
-        c.city_name -- 시도명
+        c.city_name, -- 시도명
+        s.state_name -- 주 이름 추가
         from
         board b
         left outer join user u on
@@ -330,6 +345,7 @@
         trip t ON b.trip_no = t.trip_no -- Trip과 Board 조인 추가
         LEFT JOIN
         city c ON t.city_code = c.city_code -- Trip과 City 조인
+        LEFT JOIN state s ON c.state_code = s.state_code -- City와 State 조인
         WHERE
         boardtype_no = #{boardtypeNo}
     </select>

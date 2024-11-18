@@ -38,7 +38,7 @@
             </div>
 
             <div class="mb-3">
-                <textarea id="boardContent" name="boardContent" placeholder="내용을 입력해 주세요." rows="10" class="form-control" data-th-text="${board.boardContent}"></textarea>
+                <textarea id="boardContent" name="boardContent" placeholder="내용을 입력해 주세요." class="form-control" style="height: 200px; overflow-y: auto; resize: none;" data-th-text="${board.boardContent}"></textarea>
             </div>
 
             <div class="mb-3">
@@ -62,57 +62,67 @@
             .then(response => response.json())
             .then(data => {
                 const scheduleContainer = document.getElementById('scheduleContainer');
-                const scheduleTableBody = document.getElementById('scheduleTableBody');
-                scheduleTableBody.innerHTML = ''; // 기존 데이터 초기화
+                scheduleContainer.innerHTML = ''; // 기존 데이터 초기화
 
                 if (data.length > 0) {
-                    scheduleContainer.style.display = 'block';
+                    const groupedSchedules = data.reduce((acc, schedule) => {
+                        const day = schedule.scheduleDay;
+                        if (!acc[day]) {
+                            acc[day] = [];
+                        }
+                        acc[day].push(schedule);
+                        return acc;
+                    }, {});
 
-                    data.forEach(schedule => {
-                        const scheduleDay = schedule.scheduleDay; // 일차 정보 가져오기
+                    Object.keys(groupedSchedules).forEach(day => {
                         const entry = document.createElement('div');
                         entry.classList.add('col-md-4', 'mb-3', 'd-inline-block');
                         entry.style.width = '300px';
                         entry.style.marginRight = '20px';
 
                         entry.innerHTML = `
-                            <h5 class="mb-3" style="font-size: 1.2rem;">${scheduleDay}일차</h5>
+                            <h5 class="mb-3" style="font-size: 1.2rem;">${day}일차</h5>
                             <div class="timeline">
-                                <div class="timeline-item mb-1">
-                                    <div class="p-3 border rounded shadow-sm d-flex justify-content-between align-items-center">
-                                        <div class="me-2">
-                                            <div class="badge bg-warning text-white" style="font-size: 1rem; border-radius: 50%; width: 25px; height: 25px; display: flex; align-items: center; justify-content: center;">${schedule.scheduleNo}</div>
-                                            <div class="ms-2">
-                                                <p class="mb-1 text-primary" style="font-size: 0.9rem;">${schedule.location ? schedule.location.locationName : 'N/A'}</p>
+                                ${groupedSchedules[day].map((schedule, index) => `
+                                    <div class="timeline-item mb-1">
+                                        <div class="p-3 border rounded shadow-sm d-flex justify-content-between align-items-center">
+                                            <div class="me-2">
+                                                <div class="badge bg-warning text-white" style="font-size: 1rem; border-radius: 50%; width: 25px; height: 25px; display: flex; align-items: center; justify-content: center;">${index + 1}</div>
+                                                <div class="ms-2">
+                                                    <p class="mb-1 text-primary" style="font-size: 0.9rem;">${schedule.location ? schedule.location.locationName : 'N/A'}</p>
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <img src="${schedule.location && schedule.location.locationPhoto ? schedule.location.locationPhoto : 'https://via.placeholder.com/70x70'}" alt="Location Photo" class="img-thumbnail" style="width: 70px; height: 70px;">
                                             </div>
                                         </div>
-                                        <div>
-                                            <img src="${schedule.location && schedule.location.locationPhoto ? schedule.location.locationPhoto : 'https://via.placeholder.com/70x70'}" alt="Location Photo" class="img-thumbnail" style="width: 70px; height: 70px;">
+                                        <div class="d-flex align-items-center" style="height: 20px;">
+                                            <div class="timeline-line mt-2" style="border-left: 2px dotted #ddd; height: 70%; margin-left: 15px;"></div>
+                                            <div class="text-muted small ms-2" style="font-size: 0.8rem; margin-top: 6px;"><i class="bi bi-car-front"></i> ${schedule.travelTime}분</div>
                                         </div>
                                     </div>
-                                    <div class="d-flex align-items-center" style="height: 20px;">
-                                        <div class="timeline-line mt-2" style="border-left: 2px dotted #ddd; height: 70%; margin-left: 15px;"></div>
-                                        <div class="text-muted small ms-2" style="font-size: 0.8rem; margin-top: 6px;"><i class="bi bi-car-front"></i> ${schedule.travelTime}분</div>
-                                    </div>
-                                </div>
+                                `).join('')}
                             </div>
                         `;
 
-                        scheduleTableBody.appendChild(entry);
+                        scheduleContainer.appendChild(entry);
                     });
+
+                    scheduleContainer.style.display = 'block';
                 } else {
-                    scheduleTableBody.innerHTML = '<tr><td colspan="4">일정 데이터가 없습니다.</td></tr>';
+                    scheduleContainer.innerHTML = '<p class="text-danger">일정 데이터가 없습니다.</p>';
                     scheduleContainer.style.display = 'block';
                 }
             })
             .catch(error => {
                 console.error('Error fetching schedule:', error);
-                scheduleContainer.style.display = 'none';
+                document.getElementById('scheduleContainer').style.display = 'none';
             });
     } else {
         document.getElementById('scheduleContainer').style.display = 'none';
     }
 }
+
 </script>
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">

@@ -226,8 +226,8 @@ public class QuestionController {
     model.addAttribute("isUserAuthorizedMap", isUserAuthorizedMap);
   }
 
-  @PostMapping("view2")
-  public void view2(int boardNo, Model model, HttpSession session) throws Exception {
+  @PostMapping("modify")
+  public void modify(int boardNo, Model model, HttpSession session) throws Exception {
 
     User loginUser = (User) session.getAttribute("loginUser");
 

@@ -8,7 +8,7 @@
 <body>
 <div class="container my-5" style="max-width: 1200px; margin: 0 auto;">
 
-    <form id="myForm" action="view2" method="post" enctype="multipart/form-data">
+    <form id="myForm" action="modify" method="post" enctype="multipart/form-data">
         <input type="hidden" name="boardNo" data-th-value='${board.boardNo}'>
 
         <div class="mb-3">
@@ -78,12 +78,27 @@
             <div data-th-each="trip : ${trips}" data-th-object="${trip}">
                 <h4 class="mb-2" style="margin-left: 10px; font-size: 1.5rem;">전체 경로</h4>
                 <p class="text-muted mb-3" style="margin-left: 10px; font-size: 0.9rem;" data-th-text="${#dates.format(trip.startDate, 'yyyy.MM.dd(E)')} + ' ~ ' + ${#dates.format(trip.endDate, 'yyyy.MM.dd(E)')}">일자</p>
-            </div>
+<!--            </div>-->
 
 <!--            <div class="d-flex" style="overflow-x: auto; white-space: nowrap;">-->
             <div class="d-flex" style="overflow-x: auto; overflow-y: auto; white-space: nowrap;"> <!-- 가로 스크롤 -->
                 <div class="col-md-4 mb-3 d-inline-block" style="width: 300px; margin-right: 20px;" data-th-each="entry : ${groupedSchedules}">
-                    <h5 class="mb-3 text" style="font-size: 1.2rem;" data-th-text="${entry.key} + '일차'">일차</h5>
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="text-start"
+                            style="font-size: 1.2rem; font-weight: bold;"
+                            data-th-text="${entry.key} + '일차'">
+                            1일차
+                        </h5>
+                        <span class="text-muted text-end"
+                              style="font-size: 1rem;"
+                              data-th-text="${#dates.format(trip.startDate, 'yyyy.MM.dd(E)')}">더미 날짜
+                        </span>
+<!--                        <span class="text-muted text-end"-->
+<!--                              style="font-size: 1rem;"-->
+<!--                              data-th-text="${#dates.format(#dates.addDays(trip.startDate, entry.key - 1), 'yyyy.MM.dd(E)')}">날짜-->
+<!--                        </span>-->
+                    </div>
+
 
                     <div class="timeline">
                         <div class="timeline-item mb-1" data-th-each="schedule, iter : ${entry.value}" data-th-object="${schedule}">
@@ -93,13 +108,13 @@
                                     <div class="d-flex">
                                         <div class="badge bg-warning text-white" style="font-size: 1rem; border-radius: 50%; width: 25px; height: 25px; display: flex; align-items: center; justify-content: center;" data-th-text="${iter.index + 1}">일정 순서</div>
                                         <div class="ms-2">
-                                            <p class="text-primary" style="font-size: 0.9rem;"
-                                               data-th-if="${board.trip != null and board.trip.thema != null}"
-                                               data-th-text="${board.trip.thema.themaName}">
-                                                Thema Name
+                                            <p class="mb-1 text-secondary" style="font-size: 0.9rem;">16:00 ~ 16:30</p>
+                                            <p class="mb-1 text-primary" style="font-size: 0.9rem;">
+<!--                                               data-th-if="${board.trip != null and board.trip.thema != null}"-->
+<!--                                               data-th-text="${board.trip.thema.themaName}">-->
+                                                테마 이름
                                             </p>
-                                            <p class="mb-1 text-primary" style="font-size: 0.9rem;" data-th-text="*{location.locationName}">지역</p>
-                                            <p class="mb-1 text-primary" style="font-size: 0.9rem;" data-th-text="*{location.locationName}">지역</p>
+                                            <p class="mb-1" style="font-size: 0.9rem;" data-th-text="*{location.locationName}">지역</p>
                                         </div>
                                     </div>
                                 </div>
@@ -119,6 +134,14 @@
                 </div>
             </div>
         </div>
+        </div>
+
+        <p>State: <span data-th-text="${board.trip.city.state.stateName}">서울특별시</span>
+            City: <span data-th-text="${board.trip.city.cityName}">강서구</span></p>
+
+        <div>
+            <div id="map" style="width: 1175px; height: 600px;"></div>
+        </div>
 
         <div class="mb-2">
             <textarea readonly class="form-control border-0 p-2" style="resize: none; overflow: hidden; font-size: 1rem;" data-th-text="${board.boardContent}" oninput="this.style.height = ''; this.style.height = this.scrollHeight + 'px';">내용</textarea>
@@ -136,7 +159,7 @@
 
 <div data-th-replace="~{question/comment}"></div>
 
-<button id="scrollTopButton" onclick="scrollToTop()" class="btn btn-secondary btn-sm" style="position: fixed; bottom: 20px; left: 77%; transform: translateX(-50%); visibility: hidden; padding: 7px 10px;">
+<button id="scrollTopButton" onclick="scrollToTop()" class="btn btn-secondary btn-sm" style="position: fixed; bottom: 20px; left: 80%; transform: translateX(-50%); visibility: hidden; padding: 7px 10px;">
     <i class="bi bi-arrow-up"></i> 상단으로 이동
 </button>
 
@@ -224,6 +247,35 @@
        }
    });
 </script>
+
+<!--<script>-->
+<!--    document.addEventListener('DOMContentLoaded', async () => {-->
+<!--    try {-->
+<!--        const stateName = /*[[${board.trip.city.state.stateName}]]*/ "defaultState";-->
+<!--        const cityName = /*[[${board.trip.city.cityName}]]*/ "defaultCity";-->
+
+<!--        await initializeMap("map", stateName, cityName);-->
+<!--    } catch (error) {-->
+<!--        console.error("지도 초기화 중 오류:", error);-->
+<!--    }-->
+<!--});-->
+<!--</script>-->
+
+<script>
+    document.addEventListener('DOMContentLoaded', async () => {
+        try {
+            const stateName = /*[[${board.trip.city.state.stateName} ?: '서울특별시']]*/ '서울특별시';
+            const cityName = /*[[${board.trip.city.cityName} ?: '강서구']]*/ '강서구';
+
+            await initializeMap('map', stateName, cityName);
+        } catch (error) {
+            console.error('지도를 초기화하는 중 오류가 발생했습니다:', error);
+        }
+    });
+</script>
+
+<script src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=0zojwabqn9&submodules=geocoder"></script>
+<script data-th-src="@{/js/mapUtils.js}"></script>
 
 </body>
 
