@@ -2,6 +2,8 @@ package project.tripMaker.controller;
 
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -574,11 +576,48 @@ public class ReviewController {
     return "review/list"; // 게시글 목록을 출력하는 Thymeleaf 템플릿 파일 이름
   }
 
+  // @GetMapping("api/list")
+  // public ResponseEntity<List<ReviewDto>> getReviewList(@RequestParam int page) {
+  //   try {
+  //     List<ReviewDto> reviews = reviewService.getReviews(page);
+  //     return new ResponseEntity<>(reviews, HttpStatus.OK);
+  //   } catch (Exception e) {
+  //     e.printStackTrace();
+  //     return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+  //   }
+  // }
+
   @GetMapping("api/list")
-  public ResponseEntity<List<ReviewDto>> getReviewList(@RequestParam int page) {
+  public ResponseEntity<List<ReviewDto>> getTopRecommendedBoards(@RequestParam int page) {
     try {
-      List<ReviewDto> reviews = reviewService.getReviews(page);
-      return new ResponseEntity<>(reviews, HttpStatus.OK);
+      int limit = 4; // 가져올 상위 게시글 수
+      List<Board> topBoards = reviewService.getTopRecommendedBoards(BOARD_TYPE_REVIEW, limit);
+
+      // Board 객체를 ReviewDto로 변환
+      List<ReviewDto> topBoardDtos = topBoards.stream().map(board -> {
+        LocalDate createdDate = board.getBoardCreatedDate().toInstant()
+            .atZone(ZoneId.systemDefault())
+            .toLocalDate();
+
+        String themaName = board.getTrip().getThema() != null ? board.getTrip().getThema().getThemaName() : "No Thema";
+
+        return ReviewDto.builder()
+            .boardNo(board.getBoardNo())
+            .boardTitle(board.getBoardTitle())
+            .firstImageName(board.getFirstImageName() != null ? board.getFirstImageName() : "default.png")
+            .cityName(board.getTrip().getCity().getCityName())
+            .stateName(board.getTrip().getCity().getState().getStateName())
+            .themaName(themaName)
+            .boardLike(board.getBoardLike())
+            .boardFavor(board.getBoardFavor())
+            .boardCount(board.getBoardCount())
+            .writerNickname(board.getWriter().getUserNickname())
+            .writerPhoto(board.getWriter().getUserPhoto())
+            .boardCreatedDate(createdDate)
+            .build();
+      }).collect(Collectors.toList());
+
+      return new ResponseEntity<>(topBoardDtos, HttpStatus.OK);
     } catch (Exception e) {
       e.printStackTrace();
       return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
