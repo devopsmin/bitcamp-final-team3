@@ -21,77 +21,77 @@
 <style>
     /* 기본 스타일 */
     .navbar {
-        padding: 1rem;
+        padding: 1rem !important; /* !important 추가 */
     }
 
     .navbar-brand {
-        display: flex;
-        align-items: center;
-        font-weight: bold;
-        font-size: 1.2rem;
+        display: flex !important;
+        align-items: center !important;
+        font-weight: bold !important;
+        font-size: 1.2rem !important;
     }
 
     .navbar-brand img {
-        width: 30px;
-        height: 30px;
-        margin-right: 8px;
-        border-radius: 50%;
-        object-fit: cover;
+        width: 30px !important;
+        height: 30px !important;
+        margin-right: 8px !important;
+        border-radius: 50% !important;
+        object-fit: cover !important;
     }
 
     /* 메뉴 스타일 */
     .nav {
-        background-color: #FFFFFF;
-        padding: 0.5rem 1rem;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        background-color: #FFFFFF !important;
+        padding: 0.5rem 1rem !important;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
     }
 
+    /* 기본 스타일 */
     .nav-item .nav-link {
-        font-weight: 500;
-        color: #333;
-        transition: color 0.3s ease;
-        padding: 0.5rem 1rem;
-        border-radius: 8px;
+        font-weight: 500 !important;
+        color: #333 !important;
+        transition: background-color 0.3s ease, color 0.3s ease !important;
+        padding: 0.5rem 1rem !important;
+        border-radius: 12px !important; /* 둥근 네모 모양 */
     }
 
-    /* 메뉴 호버 스타일 */
+    /* Hover 스타일 */
     .nav-item .nav-link:hover {
-        color: #007bff;
-        /*background-color: rgba(0, 123, 255, 0.1);*/
-        text-decoration: none;
+        background-color: var(--bs-primary) !important; /* Bootstrap의 btn-primary 색상 */
+        color: #fff !important; /* 텍스트 색상 변경 */
+        text-decoration: none !important; /* 밑줄 제거 */
     }
 
     /* 로그인 버튼 및 프로필 이미지 스타일 */
     .button-02-s3 .div2,
     .profile-image-wrapper img {
-        width: 30px;
-        height: 30px;
-        border-radius: 50%;
-        object-fit: cover;
+        width: 30px !important;
+        height: 30px !important;
+        border-radius: 50% !important;
+        object-fit: cover !important;
     }
 
     .dropdown-toggle {
-        display: flex;
-        align-items: center;
-        padding: 0.5rem;
-        border: none;
-        background-color: transparent;
+        display: flex !important;
+        align-items: center !important;
+        padding: 0.5rem !important;
+        border: none !important;
+        background-color: transparent !important;
     }
 
     .user-profile-container .dropdown-toggle:hover {
-        background-color: rgba(0, 123, 255, 0.1);
-        border-radius: 8px;
+        background-color: rgba(0, 123, 255, 0.1) !important;
+        border-radius: 8px !important;
     }
 
     .dropdown-menu {
-        min-width: 180px;
-        border-radius: 8px;
+        min-width: 180px !important;
+        border-radius: 8px !important;
     }
 
     .dropdown-menu .dropdown-item:hover {
-        background-color: #f1f1f1;
+        background-color: #f1f1f1 !important;
     }
-
 </style>
 
 
