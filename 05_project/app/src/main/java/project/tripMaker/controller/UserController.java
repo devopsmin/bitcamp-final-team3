@@ -88,6 +88,7 @@ public class UserController {
       updateUser.setUserTel(user.getUserTel());
       updateUser.setUserNickname(user.getUserNickname());
       updateUser.setUserRole(currentUser.getUserRole());
+      updateUser.setUserBlock(currentUser.getUserBlock());
       updateUser.setSnsNo(currentUser.getSnsNo());
 
       if (file != null && !file.isEmpty()) {

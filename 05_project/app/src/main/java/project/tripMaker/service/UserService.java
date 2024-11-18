@@ -1,6 +1,7 @@
 package project.tripMaker.service;
 
 import java.util.List;
+import java.util.Map;
 import project.tripMaker.vo.User;
 
 public interface UserService {
@@ -11,7 +12,7 @@ public interface UserService {
 
   User addSocialUser(String email, String nickname, String snsName) throws Exception;
 
-  List<User> list() throws Exception;
+  List<User> list(Map<String, Object> options) throws Exception;
 
   User get(Long userNo) throws Exception;
 
@@ -32,4 +33,6 @@ public interface UserService {
   void updateLastLogin(Long userNo) throws Exception;
 
   boolean realDelete(Long userNo, User user) throws Exception;
+
+  int countAll(Map<String, Object> options) throws Exception;
 }

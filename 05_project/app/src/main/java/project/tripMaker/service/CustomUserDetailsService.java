@@ -1,7 +1,10 @@
 package project.tripMaker.service;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -17,18 +20,21 @@ public class CustomUserDetailsService implements UserDetailsService {
   private final UserDao userDao;
 
   @Override
-  public UserDetails loadUserByUsername(String userEmail) throws UsernameNotFoundException {
+  public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
     try {
-      User user = userDao.findByEmail(userEmail);
+      User user = userDao.findByEmail(email);
       if (user == null) {
-        throw new UsernameNotFoundException("이메일을 통해 사용자를 찾을 수 없습니다.: " + userEmail);
+        throw new UsernameNotFoundException("사용자를 찾을 수 없습니다: " + email);
       }
 
-      return org.springframework.security.core.userdetails.User.builder()
-          .username(user.getUserEmail())
-          .password(user.getUserPassword())
-          .authorities(Collections.singleton(new SimpleGrantedAuthority(user.getUserRole().name())))
-          .build();
+      List<GrantedAuthority> authorities = new ArrayList<>();
+      authorities.add(new SimpleGrantedAuthority(user.getUserRole().name()));
+
+      return new org.springframework.security.core.userdetails.User(
+          user.getUserEmail(),
+          user.getUserPassword(),
+          authorities
+      );
     } catch (Exception e) {
       throw new UsernameNotFoundException("사용자 로드 중 오류 발생", e);
     }

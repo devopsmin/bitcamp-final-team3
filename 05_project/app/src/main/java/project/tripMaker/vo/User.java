@@ -20,7 +20,7 @@ public class User {
   private LocalDateTime userCreatedDate;  // 사용자 생성 날짜
   private String userNickname;        // 사용자 닉네임
   private UserRole userRole;          // 사용자 역할
-  private Integer userBlock;          // 사용자 차단 상태   현재 (0:이용 가능, 1:차단 상태, 2:탈퇴 상태) 예정
+  private Integer userBlock;          // 사용자 차단 상태   현재 (0:이용 가능, 1:일시 정지, 2:영구 정지, 3:탈퇴 회원) 
   private Integer snsNo;              // SNS 번호 (소셜 로그인 시 사용)
   private String snsName;             // SNS 이름/구분 (구글, 네이버 , 카카오)
   private LocalDateTime deletedDate;  // 탈퇴날짜

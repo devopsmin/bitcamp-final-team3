@@ -1,12 +1,41 @@
 <!DOCTYPE html>
 <html>
 <head data-th-replace="~{header :: head}"></head>
+<link rel="stylesheet" href="/css/adminUserList.css">
 <body>
 
 <header data-th-replace="~{header :: #page-header}"></header>
 
-<h1>회원 목록</h1>
-<p><a data-th-href="@{/auth/register/admin}">새 관리자</a></p>
+<div class="sidebar">
+  <!-- 프로필 영역 -->
+  <div class="profile-section">
+    <div class="profile-image-container">
+      <img data-th-if="${session.loginUser.userPhoto == null}"
+           data-th-src="@{https://dgg7dnk35523.edge.naverncp.com/HZiW9aEJy7/user/profile/default.png(type=f,w=100,h=100)}"
+           class="profile-image"
+           alt="기본 프로필 이미지">
+      <img data-th-unless="${session.loginUser.userPhoto == null}"
+           data-th-src="@{https://dgg7dnk35523.edge.naverncp.com/HZiW9aEJy7/user/profile/} + ${session.loginUser.userPhoto} + '?type=f&w=100&h=100'"
+           class="profile-image"
+           alt="프로필 이미지">
+    </div>
+    <p class="profile-name" data-th-text="${session.loginUser.userNickname}">관리자</p>
+  </div>
+
+  <!-- 메뉴 영역 -->
+  <nav class="sidebar-nav">
+    <div class="nav-section">
+      <h2>관리</h2>
+      <ul>
+        <li><a href="#" class="active">회원 관리</a></li>
+      </ul>
+    </div>
+  </nav>
+</div>
+
+<div class="main-content">
+  <div class="container">
+    <h1>회원 목록</h1>
 <table>
   <thead>
   <tr>
@@ -16,7 +45,7 @@
     <th>닉네임</th>
     <th>전화번호</th>
     <th>권한</th>
-    <th>블록 여부</th>
+    <th>차단 여부</th>
     <th>SNS 구분</th>
     <th>관리</th>
   </tr>
@@ -33,38 +62,118 @@
            data-th-src="@{https://dgg7dnk35523.edge.naverncp.com/HZiW9aEJy7/user/profile/} + ${user.userPhoto} + '?type=f&w=20&h=20'"
            src="/images/default.png">
     </td>
-    <td>
-      <a data-th-href="@{/user/profile/{userNo}(userNo=${user.userNo})}" data-th-text="${user.userEmail}"></a>
-    </td>
+    <td data-th-text="${user.userEmail}"></td>
     <td data-th-text="${user.userNickname}"></td>
     <td data-th-text="${user.userTel}"></td>
     <td data-th-text="${user.userRole}"></td>
-    <td data-th-text="${user.userBlock == 0 ? '미차단' : '차단'}"></td>
+    <td>
+      <span data-th-text="${user.userBlock == 0 ? '정상' : (user.userBlock == 1 ? '일시 정지' : (user.userBlock == 2 ? '영구 정지' : (user.userBlock == 3 ? '탈퇴 유저' : '-')))}"></span>
+    </td>
     <td data-th-text="${user.snsName}"></td>
     <td>
-      <button data-th-onclick="'deleteUser(' + ${user.userNo} + ')'" type="button">삭제</button>
+<!--      <button data-th-onclick="'deleteUser(' + ${user.userNo} + ')'" type="button"-->
+<!--              class="btn btn-danger btn-sm">삭제</button>-->
+      <button data-th-onclick="'openBanModal(' + ${user.userNo} + ')'" type="button"
+              class="btn btn-warning btn-sm"
+              data-th-if="${user.userBlock == 0}">차단</button>
+      <button data-th-onclick="'unbanUser(' + ${user.userNo} + ')'" type="button"
+              class="btn btn-success btn-sm"
+              data-th-if="${user.userBlock == 1 || user.userBlock == 2}">해제</button>
     </td>
   </tr>
 
   </tbody>
 </table>
 
-<script>
-  function deleteUser(no) {
-      if (confirm("정말 삭제하시겠습니까?")) {
-          const xhr = new XMLHttpRequest();
-          xhr.open("DELETE", "/admin/" + no, true);
-          xhr.onload = function() {
-              if (xhr.status === 200) {
-                  location.href = "/admin";
-              } else {
-                  alert("삭제 실패입니다!");
-              }
-          };
-          xhr.send();
-      }
-  }
-</script>
+<div class="row mb-3">
+  <div class="col-md-6 offset-md-3">
+    <form class="d-flex" action="/admin" method="get">
+      <select name="searchType" class="form-select me-2" style="width: auto;">
+        <option value="email" data-th-selected="${searchType == 'email'}">이메일</option>
+        <option value="nickname" data-th-selected="${searchType == 'nickname'}">닉네임</option>
+      </select>
+      <input type="text" name="searchText" class="form-control me-2"
+             data-th-value="${searchText}" placeholder="검색어를 입력하세요">
+      <button class="btn btn-outline-primary" type="submit">검색</button>
+    </form>
+  </div>
+</div>
+
+<div class="text-center mb-4">
+  <nav aria-label="Page navigation">
+    <ul class="pagination justify-content-center">
+      <li class="page-item" data-th-classappend="${pageNo == 1 ? 'disabled' : ''}">
+        <a class="page-link" data-th-href="@{/admin(pageNo=${pageNo - 1},pageSize=${pageSize})}"
+           aria-label="Previous">
+          <span aria-hidden="true">&laquo;</span>
+        </a>
+      </li>
+
+      <li class="page-item" data-th-each="i : ${#numbers.sequence(1, pageCount)}"
+          data-th-classappend="${i == pageNo ? 'active' : ''}">
+        <a class="page-link"
+           data-th-href="@{/admin(pageNo=${i},pageSize=${pageSize})}"
+           data-th-text="${i}">1</a>
+      </li>
+
+      <li class="page-item" data-th-classappend="${pageNo >= pageCount ? 'disabled' : ''}">
+        <a class="page-link" data-th-href="@{/admin(pageNo=${pageNo + 1},pageSize=${pageSize})}"
+           aria-label="Next">
+          <span aria-hidden="true">&raquo;</span>
+        </a>
+      </li>
+    </ul>
+  </nav>
+    </div>
+  </div>
+</div>
+
+
+<!-- 차단 모달 -->
+<div class="modal fade" id="banModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">사용자 차단</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="banForm">
+          <input type="hidden" id="banUserNo" name="userNo">
+          <div class="mb-3">
+            <label class="form-label">차단 기간</label>
+            <select class="form-select" id="banDuration" name="duration" required>
+              <option value="1">1일</option>
+              <option value="7">7일</option>
+              <option value="30">30일</option>
+              <option value="-1">영구정지</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">차단 사유</label>
+            <select class="form-select" id="banType" name="bentypeNo" required>
+              <option value="1">광고</option>
+              <option value="2">불법 컨텐츠</option>
+              <option value="3">부적절한 언어</option>
+              <option value="4">욕설</option>
+              <option value="5">운영자에 의한 차단</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">상세 사유</label>
+            <textarea class="form-control" id="banDesc" name="benDesc" rows="3" required></textarea>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+        <button type="button" class="btn btn-danger" onclick="banUser()">차단</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="/js/ben.js"></script>
 
 </body>
 </html>

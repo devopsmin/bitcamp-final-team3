@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
 
 <h1 class="logo-text" style="text-align: center;">모두의 여행</h1>
 
@@ -7,7 +6,7 @@
   <form action="/auth/login" method="post" class="needs-validation" novalidate>
     <div class="mb-3">
       <label for="userEmail" class="form-label">이메일</label>
-      <input id="userEmail" name="userEmail" type="email" class="form-control form-control-lg" placeholder="이메일을 입력하세요" th:value="${userEmail}"required>
+      <input id="userEmail" name="userEmail" type="email" class="form-control form-control-lg" placeholder="이메일을 입력하세요" data-th-value="${userEmail}"required>
     </div>
 
     <div class="mb-3">
@@ -50,5 +49,5 @@
   </div>
 </div>
 
-<script th:src="@{/js/auth.js}"></script>
+<script data-th-src="@{/js/auth.js}"></script>
 </html>

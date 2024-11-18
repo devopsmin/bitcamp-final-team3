@@ -21,22 +21,52 @@
 
     <select id="list" resultMap="UserMap">
         select
-          u.user_no,
-          u.user_photo,
-          u.user_created_date,
-          u.user_lastest_login,
-          u.user_email,
-          u.user_password,
-          u.user_tel,
-          u.user_nickname,
-          u.user_role,
-          u.user_block,
-          s.sns_name
+            u.user_no,
+            u.user_photo,
+            u.user_created_date,
+            u.user_lastest_login,
+            u.user_email,
+            u.user_password,
+            u.user_tel,
+            u.user_nickname,
+            u.user_role,
+            u.user_block,
+            s.sns_name
         from
-          user u
-           left join sns s on u.sns_no = s.sns_no
+            user u
+        left join sns s on u.sns_no = s.sns_no
+        <where>
+            <if test="searchType != null and searchText != null">
+                <choose>
+                    <when test="searchType == 'email'">
+                        u.user_email like concat('%', #{searchText}, '%')
+                    </when>
+                    <when test="searchType == 'nickname'">
+                        u.user_nickname like concat('%', #{searchText}, '%')
+                    </when>
+                </choose>
+            </if>
+        </where>
         order by
-         u.user_no asc;
+            u.user_no asc
+        limit #{rowNo}, #{length}
+    </select>
+
+    <select id="countAll" resultType="int">
+        select count(*) from
+            user u
+        <where>
+            <if test="searchType != null and searchText != null">
+                <choose>
+                    <when test="searchType == 'email'">
+                        u.user_email like concat('%', #{searchText}, '%')
+                    </when>
+                    <when test="searchType == 'nickname'">
+                        u.user_nickname like concat('%', #{searchText}, '%')
+                    </when>
+                </choose>
+            </if>
+        </where>
     </select>
 
     <insert id="insert" parameterType="User">
@@ -135,7 +165,8 @@
             user_nickname = #{userNickname},
             user_tel = #{userTel},
             user_password = #{userPassword},
-            user_photo = #{userPhoto}
+            user_photo = #{userPhoto},
+            user_block = #{userBlock}
         where
             user_no=#{userNo}
     </update>
@@ -152,7 +183,7 @@
 
     <update id="realDelete" parameterType="map">
         update user set
-             user_block = 2,
+             user_block = 3,
              deleted_date = NOW(),
              user_email = #{user.userEmail},
              user_nickname = #{user.userNickname},

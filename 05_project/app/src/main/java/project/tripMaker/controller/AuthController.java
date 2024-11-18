@@ -42,9 +42,9 @@ public class AuthController {
 
   @PostMapping("login")
   public String login(
-      String userEmail,
-      String userPassword,
-      boolean saveEmail,
+      @RequestParam String userEmail,
+      @RequestParam String userPassword,
+      @RequestParam(required = false) boolean saveEmail,
       HttpServletResponse res,
       HttpSession session) throws Exception {
 

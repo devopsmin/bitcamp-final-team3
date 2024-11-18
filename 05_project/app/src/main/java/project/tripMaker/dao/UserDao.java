@@ -1,5 +1,6 @@
 package project.tripMaker.dao;
 
+import java.util.Map;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import project.tripMaker.vo.User;
@@ -15,7 +16,7 @@ public interface UserDao {
 
   boolean insertSocialUser(User user) throws Exception;
 
-  List<User> list() throws Exception;
+  List<User> list(Map<String, Object> options) throws Exception;
 
   User findBy(Long userNo) throws Exception;
 
@@ -39,4 +40,6 @@ public interface UserDao {
   boolean delete(Long userNo) throws Exception;
 
   boolean realDelete(Long userNo, User user) throws Exception;
+
+  int countAll(Map<String, Object> options) throws Exception;
 }

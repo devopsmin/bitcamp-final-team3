@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="project.tripMaker.dao.BenDao">
+
+    <resultMap id="BenMap" type="project.tripMaker.vo.Ben">
+        <id column="user_no" property="userNo"/>
+        <result column="bentype_no" property="bentypeNo"/>
+        <result column="ben_desc" property="benDesc"/>
+        <result column="ben_date" property="benDate"/>
+        <result column="unban_date" property="unbanDate"/>
+    </resultMap>
+
+    <insert id="insert" parameterType="Ben">
+        insert into ben (
+            user_no,
+            bentype_no,
+            ben_desc,
+            ben_date,
+            unban_date)
+        values (
+            #{userNo}, #{bentypeNo}, #{benDesc}, #{benDate}, #{unbanDate})
+    </insert>
+
+    <select id="findByUserNo" parameterType="long" resultMap="BenMap">
+        select * from ben
+        where
+            user_no = #{userNo}
+        order by
+            ben_date DESC
+        limit 1
+    </select>
+
+    <select id="findExpiredBans" resultMap="BenMap">
+        select * from ben
+        where
+            unban_date is not null
+        and
+            unban_date &lt;= #{now}
+        and exists (
+        select
+            1
+        from
+            user
+        where
+            user.user_no = ben.user_no
+        and
+            user.user_block = 1)
+    </select>
+
+    <update id="update" parameterType="Ben">
+        update ben set
+            unban_date = #{unbanDate}
+        where
+            user_no = #{userNo}
+    </update>
+
+</mapper>

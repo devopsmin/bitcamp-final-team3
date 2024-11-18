@@ -1,5 +1,7 @@
 package project.tripMaker.service;
 
+import java.util.HashMap;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -81,8 +83,12 @@ public class DefaultUserService implements UserService {
     return user;
   }
 
-  public List<User> list() throws Exception {
-    return userDao.list();
+  public List<User> list(Map<String, Object> options) throws Exception {
+    return userDao.list(options);
+  }
+
+  public int countAll(Map<String, Object> options) throws Exception {
+    return userDao.countAll(options);
   }
 
   public User get(Long userNo) throws Exception {
