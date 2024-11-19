@@ -36,7 +36,7 @@
                 <nav class="col-xl-3 pt-3 d-flex flex-column justify-content-between">
                     <div>
                         <h4 class="text-dark text-center">
-                        <a href="/home" class="text-decoration-none text-dark">모두의<br>여행</a>
+                            <a href="/home" class="text-decoration-none text-dark">모두의<br>여행</a>
                         </h4>
                         <ul class="nav flex-column">
                             <li class="nav-item">
@@ -182,37 +182,37 @@
                         <p class="fs-4 fw-bold mb-1 text-dark" data-th-text="${#lists.isEmpty(selectLoList)} ? '0' : ${#lists.size(selectLoList)}">0</p>
                     </div>
                     <div id="cardArea">
-<!--                        &lt;!&ndash; Thymeleaf를 사용한 초기 카드 렌더링 &ndash;&gt;-->
-<!--                        <div data-th-each="location, status : ${selectLoList}" class="card mb-3" style="width: 100%; height: 100px;">-->
-<!--                            <div class="card-body d-flex align-items-center justify-content-between border gap-2">-->
-<!--                                &lt;!&ndash; 넘버링 서클 &ndash;&gt;-->
-<!--                                <div class="d-flex justify-content-center align-items-center rounded-circle bg-primary text-white"-->
-<!--                                     style="width: 20px; height: 20px; font-size: 10px;"-->
-<!--                                     data-th-text="${status.count}">1</div>-->
+                        <!--                        &lt;!&ndash; Thymeleaf를 사용한 초기 카드 렌더링 &ndash;&gt;-->
+                        <!--                        <div data-th-each="location, status : ${selectLoList}" class="card mb-3" style="width: 100%; height: 100px;">-->
+                        <!--                            <div class="card-body d-flex align-items-center justify-content-between border gap-2">-->
+                        <!--                                &lt;!&ndash; 넘버링 서클 &ndash;&gt;-->
+                        <!--                                <div class="d-flex justify-content-center align-items-center rounded-circle bg-primary text-white"-->
+                        <!--                                     style="width: 20px; height: 20px; font-size: 10px;"-->
+                        <!--                                     data-th-text="${status.count}">1</div>-->
 
-<!--                                &lt;!&ndash; 이미지 영역 &ndash;&gt;-->
-<!--                                <img class="rounded me-3 h-100" style="width: 70px; object-fit: cover;"-->
-<!--                                     data-th-src="${location.locationPhoto} ?: '/images/default.jpg'"-->
-<!--                                     alt="Location Image">-->
+                        <!--                                &lt;!&ndash; 이미지 영역 &ndash;&gt;-->
+                        <!--                                <img class="rounded me-3 h-100" style="width: 70px; object-fit: cover;"-->
+                        <!--                                     data-th-src="${location.locationPhoto} ?: '/images/default.jpg'"-->
+                        <!--                                     alt="Location Image">-->
 
-<!--                                &lt;!&ndash; 텍스트 정보 영역 &ndash;&gt;-->
-<!--                                <div class="d-flex flex-column" style="flex: 1;">-->
-<!--                                    <h5 class="card-title mb-1" style="font-size: 16px;"-->
-<!--                                        data-th-text="${location.locationName}">여행지이름</h5>-->
-<!--                                    <p class="card-text text-muted mb-0" style="font-size: 12px;"-->
-<!--                                       data-th-text="${location.locationAddr}">주소</p>-->
-<!--                                </div>-->
+                        <!--                                &lt;!&ndash; 텍스트 정보 영역 &ndash;&gt;-->
+                        <!--                                <div class="d-flex flex-column" style="flex: 1;">-->
+                        <!--                                    <h5 class="card-title mb-1" style="font-size: 16px;"-->
+                        <!--                                        data-th-text="${location.locationName}">여행지이름</h5>-->
+                        <!--                                    <p class="card-text text-muted mb-0" style="font-size: 12px;"-->
+                        <!--                                       data-th-text="${location.locationAddr}">주소</p>-->
+                        <!--                                </div>-->
 
-<!--                                &lt;!&ndash; 버튼 영역 &ndash;&gt;-->
-<!--                                <button class="btn btn-outline-secondary btn-location d-flex justify-content-center align-items-center"-->
-<!--                                        style="height: 60px; width: 30px;"-->
-<!--                                        data-th-attr="data-index=${status.index}">-->
-<!--                                    <i class="bi bi-trash"></i>-->
-<!--                                    <span class="location-x d-none" data-th-text="${location.locationX}"></span>-->
-<!--                                    <span class="location-y d-none" data-th-text="${location.locationY}"></span>-->
-<!--                                </button>-->
-<!--                            </div>-->
-<!--                        </div>-->
+                        <!--                                &lt;!&ndash; 버튼 영역 &ndash;&gt;-->
+                        <!--                                <button class="btn btn-outline-secondary btn-location d-flex justify-content-center align-items-center"-->
+                        <!--                                        style="height: 60px; width: 30px;"-->
+                        <!--                                        data-th-attr="data-index=${status.index}">-->
+                        <!--                                    <i class="bi bi-trash"></i>-->
+                        <!--                                    <span class="location-x d-none" data-th-text="${location.locationX}"></span>-->
+                        <!--                                    <span class="location-y d-none" data-th-text="${location.locationY}"></span>-->
+                        <!--                                </button>-->
+                        <!--                            </div>-->
+                        <!--                        </div>-->
                     </div>
                 </div>
             </div>

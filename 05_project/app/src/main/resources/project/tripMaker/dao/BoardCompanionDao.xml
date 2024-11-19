@@ -16,6 +16,25 @@
         <result property="tripNo" column="trip_no"/>
         <result property="boardContent" column="board_content"/>
         <result property="boardTag" column="board_tag"/>
+        <result property="boardLike" column="like_count"/>
+        <result property="boardFavor" column="favor_count"/>
+
+        <!-- Trip 및 City 정보 매핑 -->
+        <association property="trip" javaType="project.tripMaker.vo.Trip">
+            <id property="tripNo" column="trip_no"/>
+            <result property="tripTitle" column="trip_title"/>
+            <association property="city" javaType="project.tripMaker.vo.City">
+                <result property="cityName" column="city_name"/>
+                <association property="state" javaType="project.tripMaker.vo.State">
+                    <id property="stateCode" column="state_code"/>
+                    <result property="stateName" column="state_name"/>
+                </association>
+            </association>
+            <association property="thema" javaType="project.tripMaker.vo.Thema">
+                <id property="themaNo" column="thema_no"/>
+                <result property="themaName" column="thema_name"/>
+            </association>
+        </association>
 
         <!-- 동행게시판 - 작성자 정보 association(동행게시판:작성자 = 1:1 관계) -->
         <association property="writer" javaType="project.tripMaker.vo.User">
@@ -23,11 +42,18 @@
             <result property="userNickname" column="user_nickname"/>
             <result property="userPhoto" column="user_photo"/>
         </association>
+
+        <collection property="boardImages" ofType="project.tripMaker.vo.BoardImage">
+            <id property="boardNo" column="board_no"/>
+            <result property="boardimageNo" column="boardimage_no"/>
+            <result property="boardimageName" column="boardimage_name"/>
+            <result property="boardimageDefaultName" column="boardimage_default_name"/>
+        </collection>
     </resultMap>
 
 
     <!-- 동행게시판 - 목록 -->
-    <select id="list" resultMap="BoardMap">
+    <select id="list" parameterType="map" resultMap="BoardMap">
         SELECT
             b.board_no,
             b.boardtype_no,
@@ -38,21 +64,68 @@
             b.trip_no,
             b.board_content,
             b.board_tag,
+            t.trip_title,
+            th.thema_name,
+            u.user_no,
             u.user_nickname,
-            c.user_no,
-            c.comment_no,
-            c.comment_content,
-            c.comment_created_date,
-            t.trip_title
+            u.user_photo,
+            COALESCE(fv.favor_count, 0) AS favor_count,
+            COALESCE(bl.like_count, 0) AS like_count,
+            c.city_name, -- 시도명
+            s.state_name, -- 주 이름 추가
+            bi.boardimage_no,
+            bi.boardimage_name,
+            bi.boardimage_default_name
         FROM
             board b
-                INNER JOIN user u ON b.user_no = u.user_no
-                LEFT OUTER JOIN comment c on c.board_no=b.board_no
-                LEFT OUTER JOIN trip t on b.trip_no = t.trip_no
+                INNER JOIN
+                            user u ON b.user_no = u.user_no
+                LEFT JOIN
+                            favor_count_view fv ON b.board_no = fv.board_no
+                LEFT JOIN
+                            boardlike_count_view bl ON b.board_no = bl.board_no
+                LEFT JOIN
+                            trip t ON b.trip_no = t.trip_no -- Trip과 Board 조인 추가
+                LEFT JOIN
+                            thema th ON t.thema_no = th.thema_no -- Trip과 Thema 조인 추가
+                LEFT JOIN
+                            city c ON t.city_code = c.city_code -- Trip과 City 조인
+                LEFT JOIN
+                            state s ON c.state_code = s.state_code -- City와 State 조인
+                LEFT JOIN
+                            (
+                             SELECT
+                                    board_no, boardimage_no, boardimage_name, boardimage_default_name
+                             FROM
+                                    boardimage
+                             WHERE (board_no, boardimage_no)
+                                    IN (
+                                        SELECT
+                                                board_no, MIN(boardimage_no)
+                                        FROM
+                                                boardimage
+                                        GROUP BY
+                                                board_no
+                                       )
+                          ) bi ON b.board_no = bi.board_no -- Board와 첫 번째 BoardImage 조인
         WHERE
-            b.boardtype_no=2
-        ORDER BY
-            b.board_no desc
+            b.boardtype_no=#{boardtype}
+        <trim prefix="ORDER BY">
+            <choose>
+                <when test= "order == 'like'">
+                    like_count DESC, b.board_no DESC
+                </when>
+                <when test="order == 'favorite'">
+                    favor_count DESC, b.board_no DESC
+                </when>
+                <when test="order == 'count'">
+                    b.board_count DESC, b.board_no DESC
+                </when>
+                <otherwise>
+                    b.board_no DESC
+                </otherwise>
+            </choose>
+        </trim>
         LIMIT
             #{rowNo}, #{length}
     </select>
@@ -60,8 +133,21 @@
 
     <!-- 동행게시판 - 글등록 -->
     <insert id="insert" parameterType="board" useGeneratedKeys="true" keyColumn="board_no" keyProperty="boardNo">
-        INSERT INTO board (boardtype_no, board_title, board_created_date, user_no, trip_no, board_content, board_tag)
-        VALUES (2, #{boardTitle}, NOW(), #{userNo}, #{tripNo}, #{boardContent}, #{boardTag})
+        INSERT INTO board (
+                            boardtype_no,
+                            board_title,
+                            board_created_date,
+                            user_no, trip_no,
+                            board_content,
+                            board_tag)
+        VALUES (
+                2,
+                #{boardTitle},
+                NOW(),
+                #{userNo},
+                #{tripNo},
+                #{boardContent},
+                #{boardTag})
     </insert>
 
 
@@ -120,7 +206,7 @@
     <select id="countAll" resultType="int">
         SELECT count(*)
         FROM board
-        WHERE boardtype_no=#{BOARD_TYPE_COMPANION}
+        WHERE boardtype_no=#{boardtype}
     </select>
 
 
@@ -141,6 +227,98 @@
         SELECT DISTINCT trip_no
         FROM board
         WHERE boardtype_no = 2
+    </select>
+
+    <select id="searchlist" parameterType="map" resultMap="BoardMap">
+        SELECT
+            b.board_no,
+            b.boardtype_no,
+            b.board_title,
+            b.board_count,
+            b.board_created_date,
+            b.user_no,
+            b.trip_no,
+            b.board_content,
+            b.board_tag,
+            t.trip_title,
+            th.thema_name,
+            u.user_no,
+            u.user_nickname,
+            u.user_photo,
+            COALESCE(fv.favor_count, 0) AS favor_count,
+            COALESCE(bl.like_count, 0) AS like_count,
+            c.city_name, -- 시도명
+            s.state_name, -- 주 이름 추가
+            bi.boardimage_no,
+            bi.boardimage_name,
+            bi.boardimage_default_name
+        FROM
+            board b
+        INNER JOIN
+            user u ON b.user_no = u.user_no
+        LEFT JOIN
+            favor_count_view fv ON b.board_no = fv.board_no
+        LEFT JOIN
+            boardlike_count_view bl ON b.board_no = bl.board_no
+        LEFT JOIN
+            trip t ON b.trip_no = t.trip_no -- Trip과 Board 조인 추가
+        LEFT JOIN
+            thema th ON t.thema_no = th.thema_no -- Trip과 Thema 조인 추가
+        LEFT JOIN
+            city c ON t.city_code = c.city_code -- Trip과 City 조인
+        LEFT JOIN
+            state s ON c.state_code = s.state_code -- City와 State 조인
+        LEFT JOIN
+            (
+                SELECT
+                    board_no, boardimage_no, boardimage_name, boardimage_default_name
+                FROM
+                    boardimage
+                WHERE
+                    (board_no, boardimage_no)
+                IN (
+                    SELECT
+                        board_no, MIN(boardimage_no)
+                    FROM
+                        boardimage
+                    GROUP BY
+                        board_no
+                   )
+            ) bi ON b.board_no = bi.board_no -- Board와 첫 번째 BoardImage 조인
+        <trim prefix="WHERE">
+            <choose>
+                <when test="type == ''">
+                    b.boardtype_no=#{boardtype}
+                </when>
+                <when test="type == 'title'">
+                    b.boardtype_no=#{boardtype} AND
+                    b.board_title LIKE CONCAT('%', #{data}, '%')
+                </when>
+                <when test="type == 'writer'">
+                    b.boardtype_no=#{boardtype} AND
+                    u.user_nickname LIKE CONCAT('%', #{data}, '%')
+                </when>
+                <when test="type == 'tag'">
+                    b.boardtype_no=#{boardtype} AND
+                    b.board_tag LIKE CONCAT('%', #{data}, '%')
+                </when>
+                <when test="type = 'city'">
+                    b.boardtype_no=#{boardtype} AND
+                    c.city_name LIKE CONCAT('%', #{data}, '%')
+                </when>
+                <when test="type = 'thema'">
+                    b.boardtype_no=#{boardtype} AND
+                    th.thema_name LIKE CONCAT('%', #{data}, '%')
+                </when>
+                <otherwise>
+                    b.boardtype_no=#{boardtype}
+                </otherwise>
+            </choose>
+        </trim>
+        ORDER BY
+            b.board_created_date DESC, b.board_no DESC
+        LIMIT
+            #{rowNo}, #{length}
     </select>
 </mapper>
 

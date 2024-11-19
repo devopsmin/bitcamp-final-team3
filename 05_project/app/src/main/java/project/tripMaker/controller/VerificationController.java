@@ -55,8 +55,8 @@ public class VerificationController {
   @PostMapping("/verify-sms")
   @ResponseBody
   public String verifySMS(
-      @RequestParam String phoneNumber,
-      @RequestParam String code) {
+          @RequestParam String phoneNumber,
+          @RequestParam String code) {
     boolean isValid = smsService.verifyCode(phoneNumber, code);
     return isValid ? "success" : "fail";
   }
@@ -82,9 +82,9 @@ public class VerificationController {
 
   @PostMapping("/phone")
   public String verifyPhone(@RequestParam String email,
-      @RequestParam String phoneNumber,
-      HttpSession session,
-      Model model) {
+                            @RequestParam String phoneNumber,
+                            HttpSession session,
+                            Model model) {
     try {
       if (!phoneNumber.matches("\\d{3}-\\d{4}-\\d{4}")) {
         throw new IllegalArgumentException("올바른 전화번호 형식이 아닙니다. (예: 010-1234-5678)");

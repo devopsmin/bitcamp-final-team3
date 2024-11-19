@@ -14,6 +14,8 @@ import project.tripMaker.service.ScheduleService;
 import project.tripMaker.vo.*;
 
 import javax.servlet.http.HttpSession;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -32,12 +34,31 @@ public class CompanionController {
 
   private static final int BOARD_TYPE_COMPANION = 2;
 
+
   @GetMapping("list")
   public String list(
           @RequestParam(defaultValue = "1") int pageNo,
-          @RequestParam(defaultValue = "5") int pageSize,
-          Model model
+          @RequestParam(defaultValue = "10") int pageSize,
+          Model model,
+          @RequestParam(required = false, defaultValue = "order") String sort
   ) throws Exception {
+
+    String order;
+
+    switch (sort) {
+      case "likes":
+        order = "like";
+        break;
+      case "favorites":
+        order = "favorite";
+        break;
+      case "views":
+        order = "count";
+        break;
+      default:
+        order = "order";
+        break;
+    }
 
     if (pageNo < 1) {
       pageNo = 1;
@@ -54,15 +75,21 @@ public class CompanionController {
       pageNo = pageCount;
     }
 
-    List<Board> list = companionService.list(pageNo, pageSize);
+    System.out.printf("order 값 : %s", order);
+
+
+    List<Board> list = companionService.list(pageNo, pageSize, order);
     model.addAttribute("list", list);
     model.addAttribute("pageNo", pageNo);
     model.addAttribute("pageSize", pageSize);
     model.addAttribute("pageCount", pageCount);
+    model.addAttribute("order", order);
 
     return "companion/list";
   }
 
+
+  // 동행게시판 - 글쓰기
   @GetMapping("form")
   public String form(Model model, HttpSession session) throws Exception {
 
@@ -92,7 +119,8 @@ public class CompanionController {
     
   }
 
-  // trip_no 값으로 schedule 정보 데이터 추출
+
+  // trip_no 값으로 schedule 정보 데이터 추출(form.html 데이터 요청 처리 목적)
   @PostMapping("selectSchedule")
   @ResponseBody
   public List<Schedule> selectSchedule(@RequestParam int tripNo) throws Exception {
@@ -102,6 +130,8 @@ public class CompanionController {
 
   }
 
+
+  // 동행게시판 - 게시글 데이터 등록(일반 게시물 데이터, 동행모집 데이터 처리)
   @PostMapping("add")
   @ResponseBody
   public void add(@RequestBody AddRequest addRequest, HttpSession session) throws Exception {
@@ -112,30 +142,28 @@ public class CompanionController {
       throw new Exception("로그인이 필요합니다.");
     }
 
-    // Thymeleaf 으로 부터 받은 복합 객체중 Board 객체 추출
+    // 동행 데이터(일반 게시물 데이터) 처리 - Thymeleaf 으로 부터 받은 복합 객체중 Board 객체 추출
     Board board = addRequest.getBoard();
 
-    // board 테이블 저장을 위한 userNo 저장
+    // 동행 데이터(일반 게시물 데이터) 처리 - board 테이블 저장을 위한 userNo 저장
     board.setUserNo(loginUser.getUserNo());
 
-    // board 테이블 저장을 위한 tripNo 저장
+    // 동행 데이터(일반 게시물 데이터) 처리 - board 테이블 저장을 위한 tripNo 저장
     int tripNo = board.getTripNo();
 
-    // board 테이블 데이터 저장 시작
+    // 동행 데이터(일반 게시물 데이터) 처리 - board 테이블 데이터 저장 시작
     companionService.add(board);
-
-    // Step 5: Long 타입의 임의의 변수에 로그인한 사용자 번호 저장
+    
+    // 동행 데이터(동행모집 데이터) 처리 -  Long 타입의 임의의 변수에 로그인한 사용자 번호 저장
     int userNo = board.getUserNo().intValue();
 
-    // Step 6: 반환값 저장
+    // 동행 데이터(동행모집 데이터) 처리 - 반환값(직전 저장 게시물 데이터) 저장
     Board findBoard = companionService.selectIdNoByTripNo(tripNo, userNo);
 
+    // 동행 데이터(동행모집 데이터) 처리 - 데이터 추출(직전 저장 게시물의 게시물 번호)
     int findBoardId = findBoard.getBoardNo();
 
-    System.out.println("userNo 값 : " + userNo);
-    System.out.println("findBoardId 값 : " + findBoardId);
-
-    // 동행 모집 정보 데이터 저장
+    // 동행 데이터(동행모집 데이터) 처리 - 동행 모집 데이터 저장
     List<Companionrecruit> companionRecruits = addRequest.getCompanionRecruits();
     for (Companionrecruit recruit : companionRecruits) {
       recruit.setBoardNo(findBoardId);
@@ -144,6 +172,8 @@ public class CompanionController {
     
   }
 
+
+  // 동행게시판 - 상세 글조회
   @GetMapping("view")
   public String view(@RequestParam int boardNo, Model model) throws Exception {
 
@@ -153,19 +183,29 @@ public class CompanionController {
     // 게시글 데이터 로드
     Board board = companionService.findBy(boardNo);
 
-    // 여행일정(Schedule) 데이터 추출 : trip_no 값 추출(Schedule List 데이터 추출시 필요)
+    // 여행일정(Schedule) 데이터 추출 : trip_no 값 추출(특정 Schedule List 데이터 추출시 필요)
     int tripNo = board.getTripNo();
     // 여행일정(Schedule) 데이터 추출 : schedule List 데이터 추출(scheduleService viewSchedule 메서드를 이용)
     List<Schedule> scheduleList = scheduleService.viewSchedule(tripNo);
-    // 여행일정(Schedule) 데이터 추출 : schedule List 데이터 확인
-    logger.info("Schedule List: {}", scheduleList);
-    // 여행일정(Schedule) 데이터 추출 : view.html 속성 설정으로 List 전달(view.html 에서 scheduleList 명칭으로 사용)
+    // 여행일정(Schedule) 데이터 추출 : schedule List 데이터 확인(디버그용)
+    logger.info("schedule List 의 데이터: {}", scheduleList);
+    // 여행일정(Schedule) 데이터 추출 : view.html 속성 추가로 List 전달(view.html 에서 scheduleList 명칭으로 사용)
     model.addAttribute("scheduleList", scheduleList);
-
+    
+    
+    // 동행모집(CompanionRecruit) 데이터 추출 : boardNo 값 이용
+    List<Companionrecruit> companionrecruitList = companionRecruitService.findRecruitByRecruit(boardNo);
+    // 동행모집(CompanionRecruit) 데이터 추출 : companionrecruitList 데이터 확인(디버그용)
+    logger.info("companionList 의 데이터: {}", companionrecruitList);
+    // 여행일정(Schedule) 데이터 추출 : view.html 속성 추가로 List 전달(view.html 에서 companionrecruitList 명칭으로 사용)
+    model.addAttribute("companionrecruitList", companionrecruitList);
+    
+    // 동행 게시글이 존재하지 않을때 처리
     if (board == null) {
       throw new Exception("게시글이 존재하지 않습니다.");
     }
 
+    // 동행게시물이 존재할때 board 데이터 속성 추가
     model.addAttribute("board", board);
 
     return "companion/view";
@@ -173,7 +213,7 @@ public class CompanionController {
   }
 
   @PostMapping("modify")
-  public String modify(@RequestParam("boardNo") int boardNo, Model model) throws Exception {
+  public String modify(@RequestParam("boardNo") int boardNo, Model model, HttpSession session) throws Exception {
     Board board = companionService.findBy(boardNo);
 
     if (board == null) {
@@ -222,5 +262,64 @@ public class CompanionController {
       throw new Exception("삭제 권한이 없습니다.");
     }
     return "redirect:list";
+  }
+
+  @GetMapping("search")
+  public String search(
+          @RequestParam("query") String query,
+          @RequestParam(defaultValue = "1") int pageNo,
+          @RequestParam(defaultValue = "10") int pageSize,
+          Model model,
+          @RequestParam(value = "option", required = false, defaultValue = "title") String option
+  ) throws Exception {
+    String decodeQuery = URLDecoder.decode(query, StandardCharsets.UTF_8);
+    List<Board> list;
+    String type;
+
+    switch (option) {
+      case "title":
+        type = "title";
+        break;
+      case "writer":
+        type = "writer";
+        break;
+      case "city":
+        type = "city";
+        break;
+      case "tag":
+        type = "tag";
+        break;
+      case "themaName":
+        type = "thema";
+        break;
+      default:
+        type = "";
+        break;
+    }
+    if (pageNo < 1) {
+      pageNo = 1;
+    }
+
+    int length = companionService.countAll(BOARD_TYPE_COMPANION);
+
+    int pageCount = length / pageSize;
+    if (length % pageSize > 0) {
+      pageCount++;
+    }
+
+    if (pageNo > pageCount) {
+      pageNo = pageCount;
+    }
+
+    list = companionService.searchlist(pageNo, pageSize, type, decodeQuery);
+    model.addAttribute("list", list);
+    model.addAttribute("pageNo", pageNo);
+    model.addAttribute("pageSize", pageSize);
+    model.addAttribute("pageCount", pageCount);
+    model.addAttribute("option", option);
+    model.addAttribute("type", type);
+    model.addAttribute("query", decodeQuery);
+
+    return "companion/list";
   }
 }

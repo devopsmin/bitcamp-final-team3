@@ -44,13 +44,13 @@ public class ServerApp implements WebMvcConfigurer {
         SpringApplication.run(ServerApp.class, args);
     }
 
-   // @Override
-   // public void addInterceptors(InterceptorRegistry registry) {
-   //     // loginInterceptor가 null이 아닌지 확인 후 추가
-   //     if (loginInterceptor != null) {
-   //         registry.addInterceptor(loginInterceptor).addPathPatterns("/review/view");
-   //     } else {
-   //         throw new IllegalArgumentException("Interceptor is required");
-   //     }
-   // }
+    // @Override
+    // public void addInterceptors(InterceptorRegistry registry) {
+    //     // loginInterceptor가 null이 아닌지 확인 후 추가
+    //     if (loginInterceptor != null) {
+    //         registry.addInterceptor(loginInterceptor).addPathPatterns("/review/view");
+    //     } else {
+    //         throw new IllegalArgumentException("Interceptor is required");
+    //     }
+    // }
 }

@@ -23,7 +23,7 @@ public interface UserDao {
   User findByEmail(String userEmail) throws Exception;
 
   User findByEmailAndPassword(@Param("userEmail") String userEmail,
-      @Param("userPassword") String userPassword) throws Exception;
+                              @Param("userPassword") String userPassword) throws Exception;
 
   User findByTel(String userTel) throws Exception;
 

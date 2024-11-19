@@ -35,7 +35,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
     String registrationId = userRequest.getClientRegistration().getRegistrationId();
     String userNameAttributeName = userRequest.getClientRegistration().getProviderDetails()
-        .getUserInfoEndpoint().getUserNameAttributeName();
+            .getUserInfoEndpoint().getUserNameAttributeName();
 
     OAuth2UserInfo userInfo = getOAuth2UserInfo(registrationId, oauth2User.getAttributes());
 
@@ -44,8 +44,8 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
     if (email == null || email.isEmpty()) {
       throw new OAuth2AuthenticationException(
-          new OAuth2Error("이메일을 찾을 수 없습니다."),
-          "이메일을 가져올 수 없습니다.");
+              new OAuth2Error("이메일을 찾을 수 없습니다."),
+              "이메일을 가져올 수 없습니다.");
     }
 
     User user;
@@ -56,14 +56,14 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
       }
     } catch (Exception e) {
       throw new OAuth2AuthenticationException(
-          new OAuth2Error("사용자 처리 에러"),
-          "사용자 정보 처리 중 오류가 발생했습니다: " + e.getMessage());
+              new OAuth2Error("사용자 처리 에러"),
+              "사용자 정보 처리 중 오류가 발생했습니다: " + e.getMessage());
     }
 
     return new DefaultOAuth2User(
-        Collections.singleton(new SimpleGrantedAuthority(user.getUserRole().name())),
-        oauth2User.getAttributes(),
-        userNameAttributeName
+            Collections.singleton(new SimpleGrantedAuthority(user.getUserRole().name())),
+            oauth2User.getAttributes(),
+            userNameAttributeName
     );
   }
 

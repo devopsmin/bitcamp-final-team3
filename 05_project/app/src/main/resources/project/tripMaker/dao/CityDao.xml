@@ -23,56 +23,56 @@
 
     <select id="stateList" resultMap="StateResultMap">
         select
-            state_code,
-            state_name,
-            state_tour
+        state_code,
+        state_name,
+        state_tour
         from
-            state
+        state
     </select>
 
     <select id="cityList" resultMap="CityResultMap">
         SELECT
-            c.city_code,
-            c.city_name,
-            c.city_photo,
-            s.state_code,
-            s.state_name
+        c.city_code,
+        c.city_name,
+        c.city_photo,
+        s.state_code,
+        s.state_name
         FROM
-            city c
-                right JOIN state s
-                           ON s.state_code = c.state_code
+        city c
+        right JOIN state s
+        ON s.state_code = c.state_code
         where
-            s.state_code=#{stateCode}
+        s.state_code=#{stateCode}
     </select>
 
     <select id="findCity" resultMap="CityResultMap">
         SELECT
-            c.city_code,
-            c.city_name,
-            c.city_tour,
-            c.city_photo,
-            s.state_code,
-            s.state_name,
-            state_tour
+        c.city_code,
+        c.city_name,
+        c.city_tour,
+        c.city_photo,
+        s.state_code,
+        s.state_name,
+        state_tour
         FROM
-            city c
-                right JOIN state s
-                           ON s.state_code = c.state_code
+        city c
+        right JOIN state s
+        ON s.state_code = c.state_code
         where
-            c.city_code=#{cityCode}
+        c.city_code=#{cityCode}
     </select>
 
     <select id="findState" resultMap="StateResultMap">
         SELECT
-            s.state_code,
-            s.state_name,
-            s.state_tour
+        s.state_code,
+        s.state_name,
+        s.state_tour
         FROM
-            state s
-                right JOIN city c
-                           ON s.state_code = c.state_code
+        state s
+        right JOIN city c
+        ON s.state_code = c.state_code
         where
-            c.city_code=#{cityCode}
+        c.city_code=#{cityCode}
     </select>
 
 </mapper>

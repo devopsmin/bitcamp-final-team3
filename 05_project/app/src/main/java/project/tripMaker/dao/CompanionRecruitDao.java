@@ -12,9 +12,13 @@ public interface CompanionRecruitDao {
 
     List<Companionrecruit> selectAllRecruits() throws Exception;
 
-    Companionrecruit selectCompanionRecruit(int companionRecruitNo) throws Exception;
+    List<Companionrecruit> selectCompanionRecruit(int boardNo) throws Exception;
+
+    List<Companionrecruit> selectCompanionRecruitByScheduleNo(int scheduleNo) throws Exception;
 
     boolean updateCompanionRecruit(Companionrecruit companionrecruit) throws Exception;
 
-    void deleteCompanionRecruit(int boardNo) throws Exception;
+    void deleteCompanionRecruitByBoard(int boardNo) throws Exception;
+
+    void deleteCompanionRecruitByScheduleNo(int scheduleNo) throws Exception;
 }
