@@ -11,19 +11,11 @@
 <div class="container mt-5">
     <h1 class="mb-4">게시글 수정</h1>
 
-    <!-- 데이터 확인용 -->
-    <div class="alert alert-info" role="alert" data-th-if="${trips.size() > 0}">
-        디버깅용: Trip 데이터가 존재합니다.
-    </div>
-    <div class="alert alert-warning" role="alert" data-th-unless="${trips.size() > 0}">
-        Trip 데이터가 없습니다.
-    </div>
-
     <!-- 게시글이 없을 경우 -->
     <div class="alert alert-danger mt-4" data-th-unless="${board}">없는 게시글입니다.</div>
 
     <!-- 게시글이 있을 경우 -->
-    <form id="update-form" data-th-if="${board}" data-th-action="@{update}" method="post" class="mt-4">
+    <form id="update-form" data-th-if="${board}" data-th-action="@{update}" method="post" class="mt-4" enctype="multipart/form-data">
         <div class="mb-3">
             <label for="boardNo" class="form-label">게시글 번호</label>
             <input id="boardNo" name="boardNo" type="text" class="form-control" readonly th:value="${board.boardNo}">
@@ -31,7 +23,7 @@
 
         <div class="mb-3">
             <label for="title" class="form-label">제목</label>
-            <input id="title" name="title" type="text" class="form-control" th:value="${board.boardTitle}">
+            <input id="title" name="title" type="text" class="form-control" th:value="${board.boardTitle}" required maxlength="150" placeholder="제목을 입력해 주세요.">
         </div>
 
 
@@ -54,24 +46,52 @@
         <!-- 일정 리스트 -->
         <div id="scheduleContainer" class="mt-4">
             <h2 class="mb-4">일정 리스트</h2>
-            <div id="scheduleList" class="list-group">
-                <div class="list-group-item" data-th-each="schedule, status : ${schedule}" data-th-object="${schedule}">
-                    <div class="d-flex align-items-start mb-3">
-                        <span class="me-3 badge bg-secondary">일정번호: <span data-th-text="*{scheduleNo}">번호</span></span>
-                        <span class="me-3">제목: <span data-th-text="*{location.locationName}">제목</span></span>
-                        <span class="me-3">Day: <span data-th-text="*{scheduleDay}">Day</span></span>
-                        <span class="me-3">순서: <span data-th-text="*{scheduleRoute}">순서</span></span>
-                        <textarea name="scheduleContents" class="form-control" rows="3" placeholder="내용을 입력하세요"
-                                  data-th-text="${#lists.size(board.boardContent.split('\n')) > status.index ? board.boardContent.split('\n')[status.index] : ''}">
-                        </textarea>
+            <div id="scheduleList" class="list-group d-flex gap-3">
+
+                <div class="list-group-item border-0 p-0 mb-3" data-th-each="schedule, status : ${schedule}" data-th-object="${schedule}">
+                    <div data-th-if="${schedule.scheduleRoute == 0}">
+                        <h4 class="mt-4" data-th-text="${schedule.scheduleDay} + '일차'">일차</h4>
+                    </div>
+                    <div class="d-flex gap-3">
+                        <div class="flex-shrink-0" style="width: 300px;">
+                            <div class="p-3 border rounded shadow-sm d-flex justify-content-between align-items-center">
+                                <div class="me-2 align-items-start">
+                                    <div class="d-flex">
+                                        <div class="badge text-white"
+                                             data-th-classappend="'bg-' + ${schedule.scheduleDay % 6 == 1 ? 'primary' : schedule.scheduleDay % 6 == 2 ? 'warning' : schedule.scheduleDay % 6 == 3 ? 'danger' : schedule.scheduleDay % 6 == 4 ? 'info' : schedule.scheduleDay % 6 == 5 ? 'secondary' : 'success'}"
+                                             style="font-size: 1rem; border-radius: 50%; width: 25px; height: 25px; display: flex; align-items: center; justify-content: center;">
+                                            <span data-th-text="*{scheduleRoute}">순서</span>
+                                        </div>
+                                        <div class="ms-2">
+                                            <p class="mb-1 text-primary" style="font-size: 0.9rem;">
+                                                <span data-th-text="*{location.locationName}">제목</span>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <img src="${location != null and location.locationPhoto != null ? location.locationPhoto : 'https://via.placeholder.com/70x70'}"
+                                         alt="Location Photo" class="img-thumbnail" style="width: 70px; height: 70px;">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 글을 쓸 수 있는 textarea 추가 -->
+                        <div class="flex-grow-1">
+          <textarea name="scheduleContents" class="form-control schedule-note" rows="2" placeholder="내용을 입력하세요"
+                    style="height: 112px; background-color: #f8f9fa;"
+                    data-th-text="${#lists.size(board.boardContent.split('&%')) > status.index ? board.boardContent.split('&%')[status.index] : ''}">
+          </textarea>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
+
         <div class="mb-3">
             <label for="boardTag" class="form-label">태그</label>
-            <input id="boardTag" name="boardTag" type="text" class="form-control" data-th-value="${board.boardTag}">
+            <input id="boardTag" name="boardTag" type="text" class="form-control" data-th-value="${board.boardTag}" placeholder="#태그를 입력해 주세요." maxlength="15">
         </div>
 
         <textarea name="content" id="boardContent" style="display:none;" th:text="${board.boardContent}"></textarea>
@@ -80,18 +100,18 @@
         <!-- 기존 첨부 이미지 미리보기 -->
         <div id="existingImagesContainer" class="mb-3">
             <h5>기존 첨부 이미지</h5>
-            <div data-th-each="image : ${board.boardImages}" class="d-inline-block position-relative m-2" data-image-id="[[${image.boardimageNo}]]">
+            <div data-th-each="image : ${board.boardImages}" class="d-inline-block position-relative m-2" data-th-attr="data-image-id=${image.boardimageNo}">
                 <img data-th-src="@{'https://dgg7dnk35523.edge.naverncp.com/HZiW9aEJy7/review/' + ${image.boardimageName} + '?type=u&w=100&h=100'}" class="img-thumbnail">
                 <p class="text-center mt-1" data-th-text="${image.boardimageDefaultName}"></p>
                 <!-- 이미지 ID를 사용하여 함수 호출 -->
-                <button type="button" class="btn-close position-absolute top-0 start-80" onclick="removeExistingImage(this.closest('[data-image-id]').getAttribute('data-image-id'))"></button>
+                <button type="button" class="btn-close position-absolute top-0 start-80" data-th-onclick="|removeExistingImage(${image.boardimageNo})|"></button>
             </div>
         </div>
 
         <!-- 새 파일 첨부 버튼 -->
         <div class="mb-3">
-            <label for="file-upload" class="form-label">파일 첨부</label>
-            <input id="file-upload" name="imageFile" type="file" class="form-control" multiple onchange="previewImages()">
+            <label for="file-update" class="form-label">파일 첨부</label>
+            <input id="file-update" name="imageFiles" type="file" class="form-control" multiple onchange="previewImages()">
         </div>
 
         <!-- 미리보기 컨테이너 -->
@@ -107,26 +127,59 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 
+
+
 <script>
     // 삭제된 이미지들을 저장할 Set
     let deletedImages = new Set();
     // 숨겨진 이미지들을 저장할 Map (취소를 위해)
     let hiddenImages = new Map();
 
-    function removeExistingImage(imageId) {
-        const imageElement = document.querySelector(`[data-image-id="${imageId}"]`);
-        if (imageElement) {
-            // 이미지 요소를 숨기고, 삭제할 목록에 추가
-            imageElement.style.display = 'none';
-            hiddenImages.set(imageId, imageElement);
-            deletedImages.add(imageId); // Set에 이미지 ID 추가
-            document.getElementById('deletedImages').value = Array.from(deletedImages).join(','); // 업데이트
-        }
-    }
+    document.addEventListener("DOMContentLoaded", () => {
+        // 삭제된 이미지들의 ID를 저장할 Set
+        window.removeExistingImage = function(imageId) {
+            console.log(`Attempting to hide image with ID: ${imageId}`);
+
+            // 삭제된 이미지 ID 추가
+            deletedImages.add(imageId);
+            document.getElementById('deletedImages').value = Array.from(deletedImages).join(',');
+            console.log("Deleted images:", deletedImages);
+
+            // 이미지의 div 컨테이너 요소 선택
+            const imageElement = document.querySelector(`[data-image-id="${imageId}"]`);
+
+            if (imageElement) {
+                // div 내부의 img 요소 선택
+                const imgElement = imageElement.querySelector('.img-thumbnail');
+                const pElement = imageElement.querySelector('p');
+                const buttonElement = imageElement.querySelector('button');
+
+                if (pElement) pElement.style.display = 'none';
+                if (buttonElement) buttonElement.style.display = 'none';
+                if (imgElement) {
+                    // img 요소를 숨기기 (시각적으로만 안 보이게)
+                    imgElement.style.display = 'none';
+
+                    // 숨겨진 이미지 목록에 추가
+                    hiddenImages.set(imageId, imageElement);
+
+                    // 삭제된 이미지 ID를 hidden input에 업데이트
+                    document.getElementById('deletedImages').value = Array.from(deletedImages).join(',');
+                    console.log(`Successfully hid image with ID: ${imageId}`);
+                } else {
+                    console.error("Image element with class 'img-thumbnail' not found.");
+                }
+            } else {
+                console.error(`Image container with ID ${imageId} not found.`);
+            }
+        };
+    });
+
 
 
     // 취소 버튼 처리
     function resetChanges() {
+        console.log("취소버튼누름");
         // 숨겨진 이미지들 복원
         hiddenImages.forEach((element) => {
             element.style.display = 'inline-block';
@@ -139,7 +192,7 @@
 
         // 새로 추가된 이미지 미리보기 초기화
         document.getElementById('previewContainer').innerHTML = '';
-        document.getElementById('file-upload').value = '';
+        document.getElementById('file-update').value = '';
 
         // 이전 페이지로 돌아가기
         history.back();
@@ -149,7 +202,7 @@
     document.getElementById('update-form').addEventListener('submit', function(event) {
         // 기존 scheduleContents 처리 유지
         const scheduleContents = Array.from(document.getElementsByName('scheduleContents')).map(textarea => textarea.value);
-        document.getElementById('boardContent').value = scheduleContents.join('\n');
+        document.getElementById('boardContent').value = scheduleContents.join('&%');
 
         // 삭제된 이미지 목록 최종 업데이트
         document.getElementById('deletedImages').value = Array.from(deletedImages).join(',');
@@ -163,7 +216,7 @@
         const previewContainer = document.getElementById('previewContainer');
         previewContainer.innerHTML = '';
 
-        const files = document.getElementById('file-upload').files;
+        const files = document.getElementById('file-update').files;
         Array.from(files).forEach((file, index) => {
             const reader = new FileReader();
             reader.onload = (e) => {
@@ -182,7 +235,7 @@
     }
 
     function removeImage(index) {
-        const fileInput = document.getElementById('file-upload');
+        const fileInput = document.getElementById('file-update');
         const dt = new DataTransfer();
 
         Array.from(fileInput.files).forEach((file, i) => {

@@ -69,13 +69,13 @@ public class DefaultUserService implements UserService {
     }
 
     User user = User.builder()
-        .userEmail(email)
-        .userNickname(nickname != null ? nickname : "소셜 사용자")
-        .userPassword(passwordEncoder.encode("socialLoginPassword"))
-        .snsNo(snsNo)
-        .userRole(UserRole.ROLE_USER)
-        .userTel("소셜로그인")
-        .build();
+            .userEmail(email)
+            .userNickname(nickname != null ? nickname : "소셜 사용자")
+            .userPassword(passwordEncoder.encode("socialLoginPassword"))
+            .snsNo(snsNo)
+            .userRole(UserRole.ROLE_USER)
+            .userTel("소셜로그인")
+            .build();
 
     userDao.insertSocialUser(user);
     return user;
@@ -99,8 +99,9 @@ public class DefaultUserService implements UserService {
 
   @Transactional
   public boolean update(User user) throws Exception {
-    if (user.getUserPassword() != null && !user.getUserPassword().trim().isEmpty()) {
-      user.setUserPassword(passwordEncoder.encode(user.getUserPassword()));
+    User oldUser = userDao.findBy(user.getUserNo());
+    if (oldUser != null && user.getUserPassword() == null) {
+      user.setUserPassword(oldUser.getUserPassword());
     }
     return userDao.update(user);
   }

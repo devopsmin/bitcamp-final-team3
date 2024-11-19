@@ -1,5 +1,6 @@
 package project.tripMaker.service;
 
+import java.util.Collections;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -8,8 +9,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import project.tripMaker.dao.UserDao;
 import project.tripMaker.vo.User;
-
-import java.util.Collections;
 
 @Service
 @RequiredArgsConstructor
@@ -26,10 +25,10 @@ public class CustomUserDetailsService implements UserDetailsService {
       }
 
       return org.springframework.security.core.userdetails.User.builder()
-          .username(user.getUserEmail())
-          .password(user.getUserPassword())
-          .authorities(Collections.singleton(new SimpleGrantedAuthority(user.getUserRole().name())))
-          .build();
+              .username(user.getUserEmail())
+              .password(user.getUserPassword())
+              .authorities(Collections.singleton(new SimpleGrantedAuthority(user.getUserRole().name())))
+              .build();
     } catch (Exception e) {
       throw new UsernameNotFoundException("사용자 로드 중 오류 발생", e);
     }

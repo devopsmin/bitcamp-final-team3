@@ -424,7 +424,7 @@
 
             if (location) {
                 // location이 존재하는 경우: 이미지, 제목, 좌표, 삭제 버튼 추가
-                addMarker(location.locationX, location.locationY);
+                addMarker(location.locationX, location.locationY,index+1);
                 imgTag.innerHTML = ''; // img-tag 초기화
                 const img = document.createElement("img");
                 img.src = location.locationPhoto;

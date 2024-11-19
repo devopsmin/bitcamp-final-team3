@@ -10,6 +10,9 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -19,8 +22,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.multipart.MultipartFile;
+import project.tripMaker.dto.ReviewDto;
 import project.tripMaker.service.CommentService;
 import project.tripMaker.service.ReviewService;
 import project.tripMaker.service.ScheduleService;
@@ -50,14 +55,20 @@ public class ReviewController {
 
   @GetMapping("list")
   public String list(
-      // 페이지 설정
-      // pageNo (페이지번호)      Default 1 = 1페이지
-      // pageSize (화면출력 갯수) Default 9 = 9개의 게시글
-      @RequestParam(defaultValue = "1") int pageNo,
-      @RequestParam(defaultValue = "9") int pageSize,
-      Model model,
-      @RequestParam(required = false, defaultValue = "latest") String sort
+          // 페이지 설정
+          // pageNo (페이지번호)      Default 1 = 1페이지
+          // pageSize (화면출력 갯수) Default 9 = 9개의 게시글
+          @RequestParam(defaultValue = "1") int pageNo,
+          @RequestParam(defaultValue = "9") int pageSize,
+          Model model,
+          @RequestParam(required = false, defaultValue = "latest") String sort,
+          HttpSession session
   ) throws Exception {
+
+    User loginUser = (User) session.getAttribute("loginUser");
+    boolean isLoggedIn = loginUser != null;
+
+    List<Board> topBoards = reviewService.getTopRecommendedBoards(3,4); // 베스트 게시글 상위 4개 가져오기
 
     List<Board> boardList;
 
@@ -101,17 +112,38 @@ public class ReviewController {
       pageNo = pageCount;
     }
 
+
+    // 베스트 게시물 목록
+    for (Board board : topBoards) {
+      // 직접 첫번째 이미지 Board객체 추가
+      if (board.getBoardImages() != null && !board.getBoardImages().isEmpty()) {
+        board.setFirstImageName(board.getBoardImages().get(0).getBoardimageName());
+      } else {
+        board.setFirstImageName("default.png");
+      }
+    }
+
+    // 일반 게시물 목록
     for (Board board : boardList) {
+      // 직접 첫번째 이미지 Board객체 추가
+      if (board.getBoardImages() != null && !board.getBoardImages().isEmpty()) {
+        board.setFirstImageName(board.getBoardImages().get(0).getBoardimageName());
+      } else {
+        board.setFirstImageName("default.png");
+      }
+
+      // 댓글 갯수
       int commentCount = reviewService.getCommentCount(board.getBoardNo());
       board.setCommentCount(commentCount); // 댓글 개수 설정
     }
 
+    model.addAttribute("topBoards", topBoards);
     model.addAttribute("list", boardList);
     model.addAttribute("sort", sort);
     model.addAttribute("pageNo", pageNo);
     model.addAttribute("pageSize", pageSize);
     model.addAttribute("pageCount", pageCount);
-
+    model.addAttribute("isLoggedIn", isLoggedIn);
     return "review/list";
   }
 
@@ -124,7 +156,7 @@ public class ReviewController {
     }
 
     // 로그인 유저의 Trip List 찾아서 List 전달
-    List<Trip> tripList = scheduleService.getTripsByUserNo(loginUser.getUserNo());
+    List<Trip> tripList = scheduleService.getSchedulesByTripNoExcludeBoard(loginUser.getUserNo());
     model.addAttribute("trips", tripList);
 
     return "review/form";
@@ -132,8 +164,8 @@ public class ReviewController {
 
   @PostMapping("add")
   public String add(Board board,
-      @RequestParam("imageFiles")MultipartFile[] files,
-      HttpSession session) throws Exception {
+                    @RequestParam("imageFiles")MultipartFile[] files,
+                    HttpSession session) throws Exception {
     // 로그인 유저 확인
     User loginUser = (User) session.getAttribute("loginUser");
     if (loginUser == null) {
@@ -156,9 +188,9 @@ public class ReviewController {
       options.put(StorageService.CONTENT_TYPE, file.getContentType());
 
       storageService.upload(
-          folderName + boardImage.getBoardimageName(), // 업로드 파일의 경로(폴더 경로 포함)
-          file.getInputStream(), // 업로드 파일 데이터를 읽어 들일 입력스트림
-          options
+              folderName + boardImage.getBoardimageName(), // 업로드 파일의 경로(폴더 경로 포함)
+              file.getInputStream(), // 업로드 파일 데이터를 읽어 들일 입력스트림
+              options
       );
 
       attachedFiles.add(boardImage);
@@ -178,59 +210,121 @@ public class ReviewController {
 
   @GetMapping("view")
   public String view(
-      @RequestParam int boardNo,
-      @SessionAttribute(value = "loginUser") User user,
-      Model model) throws Exception {
+          @RequestParam int boardNo,
+          // @SessionAttribute(value = "loginUser") User user,
+          @RequestParam(value = "page", defaultValue = "1") int page,
+          @RequestParam(value = "pageSize", defaultValue = "5") int pageSize,
+          @RequestParam(value = "sort", defaultValue = "registered") String sort,
+          Model model,
+          HttpSession session) throws Exception {
 
     // 로그인 유저가 아닌 경우 처리 (나중에 처리해야지)
-    if (user == null) {
-      model.addAttribute("errorMessage", "로그인을 해야 합니다.");
-      return "redirect:/home";
-    }
+    // if (user == null) {
+    //   model.addAttribute("errorMessage", "로그인을 해야 합니다.");
+    //   return "redirect:/home";
+    // }
 
     Board board = reviewService.get(boardNo);
     if (board == null) {
       throw new Exception("게시글이 존재하지 않습니다.");
     }
-    // 조회수 증가
-    reviewService.increaseBoardCount(board.getBoardNo());
-    // 작성자 확인
-    User writer = board.getWriter();
-    // 로그인 유저 확인
-    Long userNo = user.getUserNo();
-    // 좋아요 여부 확인
-    boolean isLiked = reviewService.isLiked(boardNo, userNo);
-    // 즐겨찾기 여부 확인
-    boolean isFavored = reviewService.isFavored(boardNo, userNo);
 
     // 특정 Board의 Comment, Trip, Schedule 리스트 전달
-    List<Comment> commentList = commentService.list(boardNo);
+    List<Comment> commentList;
+    if ("likes".equals(sort)) {
+      commentList = commentService.listByLikes(boardNo, page, pageSize);
+    } else {
+      commentList = commentService.listByPage(boardNo, page, pageSize);
+    }
+
     List<Trip> tripList = reviewService.getTripsByBoardNo(board.getTripNo());
     List<Schedule> scheduleList = scheduleService.getSchedulesByTripNo(board.getTripNo());
+
+    int totalComments = commentService.list(boardNo).size();
+    int totalPages = (int) Math.ceil((double) totalComments / pageSize);
+
+    User loginUser = (User) session.getAttribute("loginUser");
+    boolean isLoggedIn = loginUser != null;
+
+    Map<Integer, Boolean> commentLikedMap = new HashMap<>();
+    Map<Integer, Boolean> isUserAuthorizedMap = new HashMap<>();
+
+    if (isLoggedIn) {
+      Long sessionUserNo = loginUser.getUserNo();
+
+      for (Comment comment : commentList) {
+        int commentLikeCount = commentService.getCommentLikeCount(comment.getCommentNo());
+        comment.setCommentLike(commentLikeCount);
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("commentNo", comment.getCommentNo());
+        params.put("userNo", loginUser.getUserNo());
+
+        boolean isCommentLiked = commentService.isCommentLiked(params);
+        commentLikedMap.put(comment.getCommentNo(), isCommentLiked);
+
+        boolean isCommentOwner = sessionUserNo.equals(comment.getWriter().getUserNo());
+        isUserAuthorizedMap.put(comment.getCommentNo(), isCommentOwner);
+      }
+    } else {
+      // 비로그인 상태에서도 commentLikedMap을 초기화
+      for (Comment comment : commentList) {
+        int commentLikeCount = commentService.getCommentLikeCount(comment.getCommentNo());
+        comment.setCommentLike(commentLikeCount);
+        commentLikedMap.put(comment.getCommentNo(), false);
+      }
+    }
+
+    // 조회수 증가
+    reviewService.increaseBoardCount(board.getBoardNo());
+
+    boolean isUserAuthorized = loginUser != null && loginUser.getUserNo() == board.getUserNo();
+
+    // 로그인 유저만 좋아요/즐겨찾기 여부 확인
+    boolean isLiked = false;
+    boolean isFavored = false;
+
+    if (isLoggedIn) {
+      Long userNo = loginUser.getUserNo();
+      isLiked = reviewService.isLiked(boardNo, userNo);
+      isFavored = reviewService.isFavored(boardNo, userNo);
+    }
 
     // 기본 이미지 설정
     List<BoardImage> images = board.getBoardImages();
     if (images == null || images.isEmpty()) {
       images = new ArrayList<>();
       BoardImage defaultImage = new BoardImage();
-      defaultImage.setBoardimageName("default.jpg"); // 기본 이미지 파일명
+      defaultImage.setBoardimageName("default.png"); // 기본 이미지 파일명
       images.add(defaultImage);
     }
 
     board.setBoardImages(images);
 
     Map<Integer, List<Schedule>> groupedSchedules = scheduleList.stream()
-        .collect(Collectors.groupingBy(Schedule::getScheduleDay));
+            .collect(Collectors.groupingBy(Schedule::getScheduleDay));
     model.addAttribute("groupedSchedules", groupedSchedules);
 
+
+
     model.addAttribute("board", board);
-    model.addAttribute("writer", writer);
     model.addAttribute("commentList", commentList);
     model.addAttribute("trip", tripList);
     model.addAttribute("schedule", scheduleList);
+    model.addAttribute("isUserAuthorized", isUserAuthorized);
     model.addAttribute("isLiked", isLiked);
     model.addAttribute("isFavored", isFavored);
 
+    model.addAttribute("commentList", commentList);
+    model.addAttribute("commentLikedMap", commentLikedMap);
+    model.addAttribute("currentPage", page);
+    model.addAttribute("pageSize", pageSize);
+    model.addAttribute("totalPages", totalPages);
+    model.addAttribute("sort", sort);
+    model.addAttribute("isLoggedIn", isLoggedIn);
+    model.addAttribute("loginUserNo", isLoggedIn ? loginUser.getUserNo() : null); // 로그인 유저의 번호 추가
+
+    model.addAttribute("isUserAuthorizedMap", isUserAuthorizedMap);
     return "review/view";
   }
 
@@ -249,9 +343,9 @@ public class ReviewController {
   // 파일삭제
   @DeleteMapping("file/delete")
   public String deleteFile(
-      @RequestParam("fileNo") int fileNo,
-      @RequestParam("boardNo") int boardNo,
-      HttpSession session) throws Exception {
+          @RequestParam("fileNo") int fileNo,
+          @RequestParam("boardNo") int boardNo,
+          HttpSession session) throws Exception {
 
     User loginUser = (User) session.getAttribute("loginUser");
 
@@ -283,72 +377,89 @@ public class ReviewController {
   // 수정 페이지 정보전달
   @PostMapping("update")
   public String update(
-      @RequestParam("boardNo") Integer boardNo,
-      @RequestParam("title") String title,
-      @RequestParam("content") String content,
-      @RequestParam(value = "deletedImages", required = false) String deletedImages,
-      MultipartFile[] files
+          @RequestParam("boardNo") Integer boardNo,
+          @RequestParam("title") String title,
+          @RequestParam("content") String content,
+          @RequestParam(value = "deletedImages", required = false) String deletedImages,
+          @RequestParam(value = "imageFiles", required = false) MultipartFile[] files
   ) throws Exception {
 
-    try{
-    Board board = reviewService.get(boardNo);
-    board.setBoardTitle(title);
-    board.setBoardContent(content);
+    try {
+      Board board = reviewService.get(boardNo);
+      board.setBoardTitle(title);
+      board.setBoardContent(content);
 
-    if (files == null) {
-      files = new MultipartFile[0];
-    }
+      if (files == null) {
+        files = new MultipartFile[0];
+      }
 
+      // 기존 이미지를 모두 삭제
+      reviewService.deleteAllFiles(boardNo);
 
       // 삭제된 이미지 파일 처리
-    if (deletedImages != null && !deletedImages.isEmpty()) {
-      String[] imageIds = deletedImages.split(",");
-      for (String imageId : imageIds) {
-        reviewService.deleteAttachedFile(Integer.parseInt(imageId));
+      List<BoardImage> existingImages = board.getBoardImages();
+      if (deletedImages != null && !deletedImages.isEmpty()) {
+        String[] imageIds = deletedImages.split(",");
+        for (String imageId : imageIds) {
+          int imageIdInt = Integer.parseInt(imageId);
+          reviewService.deleteAttachedFile(imageIdInt);
+
+          // existingImages 리스트에서 삭제된 이미지를 제거
+          existingImages.removeIf(image -> image.getBoardimageNo() == imageIdInt);
+        }
       }
-    }
 
-    // 새로 추가된 이미지 파일 처리
-    List<BoardImage> attachedFiles = new ArrayList<>();
-    for (MultipartFile file : files) {
-      if (file.getSize() == 0) continue;
+      // 새로 추가된 이미지 파일 처리
+      List<BoardImage> attachedFiles = new ArrayList<>();
+      if (files.length > 0) {
+        for (MultipartFile file : files) {
+          if (!file.isEmpty()) { // 파일이 존재하는 경우
+            BoardImage boardImage = new BoardImage();
+            boardImage.setBoardimageName(UUID.randomUUID().toString());
+            boardImage.setBoardimageDefaultName(file.getOriginalFilename());
 
-      BoardImage boardImage = new BoardImage();
-      boardImage.setBoardimageName(UUID.randomUUID().toString());
-      boardImage.setBoardimageDefaultName(file.getOriginalFilename());
+            // 파일 업로드 서비스 호출
+            HashMap<String, Object> options = new HashMap<>();
+            options.put(StorageService.CONTENT_TYPE, file.getContentType());
+            storageService.upload("review/" + boardImage.getBoardimageName(), file.getInputStream(), options);
 
-      HashMap<String, Object> options = new HashMap<>();
-      options.put(StorageService.CONTENT_TYPE, file.getContentType());
-      storageService.upload(folderName + boardImage.getBoardimageName(), file.getInputStream(), options);
+            attachedFiles.add(boardImage);
+          }
+        }
+      }
 
-      attachedFiles.add(boardImage);
-    }
-    board.setBoardImages(attachedFiles);
+      // 삭제되지 않은 기존 이미지와 새로 추가된 이미지를 결합하여 설정
+      attachedFiles.addAll(existingImages); // 기존 이미지는 삭제된 이미지를 제외한 상태
+      board.setBoardImages(attachedFiles);  // 결합된 파일들을 게시글에 설정
 
-    reviewService.update(board);
-    } catch (Exception e){
+      reviewService.update(board); // 변경 사항 저장
+    } catch (Exception e) {
       e.printStackTrace();
     }
 
     return "redirect:view?boardNo=" + boardNo;
   }
 
+
   // 수정 후 SQL Update 실행
   @PostMapping("modify")
-  public String modify(@RequestParam("boardNo") int boardNo, Model model) throws Exception {
-    Board board = reviewService.get(boardNo);
-    if (board == null) {
-      throw new Exception("게시글이 존재하지 않습니다.");
-    }
-    User writer = board.getWriter();
+  public String modify(@RequestParam("boardNo") int boardNo, Model model, HttpSession session) throws Exception {
 
+    User loginUser = (User) session.getAttribute("loginUser");
+
+    Board board = reviewService.get(boardNo);
+
+    if (board == null) {
+      throw new Exception("없는 게시글입니다.");
+    } else if (loginUser.getUserNo() > 10 && board.getWriter().getUserNo() != loginUser.getUserNo()) {
+      throw new Exception("변경 권한이 없습니다.");
+    }
     List<Trip> tripList = reviewService.getTripsByBoardNo(board.getTripNo());
     List<Schedule> scheduleList = scheduleService.getSchedulesByTripNo(board.getTripNo());
 
 
 
     model.addAttribute("board", board);
-    model.addAttribute("writer", writer);
     model.addAttribute("trips", tripList);
     model.addAttribute("schedule", scheduleList);
     return "review/modify";
@@ -358,8 +469,8 @@ public class ReviewController {
   @PostMapping("like/{boardNo}")
   @ResponseBody
   public Map<String, Object> toggleLike(
-      @PathVariable int boardNo,
-      @SessionAttribute("loginUser") User loginUser) {
+          @PathVariable int boardNo,
+          @SessionAttribute("loginUser") User loginUser) {
 
     Long userNo = loginUser.getUserNo();
     boolean isLiked = reviewService.toggleLike(boardNo, userNo);
@@ -376,8 +487,8 @@ public class ReviewController {
   @PostMapping("favor/{boardNo}")
   @ResponseBody
   public Map<String, Object> toggleFavor(
-      @PathVariable int boardNo,
-      @SessionAttribute("loginUser") User loginUser) {
+          @PathVariable int boardNo,
+          @SessionAttribute("loginUser") User loginUser) {
 
     Long userNo = loginUser.getUserNo();
     boolean isFavored = reviewService.toggleFavor(boardNo, userNo);
@@ -411,13 +522,14 @@ public class ReviewController {
   // 2. 작성자 writer
   // 3. 시도   city
   // 4. 태그   tag
+  // 5. 테마   themaName
   @GetMapping("search")
   public String search(
-      @RequestParam(value = "option", required = false, defaultValue = "title") String option,
-      @RequestParam("query") String query,
-      @RequestParam(defaultValue = "1") int pageNo,
-      @RequestParam(defaultValue = "9") int pageSize,
-      Model model
+          @RequestParam(value = "option", required = false, defaultValue = "title") String option,
+          @RequestParam("query") String query,
+          @RequestParam(defaultValue = "1") int pageNo,
+          @RequestParam(defaultValue = "9") int pageSize,
+          Model model
   ) {
     String decodedQuery = URLDecoder.decode(query, StandardCharsets.UTF_8);
     List<Board> searchResults;
@@ -434,6 +546,9 @@ public class ReviewController {
         break;
       case "tag":
         searchResults = reviewService.findByTag(decodedQuery);
+        break;
+      case "themaName":
+        searchResults = reviewService.findByThema(decodedQuery);
         break;
       default:
         searchResults = List.of();
@@ -458,4 +573,16 @@ public class ReviewController {
     model.addAttribute("pageCount", pageCount);
     return "review/list"; // 게시글 목록을 출력하는 Thymeleaf 템플릿 파일 이름
   }
+
+  @GetMapping("api/list")
+  public ResponseEntity<List<ReviewDto>> getReviewList(@RequestParam int page) {
+    try {
+      List<ReviewDto> reviews = reviewService.getReviews(page);
+      return new ResponseEntity<>(reviews, HttpStatus.OK);
+    } catch (Exception e) {
+      e.printStackTrace();
+      return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
 }

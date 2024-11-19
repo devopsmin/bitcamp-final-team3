@@ -20,14 +20,19 @@ public class CompanionRecruitService {
         companionRecruitDao.insertCompanionRecruit(companionrecruit);
     }
 
-    // 동행 모집 목록 조회
+    // 동행 모집 전체 데이터 조회
     public List<Companionrecruit> listRecruits() throws Exception {
         return companionRecruitDao.selectAllRecruits();
     }
 
+    // 특정 동행 모집 단일 데이터 조회(ScheduleNo 사용)
+    public List<Companionrecruit> listRecruitsByScheduleNo(int scheduleNo) throws Exception {
+        return companionRecruitDao.selectCompanionRecruitByScheduleNo(scheduleNo);
+    }
+
     // 특정 동행 모집 조회
-    public Companionrecruit findRecruitBy(int companionRecruitNo) throws Exception {
-        return companionRecruitDao.selectCompanionRecruit(companionRecruitNo);
+    public List<Companionrecruit> findRecruitByRecruit(int boardNo) throws Exception {
+        return companionRecruitDao.selectCompanionRecruit(boardNo);
     }
 
     // 동행 모집 수정
@@ -38,7 +43,12 @@ public class CompanionRecruitService {
 
     // 동행 모집 삭제
     @Transactional
-    public void deleteRecruit(int boardNo) throws Exception {
-        companionRecruitDao.deleteCompanionRecruit(boardNo);
+    public void deleteRecruitByBoard(int boardNo) throws Exception {
+        companionRecruitDao.deleteCompanionRecruitByBoard(boardNo);
+    }
+
+    @Transactional
+    public void deleteRecruitByScheduleNo(int scheduleNo) throws Exception{
+        companionRecruitDao.deleteCompanionRecruitByScheduleNo(scheduleNo);
     }
 }

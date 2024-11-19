@@ -1,52 +1,44 @@
 <div class="container my-2" style="width: 1200px; margin: 0 auto;">
     <form data-th-action="@{/comment/add}" method="post" class="mb-3">
-        <textarea name="commentContent" class="form-control mb-1"  rows="5" style="width: 100%; resize: none;" placeholder="댓글을 입력하세요"></textarea>
-        <input type="hidden" name="boardType" value="1">
-        <input type="hidden" name="boardNo" data-th-value="${board.boardNo}">
-        <button type="submit" class="btn btn-secondary">댓글 등록</button>
-    </form>
-
-    <div class="modal fade" id="checkLoginModal" tabindex="-1" aria-labelledby="checkLoginModalLabel" aria-hidden="true">
-        <div class="modal-dialog" style="margin-top: 300px;">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="checkLoginModalLabel">알림</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    로그인이 필요합니다. 로그인 창으로 이동하시겠습니까?
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" id="confirmLoginButton">확인</button>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
-                </div>
+        <div style="border: 1px solid #ddd; border-radius: 5px; padding: 15px; background-color: white;">
+            <div style="position: relative;">
+            <textarea name="commentContent" class="form-control mb-1" rows="4"
+                      style="width: 100%; resize: none; border: none; box-shadow: none; outline: none; background-color: white;"
+                      placeholder="댓글을 입력하세요"></textarea>
+            </div>
+            <div style="text-align: right; margin-top: 10px;">
+                <button type="submit" class="btn btn-secondary">댓글 등록</button>
             </div>
         </div>
-    </div>
-
-    <div class="mb-3">
-        <select id="commentSort" class="form-select w-auto" onchange="changeCommentSort()">
-            <option value="registered" data-th-selected="${sort == 'registered'}">등록순</option>
-            <option value="likes" data-th-selected="${sort == 'likes'}">좋아요순</option>
-        </select>
-    </div>
+        <input type="hidden" name="boardType" value="1">
+        <input type="hidden" name="boardNo" data-th-value="${board.boardNo}">
+    </form>
 
     <p data-th-unless="${commentList}">댓글이 없습니다.</p>
 
     <ul class="list-unstyled" data-th-if="${commentList != null and commentList.size() > 0}">
+
+        <div class="mb-3">
+            <select id="commentSort" class="form-select w-auto" onchange="changeCommentSort()">
+                <option value="registered" data-th-selected="${sort == 'registered'}">등록순</option>
+                <option value="likes" data-th-selected="${sort == 'likes'}">좋아요순</option>
+            </select>
+        </div>
+
         <li class="mb-1" data-th-each="comment : ${commentList}">
-            <div class="p-3 border rounded shadow-sm bg-white"> <!-- 박스를 위한 스타일 -->
+            <div class="p-3 border rounded shadow-sm bg-white">
                 <div class="d-flex align-items-center mb-2">
                     <img data-th-src="@{https://dgg7dnk35523.edge.naverncp.com/HZiW9aEJy7/user/profile/default.png(type=f,w=20,h=20)}"
-                         data-th-unless="${board.writer.userPhoto}"
+                         data-th-unless="${comment.writer.userPhoto}"
                          src="/images/default.png"
                          class="rounded-circle me-2" style="width: 40px; height: 40px;">
 
-                    <img data-th-if="${board.writer.userPhoto}"
-                         data-th-src="@{https://dgg7dnk35523.edge.naverncp.com/HZiW9aEJy7/user/profile/} + ${board.writer.userPhoto} + '?type=f&w=100&h=100'"
+                    <img data-th-if="${comment.writer.userPhoto}"
+                         data-th-src="@{https://dgg7dnk35523.edge.naverncp.com/HZiW9aEJy7/user/profile/} + ${comment.writer.userPhoto} + '?type=f&w=100&h=100'"
                          src="/images/default.png"
                          class="rounded-circle me-2" style="width: 40px; height: 40px;">
-                    <strong class="me-2" data-th-text="${board.writer.userNickname}">닉네임</strong>
+
+                    <strong class="me-2" data-th-text="${comment.writer.userNickname}">닉네임</strong>
                     <small class="text-muted" data-th-text="${#calendars.format(comment.commentCreatedDate, 'yyyy년 MM월 dd일 HH:mm')}">작성일</small>
                 </div>
 
@@ -62,18 +54,33 @@
                             data-th-text="${commentLikedMap[comment.commentNo] != null && commentLikedMap[comment.commentNo] ? '❤️ 좋아요 취소' : '🤍 좋아요'}">
                     </button>
                     <span data-th-id="'commentLikeCount-' + ${comment.commentNo}" class="me-2" data-th-text="${comment.commentLike}">0</span>
-                    <div data-th-if="${isLoggedIn and comment.userNo == loginUserNo}">
-                        <button type="button" class="btn btn-outline-secondary btn-sm me-1" onclick="enableEdit(this)">수정</button>
-                        <button type="button" class="btn btn-outline-secondary btn-sm me-1" data-th-onclick="|updateComment(${comment.commentNo}, ${board.boardNo}, this)|" style="display: none;">저장</button>
-                        <button type="button" class="btn btn-outline-secondary btn-sm me-1" onclick="cancelEdit(this)" style="display: none;">취소</button>
-                        <button type="button" class="btn btn-outline-secondary btn-sm" data-th-onclick="|deleteComment(${comment.commentNo}, ${board.boardNo})|">삭제</button>
+                    <div class="d-flex align-items-center">
+                        <button type="button" class="btn btn-outline-secondary btn-sm me-1 edit-button"
+                                data-th-if="${isUserAuthorizedMap[comment.commentNo]}" onclick="enableEdit(this)">수정</button>
+
+                        <button type="button" class="btn btn-outline-secondary btn-sm me-1 save-button"
+                                data-th-if="${isUserAuthorizedMap[comment.commentNo]}"
+                                data-th-onclick="|handleSave(${comment.commentNo}, ${board.boardNo}, this)|"
+                                style="display: none;">저장</button>
+
+                        <button type="button" class="btn btn-outline-secondary btn-sm me-1 cancel-button"
+                                data-th-if="${isUserAuthorizedMap[comment.commentNo]}"
+                                onclick="cancelEdit(this)" style="display: none;">취소</button>
+
+                        <button type="button" class="btn btn-outline-secondary btn-sm delete-button"
+                                data-th-if="${isUserAuthorizedMap[comment.commentNo]}"
+                                data-th-onclick="|handleDelete(${comment.commentNo}, ${board.boardNo})|">삭제</button>
                     </div>
                 </div>
             </div>
         </li>
     </ul>
 
-    <div class="text-center">
+    <div id="alertMessage" class="alert alert-success d-none" role="alert"
+         style="position: fixed; bottom: 1000px; left: 50%; transform: translateX(-50%); z-index: 1050;">
+    </div>
+
+    <div data-th-if="${commentList != null and commentList.size() > 0 and totalPages > 0}" class="text-center">
     <span data-th-if="${currentPage > 1}">
         <a class="btn btn-outline-secondary btn-sm" data-th-href="@{|?boardNo=${board.boardNo}&page=${currentPage - 1}|}">
             [이전]
@@ -86,7 +93,6 @@
            data-th-href="@{|?boardNo=${board.boardNo}&page=${i}|}"
            data-th-classappend="${i == currentPage} ? ' active' : ''"
            data-th-text="${i}">
-           1
         </a>
     </span>
 
@@ -100,79 +106,108 @@
 
 </div>
 
+<div class="modal fade" id="checkLoginModal" tabindex="-1" aria-labelledby="checkLoginModalLabel" aria-hidden="true">
+    <div class="modal-dialog" style="margin-top: 300px;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="checkLoginModalLabel">알림</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                로그인이 필요합니다. 로그인 창으로 이동하시겠습니까?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="confirmLoginButton">확인</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="confirmActionModal" tabindex="-1" aria-labelledby="confirmActionModalLabel" aria-hidden="true">
+    <div class="modal-dialog" style="margin-top: 300px;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmActionModalLabel">확인</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="confirmActionMessage">
+                <!-- 이 메시지는 JavaScript에서 설정됩니다. -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="confirmActionButton">확인</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
 <script>
     function enableEdit(button) {
+    const listItem = button.closest('li');
+    const textarea = listItem.querySelector('textarea');
 
-        const listItem = button.closest('li');
-        const textarea = listItem.querySelector('textarea');
+    textarea.setAttribute('data-original-content', textarea.value);
 
-        // 현재 내용을 저장해둠
-        textarea.setAttribute('data-original-content', textarea.value);
+    textarea.removeAttribute('readonly');
+    button.style.display = 'none';
 
-        // 텍스트 영역 수정 가능하게 설정
-        textarea.removeAttribute('readonly');
-        button.style.display = 'none'; // 수정 버튼 숨기기
-        // 저장 및 취소 버튼을 찾고 표시
-        listItem.querySelector('button[onclick^="updateComment"]').style.display = 'inline'; // 저장 버튼 표시
-        listItem.querySelector('button[onclick^="cancelEdit"]').style.display = 'inline'; // 취소 버튼 표시
-        listItem.querySelector('button[onclick^="deleteComment"]').style.display = 'none'; // 삭제 버튼 숨기기
-    }
+    listItem.querySelector('.save-button').style.display = 'inline';
+    listItem.querySelector('.cancel-button').style.display = 'inline';
+    listItem.querySelector('.delete-button').style.display = 'none';
+}
 
     function updateComment(commentNo, boardNo, button) {
-        const listItem = button.closest('li');
-        const textarea = listItem.querySelector('textarea');
-        const commentContent = textarea.value;
+    const listItem = button.closest('li');
+    const textarea = listItem.querySelector('textarea');
+    const commentContent = textarea.value;
 
-        if (confirm('댓글을 수정하시겠습니까?')) {
-            fetch(`../comment/update`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: `commentNo=${commentNo}&commentContent=${encodeURIComponent(commentContent)}&boardType=1&boardNo=${boardNo}`
-            }).then(response => {
-                if (response.ok) {
-                    alert('댓글이 수정되었습니다.');
-                    location.reload(); // 페이지 새로고침
-                } else {
-                    alert('댓글 수정에 실패했습니다.');
-                }y
-            });
+    fetch(`/comment/update`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: `commentNo=${commentNo}&commentContent=${encodeURIComponent(commentContent)}&boardType=1&boardNo=${boardNo}`
+    }).then(response => {
+        if (response.ok) {
+            location.reload();
         }
-    }
+    }).catch(error => console.error('Error:', error));
+}
+
+    function deleteComment(commentNo, boardNo) {
+    fetch(`/comment/delete?commentNo=${commentNo}&boardNo=${boardNo}&boardType=1`, {
+        method: 'GET',
+        }).then(response => {
+        if (response.ok) {
+            location.reload();
+      }
+    }).catch(error => console.error('Error:', error));}
 
     function cancelEdit(button) {
-        const listItem = button.closest('li');
-        const textarea = listItem.querySelector('textarea');
+    const listItem = button.closest('li');
+    const textarea = listItem.querySelector('textarea');
 
-        // 저장해둔 원래 내용을 되돌리기
-        textarea.value = textarea.getAttribute('data-original-content');
-        textarea.setAttribute('readonly', true);
+    textarea.value = textarea.getAttribute('data-original-content');
+    textarea.setAttribute('readonly', true);
 
-        // 버튼 표시 상태 원래대로 복구
-        listItem.querySelector('button[onclick="enableEdit(this)"]').style.display = 'inline'; // 수정 버튼 다시 표시
-        listItem.querySelector('button[onclick^="updateComment"]').style.display = 'none'; // 저장 버튼 숨기기
-        listItem.querySelector('button[onclick^="cancelEdit"]').style.display = 'none'; // 취소 버튼 숨기기
-        listItem.querySelector('button[onclick^="deleteComment"]').style.display = 'inline'; // 삭제 버튼 다시 표시하기
-    }
-
-    function deleteComment(commentNo, no) {
-        if (confirm('댓글을 삭제하시겠습니까?')) {
-            location.href = '../comment/delete?commentNo=' + commentNo + '&boardNo=' + no +'&boardType=1';
-        }
-    }
+    listItem.querySelector('.edit-button').style.display = 'inline';
+    listItem.querySelector('.save-button').style.display = 'none';
+    listItem.querySelector('.cancel-button').style.display = 'none';
+    listItem.querySelector('.delete-button').style.display = 'inline';
+}
 </script>
 <script>
     function toggleCommentLike(commentNo) {
-        const isLoggedIn = [[${isLoggedIn}]]; // 서버에서 전달받은 로그인 여부
+        const isLoggedIn = [[${isLoggedIn}]];
 
         if (!isLoggedIn) {
-            // 로그인하지 않은 경우 모달 띄우기
             const checkLoginModal = new bootstrap.Modal(document.getElementById('checkLoginModal'), {
                 backdrop: 'static',
                 keyboard: false
             });
             checkLoginModal.show();
         } else {
-            // 로그인한 경우 좋아요 기능 실행
             fetch(`/comment/toggleCommentLike?commentNo=${commentNo}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' }
@@ -183,9 +218,9 @@
                 const likeButtonElem = document.getElementById(`commentLikeButton-${commentNo}`);
 
                 if (likeCountElem && likeButtonElem) {
-                    likeCountElem.textContent = data.commentLikeCount; // 좋아요 개수 업데이트
-                    likeButtonElem.textContent = data.isCommentLiked ? '❤️ 좋아요 취소' : '🤍 좋아요'; // 버튼 텍스트 업데이트
-                    alert(data.message);
+                    likeCountElem.textContent = data.commentLikeCount;
+                    likeButtonElem.textContent = data.isCommentLiked ? '❤️ 좋아요 취소' : '🤍 좋아요';
+                    showAlert(data.message, 'success', likeButtonElem);
                 } else {
                     console.error(`Elements for commentNo ${commentNo} not found.`, {
                         likeCountElem,
@@ -197,6 +232,22 @@
         }
     }
 
+    function showAlert(message, type = 'success', targetButton) {
+        const alertBox = document.getElementById('alertMessage');
+        alertBox.classList.remove('d-none', 'alert-success', 'alert-danger', 'alert-warning', 'alert-info');
+        alertBox.classList.add(`alert-${type}`);
+        alertBox.textContent = message;
+
+        const buttonRect = targetButton.getBoundingClientRect();
+        alertBox.style.position = 'absolute';
+        alertBox.style.top = `${buttonRect.top + window.scrollY - alertBox.offsetHeight - 10}px`;
+        alertBox.style.left = `${buttonRect.left + window.scrollX - alertBox.offsetWidth + 310}px`;
+
+        alertBox.classList.remove('d-none');
+        setTimeout(() => {
+            alertBox.classList.add('d-none');
+        }, 1000);
+    }
 
 </script>
 
@@ -205,20 +256,17 @@
         const sort = document.getElementById('commentSort').value;
         const urlParams = new URLSearchParams(window.location.search);
         urlParams.set('sort', sort);
-        urlParams.set('page', '1');  // 페이지를 1로 초기화
+        urlParams.set('page', '1');
         window.location.search = urlParams.toString();
     }
 </script>
 
 <script>
     function adjustTextareaHeight(element) {
-        // 기존 높이를 초기화하여 높이 재조정
         element.style.height = 'auto';
-        // 스크롤 높이를 기준으로 높이를 다시 설정
         element.style.height = (element.scrollHeight) + 'px';
     }
 
-    // 모든 textarea 요소의 높이를 페이지 로드 시 조정
     document.addEventListener('DOMContentLoaded', () => {
         document.querySelectorAll('textarea').forEach(textarea => {
             adjustTextareaHeight(textarea);
@@ -233,40 +281,65 @@
     const isLoggedIn = [[${isLoggedIn}]];
     const confirmLoginButton = document.getElementById('confirmLoginButton');
 
-    // 중복 리스너 방지용 플래그 설정
     if (!confirmLoginButton.dataset.listenerAdded) {
         confirmLoginButton.addEventListener('click', () => {
             const checkLoginModal = bootstrap.Modal.getInstance(document.getElementById('checkLoginModal'));
             if (checkLoginModal) {
-                checkLoginModal.hide(); // 로그인 확인 모달 닫기
+                checkLoginModal.hide();
             }
 
-            // authModal.js의 loginModal을 표시
             const loginModalEl = document.getElementById('loginModal');
             if (loginModalEl) {
                 const loginModal = new bootstrap.Modal(loginModalEl);
-                loginModal.show(); // 로그인 모달을 표시
+                loginModal.show();
             } else {
                 console.error('loginModal 엘리먼트가 존재하지 않습니다.');
             }
         });
 
-        // 리스너가 추가되었음을 표시
         confirmLoginButton.dataset.listenerAdded = 'true';
     }
 
     submitButton.addEventListener('click', function(event) {
         if (!isLoggedIn) {
-            event.preventDefault(); // 폼 제출 방지
+            event.preventDefault();
 
             const checkLoginModal = new bootstrap.Modal(document.getElementById('checkLoginModal'), {
                 backdrop: 'static',
                 keyboard: false
             });
-            checkLoginModal.show(); // 로그인 필요 모달 띄우기
+            checkLoginModal.show();
         } else {
-            commentForm.submit(); // 로그인된 경우 폼 제출
+            commentForm.submit();
         }
     });
 });
 </script>
+
+<script>
+    function showConfirmModal(message, onConfirm) {
+        const modal = new bootstrap.Modal(document.getElementById('confirmActionModal'), {
+            backdrop: 'static',
+            keyboard: false
+        });
+        document.getElementById('confirmActionMessage').textContent = message;
+        document.getElementById('confirmActionButton').onclick = onConfirm;
+        modal.show();
+    }
+
+    function handleSave(commentNo, boardNo, button) {
+        showConfirmModal('댓글을 수정하시겠습니까?', () => {
+            updateComment(commentNo, boardNo, button);
+        });
+    }
+
+    function handleDelete(commentNo, boardNo) {
+        showConfirmModal('댓글을 삭제하시겠습니까?', () => {
+            deleteComment(commentNo, boardNo);
+        });
+    }
+</script>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

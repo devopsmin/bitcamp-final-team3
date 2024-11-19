@@ -28,4 +28,6 @@ public class Board {
 
   private Trip trip;              // 여행
   private List<BoardImage> boardImages;  // 게시판 첨부 이미지
+
+  private String firstImageName;  // 게시글 첫 이미지 썸네일 사진
 }

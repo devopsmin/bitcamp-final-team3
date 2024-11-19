@@ -98,46 +98,46 @@
 
     <select id="locationList" resultMap="LocationResultMap">
         SELECT
-            l.location_no,
-            l.thirdclass_code,
-            l.location_name,
-            l.location_desc,
-            l.location_photo,
-            l.location_tel,
-            l.location_addr,
-            l.location_x,
-            l.location_y,
-            l.locationtype_no,
-            c.city_code
+        l.location_no,
+        l.thirdclass_code,
+        l.location_name,
+        l.location_desc,
+        l.location_photo,
+        l.location_tel,
+        l.location_addr,
+        l.location_x,
+        l.location_y,
+        l.locationtype_no,
+        c.city_code
         from
-            location l
-                right outer join city c
-                                 on l.city_code = c.city_code
-                inner join thirdclass t
-                           on l.thirdclass_code = t.thirdclass_code
+        location l
+        right outer join city c
+        on l.city_code = c.city_code
+        inner join thirdclass t
+        on l.thirdclass_code = t.thirdclass_code
         where
-            c.city_code=#{cityCode} and t.secondclass_code != "B0201";
+        c.city_code=#{cityCode} and t.secondclass_code != "B0201";
     </select>
 
     <select id="hotelList" resultMap="LocationResultMap">
         SELECT
-            l.location_no,
-            l.thirdclass_code,
-            l.location_name,
-            l.location_desc,
-            l.location_photo,
-            l.location_tel,
-            l.location_addr,
-            l.location_x,
-            l.location_y,
-            l.locationtype_no,
-            c.city_code
+        l.location_no,
+        l.thirdclass_code,
+        l.location_name,
+        l.location_desc,
+        l.location_photo,
+        l.location_tel,
+        l.location_addr,
+        l.location_x,
+        l.location_y,
+        l.locationtype_no,
+        c.city_code
         from
-            location l
-                right outer join city c on l.city_code = c.city_code
-                inner join thirdclass t on l.thirdclass_code = t.thirdclass_code
+        location l
+        right outer join city c on l.city_code = c.city_code
+        inner join thirdclass t on l.thirdclass_code = t.thirdclass_code
         where
-            c.city_code=#{cityCode} and t.secondclass_code = "B0201";
+        c.city_code=#{cityCode} and t.secondclass_code = "B0201";
     </select>
 
     <insert id="addSchedule" parameterType="schedule"
@@ -152,35 +152,35 @@
 
     <select id="findLocation" resultMap="LocationResultMap" parameterType="int">
         select
-            l.location_no,
-            l.city_code,
-            l.thirdclass_code,
-            l.location_name,
-            l.location_desc,
-            l.location_photo,
-            l.location_tel,
-            l.location_addr,
-            l.location_x,
-            l.location_y,
-            l.locationtype_no
+        l.location_no,
+        l.city_code,
+        l.thirdclass_code,
+        l.location_name,
+        l.location_desc,
+        l.location_photo,
+        l.location_tel,
+        l.location_addr,
+        l.location_x,
+        l.location_y,
+        l.locationtype_no
         from
-            location l
+        location l
         where
-            l.location_no = #{locationNo}
+        l.location_no = #{locationNo}
     </select>
 
     <select id="viewSchedule" resultMap="SchedulResultMap" parameterType="int">
         SELECT
-            s.schedule_no,
-            s.trip_no,
-            s.schedule_day,
-            s.schedule_route,
-            l.location_no,
-            l.location_name
+        s.schedule_no,
+        s.trip_no,
+        s.schedule_day,
+        s.schedule_route,
+        l.location_no,
+        l.location_name
         FROM
-            schedule s
-                left outer join location l
-                                ON s.location_no = l.location_no
+        schedule s
+        left outer join location l
+        ON s.location_no = l.location_no
         WHERE s.trip_no = #{tripNo}
         ORDER BY s.schedule_day, s.schedule_route
 
@@ -188,100 +188,100 @@
 
     <select id="themaList" resultType="Thema">
         SELECT
-            thema_no as themaNo,
-            thema_name as themaName
+        thema_no as themaNo,
+        thema_name as themaName
         FROM thema
     </select>
 
     <select id="getThema" resultType="Thema" parameterType="int">
         SELECT
-            thema_no as themaNo,
-            thema_name as themaName
+        thema_no as themaNo,
+        thema_name as themaName
         FROM thema
         WhERE thema_no=#{themaNo}
     </select>
 
     <select id="getTripList" resultMap="TripResultMap">
         SELECT
-            t.trip_no,
-            t.user_no,
-            th.thema_no,
-            th.thema_name,
-            t.trip_title,
-            t.start_date,
-            t.end_date,
-            t.trip_created_date,
-            t.total_day,
-            st.state_code,
-            st.state_name,
-            c.city_code,
-            c.city_name,
-            s.schedule_no,
-            s.trip_no,
-            s.schedule_day,
-            s.schedule_route,
-            l.thirdclass_code,
-            l.city_code,
-            l.location_name,
-            l.location_desc,
-            l.location_photo,
-            l.location_tel,
-            l.location_addr,
-            l.location_x,
-            l.location_y,
-            l.locationtype_no
+        t.trip_no,
+        t.user_no,
+        th.thema_no,
+        th.thema_name,
+        t.trip_title,
+        t.start_date,
+        t.end_date,
+        t.trip_created_date,
+        t.total_day,
+        st.state_code,
+        st.state_name,
+        c.city_code,
+        c.city_name,
+        s.schedule_no,
+        s.trip_no,
+        s.schedule_day,
+        s.schedule_route,
+        l.thirdclass_code,
+        l.city_code,
+        l.location_name,
+        l.location_desc,
+        l.location_photo,
+        l.location_tel,
+        l.location_addr,
+        l.location_x,
+        l.location_y,
+        l.locationtype_no
         From
-            trip t
-                left outer join thema th on t.thema_no = th.thema_no
-                left outer join city c on t.city_code = c.city_code
-                left outer join state st on st.state_code = c.state_code
-                join schedule s on t.trip_no = s.trip_no
-                left outer join location l on s.location_no = l.location_no
+        trip t
+        left outer join thema th on t.thema_no = th.thema_no
+        left outer join city c on t.city_code = c.city_code
+        left outer join state st on st.state_code = c.state_code
+        join schedule s on t.trip_no = s.trip_no
+        left outer join location l on s.location_no = l.location_no
         where
-            t.city_code = #{city.cityCode}
-          and DATEDIFF(t.end_date, t.start_date) > DATEDIFF(#{endDate},#{startDate})
+        t.city_code = #{city.cityCode}
+        and DATEDIFF(t.end_date, t.start_date) > DATEDIFF(#{endDate},#{startDate})
 
     </select>
 
     <!--    유저정보를 통한 Trip 찾기-->
     <select id="findTripsByUserNo" parameterType="Long" resultMap="TripResultMap">
         SELECT
-            t.trip_no,
-            t.user_no,
-            th.thema_no,
-            th.thema_name,
-            t.trip_title,
-            t.start_date,
-            t.end_date,
-            t.trip_created_date,
-            t.total_day,
-            st.state_code,
-            st.state_name,
-            c.city_code,
-            c.city_name,
-            s.schedule_no,
-            s.trip_no,
-            s.schedule_day,
-            s.schedule_route,
-            l.thirdclass_code,
-            l.city_code,
-            l.location_name,
-            l.location_desc,
-            l.location_photo,
-            l.location_tel,
-            l.location_addr,
-            l.location_x,
-            l.location_y,
-            l.locationtype_no
+        t.trip_no,
+        t.user_no,
+        th.thema_no,
+        th.thema_name,
+        t.trip_title,
+        t.start_date,
+        t.end_date,
+        t.trip_created_date,
+        t.total_day,
+        st.state_code,
+        st.state_name,
+        c.city_code,
+        c.city_name,
+        s.schedule_no,
+        s.trip_no,
+        s.schedule_day,
+        s.schedule_route,
+        l.thirdclass_code,
+        l.city_code,
+        l.location_name,
+        l.location_desc,
+        l.location_photo,
+        l.location_tel,
+        l.location_addr,
+        l.location_x,
+        l.location_y,
+        l.locationtype_no
         From
-            trip t
-                left outer join thema th on t.thema_no = th.thema_no
-                left outer join city c on t.city_code = c.city_code
-                left outer join state st on st.state_code = c.state_code
-                join schedule s on t.trip_no = s.trip_no
-                left outer join location l on s.location_no = l.location_no
+        trip t
+        left outer join thema th on t.thema_no = th.thema_no
+        left outer join city c on t.city_code = c.city_code
+        left outer join state st on st.state_code = c.state_code
+        join schedule s on t.trip_no = s.trip_no
+        left outer join location l on s.location_no = l.location_no
         where
-            t.user_no = #{userNo}
+        t.user_no = #{userNo}
     </select>
 
     <!-- user_no로 trip_no 리스트 찾기 -->
@@ -294,19 +294,64 @@
     <!--trip_no로 schedule 리스트 찾기-->
     <select id="findSchedulesByTripNo" resultMap="SchedulResultMap" parameterType="int">
         SELECT
-            s.schedule_no,
-            s.trip_no,
-            s.schedule_day,
-            s.schedule_route,
-            l.location_no,
-            l.location_name,
-            l.location_x,
-            l.location_y
+        s.schedule_no,
+        s.trip_no,
+        s.schedule_day,
+        s.schedule_route,
+        l.location_no,
+        l.location_name,
+        l.location_x,
+        l.location_y
         FROM
-            schedule s
-                LEFT JOIN location l ON s.location_no = l.location_no
+        schedule s
+        LEFT JOIN location l ON s.location_no = l.location_no
         WHERE s.trip_no = #{tripNo}
         ORDER BY s.schedule_day, s.schedule_route
     </select>
 
+    <!--이미 게시글이 있는경우 제외하고 trip_no로 schedule 리스트 찾기-->
+    <select id="findSchedulesByTripNoExcludeBoard" resultMap="TripResultMap" parameterType="Long">
+        SELECT
+        t.trip_no,
+        t.user_no,
+        th.thema_no,
+        th.thema_name,
+        t.trip_title,
+        t.start_date,
+        t.end_date,
+        t.trip_created_date,
+        t.total_day,
+        st.state_code,
+        st.state_name,
+        c.city_code,
+        c.city_name,
+        s.schedule_no,
+        s.trip_no AS schedule_trip_no,
+        s.schedule_day,
+        s.schedule_route,
+        l.thirdclass_code,
+        l.city_code AS location_city_code,
+        l.location_name,
+        l.location_desc,
+        l.location_photo,
+        l.location_tel,
+        l.location_addr,
+        l.location_x,
+        l.location_y,
+        l.locationtype_no
+        FROM
+        trip t
+        LEFT JOIN thema th ON t.thema_no = th.thema_no
+        LEFT JOIN city c ON t.city_code = c.city_code
+        LEFT JOIN state st ON st.state_code = c.state_code
+        JOIN schedule s ON t.trip_no = s.trip_no
+        LEFT JOIN location l ON s.location_no = l.location_no
+        WHERE
+        t.user_no = #{userNo}
+        AND NOT EXISTS (
+        SELECT 1
+        FROM board b
+        WHERE b.trip_no = t.trip_no
+        );
+    </select>
 </mapper>

@@ -42,11 +42,11 @@ public class AuthController {
 
   @PostMapping("login")
   public String login(
-      String userEmail,
-      String userPassword,
-      boolean saveEmail,
-      HttpServletResponse res,
-      HttpSession session) throws Exception {
+          String userEmail,
+          String userPassword,
+          boolean saveEmail,
+          HttpServletResponse res,
+          HttpSession session) throws Exception {
 
     User user = userService.exists(userEmail, userPassword);
     if (user == null) {
@@ -90,10 +90,10 @@ public class AuthController {
 
   @PostMapping("/register/user")
   public String registerUser(
-      User user,
-      @RequestParam String confirmPassword,
-      Model model,
-      @RequestParam(required = false) MultipartFile file) {
+          User user,
+          @RequestParam String confirmPassword,
+          Model model,
+          @RequestParam(required = false) MultipartFile file) {
     try {
       if (!user.getUserPassword().equals(confirmPassword)) {
         throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
@@ -109,8 +109,8 @@ public class AuthController {
         HashMap<String, Object> options = new HashMap<>();
         options.put(StorageService.CONTENT_TYPE, file.getContentType());
         storageService.upload(folderName + filename,
-            file.getInputStream(),
-            options);
+                file.getInputStream(),
+                options);
         user.setUserPhoto(filename);
       }
 
@@ -158,9 +158,9 @@ public class AuthController {
   @PostMapping("/reset/password")
   @ResponseBody
   public String resetPassword(
-      @RequestParam String userEmail,
-      @RequestParam String userTel,
-      @RequestParam String newPassword) throws Exception {
+          @RequestParam String userEmail,
+          @RequestParam String userTel,
+          @RequestParam String newPassword) throws Exception {
 
     User user = userService.getByEmail(userEmail);
     if (user == null) {
@@ -188,24 +188,24 @@ public class AuthController {
     }
 
     String email = user.getUserEmail();
-//    String maskedEmail = maskEmail(email);
-      return "회원님의 아이디는 " + email + " 입니다.";
+    //    String maskedEmail = maskEmail(email);
+    return "회원님의 아이디는 " + email + " 입니다.";
     //    return "회원님의 아이디는 " + maskedEmail + " 입니다.";
   }
 
   // 아이디 별표 쳐서 보여줌
-//  private String maskEmail(String email) {
-//    int atIndex = email.indexOf('@');
-//    if (atIndex <= 1) return email;
-//
-//    String local = email.substring(0, atIndex);
-//    String domain = email.substring(atIndex);
-//
-//    int visibleLength = Math.min(3, local.length());
-//    String visiblePart = local.substring(0, visibleLength);
-//    String maskedPart = "*".repeat(local.length() - visibleLength);
-//
-//    return visiblePart + maskedPart + domain;
-//  }
+  //  private String maskEmail(String email) {
+  //    int atIndex = email.indexOf('@');
+  //    if (atIndex <= 1) return email;
+  //
+  //    String local = email.substring(0, atIndex);
+  //    String domain = email.substring(atIndex);
+  //
+  //    int visibleLength = Math.min(3, local.length());
+  //    String visiblePart = local.substring(0, visibleLength);
+  //    String maskedPart = "*".repeat(local.length() - visibleLength);
+  //
+  //    return visiblePart + maskedPart + domain;
+  //  }
 
 }

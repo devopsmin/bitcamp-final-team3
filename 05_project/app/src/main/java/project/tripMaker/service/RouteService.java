@@ -131,7 +131,7 @@ public class RouteService {
   }
 
   private int findNearestUnassignedTourism(RouteInfo[][] routeInfos, int accommodation,
-      int accommodationCount, boolean[] assignedTourism) {
+                                           int accommodationCount, boolean[] assignedTourism) {
     int nearest = -1;
     long minDuration = Long.MAX_VALUE;
 

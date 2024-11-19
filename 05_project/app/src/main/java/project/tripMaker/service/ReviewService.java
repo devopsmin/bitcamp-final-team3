@@ -1,13 +1,20 @@
 package project.tripMaker.service;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import project.tripMaker.dao.BoardReviewDao;
 import project.tripMaker.dao.CommentDao;
+import project.tripMaker.dto.ReviewDto;
 import project.tripMaker.vo.Board;
 import project.tripMaker.vo.BoardImage;
 import project.tripMaker.vo.Trip;
@@ -183,6 +190,7 @@ public class ReviewService implements BoardService {
   // 2. 작성자 Writer
   // 3. 시도   City
   // 4. 태그   Tag
+  // 5. 테마   Thema
   public List<Board> findByTitle(String title) {
     return boardReviewDao.findByTitle(title);
   }
@@ -197,6 +205,10 @@ public class ReviewService implements BoardService {
 
   public List<Board> findByTag(String tag) {
     return boardReviewDao.findByTag(tag);
+  }
+
+  public List<Board> findByThema(String themaName) {
+    return boardReviewDao.findByThema(themaName);
   }
 
   // 댓글 수
@@ -219,9 +231,81 @@ public class ReviewService implements BoardService {
   }
 
   // 게시글 관련 지울떄 싹다 지우기
-  @Transactional 
+  @Transactional
   public void deleteAllFiles(int boardNo) throws Exception {
     boardReviewDao.deleteFiles(boardNo);
+  }
+
+  // 보드 게시글 리스트
+  public List<Board> listBoard(int boardtypeNo) throws Exception {
+    return boardReviewDao.listBoard(boardtypeNo);
+  }
+
+  // 게시글의 추천 점수를 계산하는 메서드
+  private double calculateRecommendationScore(Board board) {
+    double viewWeight = 0.4;  // 조회수 점수 할당
+    double likeWeight = 0.3; // 좋아요 점수 할당
+    double favorWeight = 0.2; // 즐겨찾기 점수 할당
+    double recencyWeight = 0.1; // 최근글 점수 할당
+
+    double recencyScore = calculateRecencyScore(board.getBoardCreatedDate()); // Date 사용하여 최근성 점수로 계산
+
+    return (board.getBoardCount() * viewWeight) +
+            (board.getBoardLike() * likeWeight) +
+            (board.getBoardFavor() * favorWeight) +
+            (recencyScore * recencyWeight);
+  }
+
+  // Date 객체를 기반으로 최근성 점수를 계산하는 메서드
+  private int calculateRecencyScore(Date boardCreatedDate) {
+    Date now = new Date();
+    long diffInMillies = now.getTime() - boardCreatedDate.getTime(); // 현재 날짜 - 게시글 날짜, 밀리초 단위로 계산된 값
+    long daysAgo = TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS); // 밀리초를 일(day) 단위로 변환한 후 daysAgo에 저장
+
+    if (daysAgo <= 7) return 10;       // 최근 일주일 이내
+    else if (daysAgo <= 30) return 7;  // 한 달 이내
+    else return 3;                     // 한 달 이상 지난 게시글
+  }
+
+  // 베스트 글 가져오기
+  public List<Board> getTopRecommendedBoards(int boardtypeNo, int limit) throws Exception {
+    // 모든 게시글을 가져오고, 추천 점수를 계산하여 상위 N개의 게시글을 반환
+    List<Board> allBoards = listBoard(boardtypeNo); // 전체 게시글 조회
+    allBoards.sort((b1, b2) -> Double.compare(calculateRecommendationScore(b2), calculateRecommendationScore(b1)));
+    // 람다식으로 두 객체 비교, b2kr b1보다 높으면 음수를 반환, 낮으면 양수를 반환하여 내림차순으로 정렬
+
+    return allBoards.stream().limit(limit).toList();
+    // 리스트를 stream으로 변환한 후 limit 만큼 상위 n개를 리스트 형태로 변환하여 반환
+  }
+
+  public List<ReviewDto> getReviews(int page) throws Exception {
+    int pageSize = 9;  // 한 페이지에 표시할 게시물 수를 설정합니다.
+    List<Board> boards = list(page, pageSize, BOARD_TYPE_REVIEW);  // 페이지에 따른 게시글 리스트를 가져옵니다.
+
+    // Board 객체를 ReviewDto로 변환하여 반환합니다.
+    return boards.stream().map(board -> {
+      LocalDate createdDate = board.getBoardCreatedDate().toInstant()
+              .atZone(ZoneId.systemDefault())
+              .toLocalDate();
+
+      // Thema가 null일 경우 대비하여 삼항 연산자로 체크
+      String themaName = board.getTrip().getThema() != null ? board.getTrip().getThema().getThemaName() : "No Thema";
+
+      return ReviewDto.builder()
+              .boardNo(board.getBoardNo())
+              .boardTitle(board.getBoardTitle())
+              .firstImageName(board.getFirstImageName() != null ? board.getFirstImageName() : "default.png")
+              .cityName(board.getTrip().getCity().getCityName())
+              .stateName(board.getTrip().getCity().getState().getStateName())
+              .themaName(themaName)  // Thema 이름 설정
+              .boardLike(board.getBoardLike())
+              .boardFavor(board.getBoardFavor())
+              .boardCount(board.getBoardCount())
+              .writerNickname(board.getWriter().getUserNickname())
+              .writerPhoto(board.getWriter().getUserPhoto())
+              .boardCreatedDate(createdDate)  // LocalDate로 변환된 값 설정
+              .build();
+    }).collect(Collectors.toList());
   }
 
 }

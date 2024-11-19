@@ -12,12 +12,19 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="/js/mapUtils.js"></script>
+    <script src="/js/searchLocation.js"></script>
     <style>
         .form-control:focus {
             border-color: #dee2e6 !important;  /* 기본 테두리 색상 유지 */
             box-shadow: none !important;
             outline: 0 !important;
         }
+
+        .hover-card {
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
     </style>
 </head>
 <body>
@@ -28,7 +35,7 @@
                 <nav class="col-xl-3 pt-3 d-flex flex-column justify-content-between">
                     <div>
                         <h4 class="text-dark text-center">
-                        <a href="/home" class="text-decoration-none text-dark">모두의<br>여행</a>
+                            <a href="/home" class="text-decoration-none text-dark">모두의<br>여행</a>
                         </h4>
                         <ul class="nav flex-column">
                             <li class="nav-item">
@@ -146,12 +153,13 @@
                         <span class="input-group-text bg-white border-end-0">
                             <i class="bi bi-search text-muted"></i>
                         </span>
-                            <input type="text" class="form-control border-start-0" placeholder="새로운 숙소를 검색해보세요" aria-label="Search">
+                            <input type="text" class="form-control border-start-0" placeholder="새로운 장소를 검색해보세요" aria-label="Search">
                         </div>
                         <div class="d-flex justify-content-center mb-3">
-                            <div id="addLocationMap" style="width: 500px; height: 300px;" class="border rounded shadow-sm"><p>지도영역</p></div>
+                            <div id="addLocationMap" style="width: 500px; height: 250px;" class="border rounded shadow-sm">
+                            </div>
                         </div>
-                        <div class="mb-2">
+                        <div class="mb-2" style="max-height: calc(100vh - 500px); overflow-y: auto;">
                             <!-- 검색 결과가 여기에 표시될 것입니다 -->
                         </div>
                     </div>
@@ -165,37 +173,37 @@
                         <p class="fs-4 fw-bold mb-1 text-dark" data-th-text="${#lists.isEmpty(selectLoList)} ? '0' : ${#lists.size(selectLoList)}">0</p>
                     </div>
                     <div id="cardArea">
-<!--                        &lt;!&ndash; Thymeleaf를 사용한 초기 카드 렌더링 &ndash;&gt;-->
-<!--                        <div data-th-each="location, status : ${selectLoList}" class="card mb-3" style="width: 100%; height: 100px;">-->
-<!--                            <div class="card-body d-flex align-items-center justify-content-between border gap-2">-->
-<!--                                &lt;!&ndash; 넘버링 서클 &ndash;&gt;-->
-<!--                                <div class="d-flex justify-content-center align-items-center rounded-circle bg-primary text-white"-->
-<!--                                     style="width: 20px; height: 20px; font-size: 10px;"-->
-<!--                                     data-th-text="${status.count}">1</div>-->
+                        <!--                        &lt;!&ndash; Thymeleaf를 사용한 초기 카드 렌더링 &ndash;&gt;-->
+                        <!--                        <div data-th-each="location, status : ${selectLoList}" class="card mb-3" style="width: 100%; height: 100px;">-->
+                        <!--                            <div class="card-body d-flex align-items-center justify-content-between border gap-2">-->
+                        <!--                                &lt;!&ndash; 넘버링 서클 &ndash;&gt;-->
+                        <!--                                <div class="d-flex justify-content-center align-items-center rounded-circle bg-primary text-white"-->
+                        <!--                                     style="width: 20px; height: 20px; font-size: 10px;"-->
+                        <!--                                     data-th-text="${status.count}">1</div>-->
 
-<!--                                &lt;!&ndash; 이미지 영역 &ndash;&gt;-->
-<!--                                <img class="rounded me-3 h-100" style="width: 70px; object-fit: cover;"-->
-<!--                                     data-th-src="${location.locationPhoto} ?: '/images/default.jpg'"-->
-<!--                                     alt="Location Image">-->
+                        <!--                                &lt;!&ndash; 이미지 영역 &ndash;&gt;-->
+                        <!--                                <img class="rounded me-3 h-100" style="width: 70px; object-fit: cover;"-->
+                        <!--                                     data-th-src="${location.locationPhoto} ?: '/images/default.jpg'"-->
+                        <!--                                     alt="Location Image">-->
 
-<!--                                &lt;!&ndash; 텍스트 정보 영역 &ndash;&gt;-->
-<!--                                <div class="d-flex flex-column" style="flex: 1;">-->
-<!--                                    <h5 class="card-title mb-1" style="font-size: 16px;"-->
-<!--                                        data-th-text="${location.locationName}">여행지이름</h5>-->
-<!--                                    <p class="card-text text-muted mb-0" style="font-size: 12px;"-->
-<!--                                       data-th-text="${location.locationAddr}">주소</p>-->
-<!--                                </div>-->
+                        <!--                                &lt;!&ndash; 텍스트 정보 영역 &ndash;&gt;-->
+                        <!--                                <div class="d-flex flex-column" style="flex: 1;">-->
+                        <!--                                    <h5 class="card-title mb-1" style="font-size: 16px;"-->
+                        <!--                                        data-th-text="${location.locationName}">여행지이름</h5>-->
+                        <!--                                    <p class="card-text text-muted mb-0" style="font-size: 12px;"-->
+                        <!--                                       data-th-text="${location.locationAddr}">주소</p>-->
+                        <!--                                </div>-->
 
-<!--                                &lt;!&ndash; 버튼 영역 &ndash;&gt;-->
-<!--                                <button class="btn btn-outline-secondary btn-location d-flex justify-content-center align-items-center"-->
-<!--                                        style="height: 60px; width: 30px;"-->
-<!--                                        data-th-attr="data-index=${status.index}">-->
-<!--                                    <i class="bi bi-trash"></i>-->
-<!--                                    <span class="location-x d-none" data-th-text="${location.locationX}"></span>-->
-<!--                                    <span class="location-y d-none" data-th-text="${location.locationY}"></span>-->
-<!--                                </button>-->
-<!--                            </div>-->
-<!--                        </div>-->
+                        <!--                                &lt;!&ndash; 버튼 영역 &ndash;&gt;-->
+                        <!--                                <button class="btn btn-outline-secondary btn-location d-flex justify-content-center align-items-center"-->
+                        <!--                                        style="height: 60px; width: 30px;"-->
+                        <!--                                        data-th-attr="data-index=${status.index}">-->
+                        <!--                                    <i class="bi bi-trash"></i>-->
+                        <!--                                    <span class="location-x d-none" data-th-text="${location.locationX}"></span>-->
+                        <!--                                    <span class="location-y d-none" data-th-text="${location.locationY}"></span>-->
+                        <!--                                </button>-->
+                        <!--                            </div>-->
+                        <!--                        </div>-->
                     </div>
                 </div>
             </div>
@@ -203,16 +211,52 @@
 
         <div class="col-8 bg-white text-primary" id="map" style="height: 100vh;"></div>
 
-        <div aria-hidden="true" aria-labelledby="dateModalLabel" class="modal fade" data-bs-backdrop="static"
-             data-bs-keyboard="false"
-             id="dateModal" tabindex="-1">
+        <div class="modal fade" id="locationSearchModal" tabindex="-1" aria-labelledby="locationSearchModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
+                    <!-- 모달 헤더 -->
                     <div class="modal-header">
-                        <h5 class="modal-title" id="dateModalLabel">여행지 정보 나타내기</h5>
+                        <h5 class="modal-title" id="locationSearchModalLabel">장소 등록</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                    <div class="modal-body">
 
+                    <!-- 모달 바디 -->
+                    <div class="modal-body">
+                        <!-- 장소명 -->
+                        <div class="mb-3">
+                            <h5 class="location-title fw-bold"></h5>
+                        </div>
+                        <!-- 주소 정보 -->
+                        <div class="mb-3">
+                            <p class="location-address text-muted"></p>
+                            <span class="locationX"></span>
+                            <span class="locationY"></span>
+                            <span class="location-x d-none"></span>
+                            <span class="location-y d-none"></span>
+                        </div>
+
+                        <!-- 드롭다운 선택 -->
+                        <div class="dropdown mb-3">
+                            <button class="btn dropdown-toggle w-100" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                일정을 선택하세요
+                            </button>
+                            <ul class="dropdown-menu w-100">
+                                <li><a class="dropdown-item" href="#" data-value="1">1일차</a></li>
+                                <li><a class="dropdown-item" href="#" data-value="2">2일차</a></li>
+                                <li><a class="dropdown-item" href="#" data-value="3">3일차</a></li>
+                            </ul>
+                        </div>
+
+                        <!-- 확인 메시지 -->
+                        <div class="text-center mt-4">
+                            <p>이 장소를 등록하시겠습니까?</p>
+                        </div>
+                    </div>
+
+                    <!-- 모달 푸터 -->
+                    <div class="modal-footer justify-content-center">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+                        <button type="button" class="btn btn-primary">추가</button>
                     </div>
                 </div>
             </div>
@@ -230,12 +274,17 @@
 
     let selectedItems = [];
 
-    document.addEventListener('DOMContentLoaded', () => {
-        const stateName = /*[[${trip.city.state.stateName}]]*/ '';
-        const cityName = /*[[${trip.city.cityName}]]*/ '';
 
-        // 지도 초기화
-        initializeMap('map', stateName, cityName);
+    document.addEventListener('DOMContentLoaded', async () => {
+        try {
+            const stateName = /*[[${trip.city.state.stateName}]]*/ '';
+            const cityName = /*[[${trip.city.cityName}]]*/ '';
+
+            await initializeMap('map', stateName, cityName);
+            await searchMap('addLocationMap',stateName, cityName);
+        } catch (error) {
+            console.error('실행 중 오류 발생:', error);
+        }
     });
 
     document.addEventListener('DOMContentLoaded', function() {
@@ -282,26 +331,6 @@
         });
     });
 
-    // // 페이지 로드 시 초기 selectedItems 설정
-    // document.addEventListener('DOMContentLoaded', function() {
-    //     // Thymeleaf로 전달된 selectLoList의 인덱스들을 selectedItems에 추가
-    //     const initialSelectedButtons = document.querySelectorAll('#locationListDiv .btn-location[data-index]');
-    //     initialSelectedButtons.forEach(button => {
-    //         const index = button.getAttribute('data-index');
-    //         if(index) {
-    //             selectedItems.push(index);
-    //             // 버튼 스타일도 선택된 상태로 변경
-    //             button.classList.remove("btn-outline-secondary");
-    //             button.classList.add("btn-primary");
-    //             const icon = button.querySelector('i');
-    //             if(icon) {
-    //                 icon.classList.remove("bi-plus-lg");
-    //                 icon.classList.add("bi-check-lg");
-    //             }
-    //         }
-    //     });
-    // });
-
     addBtns.forEach(button => {
         button.addEventListener('click', () => {
             const locationX = button.querySelector('.location-x').textContent;
@@ -314,6 +343,10 @@
 
             icon.classList.remove("bi-plus-lg");
             icon.classList.add("bi-check-lg");
+
+            // 버튼 비활성화
+            button.disabled = true;
+            button.style.pointerEvents = 'none'; // 클릭 이벤트 완전히 차단
 
             selectedItems.push(index);
             modifyLocation(selectedItems);
@@ -433,7 +466,7 @@
 
             // 마커 추가
             if (location.locationX && location.locationY) {
-                addMarker(location.locationX, location.locationY);
+                addMarker(location.locationX, location.locationY,index+1);
             }
         });
     }
@@ -468,6 +501,9 @@
             // 버튼 스타일 변경
             button.classList.remove("btn-primary");
             button.classList.add("btn-outline-secondary");
+            // disabled 해제
+            button.disabled = false;
+            button.style.pointerEvents = ''; // 클릭 이벤트 완전히 차단
 
             // 아이콘 변경
             const icon = button.querySelector('i');
@@ -534,6 +570,33 @@
             });
         });
     });
+
+    document.addEventListener('DOMContentLoaded', function() {
+        // 검색 관련 요소 초기화
+        initializeSearch();
+
+        // 이벤트 리스너 등록
+        searchElements.input.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                const searchText = this.value.trim();
+                if (searchText) {
+                    performSearch(searchText);
+                }
+            }
+        });
+
+        searchElements.icon.addEventListener('click', function() {
+            const searchText = searchElements.input.value.trim();
+            if (searchText) {
+                performSearch(searchText);
+            }
+        });
+
+        searchElements.input.addEventListener('input', handleInputChange);
+        searchElements.clearButton.addEventListener('click', clearSearch);
+    });
+
 </script>
 </body>
 </html>

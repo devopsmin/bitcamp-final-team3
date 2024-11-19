@@ -3,6 +3,8 @@ package project.tripMaker.service;
 import java.util.Collections;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
@@ -23,7 +25,9 @@ import project.tripMaker.vo.User;
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
   private final UserDao userDao;
-  private final UserService userService;
+
+  @Autowired
+  private ObjectProvider<UserService> userServiceProvider;
 
   @Override
   public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
@@ -31,7 +35,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
     String registrationId = userRequest.getClientRegistration().getRegistrationId();
     String userNameAttributeName = userRequest.getClientRegistration().getProviderDetails()
-        .getUserInfoEndpoint().getUserNameAttributeName();
+            .getUserInfoEndpoint().getUserNameAttributeName();
 
     OAuth2UserInfo userInfo = getOAuth2UserInfo(registrationId, oauth2User.getAttributes());
 
@@ -40,26 +44,26 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
     if (email == null || email.isEmpty()) {
       throw new OAuth2AuthenticationException(
-          new OAuth2Error("이메일을 찾을 수 없습니다."),
-          "이메일을 가져올 수 없습니다.");
+              new OAuth2Error("이메일을 찾을 수 없습니다."),
+              "이메일을 가져올 수 없습니다.");
     }
 
     User user;
     try {
       user = userDao.findByEmail(email);
       if (user == null) {
-        user = userService.addSocialUser(email, name, registrationId);
+        user = userServiceProvider.getObject().addSocialUser(email, name, registrationId);
       }
     } catch (Exception e) {
       throw new OAuth2AuthenticationException(
-          new OAuth2Error("사용자 처리 에러"),
-          "사용자 정보 처리 중 오류가 발생했습니다: " + e.getMessage());
+              new OAuth2Error("사용자 처리 에러"),
+              "사용자 정보 처리 중 오류가 발생했습니다: " + e.getMessage());
     }
 
     return new DefaultOAuth2User(
-        Collections.singleton(new SimpleGrantedAuthority(user.getUserRole().name())),
-        oauth2User.getAttributes(),
-        userNameAttributeName
+            Collections.singleton(new SimpleGrantedAuthority(user.getUserRole().name())),
+            oauth2User.getAttributes(),
+            userNameAttributeName
     );
   }
 

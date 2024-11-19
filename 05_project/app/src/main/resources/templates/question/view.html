@@ -39,7 +39,6 @@
                 </div>
             </div>
 
-            <!-- 좋아요 및 즐겨찾기 버튼 -->
             <div class="d-flex align-items-center" >
                 <button type="button" id="likeButton" class="btn btn-outline-danger btn-sm me-2"
                         data-th-onclick="|toggleLike(${board.boardNo})|"
@@ -51,6 +50,10 @@
                         data-th-text="${isFavored != null and isFavored ? '⭐ 즐겨찾기 취소' : '⚪ 즐겨찾기'}"></button>
                 <span id="favorCount" data-th-text="${board.boardFavor}">0</span>
             </div>
+        </div>
+
+        <div id="alertMessage" class="alert alert-success d-none" role="alert"
+             style="position: fixed; top: 20px; right: 20px; z-index: 1050;">
         </div>
 
         <div class="modal fade" id="checkLoginModal" tabindex="-1" aria-labelledby="checkLoginModalLabel" aria-hidden="true">
@@ -77,11 +80,10 @@
                 <p class="text-muted mb-3" style="margin-left: 10px; font-size: 0.9rem;" data-th-text="${#dates.format(trip.startDate, 'yyyy.MM.dd(E)')} + ' ~ ' + ${#dates.format(trip.endDate, 'yyyy.MM.dd(E)')}">일자</p>
             </div>
 
-<!--            <div class="d-flex" style="overflow-x: auto; white-space: nowrap;">-->
-            <div class="d-flex" style="overflow-x: auto; overflow-y: auto; white-space: nowrap;"> <!-- 가로 및 세로 스크롤 -->
+            <!--            <div class="d-flex" style="overflow-x: auto; white-space: nowrap;">-->
+            <div class="d-flex" style="overflow-x: auto; overflow-y: auto; white-space: nowrap;"> <!-- 가로 스크롤 -->
                 <div class="col-md-4 mb-3 d-inline-block" style="width: 300px; margin-right: 20px;" data-th-each="entry : ${groupedSchedules}">
                     <h5 class="mb-3 text" style="font-size: 1.2rem;" data-th-text="${entry.key} + '일차'">일차</h5>
-
 
                     <div class="timeline">
                         <div class="timeline-item mb-1" data-th-each="schedule, iter : ${entry.value}" data-th-object="${schedule}">
@@ -91,7 +93,11 @@
                                     <div class="d-flex">
                                         <div class="badge bg-warning text-white" style="font-size: 1rem; border-radius: 50%; width: 25px; height: 25px; display: flex; align-items: center; justify-content: center;" data-th-text="${iter.index + 1}">일정 순서</div>
                                         <div class="ms-2">
-                                            <p class="mb-1 text-primary" style="font-size: 0.9rem;" data-th-text="*{location.locationName}">지역</p>
+                                            <p class="text-primary" style="font-size: 0.9rem;"
+                                               data-th-if="${board.trip != null and board.trip.thema != null}"
+                                               data-th-text="${board.trip.thema.themaName}">
+                                                Thema Name
+                                            </p>
                                             <p class="mb-1 text-primary" style="font-size: 0.9rem;" data-th-text="*{location.locationName}">지역</p>
                                             <p class="mb-1 text-primary" style="font-size: 0.9rem;" data-th-text="*{location.locationName}">지역</p>
                                         </div>
@@ -104,7 +110,7 @@
                                 </div>
                             </div>
 
-                            <div class="d-flex align-items-center" style="height: 20px;">
+                            <div class="d-flex align-items-center" data-th-if="${iter.index < entry.value.size() - 1}" style="height: 20px;">
                                 <div class="timeline-line mt-2" style="border-left: 2px dotted #ddd; height: 70%; margin-left: 15px;"></div>
                                 <div class="text-muted small ms-2" style="font-size: 0.8rem; margin-top: 6px;"><i class="bi bi-car-front"></i> 45분</div>
                             </div>
@@ -113,48 +119,6 @@
                 </div>
             </div>
         </div>
-
-<!--                <div class="container my-5">-->
-<!--                    <div data-th-each="trip : ${trips}" data-th-object="${trip}">-->
-<!--                        <h4 class="mb-2" style="margin-left: 10px;">전체 경로</h4>-->
-<!--                        <p class="text-muted mb-3" data-th-text="${#dates.format(trip.startDate, 'yyyy.MM.dd(E)')} + ' ~ ' + ${#dates.format(trip.endDate, 'yyyy.MM.dd(E)')}">2024.09.18(수) ~ 2024.09.21(토)</p>-->
-<!--                    </div>-->
-
-<!--                    <div style="overflow-x: auto; white-space: nowrap;"> &lt;!&ndash; 스크롤 &ndash;&gt;-->
-<!--                            <div class="d-flex" style="height:530px;">-->
-
-<!--                                <div class="col-md-4 mb-4 d-inline-block" style="width: 340px; margin-right: 20px;" data-th-each="entry : ${groupedSchedules}"> &lt;!&ndash; 여백 추가 &ndash;&gt;-->
-<!--                                <h5 class="mb-3 text" data-th-text="${entry.key} + '일차'">일차</h5>-->
-
-<!--                                <div class="timeline">-->
-<!--                                    <div class="timeline-item mb-2" data-th-each="schedule, iter : ${entry.value}" data-th-object="${schedule}">-->
-<!--                                        <div class="p-3 border rounded shadow-sm d-flex justify-content-between align-items-start">-->
-<!--                                            &lt;!&ndash; 일정 정보 &ndash;&gt;-->
-<!--                                            <div class="me-3">-->
-<!--                                                <div class="d-flex align-items-center mb-2">-->
-<!--                                                    <div class="badge bg-warning text-white" style="font-size: 1.25rem; border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center;" data-th-text="${iter.index + 1}">일정 순서</div>-->
-<!--                                                    <div class="ms-2">-->
-<!--                                                        <p class="mb-1 text-primary" data-th-text="*{location.locationName}">숙소</p>-->
-<!--                                                    </div>-->
-<!--                                                </div>-->
-<!--                                            </div>-->
-<!--                                            &lt;!&ndash; 이미지 &ndash;&gt;-->
-<!--                                            <div>-->
-<!--                                                <img data-th-src="${schedule.location.locationPhoto != null ? schedule.location.locationPhoto : 'https://via.placeholder.com/70x70'}"-->
-<!--                                                     alt="Location Photo" class="img-thumbnail" style="width: 70px; height: 70px;">-->
-<!--                                            </div>-->
-<!--                                        </div>-->
-<!--                                        &lt;!&ndash; 타임라인 점선과 시간 정보 &ndash;&gt;-->
-<!--                                        <div class="d-flex align-items-baseline">-->
-<!--                                            <div class="timeline-line mt-2" style="border-left: 2px dotted #ddd; height: 20px; margin-left: 20px;"></div>-->
-<!--                                            <div class="text-muted small ms-2"><i class="bi bi-car-front"></i> 45분</div>-->
-<!--                                        </div>-->
-<!--                                    </div>-->
-<!--                                </div>-->
-<!--                            </div>-->
-<!--                        </div>-->
-<!--                    </div>-->
-<!--                </div>-->
 
         <div class="mb-2">
             <textarea readonly class="form-control border-0 p-2" style="resize: none; overflow: hidden; font-size: 1rem;" data-th-text="${board.boardContent}" oninput="this.style.height = ''; this.style.height = this.scrollHeight + 'px';">내용</textarea>
@@ -172,80 +136,93 @@
 
 <div data-th-replace="~{question/comment}"></div>
 
-<!-- 상단 이동 버튼 -->
 <button id="scrollTopButton" onclick="scrollToTop()" class="btn btn-secondary btn-sm" style="position: fixed; bottom: 20px; left: 77%; transform: translateX(-50%); visibility: hidden; padding: 7px 10px;">
     <i class="bi bi-arrow-up"></i> 상단으로 이동
 </button>
 
-<script defer>
+<script>
     function toggleLike(boardNo) {
-    const isLoggedIn = [[${isLoggedIn}]]; // 서버에서 전달받은 로그인 여부
+        const isLoggedIn = [[${isLoggedIn}]];
+        const likeButton = document.getElementById('likeButton');
 
-    if (!isLoggedIn) {
-        // 로그인하지 않은 경우 모달 띄우기
-        const checkLoginModal = new bootstrap.Modal(document.getElementById('checkLoginModal'), {
-            backdrop: 'static',
-            keyboard: false
-        });
-        checkLoginModal.show();
-    } else {
-        // 로그인한 경우 좋아요 기능 실행
-        fetch(`/question/toggleLike?boardNo=${boardNo}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' }
-        })
-        .then(response => response.json())
-        .then(data => {
-            document.getElementById('likeCount').textContent = data.likeCount;
-            document.getElementById('likeButton').textContent = data.isLiked ? '❤️ 좋아요 취소' : '🤍 좋아요';
-            alert(data.message);
-        })
-        .catch(error => console.error('Error:', error));
+        if (!isLoggedIn) {
+            const checkLoginModal = new bootstrap.Modal(document.getElementById('checkLoginModal'), {
+                backdrop: 'static',
+                keyboard: false
+            });
+            checkLoginModal.show();
+        } else {
+            fetch(`/question/toggleLike?boardNo=${boardNo}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('likeCount').textContent = data.likeCount;
+                document.getElementById('likeButton').textContent = data.isLiked ? '❤️ 좋아요 취소' : '🤍 좋아요';
+                showAlert(data.message, 'success', likeButton);
+            })
+            .catch(error => console.error('Error:', error));
+        }
     }
-}
 
-function toggleFavor(boardNo) {
-    const isLoggedIn = [[${isLoggedIn}]]; // 서버에서 전달받은 로그인 여부
+    function toggleFavor(boardNo) {
+        const isLoggedIn = [[${isLoggedIn}]];
+        const favorButton = document.getElementById('favorButton');
 
-    if (!isLoggedIn) {
-        // 로그인하지 않은 경우 모달 띄우기
-        const checkLoginModal = new bootstrap.Modal(document.getElementById('checkLoginModal'), {
-            backdrop: 'static',
-            keyboard: false
-        });
-        checkLoginModal.show();
-    } else {
-        // 로그인한 경우 즐겨찾기 기능 실행
-        fetch(`/question/toggleFavor?boardNo=${boardNo}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' }
-        })
-        .then(response => response.json())
-        .then(data => {
-            document.getElementById('favorCount').textContent = data.favorCount;
-            document.getElementById('favorButton').textContent = data.isFavored ? '⭐ 즐겨찾기 취소' : '⚪ 즐겨찾기';
-            alert(data.message);
-        })
-        .catch(error => console.error('Error:', error));
+        if (!isLoggedIn) {
+            const checkLoginModal = new bootstrap.Modal(document.getElementById('checkLoginModal'), {
+                backdrop: 'static',
+                keyboard: false
+            });
+            checkLoginModal.show();
+        } else {
+            fetch(`/question/toggleFavor?boardNo=${boardNo}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('favorCount').textContent = data.favorCount;
+                document.getElementById('favorButton').textContent = data.isFavored ? '⭐ 즐겨찾기 취소' : '⚪ 즐겨찾기';
+                showAlert(data.message, 'success', favorButton);
+            })
+            .catch(error => console.error('Error:', error));
+        }
     }
-}
+
+        function showAlert(message, type = 'success', targetButton) {
+        const alertBox = document.getElementById('alertMessage');
+        alertBox.classList.remove('d-none', 'alert-success', 'alert-danger', 'alert-warning', 'alert-info');
+        alertBox.classList.add(`alert-${type}`);
+        alertBox.textContent = message;
+
+        const buttonRect = targetButton.getBoundingClientRect();
+        alertBox.style.position = 'absolute';
+        alertBox.style.top = `${buttonRect.top + window.scrollY - alertBox.offsetHeight - 10}px`;
+        alertBox.style.left = `${buttonRect.left + window.scrollX}px`;
+
+        alertBox.classList.remove('d-none');
+        setTimeout(() => {
+            alertBox.classList.add('d-none');
+        }, 1000);
+    }
+
 </script>
 
 <script>
-    // 상단 이동 함수
-   function scrollToTop() {
-       window.scrollTo({ top: 0, behavior: 'smooth' });
-   }
+    function scrollToTop() {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
 
-   // 스크롤 이벤트 감지하여 버튼 표시
-   window.addEventListener('scroll', function() {
-       const scrollTopButton = document.getElementById('scrollTopButton');
-       if (window.scrollY > 500) {
-           scrollTopButton.style.visibility = "visible";
-       } else {
-           scrollTopButton.style.visibility = "hidden";
-       }
-   });
+    window.addEventListener('scroll', function() {
+        const scrollTopButton = document.getElementById('scrollTopButton');
+        if (window.scrollY > 500) {
+            scrollTopButton.style.visibility = "visible";
+        } else {
+            scrollTopButton.style.visibility = "hidden";
+        }
+    });
 </script>
 
 </body>
