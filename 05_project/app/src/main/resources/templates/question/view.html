@@ -101,12 +101,22 @@
 
 
                     <div class="timeline">
-                        <div class="timeline-item mb-1" data-th-each="schedule, iter : ${entry.value}" data-th-object="${schedule}">
+                        <div id="question-location" class="timeline-item mb-1" data-th-each="schedule, iter : ${entry.value}" data-th-object="${schedule}">
+                          <div class="location">
+                            <span class="location-x" data-th-text="*{location.locationX}" style="display: none;"></span>
+                            <span class="location-y" data-th-text="*{location.locationY}" style="display: none;"></span>
+                            <span class="scheduleRoute" data-th-text="*{scheduleRoute}" style="display: none;"></span>
+                            <span class="scheduleDay" data-th-text="*{scheduleDay}" style="display: none;"></span>
+                          </div>
+
                             <div class="p-3 border rounded shadow-sm d-flex justify-content-between align-items-center" style="position: relative;">
                                 <div class="me-2" style="flex-grow: 1;">
                                 <div class="me-2 align-items=start">
                                     <div class="d-flex">
-                                        <div class="badge bg-warning text-white" style="font-size: 1rem; border-radius: 50%; width: 25px; height: 25px; display: flex; align-items: center; justify-content: center;" data-th-text="${iter.index + 1}">일정 순서</div>
+                                        <div class="badge text-white"
+                                             data-th-classappend="'bg-' + ${entry.key % 6 == 1 ? 'primary' : entry.key % 6 == 2 ? 'warning' : entry.key % 6 == 3 ? 'danger' : entry.key % 6 == 4 ? 'info' : entry.key % 6 == 5 ? 'secondary' : 'success'}"
+                                             style="font-size: 1rem; border-radius: 50%; width: 25px; height: 25px; display: flex; align-items: center; justify-content: center;"
+                                             data-th-text="${iter.index}">일정순서</div>
                                         <div class="ms-2">
                                             <p class="mb-1 text-secondary" style="font-size: 0.9rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 150px;">16:00 ~ 16:30</p>
                                             <p class="mb-1 text-primary" style="font-size: 0.9rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 150px;">
@@ -136,8 +146,8 @@
         </div>
         </div>
 
-        <p>State: <span data-th-text="${board.trip.city.state.stateName}">서울특별시</span>
-            City: <span data-th-text="${board.trip.city.cityName}">강서구</span></p>
+        <p style="display: none;">State: <span data-th-text="${board.trip.city.state.stateName}"></span>
+            City: <span data-th-text="${board.trip.city.cityName}"></span></p>
 
             <div id="map" style="width: 1175px; height: 600px;"></div>
 
@@ -289,17 +299,45 @@
 <!--});-->
 <!--</script>-->
 
-<script>
-    document.addEventListener('DOMContentLoaded', async () => {
-        try {
-            const stateName = /*[[${board.trip.city.state.stateName} ?: '서울특별시']]*/ '서울특별시';
-            const cityName = /*[[${board.trip.city.cityName} ?: '강서구']]*/ '강서구';
+<script data-th-inline="javascript">
+  document.addEventListener('DOMContentLoaded', async () => {
+    console.log(document.querySelectorAll('#question-location').length);
 
-            await initializeMap('map', stateName, cityName);
-        } catch (error) {
-            console.error('지도를 초기화하는 중 오류가 발생했습니다:', error);
+    const stateName = /*[[${board.trip.city.state.stateName}]]*/ "defaultState";
+    const cityName = /*[[${board.trip.city.cityName}]]*/ "defaultCity";
+
+    const colors = ["primary", "warning", "danger", "info", "secondary", "success"];
+
+    try {
+      // 지도초기화
+      await initializeMap("map", stateName, cityName);
+
+      // addMarker(126.545219, 33.524923);
+      const locationInfos = document.querySelectorAll('#question-location');
+      console.log(locationInfos);
+
+      locationInfos.forEach(locationInfo => {
+        // card 내부의 x와 y 좌표 추출
+        const locationX = locationInfo.querySelector('.location-x').textContent.trim();
+        const locationY = locationInfo.querySelector('.location-y').textContent.trim();
+        const scheduleRoute = locationInfo.querySelector('.scheduleRoute').textContent.trim();
+        const scheduleDay = locationInfo.querySelector('.scheduleDay').textContent.trim();
+
+        const color = colors[(scheduleDay - 1) % colors.length];
+
+        // x, y 좌표가 잘 가져와졌는지 출력합니다.
+        console.log(`Location X: ${locationX}, Location Y: ${locationY}`);
+
+        // 유효한 x, y 좌표가 있는 경우 addMarker 함수 호출
+        if (locationX && locationY) {
+          addMarker(parseFloat(locationX), parseFloat(locationY), parseInt(scheduleRoute), `text-${color}`);
         }
-    });
+      });
+    } catch (error) {
+      console.error('실행 중 오류 발생:', error);
+    }
+  });
+
 </script>
 
 <script src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=0zojwabqn9&submodules=geocoder"></script>

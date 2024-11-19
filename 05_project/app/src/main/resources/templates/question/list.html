@@ -66,8 +66,8 @@
                                 <span data-th-text="${board.trip != null and board.trip.city != null and board.trip.city.state != null ? board.trip.city.state.stateName : '정보 없음'}
                                 +' '
                                 +${board.trip != null and board.trip.city != null ? board.trip.city.cityName : '정보 없음'}">도시명</span><br>
-                                <span data-th-text="${board.trip?.thema?.themaName?:' '}">테마</span><br>
-                                <span data-th-text="${board.boardTag}">태그</span>
+                                <span data-th-text="'✈️'+${board.trip?.thema?.themaName?:' '}">테마</span><br>
+                                <span data-th-text="'#'+${board.boardTag}">태그</span>
                             </p>
 
                             <div class="d-flex justify-content-start align-items-center text-muted small">
