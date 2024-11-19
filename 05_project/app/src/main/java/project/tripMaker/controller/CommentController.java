@@ -15,9 +15,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import project.tripMaker.board.BoardType;
+import project.tripMaker.service.BoardService;
 import project.tripMaker.service.CommentService;
+import project.tripMaker.service.NotificationService;
+import project.tripMaker.service.ReviewService;
 import project.tripMaker.service.UserService;
 import project.tripMaker.vo.Comment;
+import project.tripMaker.vo.Notification;
 import project.tripMaker.vo.User;
 
 @Controller
@@ -26,7 +30,9 @@ import project.tripMaker.vo.User;
 public class CommentController {
 
   private final CommentService commentService;
+  private final NotificationService notificationService;
   private final UserService userService;
+  private final ReviewService reviewService;
 
   @GetMapping("list/{boardNo}")
   public String list(
@@ -64,6 +70,16 @@ public class CommentController {
 
     comment.setUserNo(loginUser.getUserNo());
     commentService.add(comment);
+
+    // 게시글 작성자에게 알림 전송
+    int boardNo = comment.getBoardNo();
+    User boardOwner = reviewService.get(boardNo).getWriter(); // 게시글 작성자 정보 가져오기
+    if (boardOwner != null && !boardOwner.getUserNo().equals(loginUser.getUserNo())) {
+      String notificationMessage = "회원님이 작성한 게시글에 댓글이 달렸습니다.";
+      String notificationLink = "/" + boardType.name().toLowerCase() + "/view?boardNo=" + boardNo;
+      notificationService.createNotification(boardOwner.getUserNo(), notificationMessage, notificationLink);
+    }
+
 
     return "redirect:../" + boardType.name().toLowerCase() + "/view?boardNo=" + comment.getBoardNo();
   }

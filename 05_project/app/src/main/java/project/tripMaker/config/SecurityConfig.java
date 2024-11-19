@@ -16,11 +16,9 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import project.tripMaker.config.OAuth2SuccessHandler;
 import project.tripMaker.service.BenService;
 import project.tripMaker.service.CustomOAuth2UserService;
 import project.tripMaker.service.CustomUserDetailsService;
@@ -42,7 +40,7 @@ public class SecurityConfig {
     http
         .authorizeRequests(authorize -> authorize
             .antMatchers("/admin/**").hasAuthority("ROLE_ADMIN")
-            .antMatchers("/", "/auth/**", "/oauth2/**", "/verify/**", "/css/**", "/js/**", "/images/**", "/schedule/**", "/user/**", "/home", "/board/**", "/comment/**", "/app/**", "/question/**", "/review/**", "/companion/**", "/mypage/**").permitAll()
+            .antMatchers("/", "/auth/**", "/oauth2/**", "/verify/**", "/css/**", "/js/**", "/images/**", "/schedule/**", "/user/**", "/home", "/board/**", "/comment/**", "/app/**", "/question/**", "/review/**", "/companion/**", "/mypage/**", "/notifications/**").permitAll()
             //            .antMatchers("/user/**").hasRole("USER")
             .anyRequest().authenticated()
         )
