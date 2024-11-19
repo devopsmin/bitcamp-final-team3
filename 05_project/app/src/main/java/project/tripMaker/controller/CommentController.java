@@ -94,7 +94,7 @@ public class CommentController {
     }
 
     // 댓글 작성자와 로그인 유저가 같은지 확인
-    if (!comment.getUserNo().equals(loginUser.getUserNo())) {
+    if (!comment.getUserNo().equals(loginUser.getUserNo()) || loginUser.getUserRole().name().equals("ROLE_ADMIN")) {
       throw new Exception("삭제 권한이 없습니다.");
     }
 

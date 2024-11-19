@@ -280,7 +280,7 @@ public class ReviewController {
     // 조회수 증가
     reviewService.increaseBoardCount(board.getBoardNo());
 
-    boolean isUserAuthorized = loginUser != null && loginUser.getUserNo() == board.getUserNo();
+    boolean isUserAuthorized = loginUser != null && loginUser.getUserNo() == board.getUserNo() || loginUser.getUserRole().name().equals("ROLE_ADMIN");
 
     // 로그인 유저만 좋아요/즐겨찾기 여부 확인
     boolean isLiked = false;

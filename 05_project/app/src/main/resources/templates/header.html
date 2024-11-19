@@ -19,134 +19,75 @@
 </head>
 <body>
 <style>
-    /* 기본 스타일 */
-    .navbar {
-        padding: 1rem !important; /* !important 추가 */
+    /* 네비게이션 메뉴 hover 스타일 */
+    .nav-item a {
+        font-size: 1rem;
+        font-weight: 500;
+        color: #333333;
+        text-decoration: none;
+        transition: color 0.3s ease, transform 0.3s ease;
+        padding: 0.5rem 1rem;
     }
 
-    .navbar-brand {
-        display: flex !important;
-        align-items: center !important;
-        font-weight: bold !important;
-        font-size: 1.2rem !important;
+    .nav-item a:hover {
+        color: #007BFF; /* 원하는 색상으로 변경 */
+        transform: scale(1.1); /* 메뉴가 살짝 커지는 효과 */
+        background-color: rgba(0, 123, 255, 0.1); /* 부드러운 배경 강조 */
+        border-radius: 5px;
     }
 
-    .navbar-brand img {
-        width: 30px !important;
-        height: 30px !important;
-        margin-right: 8px !important;
-        border-radius: 50% !important;
-        object-fit: cover !important;
+    /* 현재 선택된 메뉴 활성화 스타일 */
+    .nav-item .nav-link.active {
+        font-weight: bold;
+        color: #007BFF;
+        text-decoration: underline;
     }
 
-    /* 메뉴 스타일 */
-    .nav {
-        background-color: #FFFFFF !important;
-        padding: 0.5rem 1rem !important;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+    .bi-bell-fill {
+        font-size: 1.2rem; /* 아이콘 크기 조정 */
+        margin: 0 0.5rem;
     }
 
-    /* 기본 스타일 */
-    .nav-item .nav-link {
-        font-weight: 500 !important;
-        color: #333 !important;
-        transition: background-color 0.3s ease, color 0.3s ease !important;
-        padding: 0.5rem 1rem !important;
-        border-radius: 12px !important; /* 둥근 네모 모양 */
-    }
-
-    /* Hover 스타일 */
-    .nav-item .nav-link:hover {
-        background-color: var(--bs-primary) !important; /* Bootstrap의 btn-primary 색상 */
-        color: #fff !important; /* 텍스트 색상 변경 */
-        text-decoration: none !important; /* 밑줄 제거 */
-    }
-
-    /* 로그인 버튼 및 프로필 이미지 스타일 */
-    .button-02-s3 .div2,
-    .profile-image-wrapper img {
-        width: 30px !important;
-        height: 30px !important;
-        border-radius: 50% !important;
-        object-fit: cover !important;
-    }
-
-    .dropdown-toggle {
-        display: flex !important;
-        align-items: center !important;
-        padding: 0.5rem !important;
-        border: none !important;
-        background-color: transparent !important;
-    }
-
-    .user-profile-container .dropdown-toggle:hover {
-        background-color: rgba(0, 123, 255, 0.1) !important;
-        border-radius: 8px !important;
-    }
-
-    .dropdown-menu {
-        min-width: 180px !important;
-        border-radius: 8px !important;
-    }
-
-    .dropdown-menu .dropdown-item:hover {
-        background-color: #f1f1f1 !important;
+    .login-state {
+        margin-left: 1rem; /* 로그인 버튼에 추가 여백 */
     }
 </style>
 
-
 <header id="page-header">
     <div class="fram-topbanner">
-        <ul class="nav d-flex align-items-center justify-content-between px-3 py-2">
+        <ul class="nav d-flex align-items-center px-3 py-2">
             <li class="nav-item">
                 <nav class="navbar">
                     <div class="container-fluid">
                         <a class="navbar-brand" href="/">
-                            <img data-th-src="@{images/logo.png}", style="width: 150px; height: 50px" alt="Logo" class="d-inline-block align-text-top">
-<!--                            <div class="div3"><a href="/home">모두의 여행</a></div>-->
+                            <img data-th-src="@{images/logo.png}" style="width: 150px; height: 50px" alt="Logo" class="d-inline-block align-text-top">
                         </a>
                     </div>
                 </nav>
             </li>
-
-            <div class="d-flex ms-auto">
+            <div class="d-flex ms-auto align-items-center">
                 <li class="nav-item">
-                    <a class="nav-link active div2" data-bs-target="#scheduleModal" data-bs-toggle="modal">여행시작</a>
+                    <a class="nav-link active" data-bs-target="#scheduleModal" data-bs-toggle="modal">여행시작</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link active div2" data-th-href="@{/question/list}">여행질문</a>
+                    <a class="nav-link active" data-th-href="@{/question/list}">여행질문</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link active div2" data-th-href="@{/review/list}">여행후기</a>
+                    <a class="nav-link active" data-th-href="@{/review/list}">여행후기</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link active div2" data-th-href="@{/companion/list}">동행구하기</a>
+                    <a class="nav-link active" data-th-href="@{/companion/list}">동행구하기</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" data-th-href="@{/mypage/userpage}">마이페이지(임시)</a>
                 </li>
 
                 <li>
-                    <a class="nav-link active div2" data-th-href="@{/mypage/userpage}">마이페이지(임시)</a>
-                </li>
-
-<!--                <li class="nav-item" data-th-if="${session.loginUser == null}">-->
-<!--                    <a class="nav-link active div2" data-bs-target="#loginModal" data-bs-toggle="modal">마이페이지</a>-->
-<!--                </li>-->
-
-<!--                <li class="nav-item" data-th-if="${session.loginUser != null and session.loginUser.getUserRole() == ('ROLE_USER')}">-->
-<!--                    <a class="nav-link active div2" data-th-href="@{mypage/userpage.html}">마이페이지</a>-->
-<!--                </li>-->
-
-<!--                <li class="nav-item" data-th-if="${session.loginUser != null and session.loginUser.getUserRole() == ('ROLE_ADMIN')}">-->
-<!--                    <a class="nav-link active div2" data-th-href="@{/admin}">마이페이지(관리자)</a>-->
-<!--                </li>-->
-
-                <li>
-                    <div class='login-state' data-th-if="${session.loginUser == null}">
-                        <div class="div">
-                            <a class="nav-item div2" data-bs-target="#loginModal" data-bs-toggle="modal">로그인</a>
-                        </div>
+                    <div class="login-state" data-th-if="${session.loginUser == null}">
+                        <a class="nav-link" data-bs-target="#loginModal" data-bs-toggle="modal">로그인</a>
                     </div>
-                    <div class='login-state' data-th-unless="${session.loginUser == null}">
-                        <div class="user-profile-container">
+                    <div class="login-state" data-th-unless="${session.loginUser == null}">
+                        <div class="user-profile-container d-flex align-items-center">
                             <div class="profile-image-wrapper">
                                 <img data-th-if="${session.loginUser.userPhoto != null}"
                                      data-th-src="@{https://dgg7dnk35523.edge.naverncp.com/HZiW9aEJy7/user/profile/} + ${session.loginUser.userPhoto} + '?type=f&w=30&h=30'"
@@ -167,10 +108,14 @@
                                 </ul>
                             </div>
                         </div>
+                        <i class="bi bi-bell-fill"></i>
                     </div>
-                </li>
-            </div>
+                </div>
+            </li>
         </ul>
+    </div>
+
+
 
 
         <!-- 여행시작 모달 -->
