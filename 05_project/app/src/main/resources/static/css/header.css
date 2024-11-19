@@ -1,0 +1,24 @@
+header .custom-btn {
+    background-color: transparent;
+    color: black;
+    border: none;
+    transition: color 0.3s ease;
+}
+
+header .custom-btn:hover {
+    color: #8ee2ff;
+    background-color: transparent;
+}
+
+header .login-btn {
+    background-color: transparent;
+    color: black;
+    border: none;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+header .login-btn:hover {
+    background-color: black;
+    color: white;
+    border: none;
+}

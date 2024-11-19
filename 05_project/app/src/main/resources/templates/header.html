@@ -12,88 +12,70 @@
     <link data-th-href="@{/css/modal.css}" rel="stylesheet">
     <link data-th-href="@{/css/login.css}" rel="stylesheet">
     <link data-th-href="@{/css/register.css}" rel="stylesheet">
-<!--    &lt;!&ndash; Bootstrap Bundle with Popper &ndash;&gt;-->
+    <link data-th-href="@{/css/header.css}" rel="stylesheet">
+
+    <!--    &lt;!&ndash; Bootstrap Bundle with Popper &ndash;&gt;-->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script data-th-src="@{/js/modal.js}"></script>
     <script data-th-src="@{/js/authModal.js}"></script>
+
 </head>
 <body>
 
 <header id="page-header">
     <div class="fram-topbanner">
-        <ul class="nav d-flex align-items-center px-3 py-2">
-            <li class="nav-item">
-                <nav class="navbar">
-                    <div class="container-fluid">
-                        <a class="navbar-brand" href="/">
-                            <img data-th-src="@{/images/logo.png}" style="width: 150px; height: 50px" alt="Logo" class="d-inline-block align-text-top">
-                        </a>
-                    </div>
-                </nav>
+        <ul class="nav d-flex align-items-center px-5">
+            <!-- 로고 -->
+            <li>
+                <a class="navbar-brand" href="/">
+                    <img data-th-src="@{/images/logo.png}" class="ms-5" style="width: 250px; height: 100px" alt="Logo">
+                </a>
             </li>
-            <div class="d-flex ms-auto align-items-center">
-                <li class="nav-item">
-                    <button class="btn custom-btn mx-1" data-bs-target="#scheduleModal" data-bs-toggle="modal">여행시작</button>
-                </li>
-                <li class="nav-item">
-                    <a class="btn custom-btn mx-1" data-th-href="@{/question/list}">여행질문</a>
-                </li>
-                <li class="nav-item">
-                    <a class="btn custom-btn mx-1" data-th-href="@{/review/list}">여행후기</a>
-                </li>
-                <li class="nav-item">
-                    <a class="btn custom-btn mx-1" data-th-href="@{/companion/list}">동행구하기</a>
-                </li>
-                <li class="nav-item">
-                    <a class="btn custom-btn mx-1" data-th-href="@{/mypage/userpage}">마이페이지(임시)</a>
-                </li>
+
+            <!-- 메뉴 버튼들 -->
+            <div class="d-flex ms-auto align-items-center gap-5">
+                <li><button class="btn custom-btn mx-1 fw-bold fs-5" data-bs-toggle="modal" data-bs-target="#scheduleModal">여행시작</button></li>
+                <li><a class="btn custom-btn mx-1 fw-bold fs-5" data-th-href="@{/question/list}">여행질문</a></li>
+                <li><a class="btn custom-btn mx-1 fw-bold fs-5" data-th-href="@{/review/list}">여행후기</a></li>
+                <li><a class="btn custom-btn mx-1 fw-bold fs-5" data-th-href="@{/companion/list}">동행구하기</a></li>
+                <li><a class="btn custom-btn mx-1 fw-bold fs-5" data-th-href="@{/mypage/userpage}">마이페이지</a></li>
+
+                <!-- 로그인 상태 -->
                 <li>
-                    <div class="login-state" data-th-if="${session.loginUser == null}">
-                        <button class="btn custom-btn mx-1" data-bs-target="#loginModal" data-bs-toggle="modal">로그인</button>
+                    <div data-th-if="${session.loginUser == null}">
+                        <button class="btn login-btn mx-1 fw-bold fs-5" data-bs-toggle="modal" data-bs-target="#loginModal">로그인</button>
                     </div>
-                    <div class="login-state" data-th-unless="${session.loginUser == null}">
-                        <div class="user-profile-container d-flex align-items-center">
-                            <div class="profile-image-wrapper">
-                                <img data-th-if="${session.loginUser.userPhoto != null}"
-                                     data-th-src="@{https://dgg7dnk35523.edge.naverncp.com/HZiW9aEJy7/user/profile/} + ${session.loginUser.userPhoto} + '?type=f&w=30&h=30'"
-                                     class="profile-image"
-                                     alt="프로필 이미지">
-                                <img data-th-unless="${session.loginUser.userPhoto != null}"
-                                     src="https://dgg7dnk35523.edge.naverncp.com/HZiW9aEJy7/user/profile/default.png?type=f&w=30&h=30"
-                                     class="profile-image"
-                                     alt="기본 프로필 이미지">
-                            </div>
-                            <div class="dropdown">
-                                <button class="btn custom-btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <span class="user-nickname" data-th-text="${session.loginUser.userNickname}">사용자</span>
-                                </button>
-                                <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" data-th-href="@{/user/profile}">프로필 변경</a></li>
-                                    <li><a class="dropdown-item" data-th-href="@{/auth/logout}">로그아웃</a></li>
-                                </ul>
-                            </div>
+                    <div data-th-unless="${session.loginUser == null}" class="d-flex align-items-center">
+                        <img data-th-src="@{https://dgg7dnk35523.edge.naverncp.com/HZiW9aEJy7/user/profile/} + ${session.loginUser.userPhoto ?: 'default.png'} + '?type=f&w=30&h=30'" class="profile-image" alt="프로필 이미지">
+                        <div class="dropdown">
+                            <button class="btn custom-btn dropdown-toggle " data-bs-toggle="dropdown">
+                                <span data-th-text="${session.loginUser.userNickname}">사용자</span>
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" data-th-href="@{/user/profile}">프로필 변경</a></li>
+                                <li><a class="dropdown-item" data-th-href="@{/auth/logout}">로그아웃</a></li>
+                            </ul>
                         </div>
                         <i class="bi bi-bell-fill"></i>
                     </div>
+                </li>
             </div>
-            </li>
         </ul>
     </div>
 
-        <!-- 여행시작 모달 -->
-        <div aria-hidden="true" aria-labelledby="scheduleModalLabel" class="modal fade" id="scheduleModal" tabindex="-1">
-            <div class="modal-dialog modal-dialog-centered modal-lg">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="scheduleModalLabel">여행 시작하기</h5>
-                        <button aria-label="Close" class="btn-close" data-bs-dismiss="modal" type="button"></button>
-                    </div>
-                    <div class="modal-body" id="scheduleModalContent">
-                        로딩 중...
-                    </div>
+
+    <!-- 여행시작 모달 -->
+    <div class="modal fade" id="scheduleModal" tabindex="-1" aria-labelledby="scheduleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="scheduleModalLabel">여행 시작하기</h5>
+                    <button class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
+                <div class="modal-body" id="scheduleModalContent">로딩 중...</div>
             </div>
         </div>
+    </div>
 </header>
 
 </body>
