@@ -52,7 +52,7 @@ public class CommentController {
     }
 
     if (comment.getCommentContent() == null || comment.getCommentContent().trim().isEmpty()) {
-      // throw new IllegalArgumentException("댓글 내용을 입력해주세요.");
+//       throw new IllegalArgumentException("댓글 내용을 입력해주세요.");
     }
 
     if (boardTypeCode < 1 || boardTypeCode > 3) {

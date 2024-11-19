@@ -140,7 +140,16 @@ public class QuestionController {
                    HttpSession session) throws Exception {
 
     Board board = questionService.get(boardNo);
-//    System.out.println("===================="+board.toString());
+
+    int totalComments = commentService.list(boardNo).size();
+    int totalPages = (int) Math.ceil((double) totalComments / pageSize);
+
+    // 현재 페이지 번호가 유효한지 확인
+    if (page > totalPages && totalPages > 0) {
+      page = totalPages; // 유효하지 않으면 마지막 페이지로 설정
+    } else if (totalPages == 0) {
+      page = 1; // 댓글이 하나도 없으면 1페이지로 설정
+    }
 
     List<Comment> commentList;
     if ("likes".equals(sort)) {
@@ -151,9 +160,6 @@ public class QuestionController {
 
     List<Trip> tripList = questionService.getTripsByBoardNo(board.getTripNo());
     List<Schedule> scheduleList = scheduleService.getSchedulesByTripNo(board.getTripNo());
-
-    int totalComments = commentService.list(boardNo).size();
-    int totalPages = (int) Math.ceil((double) totalComments / pageSize);
 
     User loginUser = (User) session.getAttribute("loginUser");
     boolean isLoggedIn = loginUser != null;
