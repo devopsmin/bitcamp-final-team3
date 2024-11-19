@@ -10,9 +10,6 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -22,10 +19,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.multipart.MultipartFile;
-import project.tripMaker.dto.ReviewDto;
 import project.tripMaker.service.CommentService;
 import project.tripMaker.service.ReviewService;
 import project.tripMaker.service.ScheduleService;
@@ -55,14 +50,14 @@ public class ReviewController {
 
   @GetMapping("list")
   public String list(
-          // 페이지 설정
-          // pageNo (페이지번호)      Default 1 = 1페이지
-          // pageSize (화면출력 갯수) Default 9 = 9개의 게시글
-          @RequestParam(defaultValue = "1") int pageNo,
-          @RequestParam(defaultValue = "9") int pageSize,
-          Model model,
-          @RequestParam(required = false, defaultValue = "latest") String sort,
-          HttpSession session
+      // 페이지 설정
+      // pageNo (페이지번호)      Default 1 = 1페이지
+      // pageSize (화면출력 갯수) Default 9 = 9개의 게시글
+      @RequestParam(defaultValue = "1") int pageNo,
+      @RequestParam(defaultValue = "9") int pageSize,
+      Model model,
+      @RequestParam(required = false, defaultValue = "latest") String sort,
+      HttpSession session
   ) throws Exception {
 
     User loginUser = (User) session.getAttribute("loginUser");
@@ -113,19 +108,8 @@ public class ReviewController {
     }
 
 
-    // 베스트 게시물 목록
-    for (Board board : topBoards) {
-      // 직접 첫번째 이미지 Board객체 추가
-      if (board.getBoardImages() != null && !board.getBoardImages().isEmpty()) {
-        board.setFirstImageName(board.getBoardImages().get(0).getBoardimageName());
-      } else {
-        board.setFirstImageName("default.png");
-      }
-    }
-
-    // 일반 게시물 목록
     for (Board board : boardList) {
-      // 직접 첫번째 이미지 Board객체 추가
+      // 직접 첫번째 이미지 Board객체 추가 
       if (board.getBoardImages() != null && !board.getBoardImages().isEmpty()) {
         board.setFirstImageName(board.getBoardImages().get(0).getBoardimageName());
       } else {
@@ -164,8 +148,8 @@ public class ReviewController {
 
   @PostMapping("add")
   public String add(Board board,
-                    @RequestParam("imageFiles")MultipartFile[] files,
-                    HttpSession session) throws Exception {
+      @RequestParam("imageFiles")MultipartFile[] files,
+      HttpSession session) throws Exception {
     // 로그인 유저 확인
     User loginUser = (User) session.getAttribute("loginUser");
     if (loginUser == null) {
@@ -188,9 +172,9 @@ public class ReviewController {
       options.put(StorageService.CONTENT_TYPE, file.getContentType());
 
       storageService.upload(
-              folderName + boardImage.getBoardimageName(), // 업로드 파일의 경로(폴더 경로 포함)
-              file.getInputStream(), // 업로드 파일 데이터를 읽어 들일 입력스트림
-              options
+          folderName + boardImage.getBoardimageName(), // 업로드 파일의 경로(폴더 경로 포함)
+          file.getInputStream(), // 업로드 파일 데이터를 읽어 들일 입력스트림
+          options
       );
 
       attachedFiles.add(boardImage);
@@ -210,13 +194,13 @@ public class ReviewController {
 
   @GetMapping("view")
   public String view(
-          @RequestParam int boardNo,
-          // @SessionAttribute(value = "loginUser") User user,
-          @RequestParam(value = "page", defaultValue = "1") int page,
-          @RequestParam(value = "pageSize", defaultValue = "5") int pageSize,
-          @RequestParam(value = "sort", defaultValue = "registered") String sort,
-          Model model,
-          HttpSession session) throws Exception {
+      @RequestParam int boardNo,
+      // @SessionAttribute(value = "loginUser") User user,
+      @RequestParam(value = "page", defaultValue = "1") int page,
+      @RequestParam(value = "pageSize", defaultValue = "5") int pageSize,
+      @RequestParam(value = "sort", defaultValue = "registered") String sort,
+      Model model,
+      HttpSession session) throws Exception {
 
     // 로그인 유저가 아닌 경우 처리 (나중에 처리해야지)
     // if (user == null) {
@@ -302,7 +286,7 @@ public class ReviewController {
     board.setBoardImages(images);
 
     Map<Integer, List<Schedule>> groupedSchedules = scheduleList.stream()
-            .collect(Collectors.groupingBy(Schedule::getScheduleDay));
+        .collect(Collectors.groupingBy(Schedule::getScheduleDay));
     model.addAttribute("groupedSchedules", groupedSchedules);
 
 
@@ -343,9 +327,9 @@ public class ReviewController {
   // 파일삭제
   @DeleteMapping("file/delete")
   public String deleteFile(
-          @RequestParam("fileNo") int fileNo,
-          @RequestParam("boardNo") int boardNo,
-          HttpSession session) throws Exception {
+      @RequestParam("fileNo") int fileNo,
+      @RequestParam("boardNo") int boardNo,
+      HttpSession session) throws Exception {
 
     User loginUser = (User) session.getAttribute("loginUser");
 
@@ -377,11 +361,11 @@ public class ReviewController {
   // 수정 페이지 정보전달
   @PostMapping("update")
   public String update(
-          @RequestParam("boardNo") Integer boardNo,
-          @RequestParam("title") String title,
-          @RequestParam("content") String content,
-          @RequestParam(value = "deletedImages", required = false) String deletedImages,
-          @RequestParam(value = "imageFiles", required = false) MultipartFile[] files
+      @RequestParam("boardNo") Integer boardNo,
+      @RequestParam("title") String title,
+      @RequestParam("content") String content,
+      @RequestParam(value = "deletedImages", required = false) String deletedImages,
+      @RequestParam(value = "imageFiles", required = false) MultipartFile[] files
   ) throws Exception {
 
     try {
@@ -469,8 +453,8 @@ public class ReviewController {
   @PostMapping("like/{boardNo}")
   @ResponseBody
   public Map<String, Object> toggleLike(
-          @PathVariable int boardNo,
-          @SessionAttribute("loginUser") User loginUser) {
+      @PathVariable int boardNo,
+      @SessionAttribute("loginUser") User loginUser) {
 
     Long userNo = loginUser.getUserNo();
     boolean isLiked = reviewService.toggleLike(boardNo, userNo);
@@ -487,8 +471,8 @@ public class ReviewController {
   @PostMapping("favor/{boardNo}")
   @ResponseBody
   public Map<String, Object> toggleFavor(
-          @PathVariable int boardNo,
-          @SessionAttribute("loginUser") User loginUser) {
+      @PathVariable int boardNo,
+      @SessionAttribute("loginUser") User loginUser) {
 
     Long userNo = loginUser.getUserNo();
     boolean isFavored = reviewService.toggleFavor(boardNo, userNo);
@@ -525,11 +509,11 @@ public class ReviewController {
   // 5. 테마   themaName
   @GetMapping("search")
   public String search(
-          @RequestParam(value = "option", required = false, defaultValue = "title") String option,
-          @RequestParam("query") String query,
-          @RequestParam(defaultValue = "1") int pageNo,
-          @RequestParam(defaultValue = "9") int pageSize,
-          Model model
+      @RequestParam(value = "option", required = false, defaultValue = "title") String option,
+      @RequestParam("query") String query,
+      @RequestParam(defaultValue = "1") int pageNo,
+      @RequestParam(defaultValue = "9") int pageSize,
+      Model model
   ) {
     String decodedQuery = URLDecoder.decode(query, StandardCharsets.UTF_8);
     List<Board> searchResults;
@@ -573,16 +557,4 @@ public class ReviewController {
     model.addAttribute("pageCount", pageCount);
     return "review/list"; // 게시글 목록을 출력하는 Thymeleaf 템플릿 파일 이름
   }
-
-  @GetMapping("api/list")
-  public ResponseEntity<List<ReviewDto>> getReviewList(@RequestParam int page) {
-    try {
-      List<ReviewDto> reviews = reviewService.getReviews(page);
-      return new ResponseEntity<>(reviews, HttpStatus.OK);
-    } catch (Exception e) {
-      e.printStackTrace();
-      return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-  }
-
 }

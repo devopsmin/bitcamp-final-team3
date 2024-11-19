@@ -45,4 +45,8 @@ public class User {
     this.snsName = snsName;
     this.deletedDate = deletedDate;
   }
+
+  public boolean isSocialUser() {
+    return this.snsNo != null;
+  }
 }

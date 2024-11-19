@@ -4,17 +4,12 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import project.tripMaker.dao.BoardReviewDao;
 import project.tripMaker.dao.CommentDao;
-import project.tripMaker.dto.ReviewDto;
 import project.tripMaker.vo.Board;
 import project.tripMaker.vo.BoardImage;
 import project.tripMaker.vo.Trip;
@@ -231,7 +226,7 @@ public class ReviewService implements BoardService {
   }
 
   // 게시글 관련 지울떄 싹다 지우기
-  @Transactional
+  @Transactional 
   public void deleteAllFiles(int boardNo) throws Exception {
     boardReviewDao.deleteFiles(boardNo);
   }
@@ -251,9 +246,9 @@ public class ReviewService implements BoardService {
     double recencyScore = calculateRecencyScore(board.getBoardCreatedDate()); // Date 사용하여 최근성 점수로 계산
 
     return (board.getBoardCount() * viewWeight) +
-            (board.getBoardLike() * likeWeight) +
-            (board.getBoardFavor() * favorWeight) +
-            (recencyScore * recencyWeight);
+        (board.getBoardLike() * likeWeight) +
+        (board.getBoardFavor() * favorWeight) +
+        (recencyScore * recencyWeight);
   }
 
   // Date 객체를 기반으로 최근성 점수를 계산하는 메서드
@@ -276,36 +271,6 @@ public class ReviewService implements BoardService {
 
     return allBoards.stream().limit(limit).toList();
     // 리스트를 stream으로 변환한 후 limit 만큼 상위 n개를 리스트 형태로 변환하여 반환
-  }
-
-  public List<ReviewDto> getReviews(int page) throws Exception {
-    int pageSize = 9;  // 한 페이지에 표시할 게시물 수를 설정합니다.
-    List<Board> boards = list(page, pageSize, BOARD_TYPE_REVIEW);  // 페이지에 따른 게시글 리스트를 가져옵니다.
-
-    // Board 객체를 ReviewDto로 변환하여 반환합니다.
-    return boards.stream().map(board -> {
-      LocalDate createdDate = board.getBoardCreatedDate().toInstant()
-              .atZone(ZoneId.systemDefault())
-              .toLocalDate();
-
-      // Thema가 null일 경우 대비하여 삼항 연산자로 체크
-      String themaName = board.getTrip().getThema() != null ? board.getTrip().getThema().getThemaName() : "No Thema";
-
-      return ReviewDto.builder()
-              .boardNo(board.getBoardNo())
-              .boardTitle(board.getBoardTitle())
-              .firstImageName(board.getFirstImageName() != null ? board.getFirstImageName() : "default.png")
-              .cityName(board.getTrip().getCity().getCityName())
-              .stateName(board.getTrip().getCity().getState().getStateName())
-              .themaName(themaName)  // Thema 이름 설정
-              .boardLike(board.getBoardLike())
-              .boardFavor(board.getBoardFavor())
-              .boardCount(board.getBoardCount())
-              .writerNickname(board.getWriter().getUserNickname())
-              .writerPhoto(board.getWriter().getUserPhoto())
-              .boardCreatedDate(createdDate)  // LocalDate로 변환된 값 설정
-              .build();
-    }).collect(Collectors.toList());
   }
 
 }

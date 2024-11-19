@@ -80,7 +80,7 @@
                 <p class="text-muted mb-3" style="margin-left: 10px; font-size: 0.9rem;" data-th-text="${#dates.format(trip.startDate, 'yyyy.MM.dd(E)')} + ' ~ ' + ${#dates.format(trip.endDate, 'yyyy.MM.dd(E)')}">일자</p>
             </div>
 
-            <!--            <div class="d-flex" style="overflow-x: auto; white-space: nowrap;">-->
+<!--            <div class="d-flex" style="overflow-x: auto; white-space: nowrap;">-->
             <div class="d-flex" style="overflow-x: auto; overflow-y: auto; white-space: nowrap;"> <!-- 가로 스크롤 -->
                 <div class="col-md-4 mb-3 d-inline-block" style="width: 300px; margin-right: 20px;" data-th-each="entry : ${groupedSchedules}">
                     <h5 class="mb-3 text" style="font-size: 1.2rem;" data-th-text="${entry.key} + '일차'">일차</h5>
@@ -211,18 +211,18 @@
 </script>
 
 <script>
-    function scrollToTop() {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
+   function scrollToTop() {
+       window.scrollTo({ top: 0, behavior: 'smooth' });
+   }
 
-    window.addEventListener('scroll', function() {
-        const scrollTopButton = document.getElementById('scrollTopButton');
-        if (window.scrollY > 500) {
-            scrollTopButton.style.visibility = "visible";
-        } else {
-            scrollTopButton.style.visibility = "hidden";
-        }
-    });
+   window.addEventListener('scroll', function() {
+       const scrollTopButton = document.getElementById('scrollTopButton');
+       if (window.scrollY > 500) {
+           scrollTopButton.style.visibility = "visible";
+       } else {
+           scrollTopButton.style.visibility = "hidden";
+       }
+   });
 </script>
 
 </body>

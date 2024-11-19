@@ -171,9 +171,9 @@ async function deleteAccount() {
    if (!confirm("정말 탈퇴하시겠습니까?")) return;
 
    try {
-       const response = await fetch('/user/profile/delete', {
-           method: 'POST',
-           headers: { 'Content-Type': 'application/json' }
+       const response = await fetch('/user/profile/delete', { 
+           method: 'POST', 
+           headers: { 'Content-Type': 'application/json' } 
        });
        const result = await response.text();
        alert(result);
@@ -303,7 +303,7 @@ async function updatePhone() {
    }
 
    const newPhoneNumber = document.getElementById('newPhoneNumber').value;
-
+   
    try {
        document.querySelector('input[name="userTel"]').value = newPhoneNumber;
        bootstrap.Modal.getInstance(document.getElementById('changePhoneModal')).hide();
@@ -354,26 +354,3 @@ function resetForm() {
     const originalImageSrc = document.querySelector('.rounded-circle').getAttribute('data-original-src');
     document.querySelector('.rounded-circle').src = originalImageSrc;
 }
-
-document.addEventListener('DOMContentLoaded', function() {
-    const phoneModal = document.getElementById('changePhoneModal');
-    phoneModal.addEventListener('hidden.bs.modal', function () {
-        document.getElementById('newPhoneNumber').value = '';
-        document.getElementById('smsVerificationCode').value = '';
-        document.getElementById('smsVerificationDiv').style.display = 'none';
-        document.getElementById('smsTimer').textContent = '';
-        document.getElementById('updatePhoneBtn').disabled = true;
-        document.getElementById('sendSmsBtn').disabled = false;
-        profilePhoneVerified = false;
-        if (profilephoneVerificationTimer) {
-            clearInterval(profilephoneVerificationTimer);
-        }
-    });
-
-    const passwordModal = document.getElementById('passwordChangeModal');
-    passwordModal.addEventListener('hidden.bs.modal', function () {
-        document.getElementById('currentPasswordModal').value = '';
-        document.getElementById('newPassword').value = '';
-        document.getElementById('confirmNewPassword').value = '';
-    });
-});

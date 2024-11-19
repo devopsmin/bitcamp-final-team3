@@ -31,7 +31,7 @@ public class DirectionService {
 
     try {
       String params = String.format("start=%.7f,%.7f&goal=%.7f,%.7f&option=trafast",
-              startLon, startLat, goalLon, goalLat);
+          startLon, startLat, goalLon, goalLat);
 
       JsonNode response = requestApi(BASE_URL, params);
       int code = response.get("code").asInt();
@@ -40,11 +40,11 @@ public class DirectionService {
       if (code == 1) {
         System.out.println("시작과 종료가 같음!!!!!!!!!!!!!!!!");
         RouteInfo info = new RouteInfo(
-                new RouteInfo.Coordinates(startLon, startLat),  // 시작 좌표
-                new RouteInfo.Coordinates(goalLon, goalLat),    // 도착 좌표
-                0,       // distance = 0
-                0,       // duration = 0
-                null    // path = null
+            new RouteInfo.Coordinates(startLon, startLat),  // 시작 좌표
+            new RouteInfo.Coordinates(goalLon, goalLat),    // 도착 좌표
+            0,       // distance = 0
+            0,       // duration = 0
+            null    // path = null
         );
 
 
@@ -68,15 +68,15 @@ public class DirectionService {
       // Start Coordinates
       JsonNode startLocation = summary.get("start").get("location");
       RouteInfo.Coordinates start = new RouteInfo.Coordinates(
-              startLocation.get(0).asDouble(),
-              startLocation.get(1).asDouble()
+          startLocation.get(0).asDouble(),
+          startLocation.get(1).asDouble()
       );
 
       // Goal Coordinates
       JsonNode goalLocation = summary.get("goal").get("location");
       RouteInfo.Coordinates goal = new RouteInfo.Coordinates(
-              goalLocation.get(0).asDouble(),
-              goalLocation.get(1).asDouble()
+          goalLocation.get(0).asDouble(),
+          goalLocation.get(1).asDouble()
       );
 
       // Distance and duration
@@ -88,8 +88,8 @@ public class DirectionService {
       JsonNode pathArray = route.get("path");
       for (JsonNode point : pathArray) {
         path.add(new RouteInfo.Coordinates(
-                point.get(0).asDouble(),
-                point.get(1).asDouble()
+            point.get(0).asDouble(),
+            point.get(1).asDouble()
         ));
       }
 

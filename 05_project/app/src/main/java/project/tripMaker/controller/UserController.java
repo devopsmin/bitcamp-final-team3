@@ -1,15 +1,20 @@
 package project.tripMaker.controller;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.UUID;
 import javax.servlet.http.HttpSession;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import project.tripMaker.config.PasswordEncoderConfig;
 import project.tripMaker.service.StorageService;
 import project.tripMaker.service.UserService;
 import project.tripMaker.vo.User;
@@ -19,41 +24,41 @@ import project.tripMaker.vo.User;
 @RequestMapping("/user")
 public class UserController {
 
-  private final UserService userService;
-  private final StorageService storageService;
-  private final PasswordEncoder passwordEncoder;
+    private final UserService userService;
+    private final StorageService storageService;
+    private final PasswordEncoder passwordEncoder;
 
-  private final String folderName = "user/profile/";
+    private final String folderName = "user/profile/";
 
-  @GetMapping("/profile")
-  public String myInfo(
-          HttpSession session,
-          Model model) throws Exception {
-    User loginUser = (User) session.getAttribute("loginUser");
-    if (loginUser == null) {
-      throw new Exception("로그인이 필요합니다.");
+    @GetMapping("/profile")
+    public String myInfo(
+            HttpSession session,
+            Model model) throws Exception {
+        User loginUser = (User) session.getAttribute("loginUser");
+        if (loginUser == null) {
+            throw new Exception("로그인이 필요합니다.");
+        }
+        User user = userService.get(loginUser.getUserNo());
+        model.addAttribute("user", user);
+        return "user/profile/view";
     }
-    User user = userService.get(loginUser.getUserNo());
-    model.addAttribute("user", user);
-    return "user/profile/view";
-  }
 
-  @GetMapping("/profile/{userNo}")
-  public String view(
-          @PathVariable Long userNo,
-          Model model) throws Exception {
-    User user = userService.get(userNo);
-    model.addAttribute("user", user);
-    return "user/profile/view";
-  }
+    @GetMapping("/profile/{userNo}")
+    public String view(
+            @PathVariable Long userNo,
+            Model model) throws Exception {
+        User user = userService.get(userNo);
+        model.addAttribute("user", user);
+        return "user/profile/view";
+    }
 
   @PostMapping("/profile/{userNo}")
   public String update(
-          @PathVariable Long userNo,
-          @RequestParam(required = false) String currentPassword,
-          User user,
-          HttpSession session,
-          MultipartFile file) {
+      @PathVariable Long userNo,
+      @RequestParam(required = false) String currentPassword,
+      User user,
+      HttpSession session,
+      MultipartFile file) {
 
     try {
       User loginUser = (User) session.getAttribute("loginUser");
@@ -152,9 +157,9 @@ public class UserController {
   @PostMapping("/change-password")
   @ResponseBody
   public String changePassword(
-          @RequestParam String currentPassword,
-          @RequestParam String newPassword,
-          HttpSession session) {
+      @RequestParam String currentPassword,
+      @RequestParam String newPassword,
+      HttpSession session) {
     try {
       User loginUser = (User) session.getAttribute("loginUser");
       if (loginUser == null) {

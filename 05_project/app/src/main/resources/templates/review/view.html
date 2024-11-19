@@ -16,7 +16,7 @@
         <input type="hidden" name="boardNo" data-th-value="${board.boardNo}">
 
         <div class="mb-3">
-            <h2 class="form-title" style="margin-left: 10px; font-size: 1.8rem; font-weight: bold;" data-th-text="${board.boardTitle}"></h2>
+            <h2 class="form-title" style="margin-left: 10px; font-size: 1.8rem; font-weight: bold;" data-th-text="${board.boardTitle}"/>
         </div>
 
         <div data-th-if="${board}" class="border-bottom pb-3 mb-1">
@@ -113,7 +113,6 @@
         <!--        <p class="text-muted mb-3" style="margin-left: 10px; font-size: 0.9rem;" data-th-text="${board.trip.thema.themaName}">테마</p>-->
         <p class="text-muted mb-3" style="margin-left: 10px; font-size: 0.9rem;"
            data-th-text="${board.trip != null && board.trip.thema != null ? board.trip.thema.themaName : 'No Thema'}">테마명 없음</p>
-
         <div class="container my-3">
             <div data-th-with="totalIndex=${new java.util.concurrent.atomic.AtomicInteger(0)}">
                 <div class="col-md-8 mb-3" data-th-each="entry : ${groupedSchedules}">
@@ -127,14 +126,13 @@
                                 <span class="scheduleDay" data-th-text="*{scheduleDay}" style="display: none;"></span>
                             </div>
                             <!-- 카드와 textarea를 감싸는 wrapper 추가 -->
-                            <div class="d-flex gap-3 mx-auto md-5">
+                            <div class="d-flex gap-3">
                                 <!-- 기존 카드 부분 -->
                                 <div class="flex-shrink-0" style="width: 300px;">
                                     <div class="p-3 border rounded shadow-sm d-flex justify-content-between align-items-center">
                                         <div class="me-2 align-items=start">
                                             <div class="d-flex">
-                                                <div class="badge text-white"
-                                                     data-th-classappend="'bg-' + ${entry.key % 6 == 1 ? 'primary' : entry.key % 6 == 2 ? 'warning' : entry.key % 6 == 3 ? 'danger' : entry.key % 6 == 4 ? 'info' : entry.key % 6 == 5 ? 'secondary' : 'success'}"
+                                                <div class="badge bg-warning text-white"
                                                      style="font-size: 1rem; border-radius: 50%; width: 25px; height: 25px; display: flex; align-items: center; justify-content: center;"
                                                      data-th-text="${iter.index}">일정 순서</div>
                                                 <div class="ms-2">
@@ -163,8 +161,8 @@
                                 <!-- textarea 추가 -->
                                 <div class="flex-grow-1">
                                    <textarea readonly
-                                             class="form-control schedule-note" rows="2"
-                                             style="height: 112px; width: 830px; background-color: #f8f9fa;"
+                                             class="form-control"
+                                             style="height: 99px; width: 830px; background-color: #f8f9fa;"
                                              data-th-text="${#lists.size(board.boardContent.split('&%')) > totalIndex.get() ? board.boardContent.split('&%')[totalIndex.getAndIncrement()] : ''}">
                                     </textarea>
                                 </div>

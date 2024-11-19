@@ -75,7 +75,7 @@
                      data-th-each="entry : ${groupedSchedules}">
                     <div class="fw-bold mb-2" data-th-text="'Day ' + ${entry.key}">Day 1
                     </div>
-                    <!-- 드래그 앤 드롭을 위한 전용 컨테이너 - each 밖으로 이동 -->
+                        <!-- 드래그 앤 드롭을 위한 전용 컨테이너 - each 밖으로 이동 -->
                     <div class="schedule-container d-flex flex-column gap-1">
                         <!-- 각 스케줄 반복 -->
                         <th:block th:each="schedule, iterStat : ${entry.value}">
