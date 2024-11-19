@@ -54,6 +54,10 @@ public class AuthController {
       return "auth/login/fail";
     }
 
+    if (user.getUserBlock() == 1 || user.getUserBlock() == 2) {
+      throw new IllegalArgumentException("현재 차단된 유저입니다.");
+    }
+
     userService.updateLastLogin(user.getUserNo());
 
     if (saveEmail) {

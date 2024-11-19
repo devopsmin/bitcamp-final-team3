@@ -15,26 +15,53 @@
 
     <!-- Select -->
     <select id="selectCompanionRecruit" resultMap="CompanionRecruitResultMap">
-        SELECT * FROM companionrecruit WHERE companion_recruit_no = #{companionrecruitNo}
+        SELECT *
+        FROM
+            companionrecruit
+        WHERE
+            board_no = #{boardNo}
+    </select>
+
+    <!-- Select Specific CompanionRecruit -->
+    <select id="selectCompanionRecruitByScheduleNo" resultMap="CompanionRecruitResultMap">
+        SELECT *
+        FROM
+            companionrecruit
+        WHERE
+            schedule_no = #{scheduleNo}
     </select>
 
     <!-- Insert -->
     <insert id="insertCompanionRecruit">
-        INSERT INTO companionrecruit (board_no, schedule_no, checked, checked_all, recruit_max_no)
-        VALUES (#{boardNo}, #{scheduleNo}, #{checked}, #{checkedAll}, #{recruitMaxNo})
+        INSERT INTO
+            companionrecruit (board_no, schedule_no, checked, checked_all, recruit_max_no)
+        VALUES
+            (#{boardNo}, #{scheduleNo}, #{checked}, #{checkedAll}, #{recruitMaxNo})
     </insert>
 
     <!-- Update -->
     <update id="updateCompanionRecruit">
-        UPDATE companionrecruit
-        SET board_no = #{boardNo}, schedule_no = #{scheduleNo}, checked = #{checked},
+        UPDATE
+            companionrecruit
+        SET
+            board_no = #{boardNo}, schedule_no = #{scheduleNo}, checked = #{checked},
             checked_all = #{checkedAll}, recruit_max_no = #{recruitMaxNo}
-        WHERE companion_recruit_no = #{companionrecruitNo}
+        WHERE
+            schedule_no = #{scheduleNo}
     </update>
 
-    <!-- Delete -->
-    <delete id="deleteCompanionRecruit">
-        DELETE FROM companionrecruit WHERE board_no = #{boardNo}
+    <!-- Delete By Board -->
+    <delete id="deleteCompanionRecruitByBoard">
+        DELETE FROM companionrecruit
+        WHERE
+            board_no = #{boardNo}
+    </delete>
+
+    <!-- Delete Specific CompanionRecruit -->
+    <delete id="deleteCompanionRecruitByScheduleNo">
+        DELETE FROM companionrecruit
+        WHERE
+            schedule_no = #{scheduleNo}
     </delete>
 
 </mapper>

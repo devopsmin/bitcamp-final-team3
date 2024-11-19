@@ -1,5 +1,8 @@
 package project.tripMaker.config;
 
+import java.io.IOException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -9,6 +12,7 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -42,26 +46,8 @@ public class SecurityConfig {
             .loginProcessingUrl("/auth/login")
             .usernameParameter("userEmail")
             .passwordParameter("userPassword")
-            .successHandler((request, response, authentication) -> {
-              String email = authentication.getName();
-              try {
-                User user = userService.getByEmail(email);
-                if (user != null) {
-                  HttpSession session = request.getSession();
-                  session.setAttribute("loginUser", user);
-
-                  if (user.getUserRole() == UserRole.ROLE_ADMIN) {
-                    response.sendRedirect("/admin");
-                  } else {
-                    response.sendRedirect("/home");
-                  }
-                } else {
-                  throw new Exception("유저를 찾을 수 없습니다.");
-                }
-              } catch (Exception e) {
-                throw new RuntimeException(e);
-              }
-            })
+            .successHandler((request, response, authentication) ->
+                onAuthenticationSuccess(request, response, authentication, userService))
             .failureUrl("/auth/form?error")
             .permitAll()
         )
@@ -103,4 +89,31 @@ public class SecurityConfig {
   public PasswordEncoder passwordEncoder() {
     return new BCryptPasswordEncoder();
   }
+
+  private void onAuthenticationSuccess(
+      HttpServletRequest request,
+      HttpServletResponse response,
+      Authentication authentication,
+      UserService userService) throws IOException {
+
+    String email = authentication.getName();
+    try {
+      User user = userService.getByEmail(email);
+      if (user != null) {
+        HttpSession session = request.getSession();
+        session.setAttribute("loginUser", user);
+
+        if (user.getUserRole() == UserRole.ROLE_ADMIN) {
+          response.sendRedirect("/admin");
+        } else {
+          response.sendRedirect("/home");
+        }
+      } else {
+        throw new Exception("유저를 찾을 수 없습니다.");
+      }
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
+  }
+
 }

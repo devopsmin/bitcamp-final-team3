@@ -13,14 +13,8 @@ public interface BoardCompanionDao extends BoardDao{
   // 게시물 목록 조회
   List<Board> list(Map<String, Object> options) throws Exception;
 
-  // 좋아요 순으로 정렬된 목록 조회
-  List<Board> listLike(Map<String, Object> options) throws Exception;
-
-  // 즐겨찾기 순으로 정렬된 목록 조회
-  List<Board> listFavor(Map<String, Object> options) throws Exception;
-
-  // 조회수 순으로 정렬된 목록 조회
-  List<Board> listView(Map<String, Object> options) throws Exception;
+  // 게시물 검색
+  List<Board> searchlist(Map<String, Object> options) throws Exception;
 
   // 게시물 등록
   boolean insert(Board board) throws Exception;

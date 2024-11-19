@@ -71,13 +71,13 @@ public class DefaultUserService implements UserService {
     }
 
     User user = User.builder()
-        .userEmail(email)
-        .userNickname(nickname != null ? nickname : "소셜 사용자")
-        .userPassword(passwordEncoder.encode("socialLoginPassword"))
-        .snsNo(snsNo)
-        .userRole(UserRole.ROLE_USER)
-        .userTel("소셜로그인")
-        .build();
+            .userEmail(email)
+            .userNickname(nickname != null ? nickname : "소셜 사용자")
+            .userPassword(passwordEncoder.encode("socialLoginPassword"))
+            .snsNo(snsNo)
+            .userRole(UserRole.ROLE_USER)
+            .userTel("소셜로그인")
+            .build();
 
     userDao.insertSocialUser(user);
     return user;

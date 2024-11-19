@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper
-  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="project.tripMaker.dao.CommentDao">
     <!-- ResultMap for Board -->
@@ -23,51 +23,51 @@
     <select id="list" resultMap="CommentMap" parameterType="int">
 
         SELECT
-            c.comment_no,
-            c.board_no,
-            c.user_no,
-            c.comment_content,
-            c.comment_created_date,
-            u.user_no AS user_no,
-            u.user_nickname,
-            u.user_photo
+        c.comment_no,
+        c.board_no,
+        c.user_no,
+        c.comment_content,
+        c.comment_created_date,
+        u.user_no AS user_no,
+        u.user_nickname,
+        u.user_photo
         FROM
-            comment c
-                JOIN
-            user u ON c.user_no = u.user_no
+        comment c
+        JOIN
+        user u ON c.user_no = u.user_no
         WHERE
-            c.board_no = #{boardNo}
+        c.board_no = #{boardNo}
         ORDER BY
-            c.comment_no ASC
+        c.comment_no ASC
     </select>
 
     <insert id="insert" parameterType="comment"
-      useGeneratedKeys="true" keyColumn="comment_no" keyProperty="commentNo">
+            useGeneratedKeys="true" keyColumn="comment_no" keyProperty="commentNo">
         insert into comment(
-            board_no,
-            user_no,
-            comment_content,
-            comment_created_date)
+        board_no,
+        user_no,
+        comment_content,
+        comment_created_date)
         values (
-                   #{boardNo},
-                   #{userNo},
-                   #{commentContent},
-                   now())
+        #{boardNo},
+        #{userNo},
+        #{commentContent},
+        now())
     </insert>
 
     <select id="findBy" resultMap="CommentMap" parameterType="int">
         SELECT
-            comment_no,
-            board_no,
-            user_no,
-            comment_content,
-            comment_created_date
+        comment_no,
+        board_no,
+        user_no,
+        comment_content,
+        comment_created_date
         FROM
-            comment
+        comment
         WHERE
-            comment_no=#{commentNo}
+        comment_no=#{commentNo}
         ORDER BY
-            comment_no ASC
+        comment_no ASC
     </select>
 
     <delete id="delete" parameterType="int">
@@ -77,11 +77,11 @@
 
     <update id="update" parameterType="comment">
         update
-            comment
+        comment
         set
-            comment_content=#{commentContent}
+        comment_content=#{commentContent}
         where
-            comment_no=#{commentNo}
+        comment_no=#{commentNo}
     </update>
 
     <select id="countByBoardNo" resultType="int">

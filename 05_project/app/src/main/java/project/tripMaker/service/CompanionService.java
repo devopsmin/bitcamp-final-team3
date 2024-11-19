@@ -3,6 +3,7 @@ package project.tripMaker.service;
 import lombok.Data;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import project.tripMaker.board.BoardType;
 import project.tripMaker.dao.BoardCompanionDao;
 import project.tripMaker.dao.CompanionRecruitDao;
 import project.tripMaker.vo.Board;
@@ -16,7 +17,7 @@ public class CompanionService {
 
   private final BoardCompanionDao boardCompanionDao;
   private final CompanionRecruitDao companionRecruitDao;
-  private static final int BOARD_TYPE_COMPANION = 2;
+  private int BOARD_TYPE_COMPANION = BoardType.COMPANION.getTypeCode();
 
   // 게시글 작성
   @Transactional
@@ -25,11 +26,13 @@ public class CompanionService {
   }
 
   // 게시글 목록 조회
-  public List<Board> list(int pageNo, int pageSize) throws Exception {
+  public List<Board> list(int pageNo, int pageSize, String order) throws Exception {
 
     HashMap<String, Object> options = new HashMap<>();
     options.put("rowNo", (pageNo - 1) * pageSize);
     options.put("length", pageSize);
+    options.put("order", order);
+    options.put("boardtype", BOARD_TYPE_COMPANION);
 
     return boardCompanionDao.list(options);
   }
@@ -63,7 +66,7 @@ public class CompanionService {
   // 게시글 삭제
   @Transactional
   public void delete(int boardNo) throws Exception {
-    companionRecruitDao.deleteCompanionRecruit(boardNo);
+    companionRecruitDao.deleteCompanionRecruitByBoard(boardNo);
     boardCompanionDao.delete(boardNo);
   }
 
@@ -73,5 +76,16 @@ public class CompanionService {
 
   public List<Integer> getRegisteredTripNos() throws Exception {
     return boardCompanionDao.getRegisteredTripNos();
+  }
+
+  public List<Board> searchlist(int pageNo, int pageSize, String type, String data) throws Exception{
+    HashMap<String, Object> options = new HashMap<>();
+    options.put("rowNo", (pageNo - 1) * pageSize);
+    options.put("length", pageSize);
+    options.put("type", type);
+    options.put("data", data);
+    options.put("boardtype", BOARD_TYPE_COMPANION);
+
+    return boardCompanionDao.searchlist(options);
   }
 }

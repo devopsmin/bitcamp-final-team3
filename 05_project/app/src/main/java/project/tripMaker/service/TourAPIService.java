@@ -18,7 +18,7 @@ import java.util.List;
 public class TourAPIService {
 
   private final String apiKey =
-      "XnvCfqp1B9c3utiwpFbA7r1fL/VB+ajinxxnfzDqa9hYdr4tHh1sf0WUcxbFXSyK1HSCHQ3Llk6QLVRC9yMJ2g==";
+          "XnvCfqp1B9c3utiwpFbA7r1fL/VB+ajinxxnfzDqa9hYdr4tHh1sf0WUcxbFXSyK1HSCHQ3Llk6QLVRC9yMJ2g==";
   private final ObjectMapper objectMapper = new ObjectMapper();
 
   public static void main(String[] args) {
@@ -59,7 +59,7 @@ public class TourAPIService {
       String requestURL = "https://apis.data.go.kr/B551011/KorService1/areaCode1";
       String params = "numOfRows=100&pageNo=1&MobileOS=ETC&MobileApp=webapp&_type=json";
       JsonNode itemsNode =
-          requestApi(requestURL, params).path("response").path("body").path("items").path("item");
+              requestApi(requestURL, params).path("response").path("body").path("items").path("item");
       return itemsNode;
     } catch (Exception e) {
       e.printStackTrace();
@@ -71,9 +71,9 @@ public class TourAPIService {
     try {
       String requestURL = "https://apis.data.go.kr/B551011/KorService1/areaCode1";
       String params =
-          "numOfRows=100&pageNo=1&MobileOS=ETC&MobileApp=webapp&_type=json&areaCode=" + stateCode;
+              "numOfRows=100&pageNo=1&MobileOS=ETC&MobileApp=webapp&_type=json&areaCode=" + stateCode;
       JsonNode itemsNode =
-          requestApi(requestURL, params).path("response").path("body").path("items").path("item");
+              requestApi(requestURL, params).path("response").path("body").path("items").path("item");
 
       List<City> cityList = new ArrayList<>();
       City totalCity = new City();
@@ -100,10 +100,10 @@ public class TourAPIService {
     try {
       String requestURL = "https://apis.data.go.kr/B551011/KorService1/areaBasedList1";
       String params = String.format(
-          "numOfRows=10&pageNo=1&MobileOS=ETC&MobileApp=MobileApp&_type=json&listYN=Y&arrange=O&contentTypeId=12&areaCode=%s&sigunguCode=%s",
-          city.getState().getStateTour(), city.getCityTour());
+              "numOfRows=10&pageNo=1&MobileOS=ETC&MobileApp=MobileApp&_type=json&listYN=Y&arrange=O&contentTypeId=12&areaCode=%s&sigunguCode=%s",
+              city.getState().getStateTour(), city.getCityTour());
       JsonNode itemsNode =
-          requestApi(requestURL, params).path("response").path("body").path("items").path("item");
+              requestApi(requestURL, params).path("response").path("body").path("items").path("item");
 
       List<Location> locations = new ArrayList<>();
       if (itemsNode.isArray()) {
@@ -132,10 +132,10 @@ public class TourAPIService {
     try {
       String requestURL = "https://apis.data.go.kr/B551011/KorService1/areaBasedList1";
       String params = String.format(
-          "numOfRows=10&pageNo=1&MobileOS=ETC&MobileApp=MobileApp&_type=json&listYN=Y&arrange=O&contentTypeId=32&areaCode=%s&sigunguCode=%s",
-          city.getState().getStateTour(), city.getCityTour());
+              "numOfRows=10&pageNo=1&MobileOS=ETC&MobileApp=MobileApp&_type=json&listYN=Y&arrange=O&contentTypeId=32&areaCode=%s&sigunguCode=%s",
+              city.getState().getStateTour(), city.getCityTour());
       JsonNode itemsNode =
-          requestApi(requestURL, params).path("response").path("body").path("items").path("item");
+              requestApi(requestURL, params).path("response").path("body").path("items").path("item");
 
       List<Location> locations = new ArrayList<>();
       if (itemsNode.isArray()) {

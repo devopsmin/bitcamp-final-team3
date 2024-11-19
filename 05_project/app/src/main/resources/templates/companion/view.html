@@ -1,47 +1,132 @@
 <!DOCTYPE html>
 <html>
-<head data-th-replace="~{header :: head}"></head>
-<body>
-<header data-th-replace="~{header :: #page-header}"></header>
-<a data-th-href="@{/companion/form}" href="form.html">글쓰기</a>
 
-<!-- 동행모집 데이터 -->
-<form name="Companionrecruit" id="Companionrecruit">
-    <div id="scheduleListContainer" style="display: flex;">
-        <div data-th-each="schedule, iterStat : ${scheduleList}">
-            <div data-th-if="${iterStat.index == 0} or (${schedule.scheduleDay != scheduleList[iterStat.index - 1].scheduleDay})">
-                <div style="margin-right: 20px;">
-                    <label data-th-text="${schedule.scheduleDay} + ' 일차'"></label>
-                    <div data-th-each="innerSchedule : ${scheduleList}" data-th-if="${innerSchedule.scheduleDay == schedule.scheduleDay}">
-                        <input name="scheduleNo" type="hidden" data-th-value="${innerSchedule.scheduleNo}">
-                        <input name="scheduleRoute" type="text" data-th-value="${innerSchedule.scheduleRoute}" style="border: none; outline: none; padding: 0;" readonly>
-                        <input name="locationName" type="text" data-th-value="${innerSchedule.location.locationName}" style="border: none; outline: none; padding: 0;" readonly>
-                        <br>
-                    </div>
-                </div>
+    <head data-th-replace="~{header :: head}"></head>
+
+    <body>
+        <header data-th-replace="~{header :: #page-header}"></header>
+        <a data-th-href="@{/companion/form}" href="form.html">글쓰기</a>
+        <form>
+            <!-- 데이터 로딩 : 일반 게시판 데이터 -->
+            <label>제목</label><br>
+                <input name="boardTitle" type="text" data-th-value="${board.boardTitle}"
+                       style="border: none; outline: none;"><br><br>
+            <label>내용</label><br>
+                <textarea name="boardContent" data-th-text="${board.boardContent}"
+                          style="border: none; outline: none;"></textarea><br><br>
+
+            <!-- 데이터 로딩 : 여행일정 목록 + 동행정보 데이터 -->
+            <label>여행일정</label>
+                <div id="scheduleListContainer" style="display: flex;"></div>
+
+            <!-- 지도 : 여행일정 목록 좌표 표시 지도 -->
+            <div id="locationMap">
+                <div id="map" style="width: 550px; height: 400px;"></div>
             </div>
-        </div>
-    </div>
-</form><br><br>
 
-<!-- 일반 게시판 데이터 -->
-<form name="Board" id="Board">
-    <label>제목</label>
-    <input name="boardTitle" type="text" data-th-value="${board.boardTitle}" style="border: none; outline: none;"><br><br>
-    <label>내용</label><br>
-    <textarea name="boardContent" data-th-text="${board.boardContent}"style="border: none; outline: none;"></textarea><br><br>
-    <label>태그</label><br>
-    <input name="boardTag" type="text" data-th-value="${board.boardTag}"style="border: none; outline: none;"><br><br>
-</form>
+            <label>태그</label><br>
+                <input name="boardTag" type="text" data-th-value="${board.boardTag}"
+                       style="border: none; outline: none;"><br><br>
+        </form>
+        <button type="button" onclick="location.href='list'">목록</button>
+        <button data-th-onclick="|deleteBoard(${board.boardNo})|">삭제</button>
+        <br>
+    </body>
 
-<button type="button" onclick="location.href='list'">목록</button>
-<button data-th-onclick="|deleteBoard(${board.boardNo})|">삭제</button>
-<br>
+    <!-- 데이터 전달 : ScheduleList,  companionrecruitList 데이터를 JavaScript 로 전달(Thymeleaf => Javascript) -->
+    <script data-th-inline="javascript">
+        /*<![CDATA[*/
+        var scheduleList = /*[[${scheduleList}]]*/ [];
+        var companionrecruitList = /*[[${companionrecruitList}]]*/ [];
+        /*]]>*/
+    </script>
 
-<script>
-    function deleteBoard(no) {
-        location.href = "delete?boardNo=" + no;
-    }
-</script>
-</body>
+    <script>
+        // 데이터 로딩(여행일정 목록 + 동행정보 데이터) 및 태그 추가 함수 - scheduleList 데이터를 이용해 scheduleListContainer 에 태그 추가
+        document.addEventListener("DOMContentLoaded", function() {
+                // 페이지가 완전히 로드되었을 때 실행되는 코드
+                const container = document.getElementById("scheduleListContainer");
+
+                // 기존의 scheduleListContainer 내용을 초기화
+                container.innerHTML = '';
+
+                // scheduleList 데이터를 일정의 '일차'별로 그룹화하여 저장하기 위한 객체
+                const scheduleGroups = {};
+
+                // scheduleList 배열의 각 일정 객체를 순회하면서 '일차'별로 그룹화
+                scheduleList.forEach(schedule => {
+                    // scheduleDay 값이 scheduleGroups에 없으면 빈 배열로 초기화
+                    if (!scheduleGroups[schedule.scheduleDay]) {
+                        scheduleGroups[schedule.scheduleDay] = [];
+                    }
+                    // 해당 일차의 배열에 현재 일정을 추가
+                    scheduleGroups[schedule.scheduleDay].push(schedule);
+                });
+
+                // 그룹화된 일정 데이터를 사용하여 일차별로 HTML 요소를 생성
+                for (const [day, schedules] of Object.entries(scheduleGroups)) {
+                    // 각 '일차'에 대한 컨테이너 생성
+                    const dayContainer = document.createElement('div');
+                    dayContainer.style.marginRight = '20px';
+                    dayContainer.className = `day-container-${day}`;
+
+                    // '일차' 레이블 추가
+                    let dayLabel = `<div name="day" id="day">
+                                        <label>${day} 일차</label>&nbsp;&nbsp;&nbsp;
+                                    </div>`;
+                    dayContainer.innerHTML = dayLabel;
+
+                    // '전 일정 동행구함' 태그가 일차별로 한 번만 추가되도록 하기 위한 플래그
+                    let addedAllScheduleTag = false;
+
+                    // 각 일정(schedule)에 대한 HTML 요소 생성
+                    schedules.forEach(schedule => {
+                        // 일정 정보를 담을 div 요소 생성
+                        const scheduleDiv = document.createElement('div');
+
+                        // companionrecruitList에서 현재 일정과 일치하는 데이터 찾기
+                        const companionRecruitData = companionrecruitList.find(recruit => recruit.scheduleNo === schedule.scheduleNo);
+
+                        // companionRecruitData 가 존재하면 추가 정보 처리
+                        if (companionRecruitData) {
+                            const { checked, checkedAll, recruitMaxNo } = companionRecruitData;
+
+                            // 전 일정 동행구함 조건이 만족되고, 아직 태그가 추가되지 않은 경우 추가
+                            if (!checked && checkedAll && !addedAllScheduleTag) {
+                                scheduleDiv.innerHTML += `<input type="text" value="전 일정 동행구함" style="border: none; outline: none;" readonly>
+                                                          <input name="recruitMaxNo" value="${recruitMaxNo}명" type="text" style="border: none; outline: none; padding: 0;" readonly><br>`;
+                                addedAllScheduleTag = true; // 태그가 추가되었음을 표시
+                            }
+
+                            // 여행 순서 정보 추가
+                            scheduleDiv.innerHTML += `<label> 여행 순서 </label>
+                                                      <input name="scheduleRoute" value="${schedule.scheduleRoute}" type="text" style="border: none; outline: none; padding: 0;" readonly><br>`;
+
+                            // 개별 일정에 대해 동행 구함 태그 추가 여부 결정
+                            if (checked && !checkedAll) {
+                                scheduleDiv.innerHTML += `<label> 여행 장소: </label>
+                                                          <input name="locationName" value="${schedule.location.locationName}" type="text" style="border: none; outline: none; padding: 0;" readonly>
+                                                          <input type="text" value="동행 구함" style="border: none; outline: none;" readonly>
+                                                          <input name="recruitMaxNo" value="${recruitMaxNo}명" type="text" style="border: none; outline: none; padding: 0;" readonly><br>`;
+                            } else {
+                                // 동행 구함 조건이 없을 때 기본 여행 장소 정보 추가
+                                scheduleDiv.innerHTML += `<label> 여행 장소: </label>
+                                                          <input name="locationName" value="${schedule.location.locationName}" type="text" style="border: none; outline: none; padding: 0;" readonly><br>`;
+                            }
+                        } else {
+                            // companionRecruitData가 없는 경우 기본 여행 정보만 추가
+                            scheduleDiv.innerHTML += `<label> 여행 순서 </label>
+                                                      <input name="scheduleRoute" value="${schedule.scheduleRoute}" type="text" style="border: none; outline: none; padding: 0;" readonly><br>
+                                                      <label> 여행 장소: </label>
+                                                      <input name="locationName" value="${schedule.location.locationName}" type="text" style="border: none; outline: none; padding: 0;" readonly><br>`;
+                        }
+
+                        // 현재 일정에 대한 div를 일차 컨테이너에 추가
+                        dayContainer.appendChild(scheduleDiv);
+                    });
+                    // 일차 컨테이너를 전체 컨테이너에 추가
+                    container.appendChild(dayContainer);
+                }
+            });
+    </script>
 </html>

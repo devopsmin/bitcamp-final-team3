@@ -20,8 +20,14 @@ public class BenService {
   private final UserService userService;
 
   @Transactional
-  public void add(Ben ben) throws Exception {
-    benDao.insert(ben);
+  public boolean add(Ben ben) throws Exception {
+    Ben existingBen = benDao.findByUserNo(ben.getUserNo());
+    if (existingBen != null) {
+      return benDao.update(ben);
+    } else {
+      benDao.insert(ben);
+      return true;
+    }
   }
 
   public Ben getByUserNo(Long userNo) throws Exception {
@@ -30,6 +36,7 @@ public class BenService {
 
   @Transactional
   public boolean update(Ben ben) throws Exception {
+    Ben existingBen = benDao.findByUserNo(ben.getUserNo());
     return benDao.update(ben);
   }
 

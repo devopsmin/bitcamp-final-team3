@@ -32,7 +32,7 @@
             <a data-th-each="board : ${list}" href="#" data-th-href="@{view(boardNo=${board.boardNo})}" class="card mb-2 shadow-sm p-1 text-decoration-none" style="width: 100%; width: 550px; margin: 0 auto; display: block; color: inherit;">
 
                 <div class="card-header d-flex align-items-center bg-white">
-<!--                    <div class="card-header d-flex align-items-center bg-white border-bottom-0">-->
+                    <!--                    <div class="card-header d-flex align-items-center bg-white border-bottom-0">-->
                     <img data-th-src="@{https://dgg7dnk35523.edge.naverncp.com/HZiW9aEJy7/user/profile/default.png(type=f,w=20,h=20)}"
                          data-th-unless="${board.writer.userPhoto}"
                          src="/images/default.png"
@@ -114,7 +114,7 @@
             <a data-th-each="board : ${topBoards}" href="#" data-th-href="@{view(boardNo=${board.boardNo})}" class="card mb-4 shadow-sm p-1 text-decoration-none" style="width: 100%; width: 400px; margin: 0 auto; display: block; color: inherit;">
 
                 <div class="card-header d-flex align-items-center bg-white">
-<!--                    <div class="card-header d-flex align-items-center bg-white border-bottom-0">-->
+                    <!--                    <div class="card-header d-flex align-items-center bg-white border-bottom-0">-->
                     <img data-th-src="@{https://dgg7dnk35523.edge.naverncp.com/HZiW9aEJy7/user/profile/default.png(type=f,w=20,h=20)}"
                          data-th-unless="${board.writer.userPhoto}"
                          src="/images/default.png"

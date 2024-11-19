@@ -85,8 +85,8 @@ public class ScheduleService {
       return null;
     }
     scheduleList.sort(Comparator
-        .comparing(Schedule::getScheduleDay)
-        .thenComparing(Schedule::getScheduleRoute)
+            .comparing(Schedule::getScheduleDay)
+            .thenComparing(Schedule::getScheduleRoute)
     );
     return scheduleList;
   }

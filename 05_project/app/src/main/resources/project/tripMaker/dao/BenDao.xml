@@ -51,6 +51,9 @@
 
     <update id="update" parameterType="Ben">
         update ben set
+            bentype_no = #{bentypeNo},
+            ben_desc = #{benDesc},
+            ben_date = #{benDate},
             unban_date = #{unbanDate}
         where
             user_no = #{userNo}

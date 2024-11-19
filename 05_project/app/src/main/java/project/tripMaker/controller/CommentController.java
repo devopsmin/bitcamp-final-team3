@@ -30,8 +30,8 @@ public class CommentController {
 
   @GetMapping("list/{boardNo}")
   public String list(
-      @PathVariable int boardNo,
-      Model model) throws Exception {
+          @PathVariable int boardNo,
+          Model model) throws Exception {
 
     List<Comment> commentList = commentService.list(boardNo);
     System.out.println("댓글 목록 크기: " + commentList.size());
@@ -42,9 +42,9 @@ public class CommentController {
 
   @PostMapping("add")
   public String add(
-      Comment comment,
-      @RequestParam("boardType") Integer boardTypeCode,
-      HttpSession session) throws Exception {
+          Comment comment,
+          @RequestParam("boardType") Integer boardTypeCode,
+          HttpSession session) throws Exception {
 
     User loginUser = (User) session.getAttribute("loginUser");
     if (loginUser == null) {
@@ -70,9 +70,9 @@ public class CommentController {
 
   @GetMapping("delete")
   public String delete(
-      @RequestParam int commentNo,
-      @RequestParam("boardType") Integer boardTypeCode,
-      HttpSession session) throws Exception {
+          @RequestParam int commentNo,
+          @RequestParam("boardType") Integer boardTypeCode,
+          HttpSession session) throws Exception {
 
     User loginUser = (User) session.getAttribute("loginUser");
     if (loginUser == null) {
