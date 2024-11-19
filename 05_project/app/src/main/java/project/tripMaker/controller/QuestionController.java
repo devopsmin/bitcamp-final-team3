@@ -190,7 +190,7 @@ public class QuestionController {
     questionService.increaseBoardCount(board.getBoardNo());
 
     // 게시글 작성자와 로그인 사용자의 번호가 같은지 확인
-    boolean isUserAuthorized = loginUser != null && loginUser.getUserNo() == board.getUserNo() || loginUser.getUserRole().name().equals("ROLE_ADMIN");
+    boolean isUserAuthorized = loginUser != null && (loginUser.getUserNo() == board.getUserNo() || loginUser.getUserRole().name().equals("ROLE_ADMIN"));
 
     boolean isLiked = false;
     boolean isFavored = false;
