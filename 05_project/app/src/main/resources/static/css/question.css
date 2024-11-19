@@ -18,3 +18,11 @@
     max-width: 1700px; /* 카드 목록의 최대 너비 */
 }
 
+.timeline-item .text-truncate {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap; /* 한 줄로 표시 */
+    display: block; /* block으로 설정해야 적용 */
+    max-width: 200px; /* 원하는 최대 너비 설정 */
+}
+

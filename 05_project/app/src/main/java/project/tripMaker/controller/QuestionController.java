@@ -174,7 +174,7 @@ public class QuestionController {
         boolean isCommentLiked = commentService.isCommentLiked(params);
         commentLikedMap.put(comment.getCommentNo(), isCommentLiked);
 
-        boolean isCommentOwner = sessionUserNo.equals(comment.getWriter().getUserNo());
+        boolean isCommentOwner = sessionUserNo.equals(comment.getWriter().getUserNo()) || loginUser.getUserRole().name().equals("ROLE_ADMIN");
         isUserAuthorizedMap.put(comment.getCommentNo(), isCommentOwner);
       }
     } else {
@@ -190,7 +190,7 @@ public class QuestionController {
     questionService.increaseBoardCount(board.getBoardNo());
 
     // 게시글 작성자와 로그인 사용자의 번호가 같은지 확인
-    boolean isUserAuthorized = loginUser != null && loginUser.getUserNo() == board.getUserNo();
+    boolean isUserAuthorized = loginUser != null && loginUser.getUserNo() == board.getUserNo() || loginUser.getUserRole().name().equals("ROLE_ADMIN");
 
     boolean isLiked = false;
     boolean isFavored = false;
