@@ -768,21 +768,47 @@ function initializeLoginForm() {
 
             fetch(this.action, {
                 method: 'POST',
-                body: formData
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: new URLSearchParams(formData)
             })
-            .then(response => {
-                if (response.ok) {
-                    window.location.reload();
-                } else {
-                    return response.text().then(html => {
-                        document.getElementById('loginModalContent').innerHTML = html;
-                        initializeLoginForm();
-                    });
+            .then(async response => {
+                if (response.redirected) {
+                    window.location.href = response.url;
+                    return;
+                }
+
+                const data = await response.json();
+                console.log('Response data:', data);
+
+                if (data && data.error) {
+                    const errorDiv = document.querySelector('#loginModalContent .alert-danger');
+                    if (!errorDiv) {
+                        const newErrorDiv = document.createElement('div');
+                        newErrorDiv.className = 'alert alert-danger';
+                        newErrorDiv.style.marginBottom = '1rem';
+                        loginForm.insertBefore(newErrorDiv, loginForm.firstChild);
+                        newErrorDiv.textContent = data.error;
+                    } else {
+                        errorDiv.textContent = data.error;
+                        errorDiv.style.display = 'block';
+                    }
                 }
             })
             .catch(error => {
-                console.error('Error submitting login form:', error);
-                alert('로그인 중 오류가 발생했습니다.');
+                console.error('Error:', error);
+                const errorDiv = document.querySelector('#loginModalContent .alert-danger');
+                if (!errorDiv) {
+                    const newErrorDiv = document.createElement('div');
+                    newErrorDiv.className = 'alert alert-danger';
+                    newErrorDiv.style.marginBottom = '1rem';
+                    loginForm.insertBefore(newErrorDiv, loginForm.firstChild);
+                    newErrorDiv.textContent = '로그인 처리 중 오류가 발생했습니다.';
+                } else {
+                    errorDiv.textContent = '로그인 처리 중 오류가 발생했습니다.';
+                    errorDiv.style.display = 'block';
+                }
             });
         });
     }
@@ -1375,8 +1401,6 @@ function updateTermsSubmitButton() {
         termsSubmitBtn.disabled = !requiredChecked;
     }
 }
-
-
 
 // 전역 스코프에서 사용할 수 있도록 window 객체에 할당
 window.openSocialLoginPopup = openSocialLoginPopup;

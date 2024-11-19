@@ -1,53 +1,59 @@
 <!DOCTYPE html>
-
-<h1 class="logo-text" style="text-align: center;">모두의 여행</h1>
-
 <div class="container p-4">
-  <form action="/auth/login" method="post" class="needs-validation" novalidate>
-    <div class="mb-3">
-      <label for="userEmail" class="form-label">이메일</label>
-      <input id="userEmail" name="userEmail" type="email" class="form-control form-control-lg" placeholder="이메일을 입력하세요" data-th-value="${userEmail}"required>
-    </div>
-
-    <div class="mb-3">
-      <label for="userPassword" class="form-label">비밀번호</label>
-      <input id="userPassword" name="userPassword" type="password" class="form-control form-control-lg" placeholder="비밀번호를 입력하세요" required>
-    </div>
-
-    <div class="d-flex justify-content-between align-items-center mb-3">
-      <div class="form-check">
-        <input checked data-th-checked="${userEmail}" name="saveEmail" type="checkbox" class="form-check-input" id="saveEmail">
-        <label class="form-check-label" for="saveEmail">이메일 저장</label>
-      </div>
-
-      <div class="btn-group">
-        <button type="button" class="btn btn-link p-0 text-decoration-none"
-                data-bs-toggle="modal" data-bs-target="#findIdModal" data-bs-dismiss="modal">
-          아이디 찾기
-        </button>
-        <span class="mx-2">/</span>
-        <button type="button" class="btn btn-link p-0 text-decoration-none"
-                data-bs-toggle="modal" data-bs-target="#resetPasswordModal" data-bs-dismiss="modal">
-          비밀번호 찾기
-        </button>
-      </div>
-    </div>
-
-    <button type="submit" class="btn btn-primary w-100 py-2 mb-3">로그인</button>
-  </form>
-
-  <div class="text-center mb-3">
-    <small>아직 회원이 아니세요?
-      <a href="#" data-bs-toggle="modal" data-bs-target="#termsModal" data-bs-dismiss="modal" class="text-decoration-none">회원가입 하기</a>
-    </small>
+  <div data-th-if="${errorMessage}" class="alert alert-danger" role="alert">
+    <span data-th-text="${errorMessage}"></span>
   </div>
 
-  <div class="d-grid gap-2">
-    <button type="button" class="btn btn-lg btn-google w-100" onclick="openSocialLoginPopup('/oauth2/authorization/google')">Google로 로그인</button>
-    <button type="button" class="btn btn-lg btn-naver w-100" onclick="openSocialLoginPopup('/oauth2/authorization/naver')">Naver로 로그인</button>
-    <button type="button" class="btn btn-lg btn-kakao w-100" onclick="openSocialLoginPopup('/oauth2/authorization/kakao')">Kakao로 로그인</button>
+  <div id="loginModalContent">
+    <h1 class="logo-text text-center mb-4">모두의 여행</h1>
+
+    <form id="loginForm" action="/auth/login" method="post" class="needs-validation" novalidate>
+
+      <div id="loginError" class="alert alert-danger" style="display: none;"></div>
+
+      <div class="mb-3">
+        <label for="userEmail" class="form-label">이메일</label>
+        <input id="userEmail" name="userEmail" type="email" class="form-control form-control-lg" placeholder="이메일을 입력하세요" data-th-value="${userEmail}" required>
+      </div>
+
+      <div class="mb-3">
+        <label for="userPassword" class="form-label">비밀번호</label>
+        <input id="userPassword" name="userPassword" type="password" class="form-control form-control-lg" placeholder="비밀번호를 입력하세요" required>
+      </div>
+
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <div class="form-check">
+          <input checked data-th-checked="${userEmail}" name="saveEmail" type="checkbox" class="form-check-input" id="saveEmail">
+          <label class="form-check-label" for="saveEmail">이메일 저장</label>
+        </div>
+
+        <div class="btn-group">
+          <button type="button" class="btn btn-link p-0 text-decoration-none" data-bs-toggle="modal" data-bs-target="#findIdModal" data-bs-dismiss="modal">
+            아이디 찾기
+          </button>
+          <span class="mx-2">/</span>
+          <button type="button" class="btn btn-link p-0 text-decoration-none" data-bs-toggle="modal" data-bs-target="#resetPasswordModal" data-bs-dismiss="modal">
+            비밀번호 찾기
+          </button>
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-primary w-100 py-2 mb-3">로그인</button>
+    </form>
+
+    <div class="text-center mb-3">
+      <small>아직 회원이 아니세요?
+        <a href="#" data-bs-toggle="modal" data-bs-target="#termsModal" data-bs-dismiss="modal"
+           class="text-decoration-none">회원가입 하기</a>
+      </small>
+    </div>
+
+    <div class="d-grid gap-2">
+      <button type="button" class="btn btn-lg btn-google w-100" onclick="openSocialLoginPopup('/oauth2/authorization/google')">Google로 로그인</button>
+      <button type="button" class="btn btn-lg btn-naver w-100" onclick="openSocialLoginPopup('/oauth2/authorization/naver')">Naver로 로그인</button>
+      <button type="button" class="btn btn-lg btn-kakao w-100" onclick="openSocialLoginPopup('/oauth2/authorization/kakao')">Kakao로 로그인</button>
+    </div>
   </div>
 </div>
 
-<script data-th-src="@{/js/auth.js}"></script>
-</html>
+<!--<script data-th-src="@{/js/authModal.js}"></script>-->

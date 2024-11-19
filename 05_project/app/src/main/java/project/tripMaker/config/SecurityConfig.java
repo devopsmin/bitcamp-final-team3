@@ -1,6 +1,7 @@
 package project.tripMaker.config;
 
 import java.io.IOException;
+import java.time.format.DateTimeFormatter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -8,20 +9,24 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import project.tripMaker.config.OAuth2SuccessHandler;
+import project.tripMaker.service.BenService;
 import project.tripMaker.service.CustomOAuth2UserService;
 import project.tripMaker.service.CustomUserDetailsService;
 import project.tripMaker.service.UserService;
 import project.tripMaker.user.UserRole;
+import project.tripMaker.vo.Ben;
 import project.tripMaker.vo.User;
 
 @Configuration
@@ -33,7 +38,7 @@ public class SecurityConfig {
   private final CustomOAuth2UserService customOAuth2UserService;
 
   @Bean
-  public SecurityFilterChain securityFilterChain(HttpSecurity http, UserService userService) throws Exception {
+  public SecurityFilterChain securityFilterChain(HttpSecurity http, UserService userService, BenService benService) throws Exception {
     http
         .authorizeRequests(authorize -> authorize
             .antMatchers("/admin/**").hasAuthority("ROLE_ADMIN")
@@ -48,7 +53,9 @@ public class SecurityConfig {
             .passwordParameter("userPassword")
             .successHandler((request, response, authentication) ->
                 onAuthenticationSuccess(request, response, authentication, userService))
-            .failureUrl("/auth/form?error")
+            .failureHandler((request, response, exception) ->
+                onAuthenticationFailure(request, response, exception, userService, benService))
+//            .failureUrl("/auth/form?error")
             .permitAll()
         )
         .oauth2Login(oauth2 -> oauth2
@@ -61,9 +68,6 @@ public class SecurityConfig {
         .logout(logout -> logout
             .logoutSuccessUrl("/auth/form")
             .permitAll()
-        )
-        .exceptionHandling(handling -> handling
-            .accessDeniedPage("/auth/access-denied")
         )
         .csrf(csrf -> csrf.disable());
 
@@ -81,6 +85,7 @@ public class SecurityConfig {
     DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
     authProvider.setUserDetailsService(customUserDetailsService);
     authProvider.setPasswordEncoder(passwordEncoder());
+    authProvider.setHideUserNotFoundExceptions(false);
     return authProvider;
   }
 
@@ -116,4 +121,42 @@ public class SecurityConfig {
     }
   }
 
+  private void onAuthenticationFailure(
+      HttpServletRequest request,
+      HttpServletResponse response,
+      AuthenticationException exception,
+      UserService userService,
+      BenService benService) throws IOException {
+
+    response.setContentType("application/json;charset=UTF-8");
+    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+
+    String errorMessage;
+    try {
+      if (exception instanceof DisabledException
+          || exception.getCause() instanceof DisabledException) {
+        User user = userService.getByEmail(request.getParameter("userEmail"));
+        Ben ben = benService.getByUserNo(user.getUserNo());
+
+        if (ben != null && ben.getUnbanDate() != null) {
+          errorMessage = String.format("정지된 계정! 해제일은 : %s",
+              ben.getUnbanDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))+ " 입니다");
+        } else {
+          errorMessage = "영구 정지된 계정입니다.";
+        }
+      } else {
+        errorMessage = "아이디 또는 비밀번호가 올바르지 않습니다.";
+      }
+
+      String jsonResponse = String.format("{\"error\":\"%s\"}",
+          errorMessage.replace("\"", "\\\""));
+
+      response.getWriter().print(jsonResponse);
+      response.getWriter().flush();
+
+    } catch (Exception e) {
+      response.getWriter().print("{\"error\":\"처리 중 오류가 발생했습니다.\"}");
+      response.getWriter().flush();
+    }
+  }
 }
