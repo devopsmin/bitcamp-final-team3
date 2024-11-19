@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -25,6 +26,10 @@ public class CustomUserDetailsService implements UserDetailsService {
       User user = userDao.findByEmail(email);
       if (user == null) {
         throw new UsernameNotFoundException("사용자를 찾을 수 없습니다: " + email);
+      }
+
+      if (user.getUserBlock() != 0) {
+        throw new DisabledException("차단된 계정입니다.");
       }
 
       List<GrantedAuthority> authorities = new ArrayList<>();
