@@ -28,18 +28,18 @@ public class CustomUserDetailsService implements UserDetailsService {
         throw new UsernameNotFoundException("사용자를 찾을 수 없습니다: " + email);
       }
 
-      if (user.getUserBlock() != 0) {
+      if (user.getUserBlock() == 1 || user.getUserBlock() == 2) {
         throw new DisabledException("차단된 계정입니다.");
       }
-
-      List<GrantedAuthority> authorities = new ArrayList<>();
-      authorities.add(new SimpleGrantedAuthority(user.getUserRole().name()));
 
       return new org.springframework.security.core.userdetails.User(
           user.getUserEmail(),
           user.getUserPassword(),
-          authorities
+          Collections.singletonList(new SimpleGrantedAuthority(user.getUserRole().name()))
       );
+
+    } catch (DisabledException e) {
+      throw e;
     } catch (Exception e) {
       throw new UsernameNotFoundException("사용자 로드 중 오류 발생", e);
     }

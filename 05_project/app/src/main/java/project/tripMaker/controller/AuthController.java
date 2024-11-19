@@ -36,8 +36,20 @@ public class AuthController {
   private final String folderName = "user/profile/";
 
   @GetMapping("/login/form")
-  public void form(@CookieValue(name = "userEmail", required = false) String userEmail, Model model) {
+  public String form(
+      @CookieValue(name = "userEmail", required = false) String userEmail,
+      @RequestParam(value = "error", required = false) String error,
+      HttpSession session,
+      Model model) {
+
     model.addAttribute("userEmail", userEmail);
+
+    if (error != null && session.getAttribute("loginError") != null) {
+      model.addAttribute("errorMessage", session.getAttribute("loginError"));
+      session.removeAttribute("loginError");
+    }
+
+    return "auth/login/form";
   }
 
   @PostMapping("login")
@@ -52,10 +64,6 @@ public class AuthController {
     if (user == null) {
       res.setHeader("Refresh", "2; url=login/form");
       return "auth/login/fail";
-    }
-
-    if (user.getUserBlock() == 1 || user.getUserBlock() == 2) {
-      throw new IllegalArgumentException("현재 차단된 유저입니다.");
     }
 
     userService.updateLastLogin(user.getUserNo());
