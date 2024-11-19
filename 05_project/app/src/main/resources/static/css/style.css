@@ -1,11 +1,11 @@
-.fram-topbanner,
+/*.fram-topbanner,
 .fram-topbanner * {
     box-sizing: border-box;
-}
+}*/
 .fram-topbanner {
-    background: #ffffff;
-    height: 131px;
-    position: relative;
+    /* background: #ffffff; */
+    height: 130px;
+    /* position: relative; */
 }
 .button-02-s {
     background: var(--black-and-white-black, #000000);
@@ -336,3 +336,5 @@
     font-family: "Noto Sans KR", sans-serif;
     font-weight: 400;
 }
+
+

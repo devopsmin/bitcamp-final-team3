@@ -12,46 +12,12 @@
     <link data-th-href="@{/css/modal.css}" rel="stylesheet">
     <link data-th-href="@{/css/login.css}" rel="stylesheet">
     <link data-th-href="@{/css/register.css}" rel="stylesheet">
-    <!-- Bootstrap Bundle with Popper -->
+<!--    &lt;!&ndash; Bootstrap Bundle with Popper &ndash;&gt;-->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script data-th-src="@{/js/modal.js}"></script>
     <script data-th-src="@{/js/authModal.js}"></script>
 </head>
 <body>
-<style>
-    /* 네비게이션 메뉴 hover 스타일 */
-    .nav-item a {
-        font-size: 1rem;
-        font-weight: 500;
-        color: #333333;
-        text-decoration: none;
-        transition: color 0.3s ease, transform 0.3s ease;
-        padding: 0.5rem 1rem;
-    }
-
-    .nav-item a:hover {
-        color: #007BFF; /* 원하는 색상으로 변경 */
-        transform: scale(1.1); /* 메뉴가 살짝 커지는 효과 */
-        background-color: rgba(0, 123, 255, 0.1); /* 부드러운 배경 강조 */
-        border-radius: 5px;
-    }
-
-    /* 현재 선택된 메뉴 활성화 스타일 */
-    .nav-item .nav-link.active {
-        font-weight: bold;
-        color: #007BFF;
-        text-decoration: underline;
-    }
-
-    .bi-bell-fill {
-        font-size: 1.2rem; /* 아이콘 크기 조정 */
-        margin: 0 0.5rem;
-    }
-
-    .login-state {
-        margin-left: 1rem; /* 로그인 버튼에 추가 여백 */
-    }
-</style>
 
 <header id="page-header">
     <div class="fram-topbanner">
@@ -67,24 +33,23 @@
             </li>
             <div class="d-flex ms-auto align-items-center">
                 <li class="nav-item">
-                    <a class="nav-link active" data-bs-target="#scheduleModal" data-bs-toggle="modal">여행시작</a>
+                    <button class="btn custom-btn mx-1" data-bs-target="#scheduleModal" data-bs-toggle="modal">여행시작</button>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link active" data-th-href="@{/question/list}">여행질문</a>
+                    <a class="btn custom-btn mx-1" data-th-href="@{/question/list}">여행질문</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link active" data-th-href="@{/review/list}">여행후기</a>
+                    <a class="btn custom-btn mx-1" data-th-href="@{/review/list}">여행후기</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link active" data-th-href="@{/companion/list}">동행구하기</a>
+                    <a class="btn custom-btn mx-1" data-th-href="@{/companion/list}">동행구하기</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link active" data-th-href="@{/mypage/userpage}">마이페이지(임시)</a>
+                    <a class="btn custom-btn mx-1" data-th-href="@{/mypage/userpage}">마이페이지(임시)</a>
                 </li>
-
                 <li>
                     <div class="login-state" data-th-if="${session.loginUser == null}">
-                        <a class="nav-link" data-bs-target="#loginModal" data-bs-toggle="modal">로그인</a>
+                        <button class="btn custom-btn mx-1" data-bs-target="#loginModal" data-bs-toggle="modal">로그인</button>
                     </div>
                     <div class="login-state" data-th-unless="${session.loginUser == null}">
                         <div class="user-profile-container d-flex align-items-center">
@@ -99,7 +64,7 @@
                                      alt="기본 프로필 이미지">
                             </div>
                             <div class="dropdown">
-                                <button class="dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <button class="btn custom-btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                                     <span class="user-nickname" data-th-text="${session.loginUser.userNickname}">사용자</span>
                                 </button>
                                 <ul class="dropdown-menu">
@@ -110,13 +75,10 @@
                         </div>
                         <i class="bi bi-bell-fill"></i>
                     </div>
-                </div>
+            </div>
             </li>
         </ul>
     </div>
-
-
-
 
         <!-- 여행시작 모달 -->
         <div aria-hidden="true" aria-labelledby="scheduleModalLabel" class="modal fade" id="scheduleModal" tabindex="-1">
@@ -132,7 +94,10 @@
                 </div>
             </div>
         </div>
-    </div>
 </header>
+
 </body>
+
+
+
 </html>
