@@ -60,8 +60,8 @@ function renderLocationCards(data) {
 
     // HTML 생성
     const html = data.map((location, index) => `
-        <div class="card mb-3" style="width: 100%; height: 100px;">
-            <div class="card-body d-flex align-items-center justify-content-between gap-1">
+        <div class="card m-1" style="width: 100%; height: 90px;">
+            <div class="card-body px-1 py-0 d-flex align-items-center justify-content-between gap-1">
                 <div class="d-flex justify-content-center align-items-center rounded-circle bg-primary text-white"
                      style="width: 20px; height: 20px; font-size: 10px;">
                     ${index + 1}
@@ -121,10 +121,12 @@ function deleteMyLocation(e, selectedItems){
         if (button) {
             // 해당 버튼에서 locationNo 가져오기
             const locationNo = button.querySelector('.location-no').textContent;
+            console.log(selectedItems);
+            console.log(locationNo);
             const locationType = button.querySelector('.location-type').textContent;
 
             // selectedItems에서 해당 locationNo를 가진 항목의 인덱스 찾기
-            const removeIndex = selectedItems.findIndex(item => item.locationNo === locationNo);
+            const removeIndex = selectedItems.findIndex(item => item.locationNo == parseInt(locationNo, 10));
             console.log('클릭된 ', removeIndex);
             if (removeIndex !== -1) {
                 // 항목 제거
@@ -158,3 +160,73 @@ function stateChange(removedItem) {
 }
 
 
+function checkBtn() {
+    const buttons = document.querySelectorAll('#cardArea .btn-location');
+    // 각 버튼의 data-index 값 추출 및 처리
+    buttons.forEach(button => {
+        const dataIndex = button.getAttribute('data-index'); // data-index 값 가져오기
+        console.log(`Data Index: ${dataIndex}`);
+
+        const addbtn = document.querySelector(`#addBtn .btn-location[data-index="${dataIndex}"]`);
+
+        if (button) {
+            // 아이콘 요소 선택
+            const icon = button.querySelector('i');
+
+            // 클래스 변경
+            button.classList.remove("btn-outline-secondary");
+            button.classList.add("btn-primary");
+
+            icon.classList.remove("bi-plus-lg");
+            icon.classList.add("bi-check-lg");
+
+            // 버튼 비활성화
+            button.disabled = true;
+            button.style.pointerEvents = 'none'; // 클릭 이벤트 완전히 차단
+        } else {
+            console.warn(`Button with data-index="${index}" not found.`);
+        }
+    });
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+    // locationListDiv 내부의 모든 버튼
+    const locationListDiv = document.getElementById('locationListDiv');
+
+    // 클릭 이벤트 처리
+    locationListDiv.addEventListener('click', function (event) {
+        const clickedButton = event.target.closest('.btn-location'); // 클릭된 버튼 확인
+        if (!clickedButton) return; // 클릭된 요소가 버튼이 아니면 종료
+
+        const dataIndex = clickedButton.getAttribute('data-index'); // 클릭된 버튼의 data-index 가져오기
+        console.log(`Clicked button with data-index: ${dataIndex}`);
+
+        // 같은 data-index를 가진 버튼을 다시 찾기
+        const targetButton = locationListDiv.querySelector(`.btn-location[data-index="${dataIndex}"]`);
+
+        if (targetButton) {
+            console.log(`Found target button with data-index: ${dataIndex}`);
+
+            // 아이콘 요소 선택
+            const icon = targetButton.querySelector('i');
+
+            // 클래스 변경
+            targetButton.classList.remove('btn-outline-secondary');
+            targetButton.classList.add('btn-primary');
+
+            // 아이콘 변경
+            icon.classList.remove('bi-plus-lg');
+            icon.classList.add('bi-check-lg');
+
+            // 버튼 비활성화
+            targetButton.disabled = true;
+            targetButton.style.pointerEvents = 'none'; // 클릭 이벤트 완전히 차단
+
+            // 필요한 추가 작업 수행 (예: 데이터 저장)
+            const locationNo = targetButton.querySelector('.location-no').textContent.trim();
+            console.log(`Location No: ${locationNo}`);
+        } else {
+            console.warn(`No button found with data-index: ${dataIndex}`);
+        }
+    });
+});

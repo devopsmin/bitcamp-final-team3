@@ -91,8 +91,6 @@ function initializeScheduleForm() {
                     imageWrapper.innerHTML = `<p>이미지를 선택하려면 시군구를 선택하세요.</p>`;
                 }
             }
-
-            console.log(`Selected City: ${cityName} (State: ${stateName})`);
         });
     }
 
