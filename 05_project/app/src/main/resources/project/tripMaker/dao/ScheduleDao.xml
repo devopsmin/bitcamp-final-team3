@@ -62,6 +62,7 @@
             <id column="location_no" property="locationNo"/>
             <result column="location_name" property="locationName"/>
             <result column="location_photo" property="locationPhoto"/>
+            <result column="location_addr" property="locationAddr"/>
             <result column="location_x" property="locationX"/>
             <result column="location_y" property="locationY"/>
         </association>
@@ -302,6 +303,7 @@
             l.location_no,
             l.location_name,
             l.location_photo,
+            l.location_addr,
             l.location_x,
             l.location_y
         FROM
