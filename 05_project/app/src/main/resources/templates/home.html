@@ -162,14 +162,18 @@
     <div class="col-md-6">
       <div id="carouselExampleInterval" class="carousel slide" data-bs-ride="carousel">
         <div class="carousel-inner">
-          <div class="carousel-item active" data-bs-interval="3500">
-            <img data-th-src="@{'https://dgg7dnk35523.edge.naverncp.com/HZiW9aEJy7/review/default.png?type=u&w=600&h=400'}" class="d-block">
+          <!-- banner 이미지가 있는 경우 -->
+          <div th:if="${bannerImages != null and not #lists.isEmpty(bannerImages)}"
+               th:each="image, iterStat : ${bannerImages}"
+               th:class="${iterStat.first} ? 'carousel-item active' : 'carousel-item'"
+               data-bs-interval="3500">
+            <img th:src="${image}" class="d-block w-100"  style="width: 550px; height: 400px;">
           </div>
-          <div class="carousel-item" data-bs-interval="3500">
-            <img data-th-src="@{'https://dgg7dnk35523.edge.naverncp.com/HZiW9aEJy7/review/default.png?type=u&w=600&h=400'}" class="d-block">
-          </div>
-          <div class="carousel-item" data-bs-interval="3500">
-            <img data-th-src="@{'https://dgg7dnk35523.edge.naverncp.com/HZiW9aEJy7/review/default.png?type=u&w=600&h=400'}" class="d-block">
+          <!-- banner 이미지가 없는 경우 기본 이미지 표시 -->
+          <div th:if="${bannerImages == null or #lists.isEmpty(bannerImages)}"
+               class="carousel-item active"
+               data-bs-interval="3500">
+            <img th:src="${defaultImage}" class="d-block w-100">
           </div>
         </div>
         <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleInterval" data-bs-slide="prev">
