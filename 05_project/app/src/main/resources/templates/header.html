@@ -60,10 +60,17 @@
 
 
                         <!-- Bell Icon with Red Dot -->
-                        <div class="position-relative">
-                            <i id="bell-icon" class="bi bi-bell-fill" style="cursor: pointer;"></i>
-                            <span id="notification-dot" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
-                                  style="display: none;">&nbsp;</span>
+<!--                        <div class="position-relative">-->
+<!--                            <i id="bell-icon" class="bi bi-bell-fill" style="cursor: pointer;"></i>-->
+<!--                            <span id="notification-dot" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"-->
+<!--                                  style="display: none;">&nbsp;</span>-->
+<!--                        </div>-->
+                        <div class="dropdown">
+                            <i id="bell-icon" data-bs-toggle="dropdown" aria-expanded="false" class="bi bi-bell-fill" style="cursor: pointer;"></i>
+                            <span id="notification-dot" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="display: none;"></span>
+                            <ul id="notification-list" class="dropdown-menu" aria-labelledby="bell-icon">
+                                <!-- 알림 목록이 여기에 추가됩니다 -->
+                            </ul>
                         </div>
                     </div>
                 </li>
@@ -86,21 +93,21 @@
     </div>
 
     <!-- 알림 모달 -->
-    <div class="modal fade" id="notificationModal" tabindex="-1" aria-labelledby="notificationModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="notificationModalLabel">알림</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <ul id="notification-list" class="list-group">
-                        <!-- 알림 항목이 동적으로 추가됨 -->
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </div>
+<!--    <div class="modal fade" id="notificationModal" tabindex="-1" aria-labelledby="notificationModalLabel" aria-hidden="true">-->
+<!--        <div class="modal-dialog">-->
+<!--            <div class="modal-content">-->
+<!--                <div class="modal-header">-->
+<!--                    <h5 class="modal-title" id="notificationModalLabel">알림</h5>-->
+<!--                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>-->
+<!--                </div>-->
+<!--                <div class="modal-body">-->
+<!--                    <ul id="notification-list" class="list-group">-->
+<!--                        &lt;!&ndash; 알림 항목이 동적으로 추가됨 &ndash;&gt;-->
+<!--                    </ul>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
 </header>
 
 </body>

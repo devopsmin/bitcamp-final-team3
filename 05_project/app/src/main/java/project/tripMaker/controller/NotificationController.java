@@ -59,14 +59,24 @@ public class NotificationController {
         return ResponseEntity.ok(notifications);
     }
 
-    // 새로운 알림 여부 확인
+    // // 새로운 알림 여부 확인
+    // @GetMapping("check")
+    // public ResponseEntity<Boolean> hasUnreadNotifications() throws Exception {
+    //     Long userNo = getLoggedInUserNo();
+    //     System.out.println("Checking notifications for userNo: " + userNo); // 로그 추가
+    //     boolean hasUnread = !notificationService.getUnreadNotifications(userNo).isEmpty();
+    //     System.out.println("Unread notifications exist: " + hasUnread); // 로그 추가
+    //     return ResponseEntity.ok(hasUnread);
+    // }
+
+    // 새로운 알림 개수 확인
     @GetMapping("check")
-    public ResponseEntity<Boolean> hasUnreadNotifications() throws Exception {
+    public ResponseEntity<Integer> getUnreadNotificationCount() throws Exception {
         Long userNo = getLoggedInUserNo();
         System.out.println("Checking notifications for userNo: " + userNo); // 로그 추가
-        boolean hasUnread = !notificationService.getUnreadNotifications(userNo).isEmpty();
-        System.out.println("Unread notifications exist: " + hasUnread); // 로그 추가
-        return ResponseEntity.ok(hasUnread);
+        int unreadCount = notificationService.getUnreadNotifications(userNo).size();
+        System.out.println("Unread notification count: " + unreadCount); // 로그 추가
+        return ResponseEntity.ok(unreadCount);
     }
 
 }
