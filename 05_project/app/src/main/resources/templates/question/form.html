@@ -1,6 +1,9 @@
 <!DOCTYPE html>
-<html>
+<html lang="ko">
 <head data-th-replace="~{header :: head}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>여행 일정 작성</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <header data-th-replace="~{header :: #page-header}"></header>
@@ -10,9 +13,17 @@
 
     <div class="mb-4">
         <select id="tripSelect" class="form-select" onchange="loadScheduleList(this.value)">
-            <option value="">여행을 선택하세요</option>
-            <option data-th-each="trip : ${trips}" data-th-text="${trip.tripTitle}" data-th-value="${trip.tripNo}"></option>
+            <option value="" disabled selected>여행을 선택하세요</option>
+            <option data-th-each="trip : ${trips}"
+                    data-th-value="${trip.tripNo}"
+                    data-th-text="${trip.tripTitle}">
+            </option>
         </select>
+    </div>
+
+    <div id="selectedTripInfo" class="mb-4" style="display: none;">
+        <h3 id="tripTitle" class="text-primary"></h3>
+        <p id="tripDates" class="text-muted"></p>
     </div>
 
     <div id="scheduleContainer" style="display: none;">
@@ -41,86 +52,127 @@
 </div>
 
 <script>
+    const trips = /*[[${trips}]]*/ [];
+
     function loadScheduleList(tripNo) {
-        document.getElementById('selectedTripNo').value = tripNo;
+    const selectedTripNoInput = document.getElementById('selectedTripNo');
+    const selectedTripInfo = document.getElementById('selectedTripInfo');
+    const tripTitleElement = document.getElementById('tripTitle');
+    const tripDatesElement = document.getElementById('tripDates');
+    const scheduleContainer = document.getElementById('scheduleContainer');
 
-        if (tripNo) {
-            fetch(`/question/getScheduleList?tripNo=${tripNo}`)
-                .then(response => response.json())
-                .then(data => {
-                    const scheduleContainer = document.getElementById('scheduleContainer');
-                    scheduleContainer.innerHTML = ''; // 기존 데이터 초기화
-                    scheduleContainer.style.display = 'flex'; // Flexbox로 정렬
-                    scheduleContainer.style.flexWrap = 'nowrap'; // 한 줄로 나열
-                    scheduleContainer.style.overflowX = 'auto'; // 가로 스크롤 가능
-                    scheduleContainer.style.alignItems = 'flex-start'; // 상단에 정렬
-                    scheduleContainer.style.padding = '10px 0'; // 패딩 추가
+    selectedTripNoInput.value = tripNo;
 
-                    if (data.length > 0) {
-                        const groupedSchedules = data.reduce((acc, schedule) => {
-                            const day = schedule.scheduleDay;
-                            if (!acc[day]) {
-                                acc[day] = [];
-                            }
-                            acc[day].push(schedule);
-                            return acc;
-                        }, {});
+    if (tripNo) {
+        const selectedTrip = trips.find(trip => trip.tripNo === parseInt(tripNo));
 
-                        Object.keys(groupedSchedules).forEach(day => {
-                            const entry = document.createElement('div');
-                            entry.classList.add('schedule-day');
-                            entry.style.minWidth = '300px'; // 일정 카드의 최소 너비
-                            entry.style.margin = '10px';
-                            entry.style.flexShrink = '0'; // 축소되지 않도록 설정
-
-                            entry.innerHTML = `
-    <h5 class="mb-2" style="font-size: 1.2rem; font-weight: bold;">${day}일차</h5>
-    <div class="timeline">
-        ${groupedSchedules[day].map((schedule, index, arr) => `
-            <div class="timeline-item mb-2">
-                <div class="p-3 border rounded shadow-sm d-flex justify-content-between align-items-center" style="position: relative;">
-                    <div class="me-2" style="flex-grow: 1;">
-                        <div class="d-flex">
-                            <div class="badge bg-warning text-white" style="font-size: 1rem; border-radius: 50%; width: 25px; height: 25px; display: flex; align-items: center; justify-content: center;">${index + 1}</div>
-                            <div class="ms-2">
-                                <p class="mb-1 text-secondary" style="font-size: 0.9rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 150px;">16:00 ~ 16:30</p>
-                                <p class="mb-1 text-primary" style="font-size: 0.9rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 150px;">테마 이름</p>
-                                <p class="mb-1" style="font-size: 0.9rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 150px;">${schedule.location ? schedule.location.locationName : 'N/A'}</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div style="flex-shrink: 0; width: 70px; height: 70px; position: absolute; right: 15px; top: 50%; transform: translateY(-50%);">
-                        <img src="${schedule.location && schedule.location.locationPhoto ? schedule.location.locationPhoto : 'https://via.placeholder.com/70x70'}" alt="Location Photo" class="img-thumbnail" style="width: 100%; height: 100%; object-fit: cover;">
-                    </div>
-                </div>
-                ${index < arr.length - 1 ? `
-                <div class="d-flex align-items-center" style="height: 20px;">
-                    <div class="timeline-line mt-2" style="border-left: 2px dotted #ddd; height: 70%; margin-left: 15px;"></div>
-                    <div class="text-muted small ms-2" style="font-size: 0.8rem; margin-top: 6px;"><i class="bi bi-car-front"></i> ${schedule.travelTime}분</div>
-                </div>` : ''}
-            </div>
-        `).join('')}
-    </div>
-`;
-
-                            scheduleContainer.appendChild(entry);
-                        });
-                    } else {
-                        scheduleContainer.innerHTML = '<p class="text-danger">일정 데이터가 없습니다.</p>';
-                    }
-                })
-                .catch(error => {
-                    console.error('Error fetching schedule:', error);
-                    document.getElementById('scheduleContainer').style.display = 'none';
-                });
-        } else {
-            document.getElementById('scheduleContainer').style.display = 'none';
+        if (selectedTrip) {
+            selectedTripInfo.style.display = 'block';
+            tripTitleElement.textContent = selectedTrip.tripTitle;
+            tripDatesElement.textContent = `${selectedTrip.startDate} ~ ${selectedTrip.endDate}`;
         }
+
+        fetch(`/question/getScheduleList?tripNo=${tripNo}`)
+    .then(response => response.json())
+    .then(data => {
+        scheduleContainer.innerHTML = '';
+        scheduleContainer.style.display = 'flex';
+        scheduleContainer.style.flexWrap = 'nowrap';
+        scheduleContainer.style.overflowX = 'auto';
+        scheduleContainer.style.alignItems = 'flex-start';
+        scheduleContainer.style.padding = '10px 0';
+
+        if (data.length > 0) {
+            const groupedSchedules = data.reduce((acc, schedule) => {
+                const day = schedule.scheduleDay;
+                if (!acc[day]) {
+                    acc[day] = [];
+                }
+                acc[day].push(schedule);
+                return acc;
+            }, {});
+
+            Object.keys(groupedSchedules).forEach(day => {
+                const bgClass = day % 6 === 1 ? 'bg-primary' :
+                                day % 6 === 2 ? 'bg-warning' :
+                                day % 6 === 3 ? 'bg-danger' :
+                                day % 6 === 4 ? 'bg-info' :
+                                day % 6 === 5 ? 'bg-secondary' : 'bg-success';
+
+                const entry = document.createElement('div');
+                entry.classList.add('schedule-day');
+                entry.style.minWidth = '300px';
+                entry.style.margin = '10px';
+                entry.style.flexShrink = '0';
+
+                entry.innerHTML = `
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <h5 class="mb-2" style="font-size: 1.2rem; font-weight: bold;">${day}일차</h5>
+                    </div>
+                    <div class="timeline">
+                        ${groupedSchedules[day].map((schedule, index, arr) => {
+                            const randomTime = Math.floor(Math.random() * 21);
+                            const travelTime = index < arr.length - 1 ? `${randomTime}분` : "";
+                            return `
+                                <div class="timeline-item mb-2">
+                                    <div class="p-3 border rounded shadow-sm d-flex justify-content-between align-items-center" style="position: relative;">
+                                        <div class="me-2" style="flex-grow: 1;">
+                                            <div class="d-flex">
+                                                <div class="badge ${bgClass} text-white"
+                                                     style="font-size: 1rem; border-radius: 50%; width: 25px; height: 25px; display: flex; align-items: center; justify-content: center;">
+                                                     ${index + 1}
+                                                </div>
+                                                <div class="ms-2">
+                                                    <p class="mb-1" style="font-size: 0.9rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 150px; font-weight: bold;">
+                                                        ${schedule.location ? schedule.location.locationName : 'N/A'}
+                                                    </p>
+                                                    <p class="mb-1" style="font-size: 0.8rem; max-width: 150px;">
+                                                        ${schedule.location ? schedule.location.locationAddr : 'N/A'}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div style="flex-shrink: 0; width: 70px; height: 70px; position: absolute; right: 15px; top: 50%; transform: translateY(-50%);">
+                                            <img src="${schedule.location && schedule.location.locationPhoto ? schedule.location.locationPhoto : 'https://via.placeholder.com/70x70'}"
+                                                 alt="Location Photo"
+                                                 class="img-thumbnail"
+                                                 style="width: 100%; height: 100%; object-fit: cover;">
+                                        </div>
+                                    </div>
+                                        ${travelTime ? `
+                                        <div class="d-flex align-items-center" style="height: 20px;">
+                                            <div class="timeline-line mt-2" style="border-left: 2px dotted #ddd; height: 70%; margin-left: 15px;"></div>
+                                            <div class="text-muted small ms-2" style="font-size: 0.8rem; margin-top: 6px;">
+                                            🚗 ${travelTime}
+                                            </div>
+                                            </div>
+                                        ` : ''}
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                `;
+                scheduleContainer.appendChild(entry);
+            });
+        } else {
+            scheduleContainer.innerHTML = '<p class="text-danger">일정 데이터가 없습니다.</p>';
+        }
+    })
+    .catch(error => {
+        console.error('Error fetching schedule:', error);
+        alert('일정을 불러오는 데 실패했습니다.');
+    });
+
+
+    } else {
+        selectedTripInfo.style.display = 'none';
+        scheduleContainer.style.display = 'none';
     }
+}
+
 </script>
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-
 </body>
 </html>

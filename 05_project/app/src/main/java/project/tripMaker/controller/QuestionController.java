@@ -163,13 +163,6 @@ public class QuestionController {
     List<Trip> tripList = questionService.getTripsByBoardNo(board.getTripNo());
     List<Schedule> scheduleList = scheduleService.getSchedulesByTripNo(board.getTripNo());
 
-    for (Schedule schedule : scheduleList) {
-      if (schedule.getLocation() != null) {
-        System.out.println("Location Name: " + schedule.getLocation().getLocationName());
-        System.out.println("Location Address: " + schedule.getLocation().getLocationAddr());
-      }
-    }
-
     if (tripList.isEmpty() || tripList.get(0).getStartDate() == null) {
       throw new Exception("Trip 데이터가 유효하지 않습니다.");
     }

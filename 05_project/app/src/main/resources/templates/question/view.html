@@ -92,7 +92,7 @@
                         </h5>
                         <span class="text-muted text-end"
                               style="font-size: 1rem;"
-                              data-th-text="${dayDates[entry.key]}">더미 날짜
+                              data-th-text="${dayDates[entry.key]}">날짜
                         </span>
                     </div>
 
@@ -127,9 +127,10 @@
                                 </div>
                             </div>
 
-                            <div class="d-flex align-items-center" data-th-if="${iter.index < entry.value.size() - 1}" style="height: 20px;">
+                            <div class="d-flex align-items-center random-time" style="height: 20px;">
                                 <div class="timeline-line mt-2" style="border-left: 2px dotted #ddd; height: 70%; margin-left: 15px;"></div>
-                                <div class="text-muted small ms-2" style="font-size: 0.8rem; margin-top: 6px;"><i class="bi bi-car-front"></i> 45분</div>
+                                <div class="text-muted small ms-2 random-time-text" style="font-size: 0.8rem; margin-top: 6px;">
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -288,15 +289,12 @@
     const colors = ["primary", "warning", "danger", "info", "secondary", "success"];
 
     try {
-      // 지도초기화
       await initializeMap("map", stateName, cityName, { zoom: 15 });
 
-      // addMarker(126.545219, 33.524923);
       const locationInfos = document.querySelectorAll('#question-location');
       console.log(locationInfos);
 
       locationInfos.forEach(locationInfo => {
-        // card 내부의 x와 y 좌표 추출
         const locationX = locationInfo.querySelector('.location-x').textContent.trim();
         const locationY = locationInfo.querySelector('.location-y').textContent.trim();
         const scheduleRoute = locationInfo.querySelector('.scheduleRoute').textContent.trim();
@@ -304,10 +302,8 @@
 
         const color = colors[(scheduleDay - 1) % colors.length];
 
-        // x, y 좌표가 잘 가져와졌는지 출력합니다.
         console.log(`Location X: ${locationX}, Location Y: ${locationY}`);
 
-        // 유효한 x, y 좌표가 있는 경우 addMarker 함수 호출
         if (locationX && locationY) {
           addMarker(parseFloat(locationX), parseFloat(locationY), parseInt(scheduleRoute), `text-${color}`);
         }
@@ -317,6 +313,36 @@
     }
   });
 
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+    const timelines = document.querySelectorAll('.timeline');
+
+    timelines.forEach(timeline => {
+        const timelineItems = timeline.querySelectorAll('.timeline-item');
+
+        timelineItems.forEach((item, index) => {
+            const isLastElement = index === timelineItems.length - 1;
+
+            if (!isLastElement) {
+                const randomTime = Math.floor(Math.random() * 16) + 5;
+                const timeElement = item.querySelector('.random-time-text');
+                if (timeElement) {
+                    timeElement.textContent = `🚗 ${randomTime}분`;
+                }
+            } else {
+                const randomTimeElement = item.querySelector('.random-time');
+                if (randomTimeElement) {
+                    randomTimeElement.style.display = 'none';
+                }
+                const timelineLineElement = item.querySelector('.timeline-line');
+                if (timelineLineElement) {
+                    timelineLineElement.style.display = 'none';
+                }
+            }
+        });
+    });
+});
 </script>
 
 <script src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=0zojwabqn9&submodules=geocoder"></script>
