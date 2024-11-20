@@ -54,11 +54,20 @@ public class VerificationController {
 
   @PostMapping("/verify-sms")
   @ResponseBody
-  public String verifySMS(
-          @RequestParam String phoneNumber,
-          @RequestParam String code) {
-    boolean isValid = smsService.verifyCode(phoneNumber, code);
-    return isValid ? "success" : "fail";
+  public String verifySMS(@RequestParam String phoneNumber, @RequestParam String code) {
+    try {
+      User existingUser = userService.findByTel(phoneNumber);
+      if (existingUser != null) {
+        return "duplicate";
+      }
+
+      if (smsService.verifyCode(phoneNumber, code)) {
+        return "success";
+      }
+      return "fail";
+    } catch (Exception e) {
+      return "error";
+    }
   }
 
   @PostMapping("/check-nickname")
@@ -96,7 +105,9 @@ public class VerificationController {
 
       User existingUser = userService.findByTel(phoneNumber);
       if (existingUser != null) {
-        throw new IllegalArgumentException("이미 등록된 전화번호입니다.");
+        model.addAttribute("email", email);
+        model.addAttribute("error", "이미 회원가입된 전화번호입니다.");
+        return "auth/verify/phone";
       }
 
       User user = userService.getByEmail(email);

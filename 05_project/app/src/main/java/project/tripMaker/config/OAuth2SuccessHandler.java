@@ -1,6 +1,7 @@
 package project.tripMaker.config;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -41,20 +42,26 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
       if ("소셜로그인".equals(user.getUserTel())) {
         HttpSession session = request.getSession();
         session.setAttribute("tempLoginUser", user);
-        response.sendRedirect("/verify/phone?email=" + user.getUserEmail());
+
+        response.setHeader("Location", "/verify/phone?email=" + user.getUserEmail());
+        response.setStatus(302);
         return;
       }
 
       HttpSession session = request.getSession();
       session.setAttribute("loginUser", user);
-      response.sendRedirect("/home");
+
+      response.setStatus(200);
+      response.setContentType("text/plain;charset=UTF-8");
+      response.getWriter().write("SUCCESS");
 
     } catch (Exception e) {
       log.error("소셜 로그인 처리 중 오류 발생", e);
-      throw new ServletException("소셜 로그인 처리 중 오류가 발생했습니다.", e);
+
+      response.setStatus(500);
+      response.getWriter().write("ERROR");
     }
   }
-
   private User processOAuth2User(OAuth2UserInfo userInfo) throws Exception {
     User user = userService.getByEmail(userInfo.getEmail());
     if (user == null) {

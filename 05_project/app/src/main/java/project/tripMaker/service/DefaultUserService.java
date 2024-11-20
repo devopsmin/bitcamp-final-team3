@@ -62,8 +62,9 @@ public class DefaultUserService implements UserService {
     }
 
     if (userDao.existsByEmail(email)) {
-      throw new IllegalArgumentException("이미 가입된 이메일입니다.");
+      throw new IllegalArgumentException("이미 존재하는 이메일입니다.");
     }
+
 
     Integer snsNo = userDao.findSnsNoByName(provider.toLowerCase());
     if (snsNo == null) {

@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
   <title>전화번호 인증</title>
@@ -16,7 +15,7 @@
         </div>
         <div class="card-body">
           <form action="/verify/phone" method="post" id="phoneVerificationForm">
-            <input type="hidden" name="email" th:value="${email}">
+            <input type="hidden" name="email" data-th-value="${email}">
 
             <div class="mb-3">
               <label for="userTel" class="form-label">전화번호</label>
@@ -36,7 +35,7 @@
                   인증번호 전송
                 </button>
               </div>
-              <div id="phoneError" class="form-text text-danger" th:if="${error}" th:text="${error}"></div>
+              <div id="phoneError" class="alert alert-danger mt-2" data-th-if="${error}" data-th-text="${error}"></div>
             </div>
 
             <div class="mb-3" id="smsVerificationDiv" style="display: none;">

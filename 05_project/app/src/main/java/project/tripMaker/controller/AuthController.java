@@ -164,7 +164,6 @@ public class AuthController {
       return "존재하지 않는 이메일입니다.";
     }
 
-    // 이메일 인증번호 발송
     int verificationCode = mailService.sendMail(userEmail);
     return String.valueOf(verificationCode);
   }

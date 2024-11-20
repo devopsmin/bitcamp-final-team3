@@ -11,7 +11,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.SessionAttribute;
 import project.tripMaker.service.NotificationService;
+import project.tripMaker.service.UserService;
 import project.tripMaker.vo.Notification;
+import project.tripMaker.vo.User;
 
 @RestController
 @RequestMapping("/notifications")
@@ -19,10 +21,12 @@ import project.tripMaker.vo.Notification;
 public class NotificationController {
 
     private final NotificationService notificationService;
+    private final UserService userService;
 
     // 읽지 않은 알림 조회
     @GetMapping("unread")
-    public ResponseEntity<List<Notification>> getUnreadNotifications(@RequestParam Long userNo) {
+    public ResponseEntity<List<Notification>> getUnreadNotifications(Long userNo) throws Exception {
+        userService.get(userNo);
         List<Notification> notifications = notificationService.getUnreadNotifications(userNo);
         return ResponseEntity.ok(notifications);
     }

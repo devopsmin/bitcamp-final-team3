@@ -1022,42 +1022,41 @@ function initializeLoginForm() {
    }
 
    // 소셜 회원가입 sms 인증
-   async function verifySocialSMSCode() {
-       const phoneNumber = document.getElementById('userTel').value;
-       const code = document.getElementById('smsVerificationCode').value;
+ async function verifySocialSMSCode() {
+     const phoneNumber = document.getElementById('userTel').value;
+     const code = document.getElementById('smsVerificationCode').value;
 
-       if (!code) {
-           alert('인증번호를 입력해주세요.');
-           return;
-       }
+     try {
+         const response = await fetch('/verify/verify-sms', {
+             method: 'POST',
+             headers: {
+                 'Content-Type': 'application/x-www-form-urlencoded',
+             },
+             body: `phoneNumber=${encodeURIComponent(phoneNumber)}&code=${encodeURIComponent(code)}`
+         });
 
-       try {
-           const response = await fetch('/verify/verify-sms', {
-               method: 'POST',
-               headers: {
-                   'Content-Type': 'application/x-www-form-urlencoded',
-               },
-               body: `phoneNumber=${encodeURIComponent(phoneNumber)}&code=${encodeURIComponent(code)}`
-           });
+         const result = await response.text();
 
-           const result = await response.text();
+         if (result === 'duplicate') {
+             alert('이미 등록된 전화번호입니다.');
+             return;
+         }
 
-           if (result === 'success') {
-               alert('전화번호 인증이 완료되었습니다.');
-               isPhoneVerified = true;
-               document.getElementById('userTel').readOnly = true;
-               document.getElementById('smsVerificationDiv').style.display = 'none';
-               clearInterval(phoneVerificationTimer);
-               document.getElementById('sendSmsBtn').disabled = true;
-               document.getElementById('submitBtn').disabled = false;
-           } else {
-               alert('인증번호가 일치하지 않습니다.');
-           }
-       } catch (error) {
-           console.error('Error:', error);
-           alert('인증번호 확인 중 오류가 발생했습니다.');
-       }
-   }
+         if (result === 'success') {
+             alert('전화번호 인증이 완료되었습니다.');
+             isPhoneVerified = true;
+             document.getElementById('smsVerificationDiv').style.display = 'none';
+             clearInterval(phoneVerificationTimer);
+             document.getElementById('sendSmsBtn').disabled = true;
+             document.getElementById('submitBtn').disabled = false;
+         } else {
+             alert('인증번호가 일치하지 않습니다.');
+         }
+     } catch (error) {
+         console.error('Error:', error);
+         alert('인증번호 확인 중 오류가 발생했습니다.');
+     }
+ }
 
    // 소셜 회원가입 sms 인증
    function startSocialVerificationTimer() {
@@ -1181,16 +1180,46 @@ function formatPhoneNumber(event) {
        }
 
 function openSocialLoginPopup(url) {
-    const width = 500;
-    const height = 600;
+    const width = 600;
+    const height = 800;
     const left = (window.screen.width - width) / 2;
     const top = (window.screen.height - height) / 2;
 
-    window.open(
+    const popup = window.open(
         url,
         'socialLoginPopup',
-        `width=${width},height=${height},left=${left},top=${top}`
+        `width=${width},height=${height},left=${left},top=${top},scrollbars=yes,resizable=yes`
     );
+
+    const checkPopup = setInterval(() => {
+        try {
+            if (popup.closed) {
+                clearInterval(checkPopup);
+                return;
+            }
+
+            if (popup.location.hostname === window.location.hostname) {
+                // 전화번호 인증 페이지로 리다이렉트된 경우는 팝업을 그대로 유지
+                if (popup.location.pathname.includes('/verify/phone')) {
+                    clearInterval(checkPopup);
+                    return;
+                }
+
+                const responseText = popup.document.body.innerText;
+                if (responseText === "SUCCESS") {
+                    popup.close();
+                    window.location.reload();
+                    clearInterval(checkPopup);
+                }
+            }
+        } catch (e) {
+            if (e.name === 'SecurityError') {
+                return;
+            }
+            clearInterval(checkPopup);
+            console.error(e);
+        }
+    }, 100);
 }
 
 // phoneVerificationForm 이벤트 리스너

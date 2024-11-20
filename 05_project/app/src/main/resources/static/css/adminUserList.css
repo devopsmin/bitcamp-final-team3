@@ -1,7 +1,9 @@
 body {
     margin: 0;
+    padding: 0;
     min-height: 100vh;
     background-color: #ffffff;
+    font-family: 'Noto Sans KR', sans-serif;
 }
 
 .wrapper {
@@ -216,7 +218,13 @@ tbody tr:hover {
 }
 
 .nav-section {
+    font-size: 20px;
+    font-weight: 600;
+    color: #333;
     padding: 15px 0;
+    margin: 0;
+    border-bottom: 1px solid #e5e7eb;
+    text-align: center;
 }
 
 .nav-section h2 {
@@ -235,15 +243,14 @@ tbody tr:hover {
 
 .nav-section li a {
     display: block;
-    padding: 12px 16px;
-    color: #333;
+    color: #666;
     text-decoration: none;
-    border-radius: 4px;
-    font-weight: 400;
-    font-size: 20px;
-    transition: background-color 0.2s;
+    font-size: 18px;
+    padding: 8px 0;
+    transition: color 0.2s;
 }
 
 .nav-section li a:hover {
-    background-color: #f3f4f6;
+   color: #000;
+   font-weight: 500;
 }
