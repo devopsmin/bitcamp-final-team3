@@ -42,7 +42,9 @@ public class AuthController {
       HttpSession session,
       Model model) {
 
-    model.addAttribute("userEmail", userEmail);
+    if (userEmail != null && !userEmail.isEmpty()) {
+      model.addAttribute("userEmail", userEmail);
+    }
 
     if (error != null && session.getAttribute("loginError") != null) {
       model.addAttribute("errorMessage", session.getAttribute("loginError"));
@@ -52,35 +54,35 @@ public class AuthController {
     return "auth/login/form";
   }
 
-  @PostMapping("login")
-  public String login(
-      @RequestParam String userEmail,
-      @RequestParam String userPassword,
-      @RequestParam(required = false) boolean saveEmail,
-      HttpServletResponse res,
-      HttpSession session) throws Exception {
-
-    User user = userService.exists(userEmail, userPassword);
-    if (user == null) {
-      res.setHeader("Refresh", "2; url=login/form");
-      return "auth/login/fail";
-    }
-
-    userService.updateLastLogin(user.getUserNo());
-
-    if (saveEmail) {
-      Cookie cookie = new Cookie("userEmail", userEmail);
-      cookie.setMaxAge(60 * 60 * 24 * 7);
-      res.addCookie(cookie);
-    } else {
-      Cookie cookie = new Cookie("userEmail", "test@test.com");
-      cookie.setMaxAge(0);
-      res.addCookie(cookie);
-    }
-
-    session.setAttribute("loginUser", user);
-    return "redirect:/";
-  }
+//  @PostMapping("login")
+//  public String login(
+//      @RequestParam String userEmail,
+//      @RequestParam String userPassword,
+//      @RequestParam(required = false) boolean saveEmail,
+//      HttpServletResponse res,
+//      HttpSession session) throws Exception {
+//
+//    User user = userService.exists(userEmail, userPassword);
+//    if (user == null) {
+//      res.setHeader("Refresh", "2; url=login/form");
+//      return "auth/login/fail";
+//    }
+//
+//    userService.updateLastLogin(user.getUserNo());
+//
+//    if (saveEmail) {
+//      Cookie cookie = new Cookie("userEmail", userEmail);
+//      cookie.setMaxAge(60 * 60 * 24 * 7);
+//      res.addCookie(cookie);
+//    } else {
+//      Cookie cookie = new Cookie("userEmail", "test@test.com");
+//      cookie.setMaxAge(0);
+//      res.addCookie(cookie);
+//    }
+//
+//    session.setAttribute("loginUser", user);
+//    return "redirect:/";
+//  }
 
   @GetMapping("logout")
   public String logout(HttpSession session) {

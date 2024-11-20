@@ -752,7 +752,7 @@ function createModals() {
                    }
                })
                .catch(error => {
-                   console.error('Error submitting register form:', error);
+                   console.error('등록 양식 제출 오류:', error);
                    alert('회원가입 중 오류가 발생했습니다. 다시 시도해주세요.');
                });
            });
@@ -762,9 +762,30 @@ function createModals() {
 function initializeLoginForm() {
     const loginForm = document.querySelector('#loginModalContent form');
     if (loginForm) {
+        const emailInput = loginForm.querySelector('input[name="userEmail"]');
+        const saveEmailCheckbox = loginForm.querySelector('input[name="saveEmail"]');
+
+        const allCookies = document.cookie;
+
+        if (allCookies) {
+            const cookiesArray = allCookies.split('; ');
+
+            const emailCookie = cookiesArray.find(cookie => cookie.startsWith('userEmail='));
+
+            if (emailCookie) {
+                const savedEmail = emailCookie.split('=')[1];
+
+                if (savedEmail && savedEmail !== 'test@test.com') {
+                    emailInput.value = decodeURIComponent(savedEmail);
+                    saveEmailCheckbox.checked = true;
+                }
+            }
+        }
+
         loginForm.addEventListener('submit', function(e) {
             e.preventDefault();
             const formData = new FormData(this);
+            formData.set('saveEmail', saveEmailCheckbox.checked);
 
             fetch(this.action, {
                 method: 'POST',
@@ -780,7 +801,6 @@ function initializeLoginForm() {
                 }
 
                 const data = await response.json();
-                console.log('Response data:', data);
 
                 if (data && data.error) {
                     const errorDiv = document.querySelector('#loginModalContent .alert-danger');

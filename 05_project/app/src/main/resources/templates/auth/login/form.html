@@ -8,7 +8,6 @@
     <h1 class="logo-text text-center mb-4">모두의 여행</h1>
 
     <form id="loginForm" action="/auth/login" method="post" class="needs-validation" novalidate>
-
       <div id="loginError" class="alert alert-danger" style="display: none;"></div>
 
       <div class="mb-3">
@@ -23,17 +22,17 @@
 
       <div class="d-flex justify-content-between align-items-center mb-3">
         <div class="form-check">
-          <input checked data-th-checked="${userEmail}" name="saveEmail" type="checkbox" class="form-check-input" id="saveEmail">
+          <input data-th-checked="${userEmail != null}" name="saveEmail" type="checkbox" class="form-check-input" id="saveEmail">
           <label class="form-check-label" for="saveEmail">이메일 저장</label>
         </div>
 
         <div class="btn-group">
-          <button type="button" class="btn btn-link p-0 text-decoration-none" data-bs-toggle="modal" data-bs-target="#findIdModal" data-bs-dismiss="modal">
-            아이디 찾기
+          <button type="button" class="btn btn-link p-0 text-decoration-none"
+                  data-bs-toggle="modal" data-bs-target="#findIdModal" data-bs-dismiss="modal">아이디 찾기
           </button>
           <span class="mx-2">/</span>
-          <button type="button" class="btn btn-link p-0 text-decoration-none" data-bs-toggle="modal" data-bs-target="#resetPasswordModal" data-bs-dismiss="modal">
-            비밀번호 찾기
+          <button type="button" class="btn btn-link p-0 text-decoration-none"
+                  data-bs-toggle="modal" data-bs-target="#resetPasswordModal" data-bs-dismiss="modal">비밀번호 찾기
           </button>
         </div>
       </div>
@@ -43,8 +42,7 @@
 
     <div class="text-center mb-3">
       <small>아직 회원이 아니세요?
-        <a href="#" data-bs-toggle="modal" data-bs-target="#termsModal" data-bs-dismiss="modal"
-           class="text-decoration-none">회원가입 하기</a>
+        <a href="#" data-bs-toggle="modal" data-bs-target="#termsModal" data-bs-dismiss="modal" class="text-decoration-none">회원가입 하기</a>
       </small>
     </div>
 
@@ -55,5 +53,3 @@
     </div>
   </div>
 </div>
-
-<!--<script data-th-src="@{/js/authModal.js}"></script>-->

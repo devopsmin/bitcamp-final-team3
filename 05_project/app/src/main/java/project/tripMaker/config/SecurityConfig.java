@@ -2,6 +2,7 @@ package project.tripMaker.config;
 
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -53,7 +54,6 @@ public class SecurityConfig {
                 onAuthenticationSuccess(request, response, authentication, userService))
             .failureHandler((request, response, exception) ->
                 onAuthenticationFailure(request, response, exception, userService, benService))
-//            .failureUrl("/auth/form?error")
             .permitAll()
         )
         .oauth2Login(oauth2 -> oauth2
@@ -105,6 +105,17 @@ public class SecurityConfig {
       if (user != null) {
         HttpSession session = request.getSession();
         session.setAttribute("loginUser", user);
+
+        boolean saveEmail = "true".equals(request.getParameter("saveEmail"));
+        Cookie cookie = new Cookie("userEmail", saveEmail ? email : "");
+        cookie.setPath("/");
+
+        if (saveEmail) {
+          cookie.setMaxAge(60 * 60 * 24 * 7);
+        } else {
+          cookie.setMaxAge(0);
+        }
+        response.addCookie(cookie);
 
         if (user.getUserRole() == UserRole.ROLE_ADMIN) {
           response.sendRedirect("/admin");
