@@ -124,6 +124,14 @@
         scheduleList.innerHTML = ''; // 기존 데이터를 초기화합니다.
 
         if (data.length > 0) {
+          // 데이터 정렬: scheduleDay -> scheduleRoute 순으로 정렬
+          data.sort((a, b) => {
+            if (a.scheduleDay === b.scheduleDay) {
+              return a.scheduleRoute - b.scheduleRoute; // scheduleRoute 기준 정렬
+            }
+            return a.scheduleDay - b.scheduleDay; // scheduleDay 기준 정렬
+          });
+
           let currentDay = null;
           data.forEach((schedule, index) => {
             const colorIndex = (schedule.scheduleDay - 1) % colors.length;

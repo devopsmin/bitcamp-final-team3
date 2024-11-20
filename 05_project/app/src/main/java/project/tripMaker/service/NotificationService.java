@@ -26,6 +26,9 @@ public class NotificationService {
 
     // 읽지 않은 알림 조회
     public List<Notification> getUnreadNotifications(Long userNo) {
+        System.out.println("Fetching notifications for userNo: " + userNo);
+        List<Notification> notifications = notificationDao.findUnreadNotifications(userNo);
+        System.out.println("Fetched notifications: " + notifications);
         return notificationDao.findUnreadNotifications(userNo);
     }
 

@@ -18,6 +18,7 @@ import project.tripMaker.board.BoardType;
 import project.tripMaker.service.BoardService;
 import project.tripMaker.service.CommentService;
 import project.tripMaker.service.NotificationService;
+import project.tripMaker.service.QuestionService;
 import project.tripMaker.service.ReviewService;
 import project.tripMaker.service.UserService;
 import project.tripMaker.vo.Comment;
@@ -33,6 +34,7 @@ public class CommentController {
   private final NotificationService notificationService;
   private final UserService userService;
   private final ReviewService reviewService;
+  private final QuestionService questionService;
 
   @GetMapping("list/{boardNo}")
   public String list(
@@ -48,9 +50,9 @@ public class CommentController {
 
   @PostMapping("add")
   public String add(
-          Comment comment,
-          @RequestParam("boardType") Integer boardTypeCode,
-          HttpSession session) throws Exception {
+      Comment comment,
+      @RequestParam("boardType") Integer boardTypeCode,
+      HttpSession session) throws Exception {
 
     User loginUser = (User) session.getAttribute("loginUser");
     if (loginUser == null) {
@@ -58,7 +60,7 @@ public class CommentController {
     }
 
     if (comment.getCommentContent() == null || comment.getCommentContent().trim().isEmpty()) {
-//       throw new IllegalArgumentException("댓글 내용을 입력해주세요.");
+      // throw new IllegalArgumentException("댓글 내용을 입력해주세요.");
     }
 
     if (boardTypeCode < 1 || boardTypeCode > 3) {
@@ -71,18 +73,66 @@ public class CommentController {
     comment.setUserNo(loginUser.getUserNo());
     commentService.add(comment);
 
-    // 게시글 작성자에게 알림 전송
+    // 게시글 작성자 정보 가져오기 - boardType에 따라 분기
     int boardNo = comment.getBoardNo();
-    User boardOwner = reviewService.get(boardNo).getWriter(); // 게시글 작성자 정보 가져오기
+    User boardOwner = null;
+
+    switch (boardType) {
+      case REVIEW:
+        boardOwner = reviewService.get(boardNo).getWriter();
+        break;
+      case QUESTION:
+        boardOwner = questionService.get(boardNo).getWriter();
+        break;
+      // 필요한 경우 다른 게시판 타입도 추가
+    }
+
+    // 알림 생성
     if (boardOwner != null && !boardOwner.getUserNo().equals(loginUser.getUserNo())) {
       String notificationMessage = "회원님이 작성한 게시글에 댓글이 달렸습니다.";
       String notificationLink = "/" + boardType.name().toLowerCase() + "/view?boardNo=" + boardNo;
       notificationService.createNotification(boardOwner.getUserNo(), notificationMessage, notificationLink);
     }
 
-
     return "redirect:../" + boardType.name().toLowerCase() + "/view?boardNo=" + comment.getBoardNo();
   }
+//   @PostMapping("add")
+//   public String add(
+//           Comment comment,
+//           @RequestParam("boardType") Integer boardTypeCode,
+//           HttpSession session) throws Exception {
+//
+//     User loginUser = (User) session.getAttribute("loginUser");
+//     if (loginUser == null) {
+//       throw new Exception("로그인이 필요합니다.");
+//     }
+//
+//     if (comment.getCommentContent() == null || comment.getCommentContent().trim().isEmpty()) {
+// //       throw new IllegalArgumentException("댓글 내용을 입력해주세요.");
+//     }
+//
+//     if (boardTypeCode < 1 || boardTypeCode > 3) {
+//       throw new IllegalArgumentException("유효하지 않은 boardType 값입니다.");
+//     }
+//
+//     // boardTypeCode를 BoardType Enum으로 변환
+//     BoardType boardType = BoardType.fromTypeCode(boardTypeCode);
+//
+//     comment.setUserNo(loginUser.getUserNo());
+//     commentService.add(comment);
+//
+//     // 게시글 작성자에게 알림 전송
+//     int boardNo = comment.getBoardNo();
+//     User boardOwner = reviewService.get(boardNo).getWriter(); // 게시글 작성자 정보 가져오기
+//     if (boardOwner != null && !boardOwner.getUserNo().equals(loginUser.getUserNo())) {
+//       String notificationMessage = "회원님이 작성한 게시글에 댓글이 달렸습니다.";
+//       String notificationLink = "/" + boardType.name().toLowerCase() + "/view?boardNo=" + boardNo;
+//       notificationService.createNotification(boardOwner.getUserNo(), notificationMessage, notificationLink);
+//     }
+//
+//
+//     return "redirect:../" + boardType.name().toLowerCase() + "/view?boardNo=" + comment.getBoardNo();
+//   }
 
   @GetMapping("delete")
   public String delete(

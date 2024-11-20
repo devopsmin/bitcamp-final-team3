@@ -42,4 +42,6 @@ public interface UserDao {
   boolean realDelete(Long userNo, User user) throws Exception;
 
   int countAll(Map<String, Object> options) throws Exception;
+
+  Long getUserNoByEmail(String userEmail) throws Exception;
 }

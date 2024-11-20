@@ -153,4 +153,8 @@ public class DefaultUserService implements UserService {
     return userDao.realDelete(userNo, user);
   }
 
+  @Override
+  public Long getUserNoByEmail(String userEmail) throws Exception {
+    return userDao.getUserNoByEmail(userEmail);
+  }
 }

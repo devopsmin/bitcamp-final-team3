@@ -194,4 +194,7 @@
              user_no = #{userNo}
     </update>
 
+    <select id="getUserNoByEmail" resultType="Long" parameterType="String">
+        select user_no from user where user_email = #{userEmail}
+    </select>
 </mapper>

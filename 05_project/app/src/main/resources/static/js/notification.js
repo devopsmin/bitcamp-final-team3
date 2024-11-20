@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const notificationDot = document.getElementById('notification-dot');
 
   function checkNewNotifications() {
-    fetch('/notifications/check?userNo=2') // userNo는 로그인된 유저 ID로 대체
+    fetch('/notifications/check')
     .then(response => response.json())
     .then(hasUnread => {
       notificationDot.style.display = hasUnread ? 'inline' : 'none';
@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const notificationList = document.getElementById('notification-list');
 
   bellIcon.addEventListener('click', () => {
-    fetch('/notifications/unread?userNo=2') // userNo는 로그인된 유저 ID로 대체
+    fetch('/notifications/unread')
     .then(response => response.json())
     .then(notifications => {
       notificationList.innerHTML = '';
@@ -49,7 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const notificationModal = new bootstrap.Modal(document.getElementById('notificationModal'));
 
   bellIcon.addEventListener('click', () => {
-    fetch('/notifications/unread?userNo=2') // userNo는 로그인된 유저 ID로 대체
+    fetch('/notifications/unread') // userNo는 로그인된 유저 ID로 대체
     .then(response => response.json())
     .then(notifications => {
       notificationList.innerHTML = ''; // 기존 알림 초기화
@@ -98,14 +98,31 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // 레드닷 갱신 (이전 단계에서 작성한 코드 재사용)
+  // // 레드닷 갱신 (이전 단계에서 작성한 코드 재사용)
+  // function checkNewNotifications() {
+  //   fetch('/notifications/check')
+  //   .then(response => response.json())
+  //   .then(hasUnread => {
+  //     const notificationDot = document.getElementById('notification-dot');
+  //     notificationDot.style.display = hasUnread ? 'inline' : 'none';
+  //   })
+  //   .catch(error => console.error('Error checking notifications:', error));
+  // }
+
   function checkNewNotifications() {
-    fetch('/notifications/check?userNo=2') // userNo는 로그인된 유저 ID로 대체
-    .then(response => response.json())
+    fetch('/notifications/check')
+    .then(response => {
+      if (!response.ok) {
+        console.error(`Error fetching /notifications/check: ${response.status} ${response.statusText}`);
+        throw new Error(`HTTP error: ${response.status}`);
+      }
+      return response.json();
+    })
     .then(hasUnread => {
       const notificationDot = document.getElementById('notification-dot');
       notificationDot.style.display = hasUnread ? 'inline' : 'none';
     })
     .catch(error => console.error('Error checking notifications:', error));
   }
+
 });
