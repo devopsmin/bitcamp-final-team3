@@ -10,6 +10,8 @@ import project.tripMaker.service.ScheduleService;
 import project.tripMaker.service.UserService;
 import project.tripMaker.vo.*;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -161,6 +163,20 @@ public class QuestionController {
     List<Trip> tripList = questionService.getTripsByBoardNo(board.getTripNo());
     List<Schedule> scheduleList = scheduleService.getSchedulesByTripNo(board.getTripNo());
 
+    for (Schedule schedule : scheduleList) {
+      if (schedule.getLocation() != null) {
+        System.out.println("Location Name: " + schedule.getLocation().getLocationName());
+        System.out.println("Location Address: " + schedule.getLocation().getLocationAddr());
+      }
+    }
+
+    if (tripList.isEmpty() || tripList.get(0).getStartDate() == null) {
+      throw new Exception("Trip 데이터가 유효하지 않습니다.");
+    }
+
+    Trip trip = tripList.get(0); // 첫 번째 Trip 사용
+    LocalDate startDate = trip.getStartDate().toLocalDate();
+
     User loginUser = (User) session.getAttribute("loginUser");
     boolean isLoggedIn = loginUser != null;
 
@@ -206,12 +222,17 @@ public class QuestionController {
       isFavored = questionService.isFavored(Map.of("boardNo", boardNo, "userNo", loginUser.getUserNo()));
     }
 
-    // 좋아요 및 즐겨찾기 상태 확인
     int likeCount = questionService.getLikeCount(boardNo);
     int favorCount = questionService.getFavorCount(boardNo);
 
     Map<Integer, List<Schedule>> groupedSchedules = scheduleList.stream()
             .collect(Collectors.groupingBy(Schedule::getScheduleDay));
+
+    Map<Integer, String> dayDates = groupedSchedules.keySet().stream()
+            .collect(Collectors.toMap(
+                    day -> day,
+                    day -> startDate.plusDays(day - 1).format(DateTimeFormatter.ofPattern("yyyy.MM.dd(E)"))
+            ));
 
     model.addAttribute("trips", tripList);
     model.addAttribute("groupedSchedules", groupedSchedules);
@@ -222,7 +243,7 @@ public class QuestionController {
     model.addAttribute("pageSize", pageSize);
     model.addAttribute("totalPages", totalPages);
     model.addAttribute("sort", sort);
-
+    model.addAttribute("dayDates", dayDates);
 
     model.addAttribute("isLiked", isLiked);
     model.addAttribute("isFavored", isFavored);

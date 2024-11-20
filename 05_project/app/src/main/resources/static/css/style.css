@@ -337,3 +337,11 @@
     font-weight: 400;
 }
 
+.two-line-ellipsis {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;            /* 최대 2줄로 제한 */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: normal;
+}

@@ -169,20 +169,16 @@
                                 <div class="flex-shrink-0" style="width: 300px;">
                                     <div class="p-3 border rounded shadow-sm d-flex justify-content-between align-items-center" style="height: 100px;">  <!-- 높이 고정 -->
                                         <!-- Badge와 지역 이름 -->
-                                        <div class="d-flex flex-shrink-1 me-2 align-items-center" style="min-width: 0;">
+                                        <div class="d-flex flex-shrink-1 me-2 align-items-start" style="min-width: 0;">
                                             <!-- Badge -->
                                             <div class="badge text-white"
                                                  data-th-classappend="'bg-' + ${entry.key % 6 == 1 ? 'primary' : entry.key % 6 == 2 ? 'warning' : entry.key % 6 == 3 ? 'danger' : entry.key % 6 == 4 ? 'info' : entry.key % 6 == 5 ? 'secondary' : 'success'}"
                                                  style="font-size: 1rem; border-radius: 50%; width: 25px; height: 25px; display: flex; align-items: center; justify-content: center;"
                                                  data-th-text="${iter.index}">일정 순서</div>
                                             <!-- 지역 이름 -->
-                                            <div class="ms-2 text-truncate" style="max-width: 150px;">
-                                                <p class="mb-1 text-primary text-truncate" style="font-size: 0.9rem;"
-                                                   data-th-text="*{location.locationName}">지역</p><br>
-                                                <div class="ms-2 text-truncate" style="max-width: 150px;">
-                                                    <p class="mb-1 text-primary text-truncate" style="font-size: 0.9rem;"
-                                                       data-th-text="*{location.locationAddr}">지역</p>
-                                                </div>
+                                            <div class="ms-2">
+                                                <p class="mb-1" style="font-size: 0.9rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 150px; font-weight: bold;" data-th-text="*{location.locationName}">지역</p>
+                                                <p class="mb-1 two-line-ellipsis" style="font-size: 0.8rem; max-width: 150px;" data-th-text="*{location.locationAddr}">주소</p>
                                             </div>
                                         </div>
 
