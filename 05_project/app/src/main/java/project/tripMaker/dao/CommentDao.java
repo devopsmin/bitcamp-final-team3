@@ -34,5 +34,7 @@ public interface CommentDao {
   void removeCommentLike(Map<String, Object> params); // 좋아요 삭제
 
 
-  List<Comment> listUser(Long userNo) throws Exception;
+  List<Comment> listUser(Map<String, Object> options) throws Exception;
+  Integer countAllUserComment(Map<String, Object> options) throws Exception;
+
 }

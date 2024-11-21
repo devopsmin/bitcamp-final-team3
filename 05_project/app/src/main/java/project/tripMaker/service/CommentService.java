@@ -98,7 +98,12 @@ public class CommentService {
     return response;
   }
 
-  public List<Comment> listUser(Long userNo) throws Exception {
-    return commentDao.listUser(userNo);
+  public List<Comment> listUser(Map<String, Object> options) throws Exception {
+    return commentDao.listUser(options);
+  }
+
+  public Integer countAllUserComment(Map<String, Object> options) throws Exception {
+    Integer count = commentDao.countAllUserComment(options);
+    return (count == null) ? 0 : count;
   }
 }

@@ -164,27 +164,55 @@
         LIMIT #{limit} OFFSET #{offset}
     </select>
 
-    <select id="listUser" resultMap="CommentMap" parameterType="Long">
+    <select id="listUser" resultMap="CommentMap" parameterType="Map">
         SELECT
             c.comment_no,
-            c.board_no,
+            b.board_no,
             b.boardtype_no,
-            c.user_no,
             c.comment_content,
             c.comment_created_date,
-            u.user_no,
-            u.user_nickname,
-            u.user_photo
+            u.user_nickname
         FROM
             comment c
-                JOIN
+        JOIN
             user u ON c.user_no = u.user_no
-                JOIN
+        JOIN
             board b ON c.board_no = b.board_no
         WHERE
             u.user_no = #{userNo}
+            <if test="searchType != null and searchText != null">
+                <choose>
+                    <when test="searchType == 'commentContent'">
+                        AND c.comment_content LIKE CONCAT('%', #{searchText}, '%')
+                    </when>
+                    <when test="searchType == 'boardtypeNo'">
+                        AND b.boardtype_no LIKE CONCAT('%', #{searchText}, '%')
+                    </when>
+                </choose>
+            </if>
         ORDER BY
-            c.comment_no DESC;
+            c.comment_no DESC
+        LIMIT #{rowNo}, #{length}
     </select>
 
+    <select id="countAllUserComment" parameterType="Map" resultType="int">
+        SELECT count(*)
+        FROM
+        comment c
+        JOIN
+        user u ON c.user_no = u.user_no
+        JOIN
+        board b ON c.board_no = b.board_no
+        WHERE u.user_no = #{userNo}
+        <if test="searchType != null and searchText != null">
+            <choose>
+                <when test="searchType == 'commentContent'">
+                    AND c.comment_content LIKE CONCAT('%', #{searchText}, '%')
+                </when>
+                <when test="searchType == 'boardtypeNo'">
+                    AND b.boardtype_no LIKE CONCAT('%', #{searchText}, '%')
+                </when>
+            </choose>
+        </if>
+    </select>
 </mapper>

@@ -2,9 +2,11 @@ package project.tripMaker.controller;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpSession;
+import kotlinx.serialization.descriptors.PrimitiveKind.INT;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -203,7 +205,9 @@ public class MyPageController {
     @GetMapping("commentpage")
     public String commentpage(HttpSession session,
         @RequestParam(defaultValue = "1") int pageNo,
-        @RequestParam(defaultValue = "9") int pageSize,
+        @RequestParam(defaultValue = "10") int pageSize,
+        @RequestParam(required = false) String searchType,
+        @RequestParam(required = false) String searchText,
         Model model) throws Exception {
         User loginUser = (User) session.getAttribute("loginUser");
 
@@ -212,9 +216,45 @@ public class MyPageController {
             return "redirect:/auth/login";
         }
 
-        List<Comment> commentList = commentService.listUser(loginUser.getUserNo());
+        if (pageNo < 1) {
+            pageNo = 1;
+        }
+
+
+        HashMap<String, Object> options = new HashMap<>();
+        options.put("userNo", loginUser.getUserNo());
+        options.put("rowNo", (pageNo - 1) * pageSize);
+        options.put("length", pageSize);
+
+        // 검색 조건은 선택적으로 추가
+        if (searchType != null && searchText != null && !searchText.trim().isEmpty()) {
+            options.put("searchType", searchType);
+            options.put("searchText", searchText);
+        }
+
+        int length = commentService.countAllUserComment(options);
+
+        if (length < 0) {
+            length = 0; // 예외 처리
+        }
+
+        int pageCount = length / pageSize;
+        if (length % pageSize > 0) {
+            pageCount++;
+        }
+
+        if (pageNo > pageCount) {
+            pageNo = pageCount;
+        }
+
+        List<Comment> commentList = commentService.listUser(options);
 
         model.addAttribute("commentList", commentList);
+        model.addAttribute("pageNo", pageNo);
+        model.addAttribute("pageSize", pageSize);
+        model.addAttribute("pageCount", pageCount);
+        model.addAttribute("searchType", searchType);
+        model.addAttribute("searchText", searchText);
 
         return "mypage/commentpage";
     }
