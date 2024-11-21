@@ -2,6 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const notificationDot = document.getElementById('notification-dot');
   const bellIcon = document.getElementById('bell-icon');
   const notificationList = document.getElementById('notification-list');
+  let hasScrolled = false; // 스크롤 이벤트 중복 방지 플래그
 
   // 새로운 알림 확인 (숫자 포함)
   function checkNewNotifications() {
@@ -63,7 +64,11 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // 초기화 및 주기적 확인
-  setInterval(checkNewNotifications, 60000); // 1분마다 확인
-  checkNewNotifications();
+  // 스크롤 이벤트가 발생했을 때만 알림 확인
+  window.addEventListener('scroll', () => {
+    if (!hasScrolled) {
+      hasScrolled = true; // 스크롤 이벤트가 한 번만 실행되도록 설정
+      checkNewNotifications();
+    }
+  });
 });

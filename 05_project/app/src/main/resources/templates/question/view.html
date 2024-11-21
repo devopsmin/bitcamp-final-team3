@@ -26,10 +26,13 @@
                      data-th-src="@{https://dgg7dnk35523.edge.naverncp.com/HZiW9aEJy7/user/profile/} + ${board.writer.userPhoto} + '?type=f&w=100&h=100'"
                      src="/images/default.png"
                      class="rounded-circle me-2" style="width: 40px; height: 40px;">
-                <div>
-                    <h5 class="mb-1" data-th-text="${board.writer.userNickname}">닉네임</h5>
-                    <small class="text-muted">
-                        작성일: <span data-th-text="${#calendars.format(board.boardCreatedDate, 'yyyy.MM.dd HH:mm')}">날짜</span>
+                <div style="display: flex; flex-direction: column; align-items: flex-start;">
+                    <div style="display: flex; align-items: center;">
+                        <h5 class="mb-1" data-th-text="${board.writer.userNickname}" style="margin-right: 10px;">닉네임</h5>
+                        <button type="button" class="btn btn-outline-secondary btn-sm">1:1 채팅요청</button>
+                    </div>
+                    <small class="text-muted" style="margin-top: 5px;">
+                        작성일: <span data-th-text="${#dates.format(board.boardCreatedDate, 'yyyy.MM.dd HH:mm')}">날짜</span>
                         • 조회: <span data-th-text="${board.boardCount}">조회수</span>
                     </small>
                 </div>

@@ -9,7 +9,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import project.tripMaker.service.ReviewService;
 import project.tripMaker.service.ScheduleService;
+import project.tripMaker.vo.Board;
 import project.tripMaker.vo.Schedule;
 import project.tripMaker.vo.Trip;
 import project.tripMaker.vo.User;
@@ -20,6 +23,7 @@ import project.tripMaker.vo.User;
 public class MyPageController {
 
     private final ScheduleService scheduleService;
+    private final ReviewService reviewService;
 
     @GetMapping("userpage")
     public String myPage(HttpSession session) {
@@ -107,6 +111,64 @@ public class MyPageController {
 
         model.addAttribute("trips", completedTrips);
         return "mypage/completed";
+    }
+
+    @GetMapping("boardpage")
+    public String boardpage(HttpSession session,
+        @RequestParam(defaultValue = "1") int pageNo,
+        @RequestParam(defaultValue = "9") int pageSize,
+        Model model) throws Exception {
+        User loginUser = (User) session.getAttribute("loginUser");
+
+        if (loginUser == null) {
+            session.setAttribute("errorMessage", "로그인이 필요합니다.");
+            return "redirect:/auth/login";
+        }
+
+        int BOARD_TYPE_REVIEW = 3;
+
+        List<Board> boardList = reviewService.listUser(loginUser.getUserNo());
+
+        // 전체 갯수 확인
+        // 페이지 처리
+        int length = reviewService.countAll(BOARD_TYPE_REVIEW);
+        int pageCount = length / pageSize;
+
+        // 페이지 처리 최소 1 이상
+        if (pageNo < 1) {
+            pageNo = 1;
+        }
+
+        // 갯수가 size 초과시 페이지 1칸더
+        if (length % pageSize > 0) {
+            pageCount++;
+        }
+
+        // 페이지 처리 최대 PageCount 까지
+        if (pageNo > pageCount) {
+            pageNo = pageCount;
+        }
+
+        // 일반 게시물 목록
+        for (Board board : boardList) {
+            // 직접 첫번째 이미지 Board객체 추가
+            if (board.getBoardImages() != null && !board.getBoardImages().isEmpty()) {
+                board.setFirstImageName(board.getBoardImages().get(0).getBoardimageName());
+            } else {
+                board.setFirstImageName("default.png");
+            }
+
+            // 댓글 갯수
+            int commentCount = reviewService.getCommentCount(board.getBoardNo());
+            board.setCommentCount(commentCount); // 댓글 개수 설정
+        }
+
+        model.addAttribute("list", boardList);
+        model.addAttribute("pageNo", pageNo);
+        model.addAttribute("pageSize", pageSize);
+        model.addAttribute("pageCount", pageCount);
+
+        return "mypage/boardpage";
     }
 
 }

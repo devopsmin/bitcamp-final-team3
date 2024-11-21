@@ -308,4 +308,10 @@ public class ReviewService implements BoardService {
     }).collect(Collectors.toList());
   }
 
+
+  // 마이페이지용 list
+  public List<Board> listUser(Long userNo) throws Exception {
+    return boardReviewDao.listUser(userNo);
+  }
+
 }
