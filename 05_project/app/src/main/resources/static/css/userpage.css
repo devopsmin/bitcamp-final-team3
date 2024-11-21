@@ -9,14 +9,15 @@ body {
 /* 사이드바 스타일 */
 .sidebar {
     width: 280px;
-    height: calc(100vh - 80px);
+    min-height: 100vh;
     position: fixed;
     top: 80px;
     left: 0;
     background-color: white;
     border-right: 1px solid #e5e7eb;
     padding: 20px;
-    overflow-y: auto;
+    font-family: 'Noto Sans KR', sans-serif !important;
+    overflow-y: visible;
 }
 
 /* 프로필 섹션 */
@@ -112,12 +113,13 @@ body {
 .menu-list {
     list-style: none;
     padding: 0;
+    margin: 0;
     text-align: center;
 }
 
 .menu-list li {
-    margin: 8px 0;
-    text-align: center;
+    margin: 5px 0;
+    white-space: nowrap;
 }
 
 .menu-list a {
@@ -140,6 +142,7 @@ body {
     margin-left: 280px;
     margin-top: 80px;
     padding: 30px;
+    font-family: 'Noto Sans KR', sans-serif !important;
 }
 
 /* 반응형 디자인 */
@@ -161,4 +164,35 @@ body {
     .main-content {
         margin-left: 0;
     }
+}
+
+.sidebar .btn-primary {
+    width: 100%;
+    padding: 12px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    margin: -20px 0;
+}
+
+/* 모달의 버튼 스타일 */
+.modal .btn {
+    width: auto;
+    min-width: 100px;
+    margin: 0 5px;
+    padding: 8px 20px;
+    font-family: 'Noto Sans KR', sans-serif;
+}
+
+body,
+header,
+.main-content,
+.sidebar,
+button,
+a {
+    font-family: 'Noto Sans KR', sans-serif !important;
 }
