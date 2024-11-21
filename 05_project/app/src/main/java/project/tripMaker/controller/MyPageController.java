@@ -1,6 +1,7 @@
 package project.tripMaker.controller;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpSession;
@@ -25,22 +26,22 @@ public class MyPageController {
     private final ScheduleService scheduleService;
     private final ReviewService reviewService;
 
-    @GetMapping("userpage")
-    public String myPage(HttpSession session) {
-
-        User loginUser = (User) session.getAttribute("loginUser");
-
-        if (loginUser == null) {
-            session.setAttribute("errorMessage", "로그인이 필요합니다.");
-            return "redirect:/auth/login";
-        }
-
-        if (loginUser.getUserRole().name().equals("ROLE_ADMIN")){
-            return "redirect:/admin";
-        }
-
-        return "mypage/userpage";
-    }
+//    @GetMapping("userpage")
+//    public String myPage(HttpSession session) {
+//
+//        User loginUser = (User) session.getAttribute("loginUser");
+//
+//        if (loginUser == null) {
+//            session.setAttribute("errorMessage", "로그인이 필요합니다.");
+//            return "redirect:/auth/login";
+//        }
+//
+//        if (loginUser.getUserRole().name().equals("ROLE_ADMIN")){
+//            return "redirect:/admin";
+//        }
+//
+//        return "mypage/userpage";
+//    }
 
     @GetMapping("preparing")
     public String preparing(HttpSession session, Model model) {
@@ -59,6 +60,11 @@ public class MyPageController {
             .filter(trip -> {
                 LocalDate startDate = trip.getStartDate().toLocalDate();
                 return startDate.isAfter(thirtyDaysLater);
+            })
+            .sorted((trip1, trip2) -> {
+                long day1 = ChronoUnit.DAYS.between(today, trip1.getStartDate().toLocalDate());
+                long day2 = ChronoUnit.DAYS.between(today, trip2.getStartDate().toLocalDate());
+                return Long.compare(Math.abs(day1), Math.abs(day2));
             })
             .collect(Collectors.toList());
 
@@ -84,6 +90,11 @@ public class MyPageController {
                 LocalDate startDate = trip.getStartDate().toLocalDate();
                 return !startDate.isBefore(today) && !startDate.isAfter(thirtyDaysLater);
             })
+            .sorted((trip1, trip2) -> {
+                long day1 = ChronoUnit.DAYS.between(today, trip1.getStartDate().toLocalDate());
+                long day2 = ChronoUnit.DAYS.between(today, trip2.getStartDate().toLocalDate());
+                return Long.compare(Math.abs(day1), Math.abs(day2));
+            })
             .collect(Collectors.toList());
 
         model.addAttribute("trips", upcomingTrips);
@@ -106,6 +117,11 @@ public class MyPageController {
             .filter(trip -> {
                 LocalDate endDate = trip.getEndDate().toLocalDate();
                 return endDate.isBefore(today);
+            })
+            .sorted((trip1, trip2) -> {
+                long day1 = ChronoUnit.DAYS.between(trip1.getEndDate().toLocalDate(), today);
+                long day2 = ChronoUnit.DAYS.between(trip2.getEndDate().toLocalDate(), today);
+                return Long.compare(day1, day2);
             })
             .collect(Collectors.toList());
 

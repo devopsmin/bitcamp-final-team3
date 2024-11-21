@@ -6,6 +6,7 @@ body {
     font-family: 'Noto Sans KR', sans-serif;
 }
 
+
 /* 사이드바 스타일 */
 .sidebar {
     width: 280px;
@@ -197,35 +198,269 @@ a {
     font-family: 'Noto Sans KR', sans-serif !important;
 }
 
+body {
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    background-color: #ffffff;
+    font-family: 'Noto Sans KR', sans-serif;
+}
+
+
+/* 사이드바 스타일 */
+.sidebar {
+    width: 280px;
+    min-height: 100vh;
+    position: fixed;
+    top: 80px;
+    left: 0;
+    background-color: white;
+    border-right: 1px solid #e5e7eb;
+    padding: 20px;
+    font-family: 'Noto Sans KR', sans-serif !important;
+    overflow-y: visible;
+}
+
+/* 프로필 섹션 */
+.profile-section {
+    text-align: center;
+    padding: 30px 0;
+    margin-bottom: 40px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.profile-image-container {
+    width: 150px;
+    height: 150px;
+    margin: 0 auto 20px;
+    border-radius: 50%;
+    overflow: hidden;
+}
+
+.profile-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.profile-name {
+    font-size: 24px;
+    font-weight: 600;
+    color: #333;
+    margin: 0;
+}
+
+/* 버튼 스타일 */
+.btn-primary {
+    width: 100%;
+    padding: 12px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    margin: -20px 0;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+}
+
+/* 네비게이션 메뉴 */
+.nav-section {
+    padding: 0;
+}
+
+.menu-title {
+    font-size: 22px;
+    font-weight: 600;
+    color: #333;
+    padding: 15px 0;
+    margin: 0;
+    border-bottom: 1px solid #e5e7eb;
+    text-align: center;
+}
+
+.menu-title a {
+    color: #333;
+    text-decoration: none;
+    display: block;
+    transition: color 0.2s;
+}
+
+.menu-title a:hover,
+.menu-title a:visited {
+    color: #333;
+    font-weight: 600;
+}
+
+.menu-group {
+    padding: 0;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.menu-heading {
+    font-size: 20px;
+    font-weight: 500;
+    color: #333;
+    padding: 15px 0;
+    margin: 0;
+    text-align: center;
+}
+
+.menu-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    text-align: center;
+}
+
+.menu-list li {
+    margin: 5px 0;
+    white-space: nowrap;
+}
+
+.menu-list a {
+    display: block;
+    color: #666;
+    text-decoration: none;
+    font-size: 14px;
+    padding: 8px 0;
+    transition: color 0.2s;
+}
+
+.menu-list a:hover,
+.menu-list a.active {
+    color: #000;
+    font-weight: 500;
+}
+
+/* 메인 콘텐츠 영역 */
+.main-content {
+    margin-left: 280px;
+    margin-top: 80px;
+    padding: 30px;
+    font-family: 'Noto Sans KR', sans-serif !important;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+    .sidebar {
+        width: 240px;
+    }
+
+    .main-content {
+        margin-left: 240px;
+    }
+}
+
+@media (max-width: 576px) {
+    .sidebar {
+        display: none;
+    }
+
+    .main-content {
+        margin-left: 0;
+    }
+}
+
+.sidebar .btn-primary {
+    width: 100%;
+    padding: 12px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    margin: -20px 0;
+}
+
+/* 모달의 버튼 스타일 */
+.modal .btn {
+    width: auto;
+    min-width: 100px;
+    margin: 0 5px;
+    padding: 8px 20px;
+    font-family: 'Noto Sans KR', sans-serif;
+}
+
+body,
+header,
+.main-content,
+.sidebar,
+button,
+a {
+    font-family: 'Noto Sans KR', sans-serif !important;
+}
 
 /* 여행 카드 스타일 */
 .trip-card {
     width: 100%;
     position: relative;
-    padding-top: 45px;
-    margin-bottom: 2rem;
+    padding-top: 60px;
+    margin-bottom: 1rem;
+    background: #fff;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    height: 100%;
+    transition: all 0.3s ease;
 }
 
-.card {
-    width: 100%;
-    border: none;
-    border-radius: 15px;
-    overflow: visible;
-    background: white;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+.trip-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
 }
 
 .card-img-wrapper {
     position: relative;
     width: 100%;
-    height: 300px;  /* 이미지 높이 조정 */
+    height: 200px;
+    overflow: hidden;
 }
 
-.card-img-top {
+.card-img-wrapper img {
     width: 100%;
     height: 100%;
     object-fit: cover;
     border-radius: 15px;
+    transition: transform 0.3s ease;
+}
+
+.trip-card:hover .card-img-wrapper img {
+    transform: scale(1.05);
+}
+
+.card-body {
+    padding: 2rem 1.5rem;
+    margin-top: 1rem;
+}
+
+.card-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.trip-info {
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.trip-info p:not(.d-day) {
+    margin: 0.5rem 0;
+    font-size: 0.95rem;
+    color: #666;
+}
+
+.trip-info i {
+    margin-right: 0.5rem;
+    color: #007bff;
 }
 
 .trip-info .d-day {
@@ -241,67 +476,49 @@ a {
 .trip-info .d-day span {
     display: block;
     color: #000;
-    font-size: 42px !important;
-    font-weight: 800 !important;
+    font-size: 36px !important;
+    font-weight: 700 !important;
     line-height: 1;
     font-family: 'Noto Sans KR', sans-serif !important;
     margin-bottom: 15px;
 }
 
-.card-body {
-    padding: 1.5rem;
+/* 캐러셀 스타일 */
+.carousel-inner {
+    padding: 0 50px;
 }
 
-.card-title {
-    font-size: 1.3rem;
-    font-weight: 600;
-    margin-bottom: 1rem;
+.carousel-control-prev,
+.carousel-control-next {
+    width: 40px;
+    height: 40px;
+    background-color: rgba(0, 0, 0, 0.5);
+    border-radius: 50%;
+    top: 50%;
+    transform: translateY(-50%);
 }
 
-.trip-info p:not(.d-day) {
-    margin: 0.5rem 0;
-    font-size: 1rem;
-    color: #666;
+.carousel-control-prev {
+    left: -20px;
 }
 
-/* 반응형 그리드 조정 */
+.carousel-control-next {
+    right: -20px;
+}
+
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+    width: 20px;
+    height: 20px;
+}
+
+/* 그리드 조정 */
 .col-md-4 {
     padding: 0 15px;
 }
 
 .row {
     margin: 0 -15px;
-}
-
-.trip-info .d-day {
-    position: absolute;
-    top: 0px;
-    left: 0;
-    right: 0;
-    text-align: center;
-    margin: 0;
-    padding: 0;
-}
-
-.trip-info .d-day span {
-    display: block;
-    color: #000;
-    font-size: 36px !important;  /* 폰트 크기 축소 */
-    font-weight: 700 !important;
-    line-height: 1;
-    font-family: 'Noto Sans KR', sans-serif !important;
-    margin-bottom: 15px;  /* 이미지와의 간격 추가 */
-}
-
-.card-body {
-    padding: 2rem 1.5rem;
-    margin-top: 1rem;
-}
-
-.trip-info p:not(.d-day) {
-    margin: 0.5rem 0;
-    font-size: 0.95rem;
-    color: #666;
 }
 
 .main-content h3 {
@@ -313,100 +530,19 @@ a {
     font-family: 'Noto Sans KR', sans-serif;
 }
 
-
-/* 상단 캐러셀 스타일 */
-.carousel-inner {
-  padding: 0 50px;
-}
-
-.carousel-control-prev,
-.carousel-control-next {
-  width: 40px;
-  height: 40px;
-  background-color: rgba(0, 0, 0, 0.5);
-  border-radius: 50%;
-  top: 50%;
-  transform: translateY(-50%);
-}
-
-.carousel-control-prev {
-  left: -20px;
-}
-
-.carousel-control-next {
-  right: -20px;
-}
-
-.carousel-control-prev-icon,
-.carousel-control-next-icon {
-  width: 20px;
-  height: 20px;
-}
-
-/* 카드 스타일 */
-.trip-card {
-  background: #fff;
-  border-radius: 15px;
-  overflow: hidden;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-  height: 100%;
-  transition: all 0.3s ease;
-}
-
-.trip-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-}
-
-.card-img-wrapper {
-  height: 200px;
-  overflow: hidden;
-}
-
-.card-img-wrapper img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 0.3s ease;
-}
-
-.trip-card:hover .card-img-wrapper img {
-  transform: scale(1.05);
-}
-
-.card-body {
-  padding: 1.5rem;
-}
-
-.card-title {
-  font-size: 1.2rem;
-  font-weight: 600;
-  margin-bottom: 1rem;
-}
-
-.trip-info {
-  color: #666;
-  font-size: 0.9rem;
-}
-
-.trip-info i {
-  margin-right: 0.5rem;
-  color: #007bff;
-}
-
 /* 반응형 스타일 */
 @media (max-width: 768px) {
-  .carousel-inner {
-    padding: 0 20px;
-  }
+    .carousel-inner {
+        padding: 0 20px;
+    }
 
-  .carousel-control-prev,
-  .carousel-control-next {
-    width: 30px;
-    height: 30px;
-  }
+    .carousel-control-prev,
+    .carousel-control-next {
+        width: 30px;
+        height: 30px;
+    }
 
-  .card-img-wrapper {
-    height: 150px;
-  }
+    .card-img-wrapper {
+        height: 150px;
+    }
 }
