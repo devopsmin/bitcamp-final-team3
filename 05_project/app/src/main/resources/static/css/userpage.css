@@ -196,3 +196,53 @@ button,
 a {
     font-family: 'Noto Sans KR', sans-serif !important;
 }
+
+
+/* 여행 카드 스타일 */
+.trip-card {
+    transition: transform 0.2s ease;
+    margin-bottom: 20px;
+}
+
+.trip-card:hover {
+    transform: translateY(-5px);
+}
+
+.card {
+    border: none;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    height: 100%;
+}
+
+.card-img-top {
+    height: 200px;
+    object-fit: cover;
+}
+
+.card-body {
+    padding: 1.5rem;
+}
+
+.card-title {
+    font-size: 1.25rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+}
+
+.trip-info {
+    margin-bottom: 1.5rem;
+}
+
+.trip-info p {
+    margin-bottom: 0.5rem;
+    color: #666;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.trip-info i {
+    color: #4DCFBD;
+}

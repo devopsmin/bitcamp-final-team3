@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head data-th-replace="~{header :: head}"></head>
+<link rel="stylesheet" href="/css/userpage.css">
+<body>
+<header data-th-replace="~{header :: #page-header}"></header>
+
+<div class="sidebar">
+  <div class="profile-section">
+    <div class="profile-image-container">
+      <img data-th-if="${session.loginUser.userPhoto == null}"
+           data-th-src="@{https://dgg7dnk35523.edge.naverncp.com/HZiW9aEJy7/user/profile/default.png(type=f,w=100,h=100)}"
+           class="profile-image"
+           alt="기본 프로필 이미지">
+      <img data-th-unless="${session.loginUser.userPhoto == null}"
+           data-th-src="@{https://dgg7dnk35523.edge.naverncp.com/HZiW9aEJy7/user/profile/} + ${session.loginUser.userPhoto} + '?type=f&w=100&h=100'"
+           class="profile-image"
+           alt="프로필 이미지">
+    </div>
+    <p class="profile-name" data-th-text="${session.loginUser.userNickname}">유저</p>
+  </div>
+
+  <button class="btn btn-primary w-100 mb-4" data-bs-toggle="modal" data-bs-target="#scheduleModal">여행 일정 만들기</button>
+
+  <nav class="sidebar-nav">
+    <div class="nav-section">
+      <h2 class="menu-title"><a href="/mypage/userpage">마이페이지</a></h2>
+
+      <div class="menu-group">
+        <h3 class="menu-heading">여행</h3>
+        <ul class="menu-list">
+          <li><a href="/mypage/preparing">여행 준비</a></li>
+          <li><a href="/mypage/upcoming">여행 시작</a></li>
+          <li><a href="#">여행 종료</a></li>
+        </ul>
+      </div>
+
+      <div class="menu-group">
+        <h3 class="menu-heading">게시판</h3>
+        <ul class="menu-list">
+          <li><a href="#">게시글 목록</a></li>
+          <li><a href="#">댓글 목록</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+</div>
+
+<main class="main-content">
+  <h3 class="mb-4">여행 시작</h3>
+
+  <div data-th-if="${#lists.isEmpty(trips)}" class="text-center mt-5">
+    <p>시작 예정인 여행이 없습니다.</p>
+  </div>
+
+  <div data-th-unless="${#lists.isEmpty(trips)}" class="row">
+    <div data-th-each="trip : ${trips}" class="col-md-4 mb-4">
+      <div class="trip-card">
+        <div class="card">
+          <img data-th-if="${trip.city?.cityPhoto != null}"
+               data-th-src="${trip.city.cityPhoto}"
+               class="card-img-top"
+               alt="도시 이미지">
+          <div class="card-body">
+            <h5 class="card-title" data-th-text="${trip.tripTitle}">여행 제목</h5>
+            <div class="trip-info">
+              <p>
+                <i class="bi bi-geo-alt"></i>
+                <span data-th-text="${trip.city?.cityName}">도시</span>
+              </p>
+              <p>
+                <i class="bi bi-calendar"></i>
+                <span data-th-text="${#temporals.format(trip.startDate.toLocalDate(), 'yyyy-MM-dd')}">시작일</span>
+                ~
+                <span data-th-text="${#temporals.format(trip.endDate.toLocalDate(), 'yyyy-MM-dd')}">종료일</span>
+              </p>
+              <p class="d-day" data-th-with="dday=${T(java.time.temporal.ChronoUnit).DAYS.between(
+                  T(java.time.LocalDate).now(),
+                  trip.startDate.toLocalDate())}">
+                <span data-th-text="'D-' + ${dday}">D-Day</span>
+              </p>
+            </div>
+            <div class="card-actions">
+              <a data-th-href="@{/schedule/view/{tripNo}(tripNo=${trip.tripNo})}"
+                 class="btn btn-primary">일정 보기</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+</body>
+</html>

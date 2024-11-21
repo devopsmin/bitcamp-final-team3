@@ -20,7 +20,7 @@
     <p class="profile-name" data-th-text="${session.loginUser.userNickname}">유저</p>
   </div>
 
-  <button class="btn btn-primary w-100 mb-4" data-bs-toggle="modal" data-bs-target="#scheduleModal">여행 일정 만들기</button>
+  <button class="btn btn-primary w-100 mb-4">여행 일정 만들기</button>
 
   <nav class="sidebar-nav">
     <div class="nav-section">
@@ -29,8 +29,8 @@
       <div class="menu-group">
         <h3 class="menu-heading">여행</h3>
         <ul class="menu-list">
-          <li><a href="#">여행 준비</a></li>
-          <li><a href="#">여행 시작</a></li>
+          <li><a href="/mypage/preparing" data-th-classappend="${#httpServletRequest.requestURI == '/mypage/preparing' ? 'active' : ''}">여행 준비</a></li>
+          <li><a href="/mypage/upcoming" data-th-classappend="${#httpServletRequest.requestURI == '/mypage/upcoming' ? 'active' : ''}">여행 시작</a></li>
           <li><a href="#">여행 종료</a></li>
         </ul>
       </div>
