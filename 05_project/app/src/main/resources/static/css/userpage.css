@@ -200,25 +200,52 @@ a {
 
 /* 여행 카드 스타일 */
 .trip-card {
-    transition: transform 0.2s ease;
-    margin-bottom: 20px;
-}
-
-.trip-card:hover {
-    transform: translateY(-5px);
+    width: 100%;
+    position: relative;
+    padding-top: 45px;
+    margin-bottom: 2rem;
 }
 
 .card {
+    width: 100%;
     border: none;
     border-radius: 15px;
-    overflow: hidden;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-    height: 100%;
+    overflow: visible;
+    background: white;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.card-img-wrapper {
+    position: relative;
+    width: 100%;
+    height: 300px;  /* 이미지 높이 조정 */
 }
 
 .card-img-top {
-    height: 200px;
+    width: 100%;
+    height: 100%;
     object-fit: cover;
+    border-radius: 15px;
+}
+
+.trip-info .d-day {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    text-align: center;
+    margin: 0;
+    padding: 0;
+}
+
+.trip-info .d-day span {
+    display: block;
+    color: #000;
+    font-size: 42px !important;
+    font-weight: 800 !important;
+    line-height: 1;
+    font-family: 'Noto Sans KR', sans-serif !important;
+    margin-bottom: 15px;
 }
 
 .card-body {
@@ -226,23 +253,62 @@ a {
 }
 
 .card-title {
-    font-size: 1.25rem;
-    font-weight: bold;
+    font-size: 1.3rem;
+    font-weight: 600;
     margin-bottom: 1rem;
 }
 
-.trip-info {
-    margin-bottom: 1.5rem;
-}
-
-.trip-info p {
-    margin-bottom: 0.5rem;
+.trip-info p:not(.d-day) {
+    margin: 0.5rem 0;
+    font-size: 1rem;
     color: #666;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
 }
 
-.trip-info i {
-    color: #4DCFBD;
+/* 반응형 그리드 조정 */
+.col-md-4 {
+    padding: 0 15px;
+}
+
+.row {
+    margin: 0 -15px;
+}
+
+.trip-info .d-day {
+    position: absolute;
+    top: 0px;
+    left: 0;
+    right: 0;
+    text-align: center;
+    margin: 0;
+    padding: 0;
+}
+
+.trip-info .d-day span {
+    display: block;
+    color: #000;
+    font-size: 36px !important;  /* 폰트 크기 축소 */
+    font-weight: 700 !important;
+    line-height: 1;
+    font-family: 'Noto Sans KR', sans-serif !important;
+    margin-bottom: 15px;  /* 이미지와의 간격 추가 */
+}
+
+.card-body {
+    padding: 2rem 1.5rem;
+    margin-top: 1rem;
+}
+
+.trip-info p:not(.d-day) {
+    margin: 0.5rem 0;
+    font-size: 0.95rem;
+    color: #666;
+}
+
+.main-content h3 {
+    font-size: 2rem;
+    font-weight: 500;
+    color: #333;
+    margin-bottom: 3rem;
+    padding-left: 1rem;
+    font-family: 'Noto Sans KR', sans-serif;
 }

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+<script src="/js/carousel.js"></script>
 <head data-th-replace="~{header :: head}"></head>
 <link rel="stylesheet" href="/css/userpage.css">
 <body>
@@ -38,7 +39,7 @@
       <div class="menu-group">
         <h3 class="menu-heading">게시판</h3>
         <ul class="menu-list">
-          <li><a href="/mypage/boardpage">게시글 목록</a></li>
+          <li><a href="#">게시글 목록</a></li>
           <li><a href="#">댓글 목록</a></li>
         </ul>
       </div>
@@ -47,7 +48,7 @@
 </div>
 
 <main class="main-content">
-  <h3 class="mb-4">여행 시작</h3>
+  <h3 class="mb-4">여행 종료</h3>
 
   <div data-th-if="${#lists.isEmpty(trips)}" class="text-center mt-5">
     <p>시작 예정인 여행이 없습니다.</p>
@@ -64,30 +65,25 @@
                data-th-alt="${trip.city != null ? trip.city.cityName + ' 이미지' : '기본 도시 이미지'}">
         </div>
 
-          <div class="card-body">
-            <h5 class="card-title" data-th-text="${trip.tripTitle}">여행 제목</h5>
-            <div class="trip-info">
-              <p>
-                <i class="bi bi-geo-alt"></i>
-                <span data-th-text="${trip.city?.cityName}">도시</span>
-              </p>
-              <p>
-                <i class="bi bi-calendar"></i>
-                <span data-th-text="${#temporals.format(trip.startDate.toLocalDate(), 'yyyy-MM-dd')}">시작일</span>
-                ~
-                <span data-th-text="${#temporals.format(trip.endDate.toLocalDate(), 'yyyy-MM-dd')}">종료일</span>
-              </p>
-              <p class="d-day" data-th-with="dday=${T(java.time.temporal.ChronoUnit).DAYS.between(
-                  T(java.time.LocalDate).now(),
-                  trip.startDate.toLocalDate())}">
-                <span data-th-text="'D-' + ${dday}" >D-Day</span>
-              </p>
-            </div>
-
+        <div class="card-body">
+          <h5 class="card-title" data-th-text="${trip.tripTitle}">여행 제목</h5>
+          <div class="trip-info">
+            <p>
+              <i class="bi bi-geo-alt"></i>
+              <span data-th-text="${trip.city?.cityName}">도시</span>
+            </p>
+            <p>
+              <i class="bi bi-calendar"></i>
+              <span data-th-text="${#temporals.format(trip.startDate.toLocalDate(), 'yyyy-MM-dd')}">시작일</span>
+              ~
+              <span data-th-text="${#temporals.format(trip.endDate.toLocalDate(), 'yyyy-MM-dd')}">종료일</span>
+            </p>
           </div>
+
         </div>
       </div>
     </div>
+  </div>
   </div>
 </main>
 

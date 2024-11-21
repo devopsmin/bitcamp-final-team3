@@ -31,7 +31,7 @@
         <ul class="menu-list">
           <li><a href="/mypage/preparing">여행 준비</a></li>
           <li><a href="/mypage/upcoming">여행 시작</a></li>
-          <li><a href="#">여행 종료</a></li>
+          <li><a href="/mypage/completed">여행 종료</a></li>
         </ul>
       </div>
 
@@ -56,11 +56,15 @@
   <div data-th-unless="${#lists.isEmpty(trips)}" class="row">
     <div data-th-each="trip : ${trips}" class="col-md-4 mb-4">
       <div class="trip-card">
-        <div class="card">
-          <img data-th-if="${trip.city?.cityPhoto != null}"
-               data-th-src="${trip.city.cityPhoto}"
-               class="card-img-top"
-               alt="도시 이미지">
+
+        <div class="trip-card">
+          <div class="card-img-wrapper">
+            <img data-th-with="cityPhoto=${'/images/city/' + trip.city?.state?.stateName + '/' + trip.city?.state?.stateName + ' ' + trip.city?.cityName + '.jpg'}"
+                 data-th-src="${trip.city != null ? cityPhoto : '/images/default-city.jpg'}"
+                 class="card-img-top"
+                 data-th-alt="${trip.city != null ? trip.city.cityName + ' 이미지' : '기본 도시 이미지'}">
+          </div>
+
           <div class="card-body">
             <h5 class="card-title" data-th-text="${trip.tripTitle}">여행 제목</h5>
             <div class="trip-info">
@@ -75,15 +79,12 @@
                 <span data-th-text="${#temporals.format(trip.endDate.toLocalDate(), 'yyyy-MM-dd')}">종료일</span>
               </p>
               <p class="d-day" data-th-with="dday=${T(java.time.temporal.ChronoUnit).DAYS.between(
-                                        T(java.time.LocalDate).now(),
-                                        trip.startDate.toLocalDate())}">
+                   T(java.time.LocalDate).now(),
+                   trip.startDate.toLocalDate())}">
                 <span data-th-text="'D-' + ${dday}">D-Day</span>
               </p>
             </div>
-            <div class="card-actions">
-              <a data-th-href="@{/schedule/view/{tripNo}(tripNo=${trip.tripNo})}"
-                 class="btn btn-primary">일정 보기</a>
-            </div>
+
           </div>
         </div>
       </div>
