@@ -98,8 +98,7 @@ public class CommentService {
     return response;
   }
 
-
-
-
-
+  public List<Comment> listUser(Long userNo) throws Exception {
+    return commentDao.listUser(userNo);
+  }
 }

@@ -39,7 +39,7 @@
         <h3 class="menu-heading">게시판</h3>
         <ul class="menu-list">
           <li><a href="/mypage/boardpage" data-th-classappend="${#httpServletRequest.requestURI == '/mypage/boardpage' ? 'active' : ''}">게시글 목록</a></li>
-          <li><a href="#">댓글 목록</a></li>
+          <li><a href="/mypage/commentpage" data-th-classappend="${#httpServletRequest.requestURI == '/mypage/commentpage' ? 'active' : ''}">댓글 목록</a></li>
         </ul>
       </div>
     </div>

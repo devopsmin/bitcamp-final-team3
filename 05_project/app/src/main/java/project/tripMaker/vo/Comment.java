@@ -13,5 +13,7 @@ public class Comment {
     private User writer; // 작성자
 
     private int commentLike;  // 댓글 좋아요
+    
+    private int boardtypeNo; // 게시글 타입 
 }
 

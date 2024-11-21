@@ -57,4 +57,5 @@ public interface BoardQuestionDao extends BoardDao{
 
   int searchBoardCount(@Param("search") String search) throws Exception;
 
+  List<Board> listUser(Long userNo) throws Exception;
 }

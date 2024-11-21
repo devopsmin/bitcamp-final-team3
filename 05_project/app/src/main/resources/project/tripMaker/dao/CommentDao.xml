@@ -12,6 +12,7 @@
         <result property="commentContent" column="comment_content"/>
         <result property="commentCreatedDate" column="comment_created_date"/>
         <result property="commentLike" column="comment_like_count"/>
+        <result property="boardtypeNo" column="boardtype_no"/>
 
         <association property="writer" javaType="project.tripMaker.vo.User">
             <id property="userNo" column="user_no" javaType="java.lang.Long"/>
@@ -163,5 +164,27 @@
         LIMIT #{limit} OFFSET #{offset}
     </select>
 
+    <select id="listUser" resultMap="CommentMap" parameterType="Long">
+        SELECT
+            c.comment_no,
+            c.board_no,
+            b.boardtype_no,
+            c.user_no,
+            c.comment_content,
+            c.comment_created_date,
+            u.user_no,
+            u.user_nickname,
+            u.user_photo
+        FROM
+            comment c
+                JOIN
+            user u ON c.user_no = u.user_no
+                JOIN
+            board b ON c.board_no = b.board_no
+        WHERE
+            u.user_no = #{userNo}
+        ORDER BY
+            c.comment_no DESC;
+    </select>
 
 </mapper>
