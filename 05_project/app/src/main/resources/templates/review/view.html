@@ -160,14 +160,12 @@
                         <h5 class="mb-3 text" style="font-size: 1.2rem;" data-th-text="${entry.key} + '일차'">일차</h5>
                     <div class="timeline">
                         <div id="review-location" class="timeline-item mb-1" data-th-each="schedule, iter : ${entry.value}" data-th-object="${schedule}">
-
                             <div class="location">
                                 <span class="location-x" data-th-text="*{location.locationX}" style="display: none;"></span>
                                 <span class="location-y" data-th-text="*{location.locationY}" style="display: none;"></span>
                                 <span class="scheduleRoute" data-th-text="*{scheduleRoute}" style="display: none;"></span>
                                 <span class="scheduleDay" data-th-text="*{scheduleDay}" style="display: none;"></span>
                             </div>
-
                             <!-- 카드와 textarea를 감싸는 wrapper -->
                             <div class="d-flex gap-3 mx-auto md-5">
                                 <!-- 카드 부분 -->

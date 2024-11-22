@@ -458,9 +458,7 @@ public class ReviewController {
     List<Trip> tripList = reviewService.getTripsByBoardNo(board.getTripNo());
     List<Schedule> scheduleList = scheduleService.getSchedulesByTripNo(board.getTripNo());
 
-    Map<Integer, List<Schedule>> groupedSchedules = scheduleList.stream()
-        .collect(Collectors.groupingBy(Schedule::getScheduleDay));
-    model.addAttribute("groupedSchedules", groupedSchedules);
+
 
     model.addAttribute("board", board);
     model.addAttribute("trips", tripList);
