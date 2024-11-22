@@ -6,17 +6,19 @@ body {
     font-family: 'Noto Sans KR', sans-serif;
 }
 
+
 /* 사이드바 스타일 */
 .sidebar {
     width: 280px;
-    height: calc(100vh - 80px);
+    min-height: 100vh;
     position: fixed;
     top: 80px;
     left: 0;
     background-color: white;
     border-right: 1px solid #e5e7eb;
     padding: 20px;
-    overflow-y: auto;
+    font-family: 'Noto Sans KR', sans-serif !important;
+    overflow-y: visible;
 }
 
 /* 프로필 섹션 */
@@ -112,12 +114,13 @@ body {
 .menu-list {
     list-style: none;
     padding: 0;
+    margin: 0;
     text-align: center;
 }
 
 .menu-list li {
-    margin: 8px 0;
-    text-align: center;
+    margin: 5px 0;
+    white-space: nowrap;
 }
 
 .menu-list a {
@@ -140,6 +143,9 @@ body {
     margin-left: 280px;
     margin-top: 80px;
     padding: 30px;
+    font-family: 'Noto Sans KR', sans-serif !important;
+    position: relative !important;
+    overflow: hidden !important;
 }
 
 /* 반응형 디자인 */
@@ -160,5 +166,395 @@ body {
 
     .main-content {
         margin-left: 0;
+    }
+}
+
+.sidebar .btn-primary {
+    width: 100%;
+    padding: 12px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    margin: -20px 0;
+}
+
+/* 모달의 버튼 스타일 */
+.modal .btn {
+    width: auto;
+    min-width: 100px;
+    margin: 0 5px;
+    padding: 8px 20px;
+    font-family: 'Noto Sans KR', sans-serif;
+}
+
+body,
+header,
+.main-content,
+.sidebar,
+button,
+a {
+    font-family: 'Noto Sans KR', sans-serif !important;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    background-color: #ffffff;
+    font-family: 'Noto Sans KR', sans-serif;
+}
+
+
+/* 사이드바 스타일 */
+.sidebar {
+    width: 280px;
+    min-height: 100vh;
+    position: fixed;
+    top: 80px;
+    left: 0;
+    background-color: white;
+    border-right: 1px solid #e5e7eb;
+    padding: 20px;
+    font-family: 'Noto Sans KR', sans-serif !important;
+    overflow-y: visible;
+}
+
+/* 프로필 섹션 */
+.profile-section {
+    text-align: center;
+    padding: 30px 0;
+    margin-bottom: 40px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.profile-image-container {
+    width: 150px;
+    height: 150px;
+    margin: 0 auto 20px;
+    border-radius: 50%;
+    overflow: hidden;
+}
+
+.profile-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.profile-name {
+    font-size: 24px;
+    font-weight: 600;
+    color: #333;
+    margin: 0;
+}
+
+/* 버튼 스타일 */
+.btn-primary {
+    width: 100%;
+    padding: 12px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    margin: -20px 0;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+}
+
+/* 네비게이션 메뉴 */
+.nav-section {
+    padding: 0;
+}
+
+.menu-title {
+    font-size: 22px;
+    font-weight: 600;
+    color: #333;
+    padding: 15px 0;
+    margin: 0;
+    border-bottom: 1px solid #e5e7eb;
+    text-align: center;
+}
+
+.menu-title a {
+    color: #333;
+    text-decoration: none;
+    display: block;
+    transition: color 0.2s;
+}
+
+.menu-title a:hover,
+.menu-title a:visited {
+    color: #333;
+    font-weight: 600;
+}
+
+.menu-group {
+    padding: 0;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.menu-heading {
+    font-size: 20px;
+    font-weight: 500;
+    color: #333;
+    padding: 15px 0;
+    margin: 0;
+    text-align: center;
+}
+
+.menu-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    text-align: center;
+}
+
+.menu-list li {
+    margin: 5px 0;
+    white-space: nowrap;
+}
+
+.menu-list a {
+    display: block;
+    color: #666;
+    text-decoration: none;
+    font-size: 14px;
+    padding: 8px 0;
+    transition: color 0.2s;
+}
+
+.menu-list a:hover,
+.menu-list a.active {
+    color: #000;
+    font-weight: 500;
+}
+
+/* 메인 콘텐츠 영역 */
+.main-content {
+    margin-left: 280px;
+    margin-top: 80px;
+    padding: 30px;
+    font-family: 'Noto Sans KR', sans-serif !important;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+    .sidebar {
+        width: 240px;
+    }
+
+    .main-content {
+        margin-left: 240px;
+    }
+}
+
+@media (max-width: 576px) {
+    .sidebar {
+        display: none;
+    }
+
+    .main-content {
+        margin-left: 0;
+    }
+}
+
+.sidebar .btn-primary {
+    width: 100%;
+    padding: 12px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    margin: -20px 0;
+}
+
+/* 모달의 버튼 스타일 */
+.modal .btn {
+    width: auto;
+    min-width: 100px;
+    margin: 0 5px;
+    padding: 8px 20px;
+    font-family: 'Noto Sans KR', sans-serif;
+}
+
+body,
+header,
+.main-content,
+.sidebar,
+button,
+a {
+    font-family: 'Noto Sans KR', sans-serif !important;
+}
+
+/* 여행 카드 스타일 */
+.trip-card {
+    width: 100% !important;
+    position: relative !important;
+    padding-top: 60px !important;
+    margin-bottom: 1rem !important;
+    background: #fff !important;
+    border-radius: 15px !important;
+    overflow: hidden !important;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1) !important;
+    height: 100% !important;
+    transition: all 0.3s ease !important;
+}
+
+.trip-card:hover {
+    transform: translateY(-5px) !important;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15) !important;
+}
+
+.card-img-wrapper {
+    position: relative !important;
+    width: 100% !important;
+    height: 200px !important;
+    overflow: hidden !important;
+}
+
+.card-img-wrapper img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    border-radius: 15px !important;
+    transition: transform 0.3s ease !important;
+}
+
+.trip-card:hover .card-img-wrapper img {
+    transform: scale(1.05) !important;
+}
+
+.card-body {
+    padding: 2rem 1.5rem !important;
+    margin-top: 1rem !important;
+}
+
+.card-title {
+    font-size: 1.2rem !important;
+    font-weight: 600 !important;
+    margin-bottom: 1rem !important;
+}
+
+.trip-info {
+    color: #666 !important;
+    font-size: 0.9rem !important;
+}
+
+.trip-info p:not(.d-day) {
+    margin: 0.5rem 0 !important;
+    font-size: 0.95rem !important;
+    color: #666 !important;
+}
+
+.trip-info i {
+    margin-right: 0.5rem !important;
+    color: #007bff !important;
+}
+
+.trip-info .d-day {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    text-align: center !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.trip-info .d-day span {
+    display: block !important;
+    color: #000 !important;
+    font-size: 36px !important;
+    font-weight: 700 !important;
+    line-height: 1 !important;
+    font-family: 'Noto Sans KR', sans-serif !important;
+    margin-bottom: 15px !important;
+}
+
+/* 캐러셀 스타일 */
+.carousel {
+    position: relative !important;
+    width: 100% !important;
+    margin: 0 !important;
+}
+
+.carousel-inner {
+    padding: 0 50px !important;
+    position: relative !important;
+    width: calc(100% - 100px) !important;
+    margin: 0 auto !important;
+}
+
+.carousel-control-prev,
+.carousel-control-next {
+    width: 40px !important;
+    height: 40px !important;
+    background-color: rgba(0, 0, 0, 0.5) !important;
+    border-radius: 50% !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    opacity: 1 !important;
+    z-index: 5 !important;
+}
+
+.carousel-control-prev {
+    left: 0 !important;
+}
+
+.carousel-control-next {
+    right: 0 !important;
+}
+
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+    width: 20px !important;
+    height: 20px !important;
+}
+
+/* 그리드 조정 */
+.col-md-4 {
+    padding: 0 15px !important;
+}
+
+.row {
+    margin: 0 -15px !important;
+}
+
+/* 모달 열린 상태에서도 스타일 유지 */
+.modal-open .trip-card,
+.modal-open .carousel-control-prev,
+.modal-open .carousel-control-next,
+.modal-open .carousel-inner {
+    z-index: auto !important;
+}
+
+/* 반응형 스타일 */
+@media (max-width: 768px) {
+    .carousel-inner {
+        padding: 0 20px !important;
+    }
+
+    .carousel-control-prev,
+    .carousel-control-next {
+        width: 30px !important;
+        height: 30px !important;
+    }
+
+    .card-img-wrapper {
+        height: 150px !important;
     }
 }

@@ -39,7 +39,13 @@
                 <li><a class="btn custom-btn fw-bold fs-7" data-th-href="@{/question/list}">여행질문</a></li>
                 <li><a class="btn custom-btn fw-bold fs-7" data-th-href="@{/review/list}">여행후기</a></li>
                 <li><a class="btn custom-btn fw-bold fs-" data-th-href="@{/companion/list}">동행구하기</a></li>
-                <li><a class="btn custom-btn fw-bold fs-7" data-th-href="@{/mypage/userpage}">마이페이지</a></li>
+                <div data-th-if="${session.loginUser == null}">
+                    <button class="btn login-btn fw-bold fs-7" data-bs-toggle="modal" data-bs-target="#loginModal">마이페이지</button>
+                </div>
+                <div data-th-unless="${session.loginUser == null}">
+                    <a class="btn custom-btn fw-bold fs-7" href="/mypage/preparing">마이페이지</a>
+                </div>
+                </li>
 
                 <!-- 로그인 상태 -->
                 <li>

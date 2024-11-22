@@ -812,4 +812,51 @@
       b.boardtype_no = #{boardtypeNo}
   </select>
 
+
+  <select id="listUser" resultMap="BoardMap" parameterType="Long">
+    SELECT
+    b.board_no,
+    b.board_title,
+    b.board_created_date,
+    b.board_count,
+    b.board_tag,
+    b.trip_no,
+    t.trip_title,
+    th.thema_name,
+    u.user_no,
+    u.user_nickname,
+    u.user_photo,
+    COALESCE(fv.favor_count, 0) AS favor_count,
+    COALESCE(bl.like_count, 0) AS like_count,
+    c.city_name, -- 시도명
+    s.state_name, -- 주 이름 추가
+    bi.boardimage_no,
+    bi.boardimage_name,
+    bi.boardimage_default_name
+    FROM
+      board b
+      INNER JOIN user u ON b.user_no = u.user_no
+      LEFT JOIN favor_count_view fv ON b.board_no = fv.board_no
+      LEFT JOIN boardlike_count_view bl ON b.board_no = bl.board_no
+      LEFT JOIN trip t ON b.trip_no = t.trip_no -- Trip과 Board 조인 추가
+      LEFT JOIN thema th ON t.thema_no = th.thema_no -- Trip과 Thema 조인 추가
+      LEFT JOIN city c ON t.city_code = c.city_code -- Trip과 City 조인
+      LEFT JOIN state s ON c.state_code = s.state_code -- City와 State 조인
+      LEFT JOIN (
+      SELECT board_no, boardimage_no, boardimage_name, boardimage_default_name
+      FROM boardimage
+      WHERE (board_no, boardimage_no) IN (
+      SELECT board_no, MIN(boardimage_no)
+      FROM boardimage
+      GROUP BY board_no
+      )
+      ) bi ON b.board_no = bi.board_no -- Board와 첫 번째 BoardImage 조인
+    WHERE
+      b.boardtype_no = 3
+      AND
+      u.user_no = #{userNo}
+    ORDER BY
+      b.board_no DESC
+  </select>
+
 </mapper>

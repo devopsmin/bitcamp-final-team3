@@ -90,4 +90,6 @@ public interface BoardReviewDao extends BoardDao{
 
   // 전체 게시물 수 조회
   List<Board> listBoard(@Param("boardtypeNo") int boardtypeNo) throws Exception;
+
+  List<Board> listUser(Long userNo) throws Exception;
 }

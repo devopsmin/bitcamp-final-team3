@@ -4,14 +4,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import project.tripMaker.service.QuestionService;
-import project.tripMaker.service.CommentService;
-import project.tripMaker.service.ScheduleService;
-import project.tripMaker.service.UserService;
+import project.tripMaker.service.*;
 import project.tripMaker.vo.*;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,6 +27,9 @@ public class QuestionController {
   private final CommentService commentService;
   private final ScheduleService scheduleService;
   private final UserService userService;
+
+  private final ReviewService reviewService;
+  private final CompanionService companionService;
 
   @GetMapping("form")
   public void form(Model model, HttpSession session) throws Exception {
@@ -372,6 +373,133 @@ public class QuestionController {
       return null; // 로그인되지 않은 경우 null 반환
     }
     return loginUser;
+  }
+
+  @GetMapping("/api/list")
+  @ResponseBody
+  public Map<String, Object> listAsJson(
+          @RequestParam(defaultValue = "1") int pageNo,
+          @RequestParam(defaultValue = "9") int pageSize,
+          @RequestParam(required = false, defaultValue = "latest") String sort,
+          @RequestParam(required = false) String search) throws Exception {
+
+    List<Board> boardList;
+    int totalBoardCount;
+
+    if (search != null && !search.trim().isEmpty()) {
+      boardList = questionService.searchBoards(search, pageNo, pageSize);
+      totalBoardCount = questionService.searchBoardCount(search);
+    } else {
+      switch (sort) {
+        case "likes":
+          boardList = questionService.listByLikes(pageNo, pageSize);
+          break;
+        case "favorites":
+          boardList = questionService.listByFavorites(pageNo, pageSize);
+          break;
+        case "views":
+          boardList = questionService.listByViews(pageNo, pageSize);
+          break;
+        default: //"latest"
+          boardList = questionService.list(pageNo, pageSize);
+          break;
+      }
+      totalBoardCount = questionService.listBoard(1).size(); // 보드 타입 1에 대한 전체 게시물 수
+    }
+
+    for (Board board : boardList) {
+      int commentCount = questionService.getCommentCount(board.getBoardNo());
+      board.setCommentCount(commentCount);
+    }
+
+    Map<String, Object> result = new HashMap<>();
+    result.put("list", boardList);
+    result.put("totalCount", totalBoardCount);
+    result.put("pageCount", (int) Math.ceil((double) totalBoardCount / pageSize));
+    result.put("pageNo", pageNo);
+    return result;
+  }
+
+  @GetMapping("/api/top-list")
+  @ResponseBody
+  public List<Map<String, Object>> getTopBoards() throws Exception {
+
+    String specificWord = "제주도";
+
+    List<Board> questionBoards = questionService.list(1, 8);
+    List<Board> reviewBoards = reviewService.list(1, 8, 2);
+
+    List<Board> combinedBoards = new ArrayList<>();
+    combinedBoards.addAll(questionBoards);
+    combinedBoards.addAll(reviewBoards);
+
+    combinedBoards = combinedBoards.stream()
+            .filter(board ->
+                    (board.getBoardTitle() != null && board.getBoardTitle().contains(specificWord)) || // 제목 필터링
+                            (board.getTrip() != null &&
+                                    board.getTrip().getCity() != null &&
+                                    board.getTrip().getCity().getState() != null &&
+                                    board.getTrip().getCity().getState().getStateName().contains(specificWord)) // 상태 이름 필터링
+            )
+            .toList();
+
+    List<Map<String, Object>> resultList = new ArrayList<>();
+    for (Board board : combinedBoards) {
+      Map<String, Object> boardData = new HashMap<>();
+      boardData.put("boardNo", board.getBoardNo());
+      boardData.put("title", board.getBoardTitle());
+      boardData.put("viewCount", board.getBoardCount());
+      boardData.put("cityName", board.getTrip() != null && board.getTrip().getCity() != null ? board.getTrip().getCity().getCityName() : null);
+      boardData.put("stateName", board.getTrip() != null && board.getTrip().getCity() != null && board.getTrip().getCity().getState() != null
+              ? board.getTrip().getCity().getState().getStateName() : null);
+      boardData.put("favorCount", board.getBoardFavor());
+      boardData.put("likeCount", board.getBoardLike());
+      boardData.put("commentCount", board.getCommentCount());
+      resultList.add(boardData);
+    }
+
+    return resultList;
+  }
+
+  @GetMapping("/api/top-list-seoul")
+  @ResponseBody
+  public List<Map<String, Object>> getTopBoards2() throws Exception {
+
+    String specificWord = "서울";
+
+    List<Board> questionBoards = questionService.list(1, 8);
+    List<Board> reviewBoards = reviewService.list(1, 8, 2);
+
+    List<Board> combinedBoards = new ArrayList<>();
+    combinedBoards.addAll(questionBoards);
+    combinedBoards.addAll(reviewBoards);
+
+    combinedBoards = combinedBoards.stream()
+            .filter(board ->
+                    (board.getBoardTitle() != null && board.getBoardTitle().contains(specificWord)) || // 제목 필터링
+                            (board.getTrip() != null &&
+                                    board.getTrip().getCity() != null &&
+                                    board.getTrip().getCity().getState() != null &&
+                                    board.getTrip().getCity().getState().getStateName().contains(specificWord)) // 상태 이름 필터링
+            )
+            .toList();
+
+    List<Map<String, Object>> resultList = new ArrayList<>();
+    for (Board board : combinedBoards) {
+      Map<String, Object> boardData = new HashMap<>();
+      boardData.put("boardNo", board.getBoardNo());
+      boardData.put("title", board.getBoardTitle());
+      boardData.put("viewCount", board.getBoardCount());
+      boardData.put("cityName", board.getTrip() != null && board.getTrip().getCity() != null ? board.getTrip().getCity().getCityName() : null);
+      boardData.put("stateName", board.getTrip() != null && board.getTrip().getCity() != null && board.getTrip().getCity().getState() != null
+              ? board.getTrip().getCity().getState().getStateName() : null);
+      boardData.put("favorCount", board.getBoardFavor());
+      boardData.put("likeCount", board.getBoardLike());
+      boardData.put("commentCount", board.getCommentCount());
+      resultList.add(boardData);
+    }
+
+    return resultList;
   }
 
 }

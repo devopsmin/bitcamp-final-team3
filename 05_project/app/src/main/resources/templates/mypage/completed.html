@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+<head data-th-replace="~{header :: head}"></head>
+<script src="/js/carousel.js"></script>
+<link rel="stylesheet" href="/css/userpage.css">
+<body>
+<header data-th-replace="~{header :: #page-header}"></header>
+
+<div class="sidebar">
+  <div class="profile-section">
+    <div class="profile-image-container">
+      <img data-th-if="${session.loginUser.userPhoto == null}"
+           data-th-src="@{https://dgg7dnk35523.edge.naverncp.com/HZiW9aEJy7/user/profile/default.png(type=f,w=100,h=100)}"
+           class="profile-image"
+           alt="기본 프로필 이미지">
+      <img data-th-unless="${session.loginUser.userPhoto == null}"
+           data-th-src="@{https://dgg7dnk35523.edge.naverncp.com/HZiW9aEJy7/user/profile/} + ${session.loginUser.userPhoto} + '?type=f&w=100&h=100'"
+           class="profile-image"
+           alt="프로필 이미지">
+    </div>
+    <p class="profile-name" data-th-text="${session.loginUser.userNickname}">유저</p>
+  </div>
+
+  <button class="btn btn-primary w-100 mb-4" data-bs-toggle="modal" data-bs-target="#scheduleModal">여행 일정 만들기</button>
+
+  <nav class="sidebar-nav">
+    <div class="nav-section">
+
+      <div class="menu-group">
+        <h3 class="menu-heading">여행</h3>
+        <ul class="menu-list">
+          <li><a href="/mypage/preparing">여행 준비</a></li>
+          <li><a href="/mypage/upcoming">여행 시작</a></li>
+          <li><a href="/mypage/completed" class="active">여행 종료</a></li>
+        </ul>
+      </div>
+
+      <div class="menu-group">
+        <h3 class="menu-heading">게시판</h3>
+        <ul class="menu-list">
+          <li><a href="/mypage/boardpage" data-th-classappend="${#httpServletRequest.requestURI == '/mypage/boardpage' ? 'active' : ''}">게시글 목록</a></li>
+          <li><a href="/mypage/commentpage" data-th-classappend="${#httpServletRequest.requestURI == '/mypage/commentpage' ? 'active' : ''}">댓글 목록</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+</div>
+
+
+<main class="main-content">
+
+  <div data-th-if="${#lists.isEmpty(trips)}" class="text-center mt-5">
+    <p>종료된 여행이 없습니다.</p>
+  </div>
+
+  <div id="tripCarousel" class="carousel slide" data-bs-ride="carousel" data-th-unless="${#lists.isEmpty(trips)}">
+    <div class="carousel-inner">
+      <div class="carousel-item active">
+        <div class="row">
+          <div data-th-each="trip, iterStat : ${trips}"
+               data-th-if="${iterStat.index < 3}"
+               class="col-md-4 mb-4">
+            <div class="trip-card">
+              <div class="card-img-wrapper">
+                <img data-th-with="cityPhoto=${'/images/city/' + trip.city?.state?.stateName + '/' + trip.city?.state?.stateName + ' ' + trip.city?.cityName + '.jpg'}"
+                     data-th-src="${trip.city != null ? cityPhoto : '/images/default-city.jpg'}"
+                     class="card-img-top"
+                     data-th-alt="${trip.city != null ? trip.city.cityName + ' 이미지' : '기본 도시 이미지'}">
+              </div>
+              <div class="card-body">
+                <h5 class="card-title" data-th-text="${trip.tripTitle}">여행 제목</h5>
+                <div class="trip-info">
+                  <p>
+                    <i class="bi bi-geo-alt"></i>
+                    <span data-th-text="${trip.city?.cityName}">도시</span>
+                  </p>
+                  <p>
+                    <i class="bi bi-calendar"></i>
+                    <span data-th-text="${#temporals.format(trip.startDate.toLocalDate(), 'yyyy-MM-dd')}">시작일</span>
+                    ~
+                    <span data-th-text="${#temporals.format(trip.endDate.toLocalDate(), 'yyyy-MM-dd')}">종료일</span>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div data-th-each="batch, batchStat : ${#lists.size(trips) le 3 ? {} : #numbers.sequence(1, (#lists.size(trips) - 1) / 3)}"
+           class="carousel-item">
+        <div class="row">
+          <div data-th-each="trip, iterStat : ${trips}"
+               data-th-if="${iterStat.index >= batchStat.index * 3 + 3 && iterStat.index < (batchStat.index + 1) * 3 + 3}"
+               class="col-md-4 mb-4">
+            <div class="trip-card">
+              <div class="card-img-wrapper">
+                <img data-th-with="cityPhoto=${'/images/city/' + trip.city?.state?.stateName + '/' + trip.city?.state?.stateName + ' ' + trip.city?.cityName + '.jpg'}"
+                     data-th-src="${trip.city != null ? cityPhoto : '/images/default-city.jpg'}"
+                     class="card-img-top"
+                     data-th-alt="${trip.city != null ? trip.city.cityName + ' 이미지' : '기본 도시 이미지'}">
+              </div>
+              <div class="card-body">
+                <h5 class="card-title" data-th-text="${trip.tripTitle}">여행 제목</h5>
+                <div class="trip-info">
+                  <p>
+                    <i class="bi bi-geo-alt"></i>
+                    <span data-th-text="${trip.city?.cityName}">도시</span>
+                  </p>
+                  <p>
+                    <i class="bi bi-calendar"></i>
+                    <span data-th-text="${#temporals.format(trip.startDate.toLocalDate(), 'yyyy-MM-dd')}">시작일</span>
+                    ~
+                    <span data-th-text="${#temporals.format(trip.endDate.toLocalDate(), 'yyyy-MM-dd')}">종료일</span>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <button class="carousel-control-prev" type="button" data-bs-target="#tripCarousel" data-bs-slide="prev">
+      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">Previous</span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#tripCarousel" data-bs-slide="next">
+      <span class="carousel-control-next-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">Next</span>
+    </button>
+  </div>
+</main>
+
+</body>
+</html>

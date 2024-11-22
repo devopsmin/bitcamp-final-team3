@@ -250,4 +250,8 @@ public class QuestionService implements BoardService {
   public int countAll(int BOARD_TYPE_REVIEW) throws Exception {
     return 0;
   }
+
+  public List<Board> listUser(Long userNo) throws Exception {
+    return boardQuestionDao.listUser(userNo);
+  }
 }

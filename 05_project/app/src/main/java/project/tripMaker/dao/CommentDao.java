@@ -33,4 +33,8 @@ public interface CommentDao {
   void addCommentLike(Map<String, Object> params); // 좋아요 추가
   void removeCommentLike(Map<String, Object> params); // 좋아요 삭제
 
+
+  List<Comment> listUser(Map<String, Object> options) throws Exception;
+  Integer countAllUserComment(Map<String, Object> options) throws Exception;
+
 }

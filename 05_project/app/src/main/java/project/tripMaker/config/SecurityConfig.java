@@ -40,7 +40,7 @@ public class SecurityConfig {
   public SecurityFilterChain securityFilterChain(HttpSecurity http, UserService userService, BenService benService) throws Exception {
     http
         .authorizeRequests(authorize -> authorize
-            .antMatchers("/admin/**").hasAuthority("ROLE_ADMIN")
+            .antMatchers("/admin/**", "/auth/register/admin").hasAuthority("ROLE_ADMIN")
             .antMatchers("/", "/auth/**", "/oauth2/**", "/verify/**", "/css/**", "/js/**", "/images/**", "/schedule/**", "/user/**", "/home", "/board/**", "/comment/**", "/app/**", "/question/**", "/review/**", "/companion/**", "/mypage/**", "/notifications/**").permitAll()
             //            .antMatchers("/user/**").hasRole("USER")
             .anyRequest().authenticated()
@@ -61,7 +61,7 @@ public class SecurityConfig {
             .userInfoEndpoint(userInfo -> userInfo
                 .userService(customOAuth2UserService)
             )
-            .successHandler(new OAuth2SuccessHandler(userService, customOAuth2UserService))
+            .successHandler(new OAuth2SuccessHandler(userService, customOAuth2UserService, benService))
         )
         .logout(logout -> logout
             .logoutSuccessUrl("/auth/form")
@@ -118,9 +118,11 @@ public class SecurityConfig {
         response.addCookie(cookie);
 
         if (user.getUserRole() == UserRole.ROLE_ADMIN) {
-          response.sendRedirect("/admin");
-        } else {
           response.sendRedirect("/home");
+        } else {
+          // 현재 위치 유지: sendRedirect 대신 작업 종료
+          response.getWriter().write("Authentication successful!"); // 메시지 반환
+          response.getWriter().flush();
         }
       } else {
         throw new Exception("유저를 찾을 수 없습니다.");

@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head data-th-replace="~{header :: head}"></head>
+<link rel="stylesheet" href="/css/userpage.css">
+<link rel="stylesheet" href="/css/commentPage.css">
+<body>
+<header data-th-replace="~{header :: #page-header}"></header>
+
+<div class="sidebar">
+  <div class="profile-section">
+    <div class="profile-image-container">
+      <img data-th-if="${session.loginUser.userPhoto == null}"
+           data-th-src="@{https://dgg7dnk35523.edge.naverncp.com/HZiW9aEJy7/user/profile/default.png(type=f,w=100,h=100)}"
+           class="profile-image"
+           alt="기본 프로필 이미지">
+      <img data-th-unless="${session.loginUser.userPhoto == null}"
+           data-th-src="@{https://dgg7dnk35523.edge.naverncp.com/HZiW9aEJy7/user/profile/} + ${session.loginUser.userPhoto} + '?type=f&w=100&h=100'"
+           class="profile-image"
+           alt="프로필 이미지">
+    </div>
+    <p class="profile-name" data-th-text="${session.loginUser.userNickname}">유저</p>
+  </div>
+
+  <button class="btn btn-primary w-100 mb-4" data-bs-toggle="modal" data-bs-target="#scheduleModal">여행 일정 만들기</button>
+
+  <nav class="sidebar-nav">
+    <div class="nav-section">
+
+      <div class="menu-group">
+        <h3 class="menu-heading">여행</h3>
+        <ul class="menu-list">
+          <li><a href="/mypage/preparing">여행 준비</a></li>
+          <li><a href="/mypage/upcoming" >여행 시작</a></li>
+          <li><a href="/mypage/completed">여행 종료</a></li>
+        </ul>
+      </div>
+
+      <div class="menu-group">
+        <h3 class="menu-heading">게시판</h3>
+        <ul class="menu-list">
+          <li><a href="/mypage/boardpage" data-th-classappend="${#httpServletRequest.requestURI == '/mypage/boardpage' ? 'active' : ''}">게시글 목록</a></li>
+          <li><a href="/mypage/commentpage" data-th-classappend="${#httpServletRequest.requestURI == '/mypage/commentpage' ? 'active' : ''}">댓글 목록</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+</div>
+
+
+<main class="main-content">
+  <div class="container">
+    <h1>댓글 목록</h1>
+    <table>
+      <thead>
+      <tr>
+        <th>게시글 분류 번호</th>
+        <th>좋아요</th>
+        <th>게시판 제목</th>
+        <th>내용</th>
+        <th>작성일</th>
+        <th>작성시간</th>
+        <th>작성글로</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr data-th-each="comment : ${commentList}">
+        <td data-th-switch="${comment.boardtypeNo}">
+            <span data-th-case="1">질문</span>
+            <span data-th-case="2">동행</span>
+            <span data-th-case="3">후기</span>
+            <span data-th-case="*">#</span>
+        </td>
+        <td data-th-text="${comment.commentLike}"></td>
+        <td><span data-th-text="${comment.boardTitle}" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: inline-block; max-width: 200px;"/></td>
+        <td><span data-th-text="${comment.commentContent}" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: inline-block; max-width: 200px;"/></td>
+        <td data-th-text="${#dates.format(comment.commentCreatedDate, 'yyyy-MM-dd')}"></td>
+        <td data-th-text="${#dates.format(comment.commentCreatedDate, 'HH:mm:ss')}"></td>
+        <td>
+          <a
+              href="#"
+              data-th-href="${comment.boardtypeNo == 1 ? '/question/view?boardNo=' + comment.boardNo
+                  : comment.boardtypeNo == 2 ? '/companion/view?boardNo=' + comment.boardNo
+                  : comment.boardtypeNo == 3 ? '/review/view?boardNo=' + comment.boardNo
+                  : '#'}"
+              class="btn btn-primary btn-sm"
+              data-th-text="'이동'">
+          </a>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+
+    <div class="row mb-3">
+      <div class="col-md-6 offset-md-3">
+        <form class="d-flex" action="/mypage/commentpage" method="get">
+          <select name="searchType" class="form-select me-2" style="width: auto;">
+            <option value="commentContent" data-th-selected="${searchType == 'commentContent'}">댓글내용</option>
+          </select>
+          <input type="text" name="searchText" class="form-control me-2"
+                 data-th-value="${searchText}" placeholder="검색어를 입력하세요">
+          <button class="btn btn-outline-primary" type="submit">검색</button>
+        </form>
+      </div>
+    </div>
+
+
+    <div class="text-center mb-4">
+      <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+          <li class="page-item" data-th-classappend="${pageNo == 1 ? 'disabled' : ''}">
+            <a class="page-link" data-th-href="@{/mypage/commentpage(pageNo=${pageNo - 1},pageSize=${pageSize})}"
+               aria-label="Previous">
+              <span aria-hidden="true">&laquo;</span>
+            </a>
+          </li>
+
+          <li class="page-item" data-th-each="i : ${#numbers.sequence(1, pageCount)}"
+              data-th-classappend="${i == pageNo ? 'active' : ''}">
+            <a class="page-link"
+               data-th-href="@{/mypage/commentpage(pageNo=${i},pageSize=${pageSize})}"
+               data-th-text="${i}">1</a>
+          </li>
+
+          <li class="page-item" data-th-classappend="${pageNo >= pageCount ? 'disabled' : ''}">
+            <a class="page-link" data-th-href="@{/mypage/commentpage(pageNo=${pageNo + 1},pageSize=${pageSize})}"
+               aria-label="Next">
+              <span aria-hidden="true">&raquo;</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </div>
+</main>
+
+</body>
+</html>

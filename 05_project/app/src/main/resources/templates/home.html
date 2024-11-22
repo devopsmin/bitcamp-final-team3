@@ -14,6 +14,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Do+Hyeon&display=swap" rel="stylesheet">
 
 
+
 <style>
   @font-face {
     font-family: 'MaplestoryOTFBold';
@@ -143,7 +144,36 @@
   }
 </style>
 
-<div class="container d-flex justify-content-center align-items-center vh-99" style="margin-bottom: 400px; margin-top: 150px;">
+<style>
+  .card-title {
+    display: -webkit-box;
+    -webkit-line-clamp: 2; /* 최대 2줄 */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: normal;
+  }
+
+  .card-body {
+    height: 150px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+   .card-text {
+    margin-top: 4px;
+    margin-bottom: 10px; /
+    letter-spacing: 0.5px;
+    text-align: center;
+  }
+
+  .card-text span {
+    margin-right: 10px;
+  }
+</style>
+
+<div class="container d-flex justify-content-center align-items-center vh-99" style="margin-bottom: 200px; margin-top: 150px;">
   <div class="row w-100">
     <div class="col-md-6 align-items-start text-start">
       <p class="title-text">
@@ -189,9 +219,42 @@
   </div>
 </div>
 
+<div class="container mt-5">
+  <h1 class="text-center mb-4" style="font-size: 2.0rem;">제주도</h1>
+  <div id="top-board-carousel" class="carousel slide" data-bs-ride="carousel">
+    <div class="carousel-inner" id="carousel-inner1">
+      <!-- 슬라이드 아이템이 동적으로 추가됩니다 -->
+    </div>
+    <button class="carousel-control-prev" type="button" data-bs-target="#top-board-carousel" data-bs-slide="prev">
+      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">Previous</span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#top-board-carousel" data-bs-slide="next">
+      <span class="carousel-control-next-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">Next</span>
+    </button>
+  </div>
+</div>
+
+<div class="container mt-5">
+  <h1 class="text-center mb-4" style="font-size: 2.0rem;">서울</h1>
+  <div id="top-board-carousel2" class="carousel slide" data-bs-ride="carousel">
+    <div class="carousel-inner" id="carousel-inner2">
+      <!-- 슬라이드 아이템이 동적으로 추가됩니다 -->
+    </div>
+    <button class="carousel-control-prev" type="button" data-bs-target="#top-board-carousel2" data-bs-slide="prev">
+      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">Previous</span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#top-board-carousel2" data-bs-slide="next">
+      <span class="carousel-control-next-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">Next</span>
+    </button>
+  </div>
+</div>
 
 <div class="container mt-5" style="margin-bottom: 150px;">
-  <h1 class="text-center mb-4">여행 베스트 후기 목록</h1>
+  <h1 class="text-center mb-4" style="font-size: 2.0rem;">베스트 후기 게시글</h1>
 
   <div id="carouselReviews" class="carousel slide" data-bs-ride="carousel">
     <div class="carousel-inner" id="carousel-inner">
@@ -213,6 +276,134 @@
     </div>
   </div>
 </div>
+
+<script>
+  async function fetchTopBoards2() {
+    try {
+      const response = await fetch('question/api/top-list-seoul');
+      const boardList = await response.json();
+
+      const carouselInner = document.getElementById('carousel-inner2');
+      carouselInner.innerHTML = '';
+
+      const chunkSize = 4;
+      for (let i = 0; i < boardList.length; i += chunkSize) {
+        const slideItems = boardList.slice(i, i + chunkSize);
+        const slide = document.createElement('div');
+        slide.className = `carousel-item ${i === 0 ? 'active' : ''}`;
+
+        const row = document.createElement('div');
+        row.className = 'd-flex justify-content-center gap-3';
+
+        slideItems.forEach(board => {
+          const boardItem = document.createElement('div');
+          boardItem.className = 'card text-center';
+          boardItem.style.width = '18rem';
+
+          const stateName = board.trip && board.trip.city && board.trip.city.state ? board.trip.city.state.stateName : 'default';
+          const cityName = board.trip && board.trip.city ? board.trip.city.cityName : 'default';
+          const imagePath = `/images/city/${board.stateName}/${board.stateName} ${board.cityName}.jpg`;
+
+
+          boardItem.innerHTML = `
+            <a href="/question/view?boardNo=${board.boardNo}" style="text-decoration: none; color: inherit;">
+              <img
+                src="${imagePath}"
+                alt="${board.cityName || '이미지 없음'}"
+                class="img-thumbnail"
+                style="width: 100%; height: 330px; object-fit: cover;"
+              />
+              <div class="card-body">
+                <h5 class="card-title">${board.title}</h5>
+                <div>
+                  <p class="card-text">${board.stateName || '도시 정보 없음'}</p>
+                  <p class="card-text">
+                    <span>❤️ ${board.likeCount}</span>
+                    <span>⭐ ${board.favorCount}</span>
+                    <span>👀 ${board.viewCount}</span>
+                    <span>💬 ${board.commentCount}</span>
+                  </p>
+                </div>
+              </div>
+            </a>
+          `;
+          row.appendChild(boardItem);
+        });
+
+        slide.appendChild(row);
+        carouselInner.appendChild(slide);
+      }
+    } catch (error) {
+      console.error('Error fetching top boards:', error);
+    }
+  }
+
+  fetchTopBoards2();
+</script>
+
+<script>
+  async function fetchTopBoards() {
+    try {
+      const response = await fetch('question/api/top-list');
+      const boardList = await response.json();
+
+      const carouselInner = document.getElementById('carousel-inner1');
+      carouselInner.innerHTML = '';
+
+      const chunkSize = 4;
+      for (let i = 0; i < boardList.length; i += chunkSize) {
+        const slideItems = boardList.slice(i, i + chunkSize);
+        const slide = document.createElement('div');
+        slide.className = `carousel-item ${i === 0 ? 'active' : ''}`;
+
+        const row = document.createElement('div');
+        row.className = 'd-flex justify-content-center gap-3';
+
+        slideItems.forEach(board => {
+          const boardItem = document.createElement('div');
+          boardItem.className = 'card text-center';
+          boardItem.style.width = '18rem';
+
+          const stateName = board.trip && board.trip.city && board.trip.city.state ? board.trip.city.state.stateName : 'default';
+          const cityName = board.trip && board.trip.city ? board.trip.city.cityName : 'default';
+          const imagePath = `/images/city/${board.stateName}/${board.stateName} ${board.cityName}.jpg`;
+
+
+          boardItem.innerHTML = `
+            <a href="/question/view?boardNo=${board.boardNo}" style="text-decoration: none; color: inherit;">
+              <img
+                src="${imagePath}"
+                alt="${board.cityName || '이미지 없음'}"
+                class="img-thumbnail"
+                style="width: 100%; height: 330px; object-fit: cover;"
+              />
+              <div class="card-body">
+                <h5 class="card-title">${board.title}</h5>
+                <div>
+                  <p class="card-text">${board.stateName || '도시 정보 없음'}</p>
+                  <p class="card-text">
+                    <span>❤️ ${board.likeCount}</span>
+                    <span>⭐ ${board.favorCount}</span>
+                    <span>👀 ${board.viewCount}</span>
+                    <span>💬 ${board.commentCount}</span>
+                  </p>
+                </div>
+              </div>
+            </a>
+          `;
+          row.appendChild(boardItem);
+        });
+
+        slide.appendChild(row);
+        carouselInner.appendChild(slide);
+      }
+    } catch (error) {
+      console.error('Error fetching top boards:', error);
+    }
+  }
+
+  fetchTopBoards();
+</script>
 
 
 <script>

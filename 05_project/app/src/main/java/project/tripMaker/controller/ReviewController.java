@@ -140,8 +140,8 @@ public class ReviewController {
     }
 
     model.addAttribute("topBoards", topBoards);
-    model.addAttribute("list", boardList);
     model.addAttribute("sort", sort);
+    model.addAttribute("list", boardList);
     model.addAttribute("pageNo", pageNo);
     model.addAttribute("pageSize", pageSize);
     model.addAttribute("pageCount", pageCount);

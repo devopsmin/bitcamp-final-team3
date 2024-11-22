@@ -2,6 +2,7 @@ package project.tripMaker.config;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.time.format.DateTimeFormatter;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -12,9 +13,11 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import project.tripMaker.service.BenService;
 import project.tripMaker.service.CustomOAuth2UserService;
 import project.tripMaker.service.UserService;
 import project.tripMaker.user.OAuth2UserInfo;
+import project.tripMaker.vo.Ben;
 import project.tripMaker.vo.User;
 
 @RequiredArgsConstructor
@@ -23,6 +26,7 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
   private final UserService userService;
   private final CustomOAuth2UserService customOAuth2UserService;
+  private final BenService benService;
 
   @Override
   public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
@@ -38,6 +42,22 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
     try {
       User user = processOAuth2User(userInfo);
+
+      if (user.getUserBlock() == 1 || user.getUserBlock() == 2) {
+        Ben ben = benService.getByUserNo(user.getUserNo());
+
+        response.setContentType("application/json;charset=UTF-8");
+        response.setStatus(403);
+
+        if (ben != null && ben.getUnbanDate() != null) {
+          response.getWriter().write("정지된 계정입니다. 해제일: " +
+              ben.getUnbanDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+        } else {
+          response.getWriter().write("영구 정지된 계정입니다.");
+        }
+        return;
+      }
+
 
       if ("소셜로그인".equals(user.getUserTel())) {
         HttpSession session = request.getSession();

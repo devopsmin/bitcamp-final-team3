@@ -782,7 +782,7 @@ function initializeLoginForm() {
             }
         }
 
-        loginForm.addEventListener('submit', function(e) {
+        loginForm.addEventListener('submit', function (e) {
             e.preventDefault();
             const formData = new FormData(this);
             formData.set('saveEmail', saveEmailCheckbox.checked);
@@ -800,18 +800,23 @@ function initializeLoginForm() {
                     return;
                 }
 
-                const data = await response.json();
+                const responseText = await response.text(); // 응답 텍스트 받기
 
-                if (data && data.error) {
+                if (responseText === "Authentication successful!") {
+                    // 성공 처리
+                    console.log("Login successful!");
+                    window.location.reload(); // 필요에 따라 페이지 새로고침
+                } else {
+                    // 실패 메시지 출력
                     const errorDiv = document.querySelector('#loginModalContent .alert-danger');
                     if (!errorDiv) {
                         const newErrorDiv = document.createElement('div');
                         newErrorDiv.className = 'alert alert-danger';
                         newErrorDiv.style.marginBottom = '1rem';
                         loginForm.insertBefore(newErrorDiv, loginForm.firstChild);
-                        newErrorDiv.textContent = data.error;
+                        newErrorDiv.textContent = responseText;
                     } else {
-                        errorDiv.textContent = data.error;
+                        errorDiv.textContent = responseText;
                         errorDiv.style.display = 'block';
                     }
                 }
