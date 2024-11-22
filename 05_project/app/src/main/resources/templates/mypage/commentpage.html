@@ -2,7 +2,7 @@
 <html>
 <head data-th-replace="~{header :: head}"></head>
 <link rel="stylesheet" href="/css/userpage.css">
-<link rel="stylesheet" href="/css/adminUserList.css">
+<link rel="stylesheet" href="/css/commentPage.css">
 <body>
 <header data-th-replace="~{header :: #page-header}"></header>
 
@@ -53,24 +53,28 @@
     <table>
       <thead>
       <tr>
-        <th>댓글 번호</th>
-        <th>게시판 번호</th>
         <th>게시글 분류 번호</th>
-        <th>작성자</th>
+        <th>좋아요</th>
+        <th>게시판 제목</th>
         <th>내용</th>
         <th>작성일</th>
+        <th>작성시간</th>
         <th>작성글로</th>
       </tr>
       </thead>
       <tbody>
       <tr data-th-each="comment : ${commentList}">
-        <td data-th-text="${comment.commentNo}"></td>
-        <td data-th-text="${comment.boardNo}"></td>
-        <td data-th-text="${comment.boardtypeNo}"></td>
-        <td data-th-text="${comment.writer.userNickname}"></td>
-        <td><span data-th-text="${comment.commentContent}" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: inline-block; max-width: 200px;"
-          /></td>
-        <td data-th-text="${#dates.format(comment.commentCreatedDate, 'yyyy-MM-dd HH:mm:ss')}"></td>
+        <td data-th-switch="${comment.boardtypeNo}">
+            <span data-th-case="1">질문</span>
+            <span data-th-case="2">동행</span>
+            <span data-th-case="3">후기</span>
+            <span data-th-case="*">#</span>
+        </td>
+        <td data-th-text="${comment.commentLike}"></td>
+        <td><span data-th-text="${comment.boardTitle}" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: inline-block; max-width: 200px;"/></td>
+        <td><span data-th-text="${comment.commentContent}" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: inline-block; max-width: 200px;"/></td>
+        <td data-th-text="${#dates.format(comment.commentCreatedDate, 'yyyy-MM-dd')}"></td>
+        <td data-th-text="${#dates.format(comment.commentCreatedDate, 'HH:mm:ss')}"></td>
         <td>
           <a
               href="#"
@@ -90,7 +94,6 @@
       <div class="col-md-6 offset-md-3">
         <form class="d-flex" action="/mypage/commentpage" method="get">
           <select name="searchType" class="form-select me-2" style="width: auto;">
-            <option value="boardtypeNo" data-th-selected="${searchType == 'boardtypeNo'}">보드타입</option>
             <option value="commentContent" data-th-selected="${searchType == 'commentContent'}">댓글내용</option>
           </select>
           <input type="text" name="searchText" class="form-control me-2"

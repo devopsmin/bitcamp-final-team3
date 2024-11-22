@@ -13,6 +13,7 @@
         <result property="commentCreatedDate" column="comment_created_date"/>
         <result property="commentLike" column="comment_like_count"/>
         <result property="boardtypeNo" column="boardtype_no"/>
+        <result property="boardTitle" column="board_title"/>
 
         <association property="writer" javaType="project.tripMaker.vo.User">
             <id property="userNo" column="user_no" javaType="java.lang.Long"/>
@@ -169,24 +170,25 @@
             c.comment_no,
             b.board_no,
             b.boardtype_no,
+            b.board_title,
             c.comment_content,
             c.comment_created_date,
-            u.user_nickname
+            u.user_nickname,
+            COALESCE(cl.comment_like_count, 0) AS comment_like_count
         FROM
             comment c
         JOIN
             user u ON c.user_no = u.user_no
         JOIN
             board b ON c.board_no = b.board_no
+        LEFT JOIN
+            commentlike_count_view cl ON c.comment_no = cl.comment_no
         WHERE
             u.user_no = #{userNo}
             <if test="searchType != null and searchText != null">
                 <choose>
                     <when test="searchType == 'commentContent'">
                         AND c.comment_content LIKE CONCAT('%', #{searchText}, '%')
-                    </when>
-                    <when test="searchType == 'boardtypeNo'">
-                        AND b.boardtype_no LIKE CONCAT('%', #{searchText}, '%')
                     </when>
                 </choose>
             </if>
@@ -208,9 +210,6 @@
             <choose>
                 <when test="searchType == 'commentContent'">
                     AND c.comment_content LIKE CONCAT('%', #{searchText}, '%')
-                </when>
-                <when test="searchType == 'boardtypeNo'">
-                    AND b.boardtype_no LIKE CONCAT('%', #{searchText}, '%')
                 </when>
             </choose>
         </if>

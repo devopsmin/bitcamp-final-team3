@@ -33,22 +33,22 @@ public class MyPageController {
     private final QuestionService questionService;
     private final CommentService commentService;
 
-//    @GetMapping("userpage")
-//    public String myPage(HttpSession session) {
-//
-//        User loginUser = (User) session.getAttribute("loginUser");
-//
-//        if (loginUser == null) {
-//            session.setAttribute("errorMessage", "로그인이 필요합니다.");
-//            return "redirect:/auth/login";
-//        }
-//
-//        if (loginUser.getUserRole().name().equals("ROLE_ADMIN")){
-//            return "redirect:/admin";
-//        }
-//
-//        return "mypage/userpage";
-//    }
+   // @GetMapping("userpage")
+   // public String myPage(HttpSession session) {
+   //
+   //     User loginUser = (User) session.getAttribute("loginUser");
+   //
+   //     if (loginUser == null) {
+   //         session.setAttribute("errorMessage", "로그인이 필요합니다.");
+   //         return "redirect:/auth/login";
+   //     }
+   //
+   //     if (loginUser.getUserRole().name().equals("ROLE_ADMIN")){
+   //         return "redirect:/admin";
+   //     }
+   //
+   //     return "mypage/userpage";
+   // }
 
     @GetMapping("preparing")
     public String preparing(HttpSession session, Model model) {
