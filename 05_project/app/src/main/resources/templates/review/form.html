@@ -151,31 +151,36 @@
 
             // 일정 카드 스타일
             scheduleItem.innerHTML = `
-              <div class="d-flex gap-3">
+              <div class="d-flex gap-3 mx-auto md-5">
                 <div class="flex-shrink-0" style="width: 300px;">
-                  <div class="p-3 border rounded shadow-sm d-flex justify-content-between align-items-center">
-                    <div class="me-2 align-items-start">
+                  <div class="p-3 border rounded shadow-sm d-flex justify-content-between align-items-center" style="height: 100px;">  <!-- 높이 고정 -->
+                    <div class="d-flex flex-shrink-1 me-2 align-items-start" style="min-width: 0;">
                       <div class="d-flex">
                         <div class="badge bg-${badgeColor} text-white" style="font-size: 1rem; border-radius: 50%; width: 25px; height: 25px; display: flex; align-items: center; justify-content: center;">
                           ${schedule.scheduleRoute}
                         </div>
                         <div class="ms-2">
-                          <p class="mb-1 text-primary" style="font-size: 0.9rem;">
+                          <p class="mb-1 text-primary" style="font-size: 0.9rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 150px; font-weight: bold;">
                             ${schedule.location ? schedule.location.locationName : 'N/A'}
+                          </p>
+                          <p class="mb-1" style="font-size: 0.8rem; max-width: 150px;">
+                            ${schedule.location ? schedule.location.locationAddr : 'N/A'}
                           </p>
                         </div>
                       </div>
                     </div>
                     <div>
                       <img src="${schedule.location && schedule.location.locationPhoto ? schedule.location.locationPhoto : 'https://via.placeholder.com/70x70'}"
-                           alt="Location Photo" class="img-thumbnail" style="width: 70px; height: 70px;">
+                           alt="Location Photo" class="img-thumbnail" style="width: 70px; height: 70px; object-fit: cover;">
                     </div>
                   </div>
                 </div>
 
                 <!-- 글을 쓸 수 있는 textarea 추가 -->
                 <div class="flex-grow-1">
-                  <textarea class="form-control schedule-note" rows="2" placeholder="내용을 입력하세요" style="height: 112px; background-color: #f8f9fa;"></textarea>
+                  <textarea
+                  class="form-control schedule-note" rows="2" placeholder="내용을 입력하세요"
+                   style="height: 100px; background-color: #f8f9fa;"></textarea>
                 </div>
               </div>
             `;
