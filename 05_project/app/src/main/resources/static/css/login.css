@@ -175,3 +175,65 @@
   background-color: #3bb89d;
   border-color: #3bb89d;
 }
+
+#loginModalContent .d-flex {
+    min-height: 24px;
+}
+
+#loginModalContent .form-check {
+    margin: 0;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+}
+
+#loginModalContent .form-check-input {
+    margin: 0;
+    position: relative;
+    vertical-align: middle;
+}
+
+#loginModalContent .form-check-label {
+    margin-left: 8px;
+    display: inline-flex;
+    align-items: center;
+}
+
+#loginModalContent .btn-group {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+#loginModalContent .btn-link {
+    margin: 0;
+    padding: 0;
+    line-height: 24px;
+    height: 24px;
+    display: inline-flex;
+    align-items: center;
+}
+
+#loginModalContent .mx-2 {
+    margin: 0 8px;
+    line-height: 24px;
+    height: 24px;
+    display: inline-flex;
+    align-items: center;
+}
+
+#loginModalContent .logo-text {
+    margin-bottom: 1.5rem;
+}
+
+#loginModalContent .logo-text img {
+    height: 60px;
+    width: auto;
+    object-fit: contain;
+}
+
+@media (max-width: 768px) {
+    #loginModalContent .logo-text img {
+        height: 45px;
+    }
+}
