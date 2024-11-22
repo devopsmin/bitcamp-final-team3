@@ -1,132 +1,199 @@
 <!DOCTYPE html>
-<html>
+<html xmlns:th="http://www.w3.org/1999/xhtml">
 
-    <head data-th-replace="~{header :: head}"></head>
+<head data-th-replace="~{header :: head}"></head>
 
-    <body>
-        <header data-th-replace="~{header :: #page-header}"></header>
-        <a data-th-href="@{/companion/form}" href="form.html">글쓰기</a>
-        <form>
-            <!-- 데이터 로딩 : 일반 게시판 데이터 -->
-            <label>제목</label><br>
-                <input name="boardTitle" type="text" data-th-value="${board.boardTitle}"
-                       style="border: none; outline: none;"><br><br>
-            <label>내용</label><br>
-                <textarea name="boardContent" data-th-text="${board.boardContent}"
-                          style="border: none; outline: none;"></textarea><br><br>
+<body>
+<header data-th-replace="~{header :: #page-header}"></header>
+<a data-th-href="@{/companion/form}" href="form.html">글쓰기</a>
+<form>
+    <!-- 데이터 로딩 : 일반 게시판 데이터 -->
+    <div class="mb-3">
+    <label>제목</label><br>
+        <input name="boardTitle" type="text" data-th-value="${board.boardTitle}"
+               style="border: none; outline: none;"><br><br>
+    </div>
+    <label>내용</label><br>
+        <textarea name="boardContent" data-th-text="${board.boardContent}"
+                  style="border: none; outline: none;"></textarea><br><br>
 
-            <!-- 데이터 로딩 : 여행일정 목록 + 동행정보 데이터 -->
-            <label>여행일정</label>
-                <div id="scheduleListContainer" style="display: flex;"></div>
+    <!-- 데이터 로딩 : 여행일정 목록 + 동행정보 데이터 -->
+    <div class="overflow-auto flex-grow-1">
+        <div class="d-flex flex-nowrap" id="columns-container">
+        </div>
+    </div>
 
-            <!-- 지도 : 여행일정 목록 좌표 표시 지도 -->
-            <div id="locationMap">
-                <div id="map" style="width: 550px; height: 400px;"></div>
-            </div>
+    <!-- 지도 : 여행일정 목록 좌표 표시 지도 -->
+    <div id="locationMap">
+        <div id="map" style="width: 550px; height: 400px;"></div>
+    </div>
 
-            <label>태그</label><br>
-                <input name="boardTag" type="text" data-th-value="${board.boardTag}"
-                       style="border: none; outline: none;"><br><br>
-        </form>
-        <button type="button" onclick="location.href='list'">목록</button>
-        <button data-th-onclick="|deleteBoard(${board.boardNo})|">삭제</button>
-        <br>
-    </body>
+    <label>태그</label><br>
+    <input name="boardTag" type="text" data-th-value="${board.boardTag}"
+           style="border: none; outline: none;"><br><br>
+</form>
+<button type="button" onclick="location.href='list'">목록</button>
+<button data-th-onclick="|deleteBoard(${board.boardNo})|">삭제</button>
+<br>
+</body>
 
-    <!-- 데이터 전달 : ScheduleList,  companionrecruitList 데이터를 JavaScript 로 전달(Thymeleaf => Javascript) -->
-    <script data-th-inline="javascript">
-        /*<![CDATA[*/
-        var scheduleList = /*[[${scheduleList}]]*/ [];
-        var companionrecruitList = /*[[${companionrecruitList}]]*/ [];
-        /*]]>*/
-    </script>
+<!-- 데이터 전달 : ScheduleList, companionrecruitList 데이터를 JavaScript 로 전달(Thymeleaf => Javascript) -->
+<script data-th-inline="javascript">
+    /*<![CDATA[*/
+    var scheduleList = /*[[${scheduleList}]]*/ [];
+    var companionrecruitList = /*[[${companionrecruitList}]]*/ [];
+    /*]]>*/
+</script>
 
-    <script>
-        // 데이터 로딩(여행일정 목록 + 동행정보 데이터) 및 태그 추가 함수 - scheduleList 데이터를 이용해 scheduleListContainer 에 태그 추가
-        document.addEventListener("DOMContentLoaded", function() {
-                // 페이지가 완전히 로드되었을 때 실행되는 코드
-                const container = document.getElementById("scheduleListContainer");
+<script>
+    // Step 6: Grouping schedules by day
+    let scheduleGroups = {};
+    scheduleList.forEach(schedule => {
+        if (!scheduleGroups[schedule.scheduleDay]) {
+            scheduleGroups[schedule.scheduleDay] = [];
+        }
+        scheduleGroups[schedule.scheduleDay].push(schedule);
+    });
 
-                // 기존의 scheduleListContainer 내용을 초기화
-                container.innerHTML = '';
+    // Step 1: Iterating through scheduleGroups
+    for (const [day, schedules] of Object.entries(scheduleGroups)) {
+        // Step 2: Finding the columns-container div
+        const columnsContainer = document.getElementById('columns-container');
 
-                // scheduleList 데이터를 일정의 '일차'별로 그룹화하여 저장하기 위한 객체
-                const scheduleGroups = {};
+        // Step 3: Creating the column-item div
+        const columnItem = document.createElement('div');
+        columnItem.className = 'column-item text-dark p-1';
+        columnItem.style.width = '300px';
+        columnItem.style.minWidth = '300px';
 
-                // scheduleList 배열의 각 일정 객체를 순회하면서 '일차'별로 그룹화
-                scheduleList.forEach(schedule => {
-                    // scheduleDay 값이 scheduleGroups에 없으면 빈 배열로 초기화
-                    if (!scheduleGroups[schedule.scheduleDay]) {
-                        scheduleGroups[schedule.scheduleDay] = [];
-                    }
-                    // 해당 일차의 배열에 현재 일정을 추가
-                    scheduleGroups[schedule.scheduleDay].push(schedule);
-                });
+        // Step 4: Creating the fw-bold div
+        const fwBoldDiv = document.createElement('div');
+        fwBoldDiv.className = 'fw-bold mb-2';
 
-                // 그룹화된 일정 데이터를 사용하여 일차별로 HTML 요소를 생성
-                for (const [day, schedules] of Object.entries(scheduleGroups)) {
-                    // 각 '일차'에 대한 컨테이너 생성
-                    const dayContainer = document.createElement('div');
-                    dayContainer.style.marginRight = '20px';
-                    dayContainer.className = `day-container-${day}`;
+        // Step 5: Setting text content for the fw-bold div
+        fwBoldDiv.textContent = 'Day ' + day;
 
-                    // '일차' 레이블 추가
-                    let dayLabel = `<div name="day" id="day">
-                                        <label>${day} 일차</label>&nbsp;&nbsp;&nbsp;
-                                    </div>`;
-                    dayContainer.innerHTML = dayLabel;
+        // Adding fw-bold div to column-item div
+        columnItem.appendChild(fwBoldDiv);
 
-                    // '전 일정 동행구함' 태그가 일차별로 한 번만 추가되도록 하기 위한 플래그
-                    let addedAllScheduleTag = false;
+        // Prevent duplicate schedules by using a Set to track unique schedule routes
+        const addedScheduleRoutes = new Set();
 
-                    // 각 일정(schedule)에 대한 HTML 요소 생성
-                    schedules.forEach(schedule => {
-                        // 일정 정보를 담을 div 요소 생성
-                        const scheduleDiv = document.createElement('div');
+        schedules.forEach(schedule => {
+            if (!addedScheduleRoutes.has(schedule.scheduleRoute)) {
+                // Mark this schedule route as added
+                addedScheduleRoutes.add(schedule.scheduleRoute);
 
-                        // companionrecruitList에서 현재 일정과 일치하는 데이터 찾기
-                        const companionRecruitData = companionrecruitList.find(recruit => recruit.scheduleNo === schedule.scheduleNo);
+                // Step 7: Creating the card structure
+                const cardDiv = document.createElement('div');
+                cardDiv.className = 'card border-0';
+                cardDiv.id = 'locationCard';
+                cardDiv.style.width = '100%';
+                cardDiv.style.height = '100px';
+                cardDiv.style.position = 'relative';
 
-                        // companionRecruitData 가 존재하면 추가 정보 처리
-                        if (companionRecruitData) {
-                            const { checked, checkedAll, recruitMaxNo } = companionRecruitData;
+                const alignItemsDiv = document.createElement('div');
+                alignItemsDiv.className = 'd-flex align-items-start gap-1 mt-1';
+                alignItemsDiv.style.height = '100%';
 
-                            // 전 일정 동행구함 조건이 만족되고, 아직 태그가 추가되지 않은 경우 추가
-                            if (!checked && checkedAll && !addedAllScheduleTag) {
-                                scheduleDiv.innerHTML += `<input type="text" value="전 일정 동행구함" style="border: none; outline: none;" readonly>
-                                                          <input name="recruitMaxNo" value="${recruitMaxNo}명" type="text" style="border: none; outline: none; padding: 0;" readonly><br>`;
-                                addedAllScheduleTag = true; // 태그가 추가되었음을 표시
-                            }
+                const positionRelativeDiv = document.createElement('div');
+                positionRelativeDiv.className = 'position-relative d-flex flex-column align-items-center';
+                positionRelativeDiv.style.height = '100%';
 
-                            // 여행 순서 정보 추가
-                            scheduleDiv.innerHTML += `<label> 여행 순서 </label>
-                                                      <input name="scheduleRoute" value="${schedule.scheduleRoute}" type="text" style="border: none; outline: none; padding: 0;" readonly><br>`;
+                const m2Div = document.createElement('div');
+                m2Div.className = 'm-2 d-flex justify-content-center align-items-center rounded-circle text-white';
+                m2Div.style.width = '20px';
+                m2Div.style.height = '20px';
+                m2Div.style.fontSize = '10px';
+                // Step 8-1: Setting text content for m2Div
+                m2Div.textContent = schedule.scheduleRoute;
 
-                            // 개별 일정에 대해 동행 구함 태그 추가 여부 결정
-                            if (checked && !checkedAll) {
-                                scheduleDiv.innerHTML += `<label> 여행 장소: </label>
-                                                          <input name="locationName" value="${schedule.location.locationName}" type="text" style="border: none; outline: none; padding: 0;" readonly>
-                                                          <input type="text" value="동행 구함" style="border: none; outline: none;" readonly>
-                                                          <input name="recruitMaxNo" value="${recruitMaxNo}명" type="text" style="border: none; outline: none; padding: 0;" readonly><br>`;
-                            } else {
-                                // 동행 구함 조건이 없을 때 기본 여행 장소 정보 추가
-                                scheduleDiv.innerHTML += `<label> 여행 장소: </label>
-                                                          <input name="locationName" value="${schedule.location.locationName}" type="text" style="border: none; outline: none; padding: 0;" readonly><br>`;
-                            }
-                        } else {
-                            // companionRecruitData가 없는 경우 기본 여행 정보만 추가
-                            scheduleDiv.innerHTML += `<label> 여행 순서 </label>
-                                                      <input name="scheduleRoute" value="${schedule.scheduleRoute}" type="text" style="border: none; outline: none; padding: 0;" readonly><br>
-                                                      <label> 여행 장소: </label>
-                                                      <input name="locationName" value="${schedule.location.locationName}" type="text" style="border: none; outline: none; padding: 0;" readonly><br>`;
-                        }
+                const positionAbsoluteDiv = document.createElement('div');
+                positionAbsoluteDiv.className = 'position-absolute';
+                positionAbsoluteDiv.style.width = '2px';
+                positionAbsoluteDiv.style.height = 'calc(100% - 20px)';
+                positionAbsoluteDiv.style.top = '30px';
+                positionAbsoluteDiv.style.left = '50%';
+                positionAbsoluteDiv.style.transform = 'translateX(-50%)';
 
-                        // 현재 일정에 대한 div를 일차 컨테이너에 추가
-                        dayContainer.appendChild(scheduleDiv);
-                    });
-                    // 일차 컨테이너를 전체 컨테이너에 추가
-                    container.appendChild(dayContainer);
-                }
-            });
-    </script>
+                const flexColumnDiv = document.createElement('div');
+                flexColumnDiv.className = 'd-flex flex-column align-items-start mt-2';
+
+                const locationTypeP = document.createElement('p');
+                locationTypeP.className = 'mb-0 bg-info rounded text-white p-1';
+                locationTypeP.style.fontSize = '12px';
+                locationTypeP.textContent = '관광명소';
+
+                const locationNameP = document.createElement('p');
+                locationNameP.className = 'fs-6 fw-bold mb-0';
+                // Step 8-2: Setting text content for locationNameP
+                locationNameP.textContent = schedule.location.locationName;
+
+                const locationImage = document.createElement('img');
+                locationImage.alt = 'Location Image';
+                locationImage.className = 'rounded me-3 h-100 ms-auto';
+                locationImage.style.width = '60px';
+                locationImage.style.objectFit = 'cover';
+                // Step 8-3: Setting src for locationImage
+                locationImage.src = schedule.location.locationPhoto;
+
+                const daySpan = document.createElement('span');
+                daySpan.className = 'day d-none';
+                // Step 8-4: Setting text content for daySpan
+                daySpan.textContent = schedule.scheduleDay;
+
+                const routeSpan = document.createElement('span');
+                routeSpan.className = 'route d-none';
+                // Step 8-5: Setting text content for routeSpan
+                routeSpan.textContent = schedule.scheduleRoute;
+
+                const scheduleNoSpan = document.createElement('span');
+                scheduleNoSpan.className = 'schedule-no d-none';
+                // Step 8-6: Setting text content for scheduleNoSpan
+                scheduleNoSpan.textContent = schedule.scheduleNo;
+
+                const locationXSpan = document.createElement('span');
+                locationXSpan.className = 'location-x d-none';
+                // Step 8-7: Setting text content for locationXSpan
+                locationXSpan.textContent = schedule.location.locationX;
+
+                const locationYSpan = document.createElement('span');
+                locationYSpan.className = 'location-y d-none';
+                // Step 8-8: Setting text content for locationYSpan
+                locationYSpan.textContent = schedule.location.locationY;
+
+                // Appending child elements to appropriate parent elements
+                positionRelativeDiv.appendChild(m2Div);
+                positionRelativeDiv.appendChild(positionAbsoluteDiv);
+
+                flexColumnDiv.appendChild(locationTypeP);
+                flexColumnDiv.appendChild(locationNameP);
+
+                alignItemsDiv.appendChild(positionRelativeDiv);
+                alignItemsDiv.appendChild(flexColumnDiv);
+                alignItemsDiv.appendChild(locationImage);
+                alignItemsDiv.appendChild(daySpan);
+                alignItemsDiv.appendChild(routeSpan);
+                alignItemsDiv.appendChild(scheduleNoSpan);
+                alignItemsDiv.appendChild(locationXSpan);
+                alignItemsDiv.appendChild(locationYSpan);
+
+                cardDiv.appendChild(alignItemsDiv);
+
+                // Adding cardDiv to columnItem
+                columnItem.appendChild(cardDiv);
+            }
+        });
+
+        // Step 3: Adding column-item div to columns-container
+        columnsContainer.appendChild(columnItem);
+    }
+</script>
+
+<script>
+    function deleteBoard(no) {
+        location.href = "delete?boardNo=" + no;
+    }
+</script>
+
 </html>

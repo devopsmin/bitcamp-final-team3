@@ -93,20 +93,34 @@
         </div>
 
         <!-- 페이지 네비게이션 -->
-        [
-        <a data-th-href="@{/companion/list(pageNo=${pageNo - 1},pageSize=${pageSize})}" data-th-if="${pageNo > 1}"
-            href="list.html">이전</a>
-        <span data-th-unless="${pageNo > 1}">이전</span>
-        ]
+        <div class="text-center mb-4">
+            <span data-th-if="${pageNo > 1}">
+                <a class="btn btn-outline-secondary btn-sm" data-th-href="@{/companion/list(pageNo=${pageNo - 1},pageSize=${pageSize})}" data-th-if="${pageNo > 1}"
+                href="list.html">
+                [이전]
+                </a>
+            </span>
+            <span data-th-unless="${pageNo > 1}" class="btn btn-outline-secondary btn-sm disabled">[이전]</span>
 
-        <span data-th-text="${pageNo}">1</span>
+            <span data-th-each="i : ${#numbers.sequence(1, pageCount)}">
+                <a class="btn btn-outline-secondary btn-sm"
+                data-th-href="@{'list'(pageNo=${i}, sort=${param.sort}, option=${option}, query=${query})}"
+                data-th-classappend="${i == pageNo} ? ' active' : ''"
+                data-th-text="${i}">
+                1
+                </a>
+            </span>
 
-        [
-        <a data-th-href="@{/companion/list(pageNo=${pageNo + 1},pageSize=${pageSize})}" data-th-if="${pageNo < pageCount}"
-            href="list.html">다음</a>
-        <span data-th-unless="${pageNo < pageCount}">다음</span>
-        ]
-
+            <span data-th-if="${pageNo < pageCount}">
+                <a class="btn btn-outline-secondary btn-sm" data-th-href="@{/companion/list(pageNo=${pageNo + 1},pageSize=${pageSize})}"
+                href="list.html">
+                [다음]
+                </a>
+            </span>
+            <span data-th-unless="${pageNo < pageCount}" class="btn btn-outline-secondary btn-sm disabled">
+            [다음]
+            </span>
+        </div>
     </div>
 
     <script>

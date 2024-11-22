@@ -178,7 +178,11 @@
             s.schedule_day,
             s.schedule_route,
             l.location_no,
-            l.location_name
+            l.location_name,
+            l.location_photo,
+            l.location_x,
+            l.location_y,
+            l.city_code
         FROM
             schedule s
                 left outer join location l

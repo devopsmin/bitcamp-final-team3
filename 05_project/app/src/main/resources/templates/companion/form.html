@@ -8,306 +8,222 @@
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
 <body>
-    <div class="container mt-5">
-        <h1 class="mb-4">여행 동행 작성하기</h1>
+<!--Naver MAP API-->
+<script src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=0zojwabqn9&submodules=geocoder"></script>
 
-        <div class="mt-5">
-            <!-- 여행일정 선택 및 선택 -->
-            <form>
-                <div name="Trip" id="Trip">
-                    <label for="tripSelect">여행 일정선택</label>
-                    <select id="tripSelect" name="tripNo" onchange="storeTripNo(); loadScheduleList();">
-                        <option value="" disabled selected>여행 일정을 선택하세요</option>
-                        <option data-th-each="trip : ${tripList}" data-th-value="${trip.tripNo}"
+<div class="container mt-5">
+    <h1 class="mb-4">여행 동행 작성하기</h1>
+
+    <div class="mt-5">
+        <!-- 여행일정 선택 및 선택 -->
+        <form>
+            <div name="Trip" id="Trip" class="mb-4">
+                <label for="tripSelect" class="form-label">여행 일정선택</label>
+                <select id="tripSelect" name="tripNo" class="form-select">
+                    <option value="" disabled selected>여행 일정을 선택하세요</option>
+                    <option data-th-each="trip : ${tripList}" data-th-value="${trip.tripNo}"
                             data-th-text="${trip.tripTitle}">
-                        </option>
-                    </select>
+                    </option>
+                </select>
+            </div>
+
+            <!-- 동행모집 데이터 태그 랜더링 -->
+            <div name="Companionrecruit" id="Companionrecruit">
+                <!-- 동행모집 데이터 랜더링 : 여행일정 정보 + 동행모집 체크(전체 체크 + 선택 체크) -->
+                <div id="scheduleListContainer" style="display: flex;"></div>
+            </div><br><br>
+
+            <!-- 지도 영역 -->
+            <div class="container" style="max-width: 1200px; margin: 0 auto;">
+                <div id="map" style="width: 1200px; height: 400px;"></div>
+            </div><br>
+
+            <!-- 일반 게시판 데이터 -->
+            <div name="Board" id="Board">
+                <div class="mb-3">
+                    <label for="boardTitle" class="form-label">제목</label>
+                    <input id="boardTitle" name="boardTitle" type="text" class="form-control" placeholder="제목을 입력해 주세요." required maxlength="150">
                 </div>
-
-
-                <!-- 동행모집 데이터 태그 랜더링 -->
-                <div name="Companionrecruit" id="Companionrecruit">
-                    <!-- 동행모집 데이터 랜더링 : 여행일정 정보 + 동행모집 체크(전체 체크 + 선택 체크) -->
-                    <div id="scheduleListContainer" style="display: flex;"></div>
+                <div class="mb-3">
+                    <label for="boardTitle" class="form-label">내용</label>
+                    <textarea id="boardContent" name="boardContent" type="text" class="form-control" placeholder="내용을 입력해 주세요." required maxlength="300"></textarea><br><br>
                 </div>
-
-
-                <!-- 일반 게시판 데이터 -->
-                <div name="Board" id="Board">
-                    <div class="mb-3">
-                        <label for="boardTitle" class="form-label">제목</label>
-                        <input id="boardTitle" name="boardTitle" type="text" class="form-control" placeholder="제목을 입력해 주세요." required maxlength="150">
-                    </div>
-                    <div class="mb-3">
-                        <label for="boardTitle" class="form-label">내용</label>
-                        <textarea id="boardContent" name="boardContent" type="text" class="form-control" placeholder="내용을 입력해 주세요." required maxlength="300"></textarea><br><br>
-                    </div>
-                    <div class="mb-3">
-                        <label for="boardTag" class="form-label" >태그</label>
-                        <input id="boardTag" name="boardTag" type="text" class="form-control" placeholder="#태그를 입력해 주세요." required maxlength="15">
-                    </div>
-                    <!-- 파일 첨부 -->
-                    <div class="mb-3">
-                        <label for="file-upload" class="form-label">파일 첨부</label>
-                        <input id="file-upload" name="imageFiles" type="file" class="form-control" multiple onchange="previewImages()">
-                    </div>
-                    <button type="button" onclick="location.href='list'">목록</button>
-                    <button type="button" onclick="submitBoardForm()">글등록</button>
+                <div class="mb-3">
+                    <label for="boardTag" class="form-label" >태그</label>
+                    <input id="boardTag" name="boardTag" type="text" class="form-control" placeholder="#태그를 입력해 주세요." required maxlength="15">
                 </div>
-            </form>
-        </div>
+                <!-- 파일 첨부 -->
+                <div class="mb-3">
+                    <label for="file-upload" class="form-label">파일 첨부</label>
+                    <input id="file-upload" name="imageFiles" type="file" class="form-control" multiple onchange="previewImages()">
+                </div>
+                <button type="button" onclick="location.href='list'">목록</button>
+                <button type="button" onclick="submitBoardForm()">글등록</button>
+            </div>
+        </form>
     </div>
-    <script>
-        // TripList 중 선택된 TripNo 값 저장
-        let storedTripNo = null;
+</div>
 
-        function storeTripNo() {
-            const tripSelect = document.getElementById("tripSelect");
-            storedTripNo = tripSelect.value;
-        }
+<!-- JavaScript -->
+<script>
+    var mapOptions = {
+        center: new naver.maps.LatLng(37.3595704, 127.105399), // 지도의 초기 위치 설정
+        zoom: 10 // 초기 확대 수준
+    };
 
+    // 네이버 지도를 #map 요소에 렌더링
+    var map = new naver.maps.Map('map', mapOptions);
 
-        // (동행모집 : 여행일정 데이터 랜더링) 함수 - 선택된 Trip의 TripNo값 이용
-        function loadScheduleList() {
-            if (!storedTripNo) {
-                return;
-            }
+    // 사용자가 선택한 여행 일정의 위치로 지도를 이동시키는 함수
+    document.getElementById('tripSelect').addEventListener('change', function () {
+        const tripNo = this.value;
+        const formData = new URLSearchParams();
+        formData.append('tripNo', tripNo);
 
-            fetch('/companion/selectSchedule', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: new URLSearchParams({ tripNo: storedTripNo })
-            })
-                .then(response => response.json())
-                .then(scheduleList => {
-                    const container = document.getElementById("scheduleListContainer");
-                    container.innerHTML = '';
+        fetch('/companion/selectSchedule', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: formData.toString()
+        })
+        .then(response => response.json())
+        .then(data => {
+            const scheduleList = data;
 
-                    const scheduleGroups = {};
-
-                    scheduleList.forEach(schedule => {
-                        if (!scheduleGroups[schedule.scheduleDay]) {
-                            scheduleGroups[schedule.scheduleDay] = [];
-                        }
-                        scheduleGroups[schedule.scheduleDay].push(schedule);
-                    });
-
-                    for (const [day, schedules] of Object.entries(scheduleGroups)) {
-                        const dayContainer = document.createElement('div');
-                        dayContainer.style.marginRight = '20px';
-                        dayContainer.className = `day-container-${day}`;
-
-                        dayContainer.innerHTML = `  <div name="day" id="day">
-                                                        <label>${day} 일차</label>&nbsp&nbsp&nbsp
-                                                    </div>
-                                                    <div name="checkAll" id ="checkAll">
-                                                        <label>전체 체크</label><input name="checkedAll" id="checkedAll" type="checkbox" onclick="toggleAllSchedules(this, '${day}')" />
-                                                    </div>
-                                                    <div class="checkedAllrecruitMaxNoContainer" style="display: none;">
-                                                        <label>동행모집 최대 인원수: </label>
-                                                        <input name="recruitMaxNo" type="number" min="0" max="100" step="1">
-                                                    </div>
-                                              `;
-
-                        schedules.forEach(schedule => {
-                            const scheduleDiv = document.createElement('div');
-                            scheduleDiv.innerHTML = `
-                                                    <div name="Companionrecruitdata${schedule.scheduleNo}" id="Companionrecruitdata${schedule.scheduleNo}">
-                                                        <input name="scheduleNo" value="${schedule.scheduleNo}" type="hidden">
-                                                        <input name="boardNo" value="${schedule.boardNo}" type="hidden">
-                                                        <label> 여행 순서 </label>
-                                                            <input name="scheduleRoute" value="${schedule.scheduleRoute}" type="text" style="border: none; outline: none; padding: 0;" readonly><br>
-                                                        <label> 여행 장소: </label>
-                                                            <input name="locationName" value="${schedule.location.locationName}" type="text" style="border: none; outline: none; padding: 0;" readonly><br>
-                                                        <label> 동행모집 선택: </label>
-                                                            <input name="checked" type="checkbox" value="0" onchange="toggleRecruitMaxNoInput(this)"/><br>
-                                                        <div class="recruitMaxNoContainer" style="display: none;">
-                                                            <label>동행모집 최대 인원수: </label>
-                                                            <input name="recruitMaxNo" type="number" min="0" max="100" step="1">
-                                                        </div>
-                                                        <br><br>
-                                                    </div>
-                            `;
-                            dayContainer.appendChild(scheduleDiv);
-                        });
-
-                        container.appendChild(dayContainer);
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                });
-        }
-
-
-        // (Onclick 함수) 동행모집 선택(전체) onclick 동작 함수
-        function toggleAllSchedules(allCheckbox, day) {
-            const dayContainer = document.querySelector(`.day-container-${day}`);
-            const checkboxes = dayContainer.querySelectorAll("input[name='checked']");
-
-            checkboxes.forEach(checkbox => {
-                if (allCheckbox.checked) {
-                    checkbox.checked = false;
-                    checkbox.value = 0;
-                    checkbox.style.display = 'none';
-                } else {
-                    checkbox.checked = false;
-                    checkbox.value = 0;
-                    checkbox.style.display = 'inline-block';
+            // Step 6: Grouping schedules by day
+            let scheduleGroups = {};
+            scheduleList.forEach(schedule => {
+                if (!scheduleGroups[schedule.scheduleDay]) {
+                    scheduleGroups[schedule.scheduleDay] = [];
                 }
+                scheduleGroups[schedule.scheduleDay].push(schedule);
             });
 
-            const recruitMaxNoContainer = dayContainer.querySelector(".checkedAllrecruitMaxNoContainer");
-            if (allCheckbox.checked) {
-                recruitMaxNoContainer.style.display = 'block';
-            } else {
-                recruitMaxNoContainer.style.display = 'none';
-            }
-        }
+            // Step 1: Finding the columns-container div and clearing previous content once
+            const columnsContainer = document.getElementById('scheduleListContainer');
+            columnsContainer.innerHTML = ''; // Clear previous content once before the loop
 
+            for (const [day, schedules] of Object.entries(scheduleGroups)) {
+                // Step 3: Creating the column-item div
+                const columnItem = document.createElement('div');
+                columnItem.className = 'column-item text-dark p-1';
+                columnItem.style.width = '300px';
+                columnItem.style.minWidth = '300px';
 
-        // (Onclick 함수) 동행모집 선택(일반) onclick 동작 함수
-        function toggleRecruitMaxNoInput(checkbox) {
-            const recruitMaxNoContainer = checkbox.parentElement.querySelector('.recruitMaxNoContainer');
-            if (checkbox.checked) {
-                recruitMaxNoContainer.style.display = 'block';
-                checkbox.value = 1;
-            } else {
-                recruitMaxNoContainer.style.display = 'none';
-                checkbox.value = 0;
-            }
-        }
+                // Step 4: Creating the fw-bold div
+                const fwBoldDiv = document.createElement('div');
+                fwBoldDiv.className = 'fw-bold mb-2';
 
+                // Step 5: Setting text content for the fw-bold div
+                fwBoldDiv.textContent = 'Day ' + day;
 
-        // Form data 전송 함수(데이터 로드, 객체 생성, 전송)
-        function submitBoardForm() {
-            if (!storedTripNo) {
-                alert('여행 일정을 선택하세요.');
-                return;
-            }
+                // Adding fw-bold div to column-item div
+                columnItem.appendChild(fwBoldDiv);
 
-            const boardTitle = document.getElementsByName("boardTitle")[0].value;
-            const boardContent = document.getElementsByName("boardContent")[0].value;
-            const boardTag = document.getElementsByName("boardTag")[0].value;
+                const addedScheduleRoutes = new Set();
 
-            const board = {
-                tripNo: storedTripNo,
-                boardTitle: boardTitle,
-                boardContent: boardContent,
-                boardTag: boardTag
-            };
+                schedules.forEach(schedule => {
+                    if (!addedScheduleRoutes.has(schedule.scheduleRoute)) {
+                        addedScheduleRoutes.add(schedule.scheduleRoute);
 
-            const companionRecruits = [];
+                        const cardDiv = document.createElement('div');
+                        cardDiv.className = 'card border-0';
+                        cardDiv.id = 'locationCard';
+                        cardDiv.style.width = '100%';
+                        cardDiv.style.height = '100px';
+                        cardDiv.style.position = 'relative';
 
-            // day-container 태그를 순회하며 체크된 상태에 따라 처리
-            document.querySelectorAll("[class^='day-container-']").forEach(dayContainer => {
-                const checkedAllInput = dayContainer.querySelector("input[name='checkedAll']");
+                        const alignItemsDiv = document.createElement('div');
+                        alignItemsDiv.className = 'd-flex align-items-start gap-1 mt-1';
+                        alignItemsDiv.style.height = '100%';
 
-                if (checkedAllInput && checkedAllInput.checked) {
-                    // 로직 분기 첫번째: 전체 체크된 경우
-                    const recruitMaxNo = dayContainer.querySelector(".checkedAllrecruitMaxNoContainer input[name='recruitMaxNo']").value;
+                        const positionRelativeDiv = document.createElement('div');
+                        positionRelativeDiv.className = 'position-relative d-flex flex-column align-items-center';
+                        positionRelativeDiv.style.height = '100%';
 
-                    dayContainer.querySelectorAll("[id^='Companionrecruitdata']").forEach(scheduleDiv => {
-                        const scheduleNo = scheduleDiv.querySelector("input[name='scheduleNo']").value;
+                        const m2Div = document.createElement('div');
+                        m2Div.className = 'm-2 d-flex justify-content-center align-items-center rounded-circle text-white';
+                        m2Div.style.width = '20px';
+                        m2Div.style.height = '20px';
+                        m2Div.style.fontSize = '10px';
+                        m2Div.textContent = schedule.scheduleRoute;
 
-                        if (scheduleDiv === dayContainer.querySelector("[id^='Companionrecruitdata']")) {
-                            companionRecruits.push({
-                                scheduleNo: scheduleNo,
-                                checked: false,
-                                checkedAll: true,
-                                recruitMaxNo: recruitMaxNo
-                            });
-                        } else {
-                            companionRecruits.push({
-                                scheduleNo: scheduleNo,
-                                checked: false,
-                                checkedAll: true,
-                                recruitMaxNo: 0
-                            });
-                        }
-                    });
-                } else {
-                    // 로직 분기 두번째: 전체 체크가 안 된 경우
-                    dayContainer.querySelectorAll("[id^='Companionrecruitdata']").forEach(scheduleDiv => {
-                        const checkedInput = scheduleDiv.querySelector("input[name='checked']");
+                        const positionAbsoluteDiv = document.createElement('div');
+                        positionAbsoluteDiv.className = 'position-absolute';
+                        positionAbsoluteDiv.style.width = '2px';
+                        positionAbsoluteDiv.style.height = 'calc(100% - 20px)';
+                        positionAbsoluteDiv.style.top = '30px';
+                        positionAbsoluteDiv.style.left = '50%';
+                        positionAbsoluteDiv.style.transform = 'translateX(-50%)';
 
-                        if (checkedInput && checkedInput.checked) {
-                            const scheduleNo = scheduleDiv.querySelector("input[name='scheduleNo']").value;
-                            const recruitMaxNo = scheduleDiv.querySelector(".recruitMaxNoContainer input[name='recruitMaxNo']").value;
+                        const flexColumnDiv = document.createElement('div');
+                        flexColumnDiv.className = 'd-flex flex-column align-items-start mt-2';
 
-                            companionRecruits.push({
-                                scheduleNo: scheduleNo,
-                                checked: true,
-                                checkedAll: false,
-                                recruitMaxNo: recruitMaxNo
-                            });
-                        }
-                    });
-                }
-            });
+                        const locationTypeP = document.createElement('p');
+                        locationTypeP.className = 'mb-0 bg-info rounded text-white p-1';
+                        locationTypeP.style.fontSize = '12px';
+                        locationTypeP.textContent = schedule.scheduleRoute == 0 ? '숙박업소' : '관광명소';
 
-            const payload = {
-                board: board,
-                companionRecruits: companionRecruits
-            };
+                        const locationNameP = document.createElement('p');
+                        locationNameP.className = 'fs-6 fw-bold mb-0';
+                        locationNameP.textContent = schedule.location.locationName;
 
-            fetch('add', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(payload)
-            })
-                .then(response => {
-                    if (response.ok) {
-                        alert('정상적으로 글등록 되었습니다.');
-                        location.href = 'list';
-                    } else {
-                        alert('글 등록에 실패했습니다.');
+                        const locationImage = document.createElement('img');
+                        locationImage.alt = 'Location Image';
+                        locationImage.className = 'rounded me-3 h-100 ms-auto';
+                        locationImage.style.width = '60px';
+                        locationImage.style.objectFit = 'cover';
+                        locationImage.src = schedule.location.locationPhoto;
+
+                        const daySpan = document.createElement('span');
+                        daySpan.className = 'day d-none';
+                        daySpan.textContent = schedule.scheduleDay;
+
+                        const routeSpan = document.createElement('span');
+                        routeSpan.className = 'route d-none';
+                        routeSpan.textContent = schedule.scheduleRoute;
+
+                        const scheduleNoSpan = document.createElement('span');
+                        scheduleNoSpan.className = 'schedule-no d-none';
+                        scheduleNoSpan.textContent = schedule.scheduleNo;
+
+                        const locationXSpan = document.createElement('span');
+                        locationXSpan.className = 'location-x d-none';
+                        locationXSpan.textContent = schedule.location.locationX;
+
+                        const locationYSpan = document.createElement('span');
+                        locationYSpan.className = 'location-y d-none';
+                        locationYSpan.textContent = schedule.location.locationY;
+
+                        positionRelativeDiv.appendChild(m2Div);
+                        positionRelativeDiv.appendChild(positionAbsoluteDiv);
+
+                        flexColumnDiv.appendChild(locationTypeP);
+                        flexColumnDiv.appendChild(locationNameP);
+
+                        alignItemsDiv.appendChild(positionRelativeDiv);
+                        alignItemsDiv.appendChild(flexColumnDiv);
+                        alignItemsDiv.appendChild(locationImage);
+                        alignItemsDiv.appendChild(daySpan);
+                        alignItemsDiv.appendChild(routeSpan);
+                        alignItemsDiv.appendChild(scheduleNoSpan);
+                        alignItemsDiv.appendChild(locationXSpan);
+                        alignItemsDiv.appendChild(locationYSpan);
+
+                        cardDiv.appendChild(alignItemsDiv);
+                        columnItem.appendChild(cardDiv);
                     }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('오류가 발생했습니다.');
                 });
-        }
 
-        function previewImages() {
-          const previewContainer = document.getElementById('previewContainer');
-          previewContainer.innerHTML = ''; // 기존 미리보기 초기화
+                columnsContainer.appendChild(columnItem);
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    });
+</script>
 
-          const files = document.getElementById('file-upload').files;
-          Array.from(files).forEach((file, index) => {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-              const previewItem = document.createElement('div');
-              previewItem.classList.add('d-inline-block', 'position-relative', 'm-2');
 
-              previewItem.innerHTML = `
-          <img src="${e.target.result}" class="img-thumbnail" style="width: 100px; height: 100px;">
-          <p class="text-center mt-1">${file.name}</p>
-          <button type="button" class="btn-close position-absolute top-0 start-80" onclick="removeImage(${index})"></button>
-        `;
-              previewContainer.appendChild(previewItem);
-            };
-            reader.readAsDataURL(file);
-          });
-        }
-
-        function removeImage(index) {
-          const fileInput = document.getElementById('file-upload');
-          const dt = new DataTransfer();
-
-          Array.from(fileInput.files).forEach((file, i) => {
-            if (i !== index) dt.items.add(file); // 선택한 인덱스 제외
-          });
-
-          fileInput.files = dt.files;
-          previewImages(); // 미리보기 다시 로드
-        }
-    </script>
 </body>
 
 </html>
