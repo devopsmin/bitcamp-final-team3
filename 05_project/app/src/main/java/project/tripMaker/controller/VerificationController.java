@@ -54,20 +54,11 @@ public class VerificationController {
 
   @PostMapping("/verify-sms")
   @ResponseBody
-  public String verifySMS(@RequestParam String phoneNumber, @RequestParam String code) {
-    try {
-      User existingUser = userService.findByTel(phoneNumber);
-      if (existingUser != null) {
-        return "duplicate";
-      }
-
-      if (smsService.verifyCode(phoneNumber, code)) {
-        return "success";
-      }
-      return "fail";
-    } catch (Exception e) {
-      return "error";
-    }
+  public String verifySMS(
+      @RequestParam String phoneNumber,
+      @RequestParam String code) {
+    boolean isValid = smsService.verifyCode(phoneNumber, code);
+    return isValid ? "success" : "fail";
   }
 
   @PostMapping("/check-nickname")

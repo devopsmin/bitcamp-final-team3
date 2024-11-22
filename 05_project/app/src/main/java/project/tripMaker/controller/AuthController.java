@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Controller;
@@ -33,6 +34,7 @@ public class AuthController {
   private final SMSService smsService;
   private final StorageService storageService;
   private final MailService mailService;
+  private final PasswordEncoder passwordEncoder;
 
   private final String folderName = "user/profile/";
 
@@ -185,7 +187,9 @@ public class AuthController {
       return "이메일과 전화번호가 일치하지 않습니다.";
     }
 
-    user.setUserPassword(newPassword);
+    String encodedPassword = passwordEncoder.encode(newPassword);
+    user.setUserPassword(encodedPassword);
+
     if (userService.update(user)) {
       return "success";
     } else {

@@ -61,7 +61,7 @@ public class SecurityConfig {
             .userInfoEndpoint(userInfo -> userInfo
                 .userService(customOAuth2UserService)
             )
-            .successHandler(new OAuth2SuccessHandler(userService, customOAuth2UserService))
+            .successHandler(new OAuth2SuccessHandler(userService, customOAuth2UserService, benService))
         )
         .logout(logout -> logout
             .logoutSuccessUrl("/auth/form")
