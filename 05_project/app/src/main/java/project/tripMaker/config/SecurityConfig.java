@@ -120,7 +120,9 @@ public class SecurityConfig {
         if (user.getUserRole() == UserRole.ROLE_ADMIN) {
           response.sendRedirect("/home");
         } else {
-          response.sendRedirect("/home");
+          // 현재 위치 유지: sendRedirect 대신 작업 종료
+          response.getWriter().write("Authentication successful!"); // 메시지 반환
+          response.getWriter().flush();
         }
       } else {
         throw new Exception("유저를 찾을 수 없습니다.");
