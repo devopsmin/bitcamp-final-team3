@@ -40,7 +40,7 @@ public class SecurityConfig {
   public SecurityFilterChain securityFilterChain(HttpSecurity http, UserService userService, BenService benService) throws Exception {
     http
         .authorizeRequests(authorize -> authorize
-            .antMatchers("/admin/**").hasAuthority("ROLE_ADMIN")
+            .antMatchers("/admin/**", "/auth/register/admin").hasAuthority("ROLE_ADMIN")
             .antMatchers("/", "/auth/**", "/oauth2/**", "/verify/**", "/css/**", "/js/**", "/images/**", "/schedule/**", "/user/**", "/home", "/board/**", "/comment/**", "/app/**", "/question/**", "/review/**", "/companion/**", "/mypage/**", "/notifications/**").permitAll()
             //            .antMatchers("/user/**").hasRole("USER")
             .anyRequest().authenticated()
@@ -118,7 +118,7 @@ public class SecurityConfig {
         response.addCookie(cookie);
 
         if (user.getUserRole() == UserRole.ROLE_ADMIN) {
-          response.sendRedirect("/admin");
+          response.sendRedirect("/home");
         } else {
           response.sendRedirect("/home");
         }

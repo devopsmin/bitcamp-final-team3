@@ -144,6 +144,8 @@ body {
     margin-top: 80px;
     padding: 30px;
     font-family: 'Noto Sans KR', sans-serif !important;
+    position: relative !important;
+    overflow: hidden !important;
 }
 
 /* 반응형 디자인 */
@@ -400,149 +402,159 @@ a {
 
 /* 여행 카드 스타일 */
 .trip-card {
-    width: 100%;
-    position: relative;
-    padding-top: 60px;
-    margin-bottom: 1rem;
-    background: #fff;
-    border-radius: 15px;
-    overflow: hidden;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-    height: 100%;
-    transition: all 0.3s ease;
+    width: 100% !important;
+    position: relative !important;
+    padding-top: 60px !important;
+    margin-bottom: 1rem !important;
+    background: #fff !important;
+    border-radius: 15px !important;
+    overflow: hidden !important;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1) !important;
+    height: 100% !important;
+    transition: all 0.3s ease !important;
 }
 
 .trip-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    transform: translateY(-5px) !important;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15) !important;
 }
 
 .card-img-wrapper {
-    position: relative;
-    width: 100%;
-    height: 200px;
-    overflow: hidden;
+    position: relative !important;
+    width: 100% !important;
+    height: 200px !important;
+    overflow: hidden !important;
 }
 
 .card-img-wrapper img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border-radius: 15px;
-    transition: transform 0.3s ease;
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    border-radius: 15px !important;
+    transition: transform 0.3s ease !important;
 }
 
 .trip-card:hover .card-img-wrapper img {
-    transform: scale(1.05);
+    transform: scale(1.05) !important;
 }
 
 .card-body {
-    padding: 2rem 1.5rem;
-    margin-top: 1rem;
+    padding: 2rem 1.5rem !important;
+    margin-top: 1rem !important;
 }
 
 .card-title {
-    font-size: 1.2rem;
-    font-weight: 600;
-    margin-bottom: 1rem;
+    font-size: 1.2rem !important;
+    font-weight: 600 !important;
+    margin-bottom: 1rem !important;
 }
 
 .trip-info {
-    color: #666;
-    font-size: 0.9rem;
+    color: #666 !important;
+    font-size: 0.9rem !important;
 }
 
 .trip-info p:not(.d-day) {
-    margin: 0.5rem 0;
-    font-size: 0.95rem;
-    color: #666;
+    margin: 0.5rem 0 !important;
+    font-size: 0.95rem !important;
+    color: #666 !important;
 }
 
 .trip-info i {
-    margin-right: 0.5rem;
-    color: #007bff;
+    margin-right: 0.5rem !important;
+    color: #007bff !important;
 }
 
 .trip-info .d-day {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    text-align: center;
-    margin: 0;
-    padding: 0;
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    text-align: center !important;
+    margin: 0 !important;
+    padding: 0 !important;
 }
 
 .trip-info .d-day span {
-    display: block;
-    color: #000;
+    display: block !important;
+    color: #000 !important;
     font-size: 36px !important;
     font-weight: 700 !important;
-    line-height: 1;
+    line-height: 1 !important;
     font-family: 'Noto Sans KR', sans-serif !important;
-    margin-bottom: 15px;
+    margin-bottom: 15px !important;
 }
 
 /* 캐러셀 스타일 */
+.carousel {
+    position: relative !important;
+    width: 100% !important;
+    margin: 0 !important;
+}
+
 .carousel-inner {
-    padding: 0 50px;
+    padding: 0 50px !important;
+    position: relative !important;
+    width: calc(100% - 100px) !important;
+    margin: 0 auto !important;
 }
 
 .carousel-control-prev,
 .carousel-control-next {
-    width: 40px;
-    height: 40px;
-    background-color: rgba(0, 0, 0, 0.5);
-    border-radius: 50%;
-    top: 50%;
-    transform: translateY(-50%);
+    width: 40px !important;
+    height: 40px !important;
+    background-color: rgba(0, 0, 0, 0.5) !important;
+    border-radius: 50% !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    opacity: 1 !important;
+    z-index: 5 !important;
 }
 
 .carousel-control-prev {
-    left: -20px;
+    left: 0 !important;
 }
 
 .carousel-control-next {
-    right: -20px;
+    right: 0 !important;
 }
 
 .carousel-control-prev-icon,
 .carousel-control-next-icon {
-    width: 20px;
-    height: 20px;
+    width: 20px !important;
+    height: 20px !important;
 }
 
 /* 그리드 조정 */
 .col-md-4 {
-    padding: 0 15px;
+    padding: 0 15px !important;
 }
 
 .row {
-    margin: 0 -15px;
+    margin: 0 -15px !important;
 }
 
-.main-content h3 {
-    font-size: 2rem;
-    font-weight: 500;
-    color: #333;
-    margin-bottom: 3rem;
-    padding-left: 1rem;
-    font-family: 'Noto Sans KR', sans-serif;
+/* 모달 열린 상태에서도 스타일 유지 */
+.modal-open .trip-card,
+.modal-open .carousel-control-prev,
+.modal-open .carousel-control-next,
+.modal-open .carousel-inner {
+    z-index: auto !important;
 }
 
 /* 반응형 스타일 */
 @media (max-width: 768px) {
     .carousel-inner {
-        padding: 0 20px;
+        padding: 0 20px !important;
     }
 
     .carousel-control-prev,
     .carousel-control-next {
-        width: 30px;
-        height: 30px;
+        width: 30px !important;
+        height: 30px !important;
     }
 
     .card-img-wrapper {
-        height: 150px;
+        height: 150px !important;
     }
 }
