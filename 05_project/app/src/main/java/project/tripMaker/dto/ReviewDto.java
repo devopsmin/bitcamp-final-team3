@@ -24,4 +24,5 @@ public class ReviewDto {
     private String writerNickname;  // 작성자 닉네임
     private String writerPhoto;     // 작성자 사진
     private LocalDate boardCreatedDate;  // 작성 날짜
+    private int commentCount;        // 댓글 갯수
 }

@@ -108,42 +108,56 @@
             </div>
 
             <!-- 이미지 보여주기 -->
-            <div class="boardImages">
-                <div th:each="image, iter : ${board.boardImages}" class="slide" th:attr="data-index=${iter.index}">
-                    <a th:href="${
-    image != null && image.boardimageName != null && image.boardimageName != 'default.png' ?
-        'https://kr.object.ncloudstorage.com/bitcamp-bucket088a/review/' + image.boardimageName
-        :
-        '/images/city/'
-        + (board.trip != null and board.trip.city != null and board.trip.city.state != null ? board.trip.city.state.stateName : 'default')
-        + '/'
-        + (board.trip != null and board.trip.city != null and board.trip.city.state != null ? board.trip.city.state.stateName : 'default')
-        + ' '
-        + (board.trip != null and board.trip.city != null ? board.trip.city.cityName : 'default')
-        + '.jpg'
-    }">
-
-                        <img th:src="${
-        image != null && image.boardimageName != null && image.boardimageName != 'default.png' ?
-            'https://dgg7dnk35523.edge.naverncp.com/HZiW9aEJy7/review/' + image.boardimageName + '?type=u&w=600&h=400'
-            :
-            '/images/city/'
-            + (board.trip != null and board.trip.city != null and board.trip.city.state != null ? board.trip.city.state.stateName : 'default')
-            + '/'
-            + (board.trip != null and board.trip.city != null and board.trip.city.state != null ? board.trip.city.state.stateName : 'default')
-            + ' '
-            + (board.trip != null and board.trip.city != null ? board.trip.city.cityName : 'default')
-            + '.jpg'
-        }"
-                             class="img-thumbnail" style="width: 600px; height: 400px;">
-                    </a>
+            <div id="carouselExampleIndicators" class="carousel slide" data-bs-ride="carousel">
+                <!-- Indicators -->
+                <div class="carousel-indicators">
+                    <div th:each="image, iter : ${board.boardImages}">
+                        <button type="button" data-bs-target="#carouselExampleIndicators" th:attr="data-bs-slide-to=${iter.index}"
+                                th:classappend="${iter.index == 0 ? 'active' : ''}" aria-current="true" aria-label="Slide [[${iter.index + 1}]]"></button>
+                    </div>
                 </div>
-                <!-- 이미지 네비게이션-->
-                <ul class="pagination justify-content-center">
-                    <button class="prev btn btn-outline-secondary btn-sm" onclick="changeSlide(-1)">❮</button>
-                    <div id="pagination-dots" class="d-inline "></div>
-                    <button class="next btn btn-outline-secondary btn-sm" onclick="changeSlide(1)">❯</button>
-                </ul>
+
+                <!-- Slides -->
+                <div class="carousel-inner">
+                    <div th:each="image, iter : ${board.boardImages}"
+                         th:classappend="${iter.index == 0 ? 'active' : ''}" class="carousel-item">
+                        <a th:href="${
+                image != null && image.boardimageName != null && image.boardimageName != 'default.png' ?
+                    'https://kr.object.ncloudstorage.com/bitcamp-bucket088a/review/' + image.boardimageName
+                    :
+                    '/images/city/'
+                    + (board.trip != null and board.trip.city != null and board.trip.city.state != null ? board.trip.city.state.stateName : 'default')
+                    + '/'
+                    + (board.trip != null and board.trip.city != null and board.trip.city.state != null ? board.trip.city.state.stateName : 'default')
+                    + ' '
+                    + (board.trip != null and board.trip.city != null ? board.trip.city.cityName : 'default')
+                    + '.jpg'
+            }">
+                            <img th:src="${
+                    image != null && image.boardimageName != null && image.boardimageName != 'default.png' ?
+                        'https://dgg7dnk35523.edge.naverncp.com/HZiW9aEJy7/review/' + image.boardimageName + '?type=u&w=600&h=400'
+                        :
+                        '/images/city/'
+                        + (board.trip != null and board.trip.city != null and board.trip.city.state != null ? board.trip.city.state.stateName : 'default')
+                        + '/'
+                        + (board.trip != null and board.trip.city != null and board.trip.city.state != null ? board.trip.city.state.stateName : 'default')
+                        + ' '
+                        + (board.trip != null and board.trip.city != null ? board.trip.city.cityName : 'default')
+                        + '.jpg'
+                }" class="d-block w-100" style="width: 600px; height: 400px;" alt="Slide [[${iter.index + 1}]]">
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Controls -->
+                <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Next</span>
+                </button>
             </div>
         </div>
     </div>

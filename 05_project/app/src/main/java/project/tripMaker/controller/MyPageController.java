@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpSession;
-import kotlinx.serialization.descriptors.PrimitiveKind.INT;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -19,7 +18,6 @@ import project.tripMaker.service.ReviewService;
 import project.tripMaker.service.ScheduleService;
 import project.tripMaker.vo.Board;
 import project.tripMaker.vo.Comment;
-import project.tripMaker.vo.Schedule;
 import project.tripMaker.vo.Trip;
 import project.tripMaker.vo.User;
 
@@ -124,8 +122,51 @@ public class MyPageController {
         return "mypage/completed";
     }
 
-    @GetMapping("boardpage")
-    public String boardpage(HttpSession session,
+    @GetMapping("questionpage")
+    public String questionpage(HttpSession session,
+        @RequestParam(defaultValue = "1") int pageNo,
+        @RequestParam(defaultValue = "9") int pageSize,
+        Model model) throws Exception {
+        User loginUser = (User) session.getAttribute("loginUser");
+
+        if (loginUser == null) {
+            session.setAttribute("errorMessage", "로그인이 필요합니다.");
+            return "redirect:/auth/login";
+        }
+
+        List<Board> questionBoardList = questionService.listUser(loginUser.getUserNo());
+
+        // 전체 갯수 확인
+        // 페이지 처리
+        int length = questionService.countAll(1);
+        int pageCount = length / pageSize;
+
+        // 페이지 처리 최소 1 이상
+        if (pageNo < 1) {
+            pageNo = 1;
+        }
+
+        // 갯수가 size 초과시 페이지 1칸더
+        if (length % pageSize > 0) {
+            pageCount++;
+        }
+
+        // 페이지 처리 최대 PageCount 까지
+        if (pageNo > pageCount) {
+            pageNo = pageCount;
+        }
+
+
+        model.addAttribute("questionList", questionBoardList);
+        model.addAttribute("pageNo", pageNo);
+        model.addAttribute("pageSize", pageSize);
+        model.addAttribute("pageCount", pageCount);
+
+        return "mypage/questionpage";
+    }
+
+    @GetMapping("reviewpage")
+    public String reviewpage(HttpSession session,
         @RequestParam(defaultValue = "1") int pageNo,
         @RequestParam(defaultValue = "9") int pageSize,
         Model model) throws Exception {
@@ -137,7 +178,6 @@ public class MyPageController {
         }
 
         List<Board> reviewBoardList = reviewService.listUser(loginUser.getUserNo());
-        List<Board> questionBoardList = questionService.listUser(loginUser.getUserNo());
 
         // 전체 갯수 확인
         // 페이지 처리
@@ -173,21 +213,25 @@ public class MyPageController {
             board.setCommentCount(commentCount); // 댓글 개수 설정
         }
 
-        // 리뷰 게시물 목록
-        for (Board board : questionBoardList) {
-            // 댓글 갯수
-            int commentCount = reviewService.getCommentCount(board.getBoardNo());
-            board.setCommentCount(commentCount); // 댓글 개수 설정
-        }
-
-
-        model.addAttribute("questionList", questionBoardList);
         model.addAttribute("reviewList", reviewBoardList);
         model.addAttribute("pageNo", pageNo);
         model.addAttribute("pageSize", pageSize);
         model.addAttribute("pageCount", pageCount);
 
-        return "mypage/boardpage";
+        return "mypage/reviewpage";
+    }
+
+
+    // 리스트 페이징 처리 메서드
+    private List<Board> paginateList(List<Board> list, int pageNo, int pageSize) {
+        int start = (pageNo - 1) * pageSize;
+        int end = Math.min(start + pageSize, list.size());
+        return list.subList(start, end);
+    }
+
+    // 페이지 수 계산 메서드
+    private int calculatePageCount(int totalSize, int pageSize) {
+        return (totalSize + pageSize - 1) / pageSize; // 올림 계산
     }
 
     @GetMapping("commentpage")
