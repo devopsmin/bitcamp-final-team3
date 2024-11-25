@@ -160,8 +160,18 @@
                           ${schedule.scheduleRoute}
                         </div>
                         <div class="ms-2">
-                          <p class="mb-1 text-primary" style="font-size: 0.9rem;">
+                          <p class="mb-1 text-primary" style="font-size: 0.9rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 150px; font-weight: bold;">
                             ${schedule.location ? schedule.location.locationName : 'N/A'}
+                          </p>
+                          <p class="mb-1 two-line-ellipsis" style="
+                          font-size: 0.8rem;
+                          max-width: 150px;
+                          overflow: hidden;
+                          text-overflow: ellipsis;
+                          display: -webkit-box;
+                          -webkit-line-clamp: 2;
+                          -webkit-box-orient: vertical;">
+                            ${schedule.location ? schedule.location.locationAddr : 'N/A'}
                           </p>
                         </div>
                       </div>
@@ -175,7 +185,7 @@
 
                 <!-- 글을 쓸 수 있는 textarea 추가 -->
                 <div class="flex-grow-1">
-                  <textarea class="form-control schedule-note" rows="2" placeholder="내용을 입력하세요" style="height: 112px; background-color: #f8f9fa;"></textarea>
+                  <textarea class="form-control schedule-note" rows="2" placeholder="내용을 입력하세요" style="height: 127px; background-color: #f8f9fa;"></textarea>
                 </div>
               </div>
             `;

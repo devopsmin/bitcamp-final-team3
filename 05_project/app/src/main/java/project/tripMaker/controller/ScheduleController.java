@@ -228,7 +228,7 @@ public class ScheduleController {
         dayIndex = locationIndex;
       }
       Location location = selectHoList.get(dayIndex);
-      schedule.setScheduleNo(location.getLocationNo());
+      schedule.setScheduleNo(totalIndex);
       location.setCityCode(trip.getCity().getCityCode());
       schedule.setLocation(location);
       schedule.setScheduleDay(locationIndex + 1);
@@ -240,7 +240,7 @@ public class ScheduleController {
     for (int locationIndex = 0; locationIndex < selectLoList.size(); locationIndex++) {
       Schedule schedule = new Schedule();
       Location location = selectLoList.get(locationIndex);
-      schedule.setScheduleNo(location.getLocationNo());
+      schedule.setScheduleNo(totalIndex);
       schedule.setLocation(location);
       location.setCityCode(trip.getCity().getCityCode());
       schedule.setScheduleDay(1);
