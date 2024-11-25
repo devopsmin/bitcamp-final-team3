@@ -159,14 +159,11 @@ public class SecurityConfig {
         errorMessage = "아이디 또는 비밀번호가 올바르지 않습니다.";
       }
 
-      String jsonResponse = String.format("{\"error\":\"%s\"}",
-          errorMessage.replace("\"", "\\\""));
-
-      response.getWriter().print(jsonResponse);
+      response.getWriter().write(errorMessage);
       response.getWriter().flush();
 
     } catch (Exception e) {
-      response.getWriter().print("{\"error\":\"처리 중 오류가 발생했습니다.\"}");
+      response.getWriter().write("처리 중 오류가 발생했습니다.");
       response.getWriter().flush();
     }
   }
