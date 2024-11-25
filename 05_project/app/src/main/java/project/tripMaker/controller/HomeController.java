@@ -18,7 +18,7 @@ public class HomeController {
   private String resourceLocation;
 
   private static final String DEFAULT_IMAGE =
-      "https://dgg7dnk35523.edge.naverncp.com/HZiW9aEJy7/review/default.png?type=u&w=600&h=400";
+      "https://dgg7dnk35523.edge.naverncp.com/HZiW9aEJy7/review/default.png?type=u&w=550&h=480";
 
   @GetMapping("/home")
   public String home(Model model) {

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head data-th-replace="~{header :: head}"></head>
+<link rel="stylesheet" href="/css/userpage.css">
+<body>
+<header data-th-replace="~{header :: #page-header}"></header>
+
+<div class="sidebar">
+    <div class="profile-section">
+        <div class="profile-image-container">
+            <img data-th-if="${session.loginUser.userPhoto == null}"
+                 data-th-src="@{https://dgg7dnk35523.edge.naverncp.com/HZiW9aEJy7/user/profile/default.png(type=f,w=100,h=100)}"
+                 class="profile-image"
+                 alt="기본 프로필 이미지">
+            <img data-th-unless="${session.loginUser.userPhoto == null}"
+                 data-th-src="@{https://dgg7dnk35523.edge.naverncp.com/HZiW9aEJy7/user/profile/} + ${session.loginUser.userPhoto} + '?type=f&w=100&h=100'"
+                 class="profile-image"
+                 alt="프로필 이미지">
+        </div>
+        <p class="profile-name" data-th-text="${session.loginUser.userNickname}">유저</p>
+    </div>
+
+    <button class="btn btn-primary w-100 mb-4" data-bs-toggle="modal" data-bs-target="#scheduleModal">여행 일정 만들기</button>
+
+    <nav class="sidebar-nav">
+        <div class="nav-section">
+
+            <div class="menu-group">
+                <h3 class="menu-heading">여행</h3>
+                <ul class="menu-list">
+                    <li><a href="/mypage/preparing">여행 준비</a></li>
+                    <li><a href="/mypage/upcoming">여행 시작</a></li>
+                    <li><a href="/mypage/completed">여행 종료</a></li>
+                </ul>
+            </div>
+
+            <div class="menu-group">
+                <h3 class="menu-heading">게시판</h3>
+                <ul class="menu-list">
+                    <li><a href="/mypage/boardpage" data-th-classappend="${#httpServletRequest.requestURI == '/mypage/boardpage' ? 'active' : ''}">게시글 목록</a></li>
+                    <li><a href="/mypage/commentpage" data-th-classappend="${#httpServletRequest.requestURI == '/mypage/commentpage' ? 'active' : ''}">댓글 목록</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+</div>
+
+</body>
+</html>

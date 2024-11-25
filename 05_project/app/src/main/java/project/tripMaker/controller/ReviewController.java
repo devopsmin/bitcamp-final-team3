@@ -4,6 +4,7 @@ import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -306,7 +307,15 @@ public class ReviewController {
         .collect(Collectors.groupingBy(Schedule::getScheduleDay));
     model.addAttribute("groupedSchedules", groupedSchedules);
 
+    Trip trip = board.getTrip();
+    LocalDate startDate = trip.getStartDate().toLocalDate();
 
+    Map<Integer, String> dayDates = groupedSchedules.keySet().stream()
+        .collect(Collectors.toMap(
+            day -> day,
+            day -> startDate.plusDays(day - 1).format(DateTimeFormatter.ofPattern("yyyy.MM.dd(E)"))
+        ));
+    model.addAttribute("dayDates", dayDates);
 
     model.addAttribute("board", board);
     model.addAttribute("commentList", commentList);
@@ -613,6 +622,7 @@ public class ReviewController {
             .writerNickname(board.getWriter().getUserNickname())
             .writerPhoto(board.getWriter().getUserPhoto())
             .boardCreatedDate(createdDate)
+            .commentCount(board.getCommentCount())
             .build();
       }).collect(Collectors.toList());
 

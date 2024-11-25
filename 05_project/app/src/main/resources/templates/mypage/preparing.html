@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head data-th-replace="~{header :: head}"></head>
+
 <script src="/js/carousel.js"></script>
 <link rel="stylesheet" href="/css/userpage.css">
 <body>
@@ -60,34 +61,36 @@
           <div data-th-each="trip, iterStat : ${trips}"
                data-th-if="${iterStat.index < 3}"
                class="col-md-4 mb-4">
-            <div class="trip-card">
-              <div class="card-img-wrapper">
-                <img data-th-with="cityPhoto=${'/images/city/' + trip.city?.state?.stateName + '/' + trip.city?.state?.stateName + ' ' + trip.city?.cityName + '.jpg'}"
-                     data-th-src="${trip.city != null ? cityPhoto : '/images/default-city.jpg'}"
-                     class="card-img-top"
-                     data-th-alt="${trip.city != null ? trip.city.cityName + ' 이미지' : '기본 도시 이미지'}">
-              </div>
-              <div class="card-body">
-                <h5 class="card-title" data-th-text="${trip.tripTitle}">여행 제목</h5>
-                <div class="trip-info">
-                  <p>
-                    <i class="bi bi-geo-alt"></i>
-                    <span data-th-text="${trip.city?.cityName}">도시</span>
-                  </p>
-                  <p>
-                    <i class="bi bi-calendar"></i>
-                    <span data-th-text="${#temporals.format(trip.startDate.toLocalDate(), 'yyyy-MM-dd')}">시작일</span>
-                    ~
-                    <span data-th-text="${#temporals.format(trip.endDate.toLocalDate(), 'yyyy-MM-dd')}">종료일</span>
-                  </p>
-                  <p class="d-day" data-th-with="dday=${T(java.time.temporal.ChronoUnit).DAYS.between(
-                  T(java.time.LocalDate).now(),
-                  trip.startDate.toLocalDate())}">
-                    <span data-th-text="'D-' + ${dday}" >D-Day</span>
-                  </p>
+            <a data-th-href="@{/mypage/view(tripNo=${trip.tripNo})}" class="trip-link">
+              <div class="trip-card">
+                <div class="card-img-wrapper">
+                  <img data-th-with="cityPhoto=${'/images/city/' + trip.city?.state?.stateName + '/' + trip.city?.state?.stateName + ' ' + trip.city?.cityName + '.jpg'}"
+                       data-th-src="${trip.city != null ? cityPhoto : '/images/default-city.jpg'}"
+                       class="card-img-top"
+                       data-th-alt="${trip.city != null ? trip.city.cityName + ' 이미지' : '기본 도시 이미지'}">
+                </div>
+                <div class="card-body">
+                  <h5 class="card-title" data-th-text="${trip.tripTitle}">여행 제목</h5>
+                  <div class="trip-info">
+                    <p>
+                      <i class="bi bi-geo-alt"></i>
+                      <span data-th-text="${trip.city?.cityName}">도시</span>
+                    </p>
+                    <p>
+                      <i class="bi bi-calendar"></i>
+                      <span data-th-text="${#temporals.format(trip.startDate.toLocalDate(), 'yyyy-MM-dd')}">시작일</span>
+                      ~
+                      <span data-th-text="${#temporals.format(trip.endDate.toLocalDate(), 'yyyy-MM-dd')}">종료일</span>
+                    </p>
+                    <p class="d-day" data-th-with="dday=${T(java.time.temporal.ChronoUnit).DAYS.between(
+                                    T(java.time.LocalDate).now(),
+                                    trip.startDate.toLocalDate())}">
+                      <span data-th-text="'D-' + ${dday}">D-Day</span>
+                    </p>
+                  </div>
                 </div>
               </div>
-            </div>
+            </a>
           </div>
         </div>
       </div>
@@ -98,34 +101,36 @@
           <div data-th-each="trip, iterStat : ${trips}"
                data-th-if="${iterStat.index >= batchStat.index * 3 + 3 && iterStat.index < (batchStat.index + 1) * 3 + 3}"
                class="col-md-4 mb-4">
-            <div class="trip-card">
-              <div class="card-img-wrapper">
-                <img data-th-with="cityPhoto=${'/images/city/' + trip.city?.state?.stateName + '/' + trip.city?.state?.stateName + ' ' + trip.city?.cityName + '.jpg'}"
-                     data-th-src="${trip.city != null ? cityPhoto : '/images/default-city.jpg'}"
-                     class="card-img-top"
-                     data-th-alt="${trip.city != null ? trip.city.cityName + ' 이미지' : '기본 도시 이미지'}">
-              </div>
-              <div class="card-body">
-                <h5 class="card-title" data-th-text="${trip.tripTitle}">여행 제목</h5>
-                <div class="trip-info">
-                  <p>
-                    <i class="bi bi-geo-alt"></i>
-                    <span data-th-text="${trip.city?.cityName}">도시</span>
-                  </p>
-                  <p>
-                    <i class="bi bi-calendar"></i>
-                    <span data-th-text="${#temporals.format(trip.startDate.toLocalDate(), 'yyyy-MM-dd')}">시작일</span>
-                    ~
-                    <span data-th-text="${#temporals.format(trip.endDate.toLocalDate(), 'yyyy-MM-dd')}">종료일</span>
-                  </p>
-                  <p class="d-day" data-th-with="dday=${T(java.time.temporal.ChronoUnit).DAYS.between(
-                  T(java.time.LocalDate).now(),
-                  trip.startDate.toLocalDate())}">
-                    <span data-th-text="'D-' + ${dday}" >D-Day</span>
-                  </p>
+            <a data-th-href="@{/mypage/view(tripNo=${trip.tripNo})}" class="trip-link">
+              <div class="trip-card">
+                <div class="card-img-wrapper">
+                  <img data-th-with="cityPhoto=${'/images/city/' + trip.city?.state?.stateName + '/' + trip.city?.state?.stateName + ' ' + trip.city?.cityName + '.jpg'}"
+                       data-th-src="${trip.city != null ? cityPhoto : '/images/default-city.jpg'}"
+                       class="card-img-top"
+                       data-th-alt="${trip.city != null ? trip.city.cityName + ' 이미지' : '기본 도시 이미지'}">
+                </div>
+                <div class="card-body">
+                  <h5 class="card-title" data-th-text="${trip.tripTitle}">여행 제목</h5>
+                  <div class="trip-info">
+                    <p>
+                      <i class="bi bi-geo-alt"></i>
+                      <span data-th-text="${trip.city?.cityName}">도시</span>
+                    </p>
+                    <p>
+                      <i class="bi bi-calendar"></i>
+                      <span data-th-text="${#temporals.format(trip.startDate.toLocalDate(), 'yyyy-MM-dd')}">시작일</span>
+                      ~
+                      <span data-th-text="${#temporals.format(trip.endDate.toLocalDate(), 'yyyy-MM-dd')}">종료일</span>
+                    </p>
+                    <p class="d-day" data-th-with="dday=${T(java.time.temporal.ChronoUnit).DAYS.between(
+                                    T(java.time.LocalDate).now(),
+                                    trip.startDate.toLocalDate())}">
+                      <span data-th-text="'D-' + ${dday}">D-Day</span>
+                    </p>
+                  </div>
                 </div>
               </div>
-            </div>
+            </a>
           </div>
         </div>
       </div>
