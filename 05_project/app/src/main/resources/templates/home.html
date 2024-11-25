@@ -32,27 +32,27 @@
 
   .title-text {
     font-family: 'SBAggroB', sans-serif;
-    font-size: 65px;
-    position: relative; /* typing-text의 기준점 */
-    display: inline-block; /* inline 요소로 설정 */
+    font-size: 65px; !important;
+    position: relative; /* typing-text의 기준점 */ !important;
+    display: inline-block; /* inline 요소로 설정 */ !important;
   }
 
   .typing-text {
-    display: inline-block; /* 커서와 텍스트를 함께 처리 */
-    white-space: nowrap;
-    overflow: hidden;
-    font-family: "MaplestoryOTFBold", sans-serif;
-    font-size: 2rem; /* 적절한 폰트 크기 설정 */
+    display: inline-block; /* 커서와 텍스트를 함께 처리 */ !important;
+    white-space: nowrap; !important;
+    overflow: hidden; !important;
+    font-family: "MaplestoryOTFBold", sans-serif; !important;
+    font-size: 2rem; /* 적절한 폰트 크기 설정 */ !important;
   }
 
   .cursor {
-    display: inline-block;
-    margin-left: 2px;  /* 텍스트와 커서 사이 간격 */
-    width: 3px;  /* 커서 너비 */
-    height: 1.2em;  /* 커서 높이 */
-    background-color: black;
-    vertical-align: text-top;  /* 텍스트와 수직 정렬 */
-    animation: blink 0.7s infinite;  /* 깜박임 애니메이션 적용 */
+    display: inline-block; !important;
+    margin-left: 2px;  /* 텍스트와 커서 사이 간격 */ !important;
+    width: 3px;  /* 커서 너비 */ !important;
+    height: 1.2em;  /* 커서 높이 */ !important;
+    background-color: black; !important;
+    vertical-align: text-top;  /* 텍스트와 수직 정렬 */ !important;
+    animation: blink 0.7s infinite;  /* 깜박임 애니메이션 적용 */ !important;
   }
 
   /* 깜빡이는 커서 애니메이션 */
@@ -63,22 +63,6 @@
     100% { opacity: 1; }
   }
 
-  /* 두 번째 슬라이드의 버튼 스타일 변경 */
-  #carouselReviews .carousel-control-prev-icon,
-  #carouselReviews .carousel-control-next-icon {
-    background-color: black; /* 검은색 아이콘 */
-    border-radius: 50%; /* 원형 버튼 (선택 사항) */
-  }
-
-  /* 두 번째 슬라이드 버튼 위치 조정 */
-  #carouselReviews .carousel-control-prev {
-    left: -125px; /* 버튼 위치 외부로 조정 */
-  }
-
-  #carouselReviews .carousel-control-next {
-    right: -125px; /* 버튼 위치 외부로 조정 */
-  }
-
   @media (max-width: 768px) {
     .typing-text {
       font-size: 1.5rem; /* 작은 화면에서는 폰트 크기 줄임 */
@@ -87,61 +71,6 @@
     }
   }
 
-  .card-bestList .card {
-    width: 18rem; /* 카드 너비 고정 */
-    height: 25rem; /* 카드 높이 고정 */
-    overflow: hidden; /* 넘치는 내용 숨김 */
-    display: flex;
-    flex-direction: column; /* 내부 요소를 세로로 정렬 */
-    justify-content: space-between; /* 이미지와 본문 간 간격 유지 */
-  }
-
-  .card-bestList .card img {
-    height: 12rem; /* 이미지 높이 고정 */
-    width: 100%; /* 이미지가 카드 너비에 맞도록 */
-    object-fit: cover; /* 이미지 비율 유지하면서 크기 조정 */
-  }
-
-  .card-bestList .card-body {
-    flex-grow: 1; /* 본문 영역의 유연한 크기 조정 */
-    padding: 1rem;
-    display: flex;
-    flex-direction: column;
-    justify-content: center; /* 본문 내용을 중앙 정렬 */
-    align-items: center;
-  }
-
-  .card-bestList .card-title {
-    font-size: 1rem;
-    font-weight: bold;
-    text-align: center;
-    max-height: 2rem; /* 제목 높이 고정 */
-    overflow: hidden; /* 넘치는 텍스트 숨김 */
-    text-overflow: ellipsis; /* 넘치는 텍스트를 말줄임표로 표시 */
-    white-space: nowrap; /* 텍스트를 한 줄로 유지 */
-  }
-
-  .card-bestList .card-text {
-    font-size: 0.9rem;
-    color: #6c757d;
-    text-align: center;
-    max-height: 1.5rem; /* 본문 텍스트 높이 고정 */
-    overflow: hidden; /* 넘치는 텍스트 숨김 */
-    text-overflow: ellipsis; /* 넘치는 텍스트를 말줄임표로 표시 */
-    white-space: nowrap; /* 텍스트를 한 줄로 유지 */
-  }
-
-  .card-bestList {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr); /* 4개의 열 */
-    gap: 20px; /* 카드 간 간격 */
-    max-width: 1700px; /* 전체 카드 리스트의 최대 너비 */
-    margin: 0 auto; /* 카드 리스트를 중앙 정렬 */
-
-    .container {
-      transition: all 0.5s ease-in-out;
-    }
-  }
 </style>
 
 <style>
@@ -172,6 +101,7 @@
     margin-right: 10px;
   }
 </style>
+
 
 <div class="container d-flex justify-content-center align-items-center vh-99" style="margin-bottom: 200px; margin-top: 150px;">
   <div class="row w-100">
@@ -253,9 +183,8 @@
   </div>
 </div>
 
-<div class="container mt-5" style="margin-bottom: 150px;">
+<div class="container mt-5">
   <h1 class="text-center mb-4" style="font-size: 2.0rem;">베스트 후기 게시글</h1>
-
   <div id="carouselReviews" class="carousel slide" data-bs-ride="carousel">
     <div class="carousel-inner" id="carousel-inner">
       <!-- 슬라이드 아이템이 여기에 동적으로 추가됩니다 -->
@@ -430,22 +359,35 @@
         slide.className = `carousel-item ${page === 1 && i === 0 ? 'active' : ''}`;
 
         const row = document.createElement('div');
-        row.className = 'row';
+        row.className = 'd-flex justify-content-center gap-3';
 
         slideItems.forEach(item => {
           const col = document.createElement('div');
-          col.className = 'col-md-3'; // 4개씩 배치
+          col.className = 'card text-center'; // 4개씩 배치
+          col.style.width = '18rem';
           col.innerHTML = `
-            <div class="card shadow-sm">
-            <a href="/review/view?boardNo=${item.boardNo}" class="stretched-link" style="text-decoration: none; color: inherit;">
-              <img src="${item.firstImageName ? `https://dgg7dnk35523.edge.naverncp.com/HZiW9aEJy7/review/${item.firstImageName}?type=u&w=150&h=150` : 'https://dgg7dnk35523.edge.naverncp.com/HZiW9aEJy7/review/default.png?type=u&w=150&h=150'}" class="card-img-top" alt="${item.boardTitle}">
-              <div class="card-body text-center">
-                <h5 class="card-title" style="max-height: 1.5rem; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">${item.boardTitle}</h5>
-                <p class="card-text">${item.cityName}</p>
-                <p class="text-muted small">❤️ ${item.boardLike} | 👀 ${item.boardCount}</p>
+            <a href="/review/view?boardNo=${item.boardNo}" style="text-decoration: none; color: inherit;">
+              <img
+                src="${item.firstImageName
+              ? `https://dgg7dnk35523.edge.naverncp.com/HZiW9aEJy7/review/${item.firstImageName}?type=u&w=150&h=150`
+              : 'https://dgg7dnk35523.edge.naverncp.com/HZiW9aEJy7/review/default.png?type=u&w=150&h=150'}"
+                class="img-thumbnail"
+                alt="${item.boardTitle}"
+                style="width: 100%; height: 330px; object-fit: cover;"
+              />
+              <div class="card-body">
+                <h5 class="card-title">${item.boardTitle}</h5>
+                <div>
+                  <p class="card-text">${item.cityName}</p>
+                  <p class="card-text">
+                    <span>❤️ ${item.boardLike}</span>
+                    <span>⭐ ${item.boardFavor}</span>
+                    <span>👀 ${item.boardCount}</span>
+                    <span>💬 ${item.commentCount}</span>
+                  </p>
+                </div>
               </div>
             </a>
-            </div>
           `;
           row.appendChild(col);
         });
