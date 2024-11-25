@@ -1,9 +1,12 @@
 package project.tripMaker.controller;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -16,10 +19,7 @@ import project.tripMaker.service.CommentService;
 import project.tripMaker.service.QuestionService;
 import project.tripMaker.service.ReviewService;
 import project.tripMaker.service.ScheduleService;
-import project.tripMaker.vo.Board;
-import project.tripMaker.vo.Comment;
-import project.tripMaker.vo.Trip;
-import project.tripMaker.vo.User;
+import project.tripMaker.vo.*;
 
 @Controller
 @RequestMapping("/mypage")
@@ -289,6 +289,61 @@ public class MyPageController {
         model.addAttribute("searchText", searchText);
 
         return "mypage/commentpage";
+    }
+
+
+    @GetMapping("view")
+    public void view(@RequestParam("tripNo") int tripNo,
+                     Model model,
+                     HttpSession session) throws Exception {
+
+        User loginUser = (User) session.getAttribute("loginUser");
+        boolean isLoggedIn = loginUser != null;
+
+        if (!isLoggedIn) {
+            throw new Exception("로그인이 필요합니다.");
+        }
+
+        List<Trip> trips = scheduleService.getTripsByUserNo(loginUser.getUserNo());
+
+        if (trips == null || trips.isEmpty()) {
+            throw new Exception("사용자와 관련된 Trip 데이터가 없습니다.");
+        }
+
+        Trip trip = trips.stream()
+                .filter(t -> t.getTripNo() == tripNo)
+                .findFirst()
+                .orElseThrow(() -> new Exception("해당 Trip을 찾을 수 없습니다."));
+
+        if (trip.getStartDate() == null || trip.getEndDate() == null) {
+            throw new Exception("Trip의 날짜 데이터가 유효하지 않습니다.");
+        }
+
+        List<Schedule> scheduleList = scheduleService.getSchedulesByTripNo(tripNo);
+
+        LocalDate startDate = trip.getStartDate().toLocalDate();
+
+        Map<Integer, List<Schedule>> groupedSchedules = scheduleList.stream()
+                .collect(Collectors.groupingBy(Schedule::getScheduleDay));
+
+        Map<Integer, String> dayDates = groupedSchedules.keySet().stream()
+                .collect(Collectors.toMap(
+                        day -> day,
+                        day -> startDate.plusDays(day - 1).format(DateTimeFormatter.ofPattern("yyyy.MM.dd(E)"))
+                ));
+
+        if (groupedSchedules.isEmpty()) {
+            model.addAttribute("noSchedulesMessage", "등록된 일정이 없습니다.");
+        }
+
+        boolean isUserAuthorized = Objects.equals(loginUser.getUserNo(), trip.getUserNo()) ||
+                "ROLE_ADMIN".equals(loginUser.getUserRole().name());
+
+        model.addAttribute("trip", trip);
+        model.addAttribute("groupedSchedules", groupedSchedules);
+        model.addAttribute("dayDates", dayDates);
+        model.addAttribute("isLoggedIn", isLoggedIn);
+        model.addAttribute("isUserAuthorized", isUserAuthorized);
     }
 
 }
