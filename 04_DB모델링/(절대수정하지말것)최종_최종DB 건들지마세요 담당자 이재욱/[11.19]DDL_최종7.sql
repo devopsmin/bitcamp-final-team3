@@ -354,29 +354,28 @@ ALTER TABLE board
 
 -- 차단
 CREATE TABLE ben (
-                     user_no    BIGINT   NOT NULL COMMENT '유저번호', -- 유저번호
-                     bentype_no INTEGER  NULL     COMMENT '차단분류번호', -- 차단분류번호
-                     ben_desc   TEXT     NOT NULL COMMENT '차단내용', -- 차단내용
-                     ben_date   DATETIME NULL     DEFAULT now() COMMENT '차단날짜' -- 차단날짜
-                     unban_date DATETIME NULL     COMMENT '차단해제날짜' -- 차단해제날짜
+    user_no    BIGINT   NOT NULL COMMENT '유저번호', -- 유저번호
+    bentype_no INTEGER  NULL     COMMENT '차단분류번호', -- 차단분류번호
+    ben_desc   TEXT     NOT NULL COMMENT '차단내용', -- 차단내용
+    ben_date   DATETIME NULL     DEFAULT now() COMMENT '차단날짜', -- 차단날짜
+    unban_date DATETIME NULL     COMMENT '차단해제날짜' -- 차단해제날짜
 )
-    COMMENT '차단';
+COMMENT '차단';
 
 -- 차단
 ALTER TABLE ben
-    ADD CONSTRAINT PK_ben      --  차단 기본키
-        PRIMARY KEY (user_no);
+    ADD CONSTRAINT PK_ben -- 차단 기본키
+    PRIMARY KEY (user_no);
 
 ALTER TABLE ben
     ADD CONSTRAINT FK_user_TO_ben -- 차단 외래키 (유저)
-        FOREIGN KEY (user_no)
-        REFERENCES user (user_no);
+    FOREIGN KEY (user_no)
+    REFERENCES user (user_no);
 
 ALTER TABLE ben
     ADD CONSTRAINT FK_bentype_TO_ben -- 차단 타입 외래키 (벤타입)
-        FOREIGN KEY (bentype_no)
-        REFERENCES bentype (bentype_no);
-
+    FOREIGN KEY (bentype_no)
+    REFERENCES bentype (bentype_no);
 
 -- 시도
 CREATE TABLE state (
