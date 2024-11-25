@@ -16,6 +16,8 @@ import project.tripMaker.vo.*;
 import javax.servlet.http.HttpSession;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -38,7 +40,7 @@ public class CompanionController {
   @GetMapping("list")
   public String list(
           @RequestParam(defaultValue = "1") int pageNo,
-          @RequestParam(defaultValue = "10") int pageSize,
+          @RequestParam(defaultValue = "6") int pageSize,
           Model model,
           @RequestParam(required = false, defaultValue = "order") String sort
   ) throws Exception {
@@ -175,7 +177,7 @@ public class CompanionController {
 
   // 동행게시판 - 상세 글조회
   @GetMapping("view")
-  public String view(@RequestParam int boardNo, Model model) throws Exception {
+  public String view(@RequestParam int boardNo, Model model, HttpSession session) throws Exception {
 
     // 게시글 조회수 증가 처리
     companionService.increaseViewCount(boardNo);
@@ -199,7 +201,30 @@ public class CompanionController {
     logger.info("companionList 의 데이터: {}", companionrecruitList);
     // 여행일정(Schedule) 데이터 추출 : view.html 속성 추가로 List 전달(view.html 에서 companionrecruitList 명칭으로 사용)
     model.addAttribute("companionrecruitList", companionrecruitList);
-    
+
+    // 로그인 여부처리 및 게시글 권한
+    User loginUser = (User) session.getAttribute("loginUser");
+    boolean isLoggedIn = loginUser != null;
+
+    Map<Integer, Boolean> isUserAuthorizedMap = new HashMap<>();
+    boolean isUserAuthorized = loginUser != null && (loginUser.getUserNo() == board.getUserNo() || loginUser.getUserRole().name().equals("ROLE_ADMIN"));
+
+    // 로그인 유저만 좋아요/즐겨찾기 여부 확인
+    boolean isLiked = false;
+    boolean isFavored = false;
+
+    // 기본 이미지 설정
+    List<BoardImage> images = board.getBoardImages();
+    if (images == null || images.isEmpty()) {
+      images = new ArrayList<>();
+      BoardImage defaultImage = new BoardImage();
+      defaultImage.setBoardimageName("default.png"); // 기본 이미지 파일명
+      images.add(defaultImage);
+    }
+
+    board.setBoardImages(images);
+
+
     // 동행 게시글이 존재하지 않을때 처리
     if (board == null) {
       throw new Exception("게시글이 존재하지 않습니다.");
@@ -208,9 +233,16 @@ public class CompanionController {
     // 동행게시물이 존재할때 board 데이터 속성 추가
     model.addAttribute("board", board);
 
+    model.addAttribute("isLoggedIn", isLoggedIn);
+    model.addAttribute("loginUserNo", isLoggedIn ? loginUser.getUserNo() : null); // 로그인 유저의 번호 추가
+
+    model.addAttribute("isUserAuthorized", isUserAuthorized);
+    model.addAttribute("isUserAuthorizedMap", isUserAuthorizedMap);
+
     return "companion/view";
 
   }
+
 
   @PostMapping("modify")
   public String modify(@RequestParam("boardNo") int boardNo, Model model, HttpSession session) throws Exception {
@@ -223,6 +255,7 @@ public class CompanionController {
     model.addAttribute("board", board);
     return "companion/modify";
   }
+
 
   @PostMapping("update")
   public String update(
@@ -244,6 +277,7 @@ public class CompanionController {
     return "redirect:view?boardNo=" + boardNo;
   }
 
+
   @GetMapping("delete")
   public String delete(int boardNo, HttpSession session) throws Exception {
     User loginUser = (User) session.getAttribute("loginUser");
@@ -263,6 +297,7 @@ public class CompanionController {
     }
     return "redirect:list";
   }
+
 
   @GetMapping("search")
   public String search(

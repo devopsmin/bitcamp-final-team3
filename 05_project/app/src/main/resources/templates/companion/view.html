@@ -2,41 +2,107 @@
 <html xmlns:th="http://www.w3.org/1999/xhtml">
 
 <head data-th-replace="~{header :: head}"></head>
+<header data-th-replace="~{header :: #page-header}"/>
+
+<!-- Bootstrap CSS -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.3/dist/sweetalert2.min.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
+<!--fontawesome-->
+<script src="https://kit.fontawesome.com/ecaa6a7d50.js" crossorigin="anonymous"></script>
+<!-- Bootstrap JS 및 종속성 -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<!--Naver MAP API-->
+<script src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=0zojwabqn9&submodules=geocoder"></script>
+<script data-th-src="@{/js/mapUtils.js}"></script>
 
 <body>
-<header data-th-replace="~{header :: #page-header}"></header>
-<a data-th-href="@{/companion/form}" href="form.html">글쓰기</a>
-<form>
-    <!-- 데이터 로딩 : 일반 게시판 데이터 -->
-    <div class="mb-3">
-    <label>제목</label><br>
-        <input name="boardTitle" type="text" data-th-value="${board.boardTitle}"
-               style="border: none; outline: none;"><br><br>
-    </div>
-    <label>내용</label><br>
-        <textarea name="boardContent" data-th-text="${board.boardContent}"
-                  style="border: none; outline: none;"></textarea><br><br>
+    <!-- 게시글이 없는 경우 -->
+    <p data-th-unless="${board}">없는 게시글입니다.</p>
 
-    <!-- 데이터 로딩 : 여행일정 목록 + 동행정보 데이터 -->
-    <div class="overflow-auto flex-grow-1">
-        <div class="d-flex flex-nowrap" id="columns-container">
+    <div class="container my-5" style="max-width: 1200px; margin: 0 auto;">
+        <form id="myForm" data-th-action="@{modify}" method="post" enctype="multipart/form-data">
+            <input type="hidden" name="boardNo" data-th-value="${board.boardNo}">
+
+            <div class="mb-3">
+                <h2 class="form-title" style="margin-left: 10px; font-size: 1.8rem; font-weight: bold;" data-th-text="${board.boardTitle}"></h2>
+            </div>
+
+            <div data-th-if="${board}" class="border-bottom pb-3 mb-1">
+                <div class="d-flex align-items-center mb-3">
+                    <img data-th-src="@{https://dgg7dnk35523.edge.naverncp.com/HZiW9aEJy7/user/profile/default.png(type=f,w=20,h=20)}"
+                         data-th-unless="${board.writer.userPhoto}"
+                         src="/images/default.png"
+                         class="rounded-circle me-2" style="width: 40px; height: 40px;">
+                    <img data-th-if="${board.writer.userPhoto}"
+                         data-th-src="@{https://dgg7dnk35523.edge.naverncp.com/HZiW9aEJy7/user/profile/} + ${board.writer.userPhoto} + '?type=f&w=100&h=100'"
+                         src="/images/default.png"
+                         class="rounded-circle me-2" style="width: 40px; height: 40px;">
+                    <div style="display: flex; flex-direction: column; align-items: flex-start;">
+                        <div style="display: flex; align-items: center;">
+                            <h5 class="mb-1" data-th-text="${board.writer.userNickname}" style="margin-right: 10px;">닉네임</h5>
+                            <button type="button" class="btn btn-outline-secondary btn-sm">1:1 채팅요청</button>
+                        </div>
+                        <small class="text-muted" style="margin-top: 5px;">
+                            작성일: <span data-th-text="${#dates.format(board.boardCreatedDate, 'yyyy.MM.dd HH:mm')}">날짜</span>
+                            • 조회: <span data-th-text="${board.boardCount}">조회수</span>
+                        </small>
+                    </div>
+                    <div class="ms-auto">
+                        <button type="button" class="btn btn-outline-secondary btn-sm" onclick="location.href='list'">목록</button>
+                        <button type="button" class="btn btn-outline-secondary btn-sm" data-th-if="${isUserAuthorized}" data-th-onclick="document.getElementById('myForm').submit();">수정</button>
+                        <button type="button" class="btn btn-outline-secondary btn-sm" data-th-if="${isUserAuthorized}" data-th-onclick="|deleteBoard(${board.boardNo})|">삭제</button>
+                    </div>
+                </div>
+
+                <!-- 좋아요 및 즐겨찾기 버튼 -->
+                <div class="d-flex align-items-center" >
+                    <button type="button" id="likeButton" class="btn btn-outline-danger btn-sm me-2"
+                            data-th-text="${isLiked != null and isLiked ? '❤️ 좋아요 취소' : '🤍 좋아요'}"
+                            data-th-onclick="toggleLike([[${board.boardNo}]])"></button><br>
+                    <span id="likeCount" class="me-3" data-th-text="${board.boardLike}">0</span>
+
+                    <button type="button" id="favorButton" class="btn btn-outline-warning btn-sm me-2"
+                            data-th-text="${isFavored != null and isFavored ? '⭐ 즐겨찾기 취소' : '⚪ 즐겨찾기'}"
+                            data-th-onclick="toggleFavor([[${board.boardNo}]])"></button>
+                    <span id="favorCount" class="me-3" data-th-text="${board.boardFavor}">0</span><br>
+                </div>
+
+                <div class="modal fade" id="checkLoginModal" tabindex="-1" aria-labelledby="checkLoginModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" style="margin-top: 300px;">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="checkLoginModalLabel">알림</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                로그인이 필요합니다. 로그인 창으로 이동하시겠습니까?
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-primary" id="confirmLoginButton">확인</button>
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+        <div name="Companionrecruit" id="Companionrecruit" class="container my-3">
+            <div id="scheduleListContainer" class="row" style="display: flex;"></div>
         </div>
+
+        <!-- 지도 영역 -->
+        <div class="container" style="max-width: 1200px; margin: 0 auto;">
+            <div id="map" style="width: 1200px; height: 400px;"></div>
+        </div><br>
     </div>
 
-    <!-- 지도 : 여행일정 목록 좌표 표시 지도 -->
-    <div id="locationMap">
-        <div id="map" style="width: 550px; height: 400px;"></div>
-    </div>
-
-    <label>태그</label><br>
-    <input name="boardTag" type="text" data-th-value="${board.boardTag}"
-           style="border: none; outline: none;"><br><br>
-</form>
-<button type="button" onclick="location.href='list'">목록</button>
-<button data-th-onclick="|deleteBoard(${board.boardNo})|">삭제</button>
-<br>
 </body>
-
 <!-- 데이터 전달 : ScheduleList, companionrecruitList 데이터를 JavaScript 로 전달(Thymeleaf => Javascript) -->
 <script data-th-inline="javascript">
     /*<![CDATA[*/
@@ -56,13 +122,23 @@
     });
 
     // Step 1: Iterating through scheduleGroups
+    let columnCounter = 0;
+    let rowDiv = null;
+
     for (const [day, schedules] of Object.entries(scheduleGroups)) {
-        // Step 2: Finding the columns-container div
-        const columnsContainer = document.getElementById('columns-container');
+        // Step 2: Finding the scheduleListContainer div
+        const columnsContainer = document.getElementById('scheduleListContainer');
+
+        // Create a new row div for every 3 columns
+        if (columnCounter % 3 === 0) {
+            rowDiv = document.createElement('div');
+            rowDiv.className = 'row w-100 mb-3';
+            columnsContainer.appendChild(rowDiv);
+        }
 
         // Step 3: Creating the column-item div
         const columnItem = document.createElement('div');
-        columnItem.className = 'column-item text-dark p-1';
+        columnItem.className = 'column-item text-dark p-1 col-md-4';
         columnItem.style.width = '300px';
         columnItem.style.minWidth = '300px';
 
@@ -101,7 +177,7 @@
                 positionRelativeDiv.style.height = '100%';
 
                 const m2Div = document.createElement('div');
-                m2Div.className = 'm-2 d-flex justify-content-center align-items-center rounded-circle text-white';
+                m2Div.className = 'm-2 d-flex justify-content-center align-items-center rounded-circle text-white bg-primary';
                 m2Div.style.width = '20px';
                 m2Div.style.height = '20px';
                 m2Div.style.fontSize = '10px';
@@ -109,7 +185,7 @@
                 m2Div.textContent = schedule.scheduleRoute;
 
                 const positionAbsoluteDiv = document.createElement('div');
-                positionAbsoluteDiv.className = 'position-absolute';
+                positionAbsoluteDiv.className = 'position-absolute bg-primary';
                 positionAbsoluteDiv.style.width = '2px';
                 positionAbsoluteDiv.style.height = 'calc(100% - 20px)';
                 positionAbsoluteDiv.style.top = '30px';
@@ -122,7 +198,7 @@
                 const locationTypeP = document.createElement('p');
                 locationTypeP.className = 'mb-0 bg-info rounded text-white p-1';
                 locationTypeP.style.fontSize = '12px';
-                locationTypeP.textContent = '관광명소';
+                locationTypeP.textContent = schedule.scheduleRoute == 0 ? '숙박업소' : '관광명소';
 
                 const locationNameP = document.createElement('p');
                 locationNameP.className = 'fs-6 fw-bold mb-0';
@@ -185,15 +261,254 @@
             }
         });
 
-        // Step 3: Adding column-item div to columns-container
-        columnsContainer.appendChild(columnItem);
+        // Adding column-item div to the current row div
+        rowDiv.appendChild(columnItem);
+        columnCounter++;
     }
+
+    // Step 1: Iterate through companionrecruitList
+    companionrecruitList.forEach(companion => {
+        const columnItems = document.querySelectorAll('#scheduleListContainer .column-item');
+
+        columnItems.forEach(columnItem => {
+            const locationCards = columnItem.querySelectorAll('.card.border-0');
+
+            locationCards.forEach(card => {
+                const scheduleNoSpan = card.querySelector('.schedule-no');
+
+                if (scheduleNoSpan && scheduleNoSpan.textContent == companion.scheduleNo) {
+                    const checked = companion.checked;
+                    const checkedAll = companion.checkedAll;
+
+                    if (checkedAll && !checked) {
+                        const dayHeader = columnItem.querySelector('.fw-bold.mb-2');
+                        const recruitTag = document.createElement('p');
+                        recruitTag.className = 'mb-0 bg-secondary rounded text-white p-1';
+                        recruitTag.style.fontSize = '12px';
+                        recruitTag.style.width = '35%';
+                        recruitTag.textContent = '전일정 동행구함';
+                        dayHeader.after(recruitTag);
+                    } else if (!checkedAll && checked) {
+                        const locationTypeP = card.querySelector('.d-flex.flex-column.align-items-start.mt-2 p.bg-info');
+                        if (locationTypeP && locationTypeP.textContent !== '숙박업소') {
+                            const recruitTag = document.createElement('p');
+                            recruitTag.className = 'mb-0 bg-secondary rounded text-white p-1';
+                            recruitTag.style.fontSize = '12px';
+                            recruitTag.textContent = '동행구함';
+                            locationTypeP.after(recruitTag);
+                        }
+                    }
+                }
+            });
+        });
+    });
 </script>
 
-<script>
+<script data-th-inline="javascript">
+    <!-- 게시글삭제 -->
     function deleteBoard(no) {
-        location.href = "delete?boardNo=" + no;
+        Swal.fire({
+            title: '해당글을 삭제하시겠습니까?',
+            text: '삭제시 다시 되돌릴 수 없습니다.',
+            icon: 'warning',
+
+            showCancelButton: true, // cancel버튼 보이기. 기본은 원래 없음
+            confirmButtonColor: '#3085d6', // confrim 버튼 색깔 지정
+            cancelButtonColor: '#d33', // cancel 버튼 색깔 지정
+            confirmButtonText: '확인', // confirm 버튼 텍스트 지정
+            cancelButtonText: '취소', // cancel 버튼 텍스트 지정
+
+            // reverseButtons: true, // 버튼 순서 거꾸로
+
+        }).then(result => { // 만약 Promise리턴을 받으면,
+            if (result.isConfirmed) { // 만약 모달창에서 confirm 버튼을 눌렀다면
+
+                Swal.fire({
+                    title: '삭제 완료되었습니다.',
+                    text: '여행동행 모집글 삭제완료~!',
+                    icon: 'success',
+
+                    confirmButtonColor: '#3085d6', // confrim 버튼 색깔 지정
+                    confirmButtonText: '확인', // confirm 버튼 텍스트 지정
+                }).then(result => {
+                    location.href = "delete?boardNo=" + no;
+                });
+            }
+        });
     }
+
+    // 좋아요 토글 함수
+    function toggleLike(boardNo) {
+        const isLoggedIn = [[${isLoggedIn}]];
+
+        if (!isLoggedIn) {
+            const checkLoginModal = new bootstrap.Modal(document.getElementById('checkLoginModal'), {
+                backdrop: 'static',
+                keyboard: false
+            });
+            checkLoginModal.show();
+        } else {
+            fetch(`like/${boardNo}`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+            })
+            .then(response => {
+                return response.json().then(result => ({status: response.ok, data: result}));
+            })
+            .then(({status, data}) => {
+                if (status) {
+                    // UI 업데이트: 좋아요 버튼 및 카운트 변경
+                    const likeButton = document.getElementById('likeButton');
+                    const likeCount = document.getElementById('likeCount');
+
+                    likeButton.textContent = data.isLiked ? '❤️ 좋아요 취소' : '🤍 좋아요';
+                    likeCount.textContent = data.likeCount;
+
+                    // 성공 토스트 메시지
+                    Swal.fire({
+                        toast: true,
+                        position: 'top-start',
+                        icon: 'success',
+                        title: '좋아요 상태가 변경되었습니다.',
+                        showConfirmButton: false,
+                        timer: 1500,
+                        timerProgressBar: true,
+                    });
+                } else {
+                    // 오류 토스트 메시지
+                    Swal.fire({
+                        toast: true,
+                        position: 'top-start',
+                        icon: 'error',
+                        title: result.message || '좋아요 처리 중 오류가 발생했습니다.',
+                        showConfirmButton: false,
+                        timer: 1500,
+                        timerProgressBar: true,
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('좋아요 요청 실패:', error);
+                // alert('네트워크 오류가 발생했습니다. 다시 시도해 주세요.');
+                // 네트워크 오류 토스트 메시지
+                Swal.fire({
+                    toast: true,
+                    position: 'top-start',
+                    icon: 'error',
+                    title: '네트워크 오류가 발생했습니다. 다시 시도해 주세요.',
+                    showConfirmButton: false,
+                    timer: 1500,
+                    timerProgressBar: true,
+                });
+            });
+        }
+    }
+
+    // 즐겨찾기 토글 함수
+    function toggleFavor(boardNo) {
+        const isLoggedIn = [[${isLoggedIn}]];
+
+        if (!isLoggedIn) {
+            const checkLoginModal = new bootstrap.Modal(document.getElementById('checkLoginModal'), {
+                backdrop: 'static',
+                keyboard: false
+            });
+            checkLoginModal.show();
+        } else {
+            fetch(`favor/${boardNo}`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+            })
+            .then(response => {
+                return response.json().then(result => ({status: response.ok, data: result}));
+            })
+            .then(({status, data}) => {
+                if (status) {
+                    // UI 업데이트: 좋아요 버튼 및 카운트 변경
+                    const favorButton = document.getElementById('favorButton');
+                    const favorCount = document.getElementById('favorCount');
+
+                    favorButton.textContent = data.isFavored ? '⭐ 즐겨찾기 취소' : '⚪ 즐겨찾기';
+                    favorCount.textContent = data.favorCount;
+
+                    // 성공 토스트 메시지
+                    Swal.fire({
+                        toast: true,
+                        position: 'top-start',
+                        icon: 'success',
+                        title: '즐겨찾기 상태가 변경되었습니다.',
+                        showConfirmButton: false,
+                        timer: 1500,
+                        timerProgressBar: true,
+                    });
+                } else {
+                    // 오류 토스트 메시지
+                    Swal.fire({
+                        toast: true,
+                        position: 'top-start',
+                        icon: 'error',
+                        title: data.message || '즐겨찾기 처리 중 오류가 발생했습니다.',
+                        showConfirmButton: false,
+                        timer: 1500,
+                        timerProgressBar: true,
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('즐겨찾기 요청 실패:', error);
+                // 네트워크 오류 토스트 메시지
+                Swal.fire({
+                    toast: true,
+                    position: 'top-start',
+                    icon: 'error',
+                    title: '네트워크 오류가 발생했습니다. 다시 시도해 주세요.',
+                    showConfirmButton: false,
+                    timer: 1500,
+                    timerProgressBar: true,
+                });
+            });
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', async () => {
+        console.log(document.querySelectorAll('#scheduleListContainer').length);
+
+        const stateName = /*[[${board.trip.city.state.stateName}]]*/ "defaultState";
+        const cityName = /*[[${board.trip.city.cityName}]]*/ "defaultCity";
+
+        const colors = ["primary", "warning", "danger", "info", "secondary", "success"];
+
+        try {
+            // 지도초기화
+            await initializeMap("map", stateName, cityName);
+
+            // addMarker(126.545219, 33.524923);
+            const locationInfos = document.querySelectorAll('#scheduleListContainer');
+            console.log(locationInfos);
+
+            locationInfos.forEach(locationInfo => {
+                // card 내부의 x와 y 좌표 추출
+                const locationX = locationInfo.querySelector('.location-x').textContent.trim();
+                const locationY = locationInfo.querySelector('.location-y').textContent.trim();
+                const scheduleRoute = locationInfo.querySelector('.route').textContent.trim();
+                const scheduleDay = locationInfo.querySelector('.day').textContent.trim();
+
+                const color = colors[(scheduleDay - 1) % colors.length];
+
+                // x, y 좌표가 잘 가져와졌는지 출력합니다.
+                console.log(`Location X: ${locationX}, Location Y: ${locationY}`);
+
+                // 유효한 x, y 좌표가 있는 경우 addMarker 함수 호출
+                if (locationX && locationY) {
+                    addMarker(parseFloat(locationX), parseFloat(locationY), parseInt(scheduleRoute), `text-${color}`);
+
+                }
+            });
+        } catch (error) {
+            console.error('실행 중 오류 발생:', error);
+        }
+    });
+
 </script>
 
 </html>
