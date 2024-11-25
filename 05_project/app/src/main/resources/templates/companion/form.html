@@ -1,76 +1,81 @@
 <!DOCTYPE html>
 <html>
 
-    <head data-th-replace="~{header :: head}"></head>
-    <header data-th-replace="~{header :: #page-header}"/>
+<head data-th-replace="~{header :: head}"></head>
+<header data-th-replace="~{header :: #page-header}" />
 
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://oapi.map.naver.com/openapi/v3/maps.js?ncpClientId=0zojwabqn9&submodules=geocoder"
+<!-- Bootstrap CSS -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://oapi.map.naver.com/openapi/v3/maps.js?ncpClientId=0zojwabqn9&submodules=geocoder"
     type="text/javascript"></script>
-    <script src="/js/mapUtils.js"></script>
+<script src="/js/mapUtils.js"></script>
 
-    <body>
-        <div class="container mt-5">
-            <div class="d-flex justify-content-between align-items-center">
-                <h1 class="mb-4">여행 동행 작성하기</h1>
-                <button type="button" class="btn btn-secondary float-end" onclick="location.href='list'">목록</button>
-            </div>
-
-            <div class="mt-5">
-                <!-- 여행일정 선택 및 선택 -->
-                <form id="companionForm">
-                    <div name="Trip" id="Trip" class="mb-4">
-                        <label for="tripSelect" class="form-label">여행 일정선택</label>
-                        <select id="tripSelect" name="tripNo" class="form-select">
-                            <option value="" disabled selected>여행 일정을 선택하세요</option>
-                            <option data-th-each="trip : ${tripList}" data-th-value="${trip.tripNo}"
-                                    data-th-text="${trip.tripTitle}">
-                            </option>
-                        </select>
-                    </div>
-
-                    <!-- 동행모집 데이터 태그 랜더링 -->
-                    <div name="Companionrecruit" id="Companionrecruit">
-                        <!-- 동행모집 데이터 랜더링 : 여행일정 정보 + 동행모집 체크(전체 체크 + 선택 체크) -->
-                        <div id="scheduleListContainer" class="row row-cols-1 row-cols-md-3 g-4"></div>
-                    </div><br><br>
-
-                    <!-- 지도 영역 -->
-                    <div class="container" style="max-width: 1200px; margin: 0 auto;">
-                        <div id="map" style="width: 1200px; height: 400px;"></div>
-                    </div><br>
-
-                    <!-- 일반 게시판 데이터 -->
-                    <div name="Board" id="Board">
-                        <div class="mb-3">
-                            <label for="boardTitle" class="form-label">제목</label>
-                            <input id="boardTitle" name="boardTitle" type="text" class="form-control" placeholder="제목을 입력해 주세요." required maxlength="150">
-                        </div>
-                        <div class="mb-3">
-                            <label for="boardTitle" class="form-label">내용</label>
-                            <textarea id="boardContent" name="boardContent" type="text" class="form-control" placeholder="내용을 입력해 주세요." required maxlength="300" style="resize: none;"></textarea>
-                        </div>
-                        <div class="mb-3">
-                            <label for="boardTag" class="form-label">태그</label>
-                            <input id="boardTag" name="boardTag" type="text" class="form-control" placeholder="#태그를 입력해 주세요." required maxlength="15">
-                        </div>
-                        <!-- 파일 첨부 -->
-                        <div class="mb-3">
-                            <label for="file-upload" class="form-label">파일 첨부</label>
-                            <input id="file-upload" name="imageFiles" type="file" class="form-control" multiple onchange="previewImages()">
-                        </div>
-                        
-                        <button type="submit" class="btn btn-primary">등록</button>
-                    </div>
-                </form>
-            </div>
+<body>
+    <div class="container mt-5">
+        <div class="d-flex justify-content-between align-items-center">
+            <h1 class="mb-4">여행 동행모집 작성하기</h1>
+            <button type="button" class="btn btn-secondary float-end" onclick="location.href='list'">목록</button>
         </div>
 
-        <script>
-            function previewImages() {
+        <div class="mt-5">
+            <!-- 여행일정 선택 및 선택 -->
+            <form id="companionForm">
+                <div name="Trip" id="Trip" class="mb-4">
+                    <label for="tripSelect" class="form-label">여행 일정선택</label>
+                    <select id="tripSelect" name="tripNo" class="form-select">
+                        <option value="" disabled selected>여행 일정을 선택하세요</option>
+                        <option data-th-each="trip : ${tripList}" data-th-value="${trip.tripNo}"
+                            data-th-text="${trip.tripTitle}">
+                        </option>
+                    </select>
+                </div>
+
+                <!-- 동행모집 데이터 태그 랜더링 -->
+                <div name="Companionrecruit" id="Companionrecruit">
+                    <!-- 동행모집 데이터 랜더링 : 여행일정 정보 + 동행모집 체크(전체 체크 + 선택 체크) -->
+                    <div id="scheduleListContainer" class="row" style="display: flex;"></div>
+                </div><br><br>
+
+                <!-- 지도 영역 -->
+                <div class="container" style="max-width: 1200px; margin: 0 auto;">
+                    <div id="map" style="width: 1200px; height: 400px;"></div>
+                </div><br>
+
+                <!-- 일반 게시판 데이터 -->
+                <div name="Board" id="Board">
+                    <div class="mb-3">
+                        <label for="boardTitle" class="form-label">제목</label>
+                        <input id="boardTitle" name="boardTitle" type="text" class="form-control"
+                            placeholder="제목을 입력해 주세요." required maxlength="150">
+                    </div>
+                    <div class="mb-3">
+                        <label for="boardTitle" class="form-label">내용</label>
+                        <textarea id="boardContent" name="boardContent" type="text" class="form-control"
+                            placeholder="내용을 입력해 주세요." required maxlength="300" style="resize: none;"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="boardTag" class="form-label">태그</label>
+                        <input id="boardTag" name="boardTag" type="text" class="form-control"
+                            placeholder="#태그를 입력해 주세요." required maxlength="15">
+                    </div>
+                    <!-- 파일 첨부 -->
+                    <div class="mb-3">
+                        <label for="file-upload" class="form-label">파일 첨부</label>
+                        <input id="file-upload" name="imageFiles" type="file" class="form-control" multiple
+                            onchange="previewImages()">
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">등록</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+    <script>
+        function previewImages() {
             const previewContainer = document.getElementById('previewContainer');
             previewContainer.innerHTML = ''; // 기존 미리보기 초기화
 
@@ -78,21 +83,19 @@
             Array.from(files).forEach((file, index) => {
                 const reader = new FileReader();
                 reader.onload = (e) => {
-                const previewItem = document.createElement('div');
-                previewItem.classList.add('d-inline-block', 'position-relative', 'm-2');
+                    const previewItem = document.createElement('div');
+                    previewItem.classList.add('d-inline-block', 'position-relative', 'm-2');
 
-                previewItem.innerHTML = `
-            <img src="${e.target.result}" class="img-thumbnail" style="width: 100px; height: 100px;">
-            <p class="text-center mt-1">${file.name}</p>
-            <button type="button" class="btn-close position-absolute top-0 start-80" onclick="removeImage(${index})"></button>
-            `;
-                previewContainer.appendChild(previewItem);
+                    previewItem.innerHTML = `
+                        <img src="${e.target.result}" class="img-thumbnail" style="width: 100px; height: 100px;"> <p class="text-center mt-1">${file.name}</p>
+                        <button type="button" class="btn-close position-absolute top-0 start-80" onclick="removeImage(${index})"></button>`;
+                    previewContainer.appendChild(previewItem);
                 };
                 reader.readAsDataURL(file);
             });
-            }
+        }
 
-            function removeImage(index) {
+        function removeImage(index) {
             const fileInput = document.getElementById('file-upload');
             const dt = new DataTransfer();
 
@@ -102,98 +105,99 @@
 
             fileInput.files = dt.files;
             previewImages(); // 미리보기 다시 로드
-            }
-        </script>
+        }
+    </script>
 
-        <script>
-            // 동적 태그생성 감지 함수 선언
-            const observer = new MutationObserver((mutationsList) => {
-                var columnItems = '';
-                var locationXSpan = '';
 
-                var locationX = '';
-                var locationY = '';
+    <script>
+        // 동적 태그생성 감지 함수 선언
+        const observer = new MutationObserver((mutationsList) => {
+            var columnItems = '';
+            var locationXSpan = '';
 
-                var markers = new Array;
+            var locationX = '';
+            var locationY = '';
 
-                var locationXList = [];
-                var locationYList = [];
-                var locationList = [];
+            var markers = new Array;
 
-                // 초기 네이버 지도 랜더링
-                var map = new naver.maps.Map('map', {
-                    center: new naver.maps.LatLng(37.3595704, 127.105399),
-                    zoom: 10
-                });
+            var locationXList = [];
+            var locationYList = [];
+            var locationList = [];
 
-                mutationsList.forEach((mutation) => {
-                    if (mutation.type === "childList") {
-                        mutation.addedNodes.forEach((node) => {
-                            // 요소 노드만 처리
-                            if (node.nodeType === 1) {
-                                // 동적태그 생성감지 확인용 console.log
-                                console.log("새로운 태그가 추가되었습니다:", node);
-
-                                // 동적태그 : 좌표 태그의 태그값 추출
-                                const scheduleListContainer = document.getElementById('scheduleListContainer');
-                                if (scheduleListContainer) {
-                                    columnItems = scheduleListContainer.getElementsByClassName('column-item text-dark p-1');
-
-                                    // column-item 태그를 하나씩 조회
-                                    for (let i = 0; i < columnItems.length; i++) {
-                                        const columnItem = columnItems[i];
-
-                                        // column-item 태그 안의 location-x-d-none 및 location-y-d-none 조회
-                                        locationXSpan = columnItem.querySelector('span.location-x.d-none');
-                                        locationYSpan = columnItem.querySelector('span.location-y.d-none');
-
-                                        if (locationXSpan && locationYSpan) {
-                                            // 추출한 값들을 변수에 저장
-                                            locationX = parseFloat(locationXSpan.textContent);
-                                            locationY = parseFloat(locationYSpan.textContent);
-
-                                            locationXList.push(locationX);
-                                            locationYList.push(locationY);
-
-                                            locationList.push({ lat: locationX, lng: locationY });
-
-                                            var marker = new naver.maps.Marker({
-                                                position: new naver.maps.LatLng(locationX, locationY),
-                                                map: map
-                                            });
-                                            markers.push(marker);
-                                        }
-                                    }
-
-                                    // 저장된 값들을 출력
-                                    console.log('locationX values:', locationXList);
-                                    console.log('locationY values:', locationYList);
-                                    console.log('locationList values : ', locationList);
-                                }
-                            }
-                        });
-                    }
-                });
+            // 초기 네이버 지도 랜더링
+            var map = new naver.maps.Map('map', {
+                center: new naver.maps.LatLng(37.3595704, 127.105399),
+                zoom: 10
             });
-            // 동적 태그생성 감지 설정( 감지범위 : 자식태그 포함 )
-            const container = document.getElementById("scheduleListContainer");
-            observer.observe(container, { childList: true });
-        </script>
 
-        <script>
-            // scheduleListContainer 태그 - 자식 태그 동적 생성
-            document.getElementById('tripSelect').addEventListener('change', function () {
-                const tripNo = this.value;
-                const formData = new URLSearchParams();
-                formData.append('tripNo', tripNo);
+            mutationsList.forEach((mutation) => {
+                if (mutation.type === "childList") {
+                    mutation.addedNodes.forEach((node) => {
+                        // 요소 노드만 처리
+                        if (node.nodeType === 1) {
+                            // 동적태그 생성감지 확인용 console.log
+                            console.log("새로운 태그가 추가되었습니다:", node);
 
-                fetch('/companion/selectSchedule', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded'
-                    },
-                    body: formData.toString()
-                })
+                            // 동적태그 : 좌표 태그의 태그값 추출
+                            const scheduleListContainer = document.getElementById('scheduleListContainer');
+                            if (scheduleListContainer) {
+                                columnItems = scheduleListContainer.getElementsByClassName('column-item text-dark p-1');
+
+                                // column-item 태그를 하나씩 조회
+                                for (let i = 0; i < columnItems.length; i++) {
+                                    const columnItem = columnItems[i];
+
+                                    // column-item 태그 안의 location-x-d-none 및 location-y-d-none 조회
+                                    locationXSpan = columnItem.querySelector('span.location-x.d-none');
+                                    locationYSpan = columnItem.querySelector('span.location-y.d-none');
+
+                                    if (locationXSpan && locationYSpan) {
+                                        // 추출한 값들을 변수에 저장
+                                        locationX = parseFloat(locationXSpan.textContent);
+                                        locationY = parseFloat(locationYSpan.textContent);
+
+                                        locationXList.push(locationX);
+                                        locationYList.push(locationY);
+
+                                        locationList.push({ lat: locationX, lng: locationY });
+
+                                        var marker = new naver.maps.Marker({
+                                            position: new naver.maps.LatLng(locationX, locationY),
+                                            map: map
+                                        });
+                                        markers.push(marker);
+                                    }
+                                }
+
+                                // 저장된 값들을 출력
+                                console.log('locationX values:', locationXList);
+                                console.log('locationY values:', locationYList);
+                                console.log('locationList values : ', locationList);
+                            }
+                        }
+                    });
+                }
+            });
+        });
+        // 동적 태그생성 감지 설정( 감지범위 : 자식태그 포함 )
+        const container = document.getElementById("scheduleListContainer");
+        observer.observe(container, { childList: true });
+    </script>
+
+    <script>
+        // scheduleListContainer 태그 - 자식 태그 동적 생성
+        document.getElementById('tripSelect').addEventListener('change', function () {
+            const tripNo = this.value;
+            const formData = new URLSearchParams();
+            formData.append('tripNo', tripNo);
+
+            fetch('/companion/selectSchedule', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: formData.toString()
+            })
                 .then(response => response.json())
                 .then(data => {
                     const scheduleList = data;
@@ -211,13 +215,21 @@
                     const columnsContainer = document.getElementById('scheduleListContainer');
                     columnsContainer.innerHTML = ''; // Clear previous content once before the loop
 
+                    let currentRow;
+                    let itemCount = 0;
+
                     for (const [day, schedules] of Object.entries(scheduleGroups)) {
                         // Step 3: Creating the column-item div
+                        if (itemCount % 3 === 0) {
+                            currentRow = document.createElement('div');
+                            currentRow.className = 'row w-100 mb-4';
+                            columnsContainer.appendChild(currentRow);
+                        }
+
                         const columnItem = document.createElement('div');
-                        columnItem.className = 'column-item text-dark p-1 col';
+                        columnItem.className = 'column-item text-dark p-1 col-md-4';
                         columnItem.style.width = '300px';
-                        columnItem.style.minWidth = '300px';
-                        columnItem.style.paddingRight = '500px';
+                        columnItem.style.minWidth = '400px';
 
                         // Step 4: Creating the fw-bold div
                         const fwBoldDiv = document.createElement('div');
@@ -239,11 +251,10 @@
                         // Adding fw-bold div to column-item div
                         columnItem.appendChild(fwBoldDiv);
 
-                        // Adding event listener to the checkbox to display input for maximum people
-                        addCheckBox.addEventListener('change', function() {
+                        // Adding event listener to the checkbox to display input for maximum people and disable buttons
+                        addCheckBox.addEventListener('change', function () {
                             const existingMaxPeopleContainerAll = fwBoldDiv.nextElementSibling;
-                            const addBtn = columnItem.querySelector('#addBtn');
-                            const addIcon = addBtn?.querySelector('i');
+                            const locationCards = columnItem.querySelectorAll('#locationCard');
                             if (this.checked) {
                                 if (!existingMaxPeopleContainerAll || existingMaxPeopleContainerAll.id !== 'maxPeopleContainerAll') {
                                     const maxPeopleContainerAll = document.createElement('div');
@@ -252,18 +263,18 @@
 
                                     const maxPeopleLabel = document.createElement('label');
                                     maxPeopleLabel.className = 'form-label me-2';
-                                    maxPeopleLabel.textContent = '최대 인원수';
+                                    maxPeopleLabel.textContent = '최대 모집 인원';
 
                                     const maxPeopleInputAll = document.createElement('input');
                                     maxPeopleInputAll.className = 'form-control';
                                     maxPeopleInputAll.type = 'number';
-                                    maxPeopleInputAll.style.width = '100px';
+                                    maxPeopleInputAll.style.width = '55px';
                                     maxPeopleInputAll.min = 1;
                                     maxPeopleInputAll.max = 10;
                                     maxPeopleInputAll.value = 1;
 
                                     // Adding event listener to validate input value
-                                    maxPeopleInputAll.addEventListener('input', function() {
+                                    maxPeopleInputAll.addEventListener('input', function () {
                                         if (this.value < 1) {
                                             alert('잘못된 입력값 입니다');
                                             this.value = 1;
@@ -274,23 +285,53 @@
                                     maxPeopleContainerAll.appendChild(maxPeopleInputAll);
                                     fwBoldDiv.insertAdjacentElement('afterend', maxPeopleContainerAll);
                                 }
-                                if (addIcon) {
-                                    addIcon.classList.remove('bi-plus-lg');
-                                    addIcon.classList.add('bi-check-lg');
-                                    addBtn.dataset.value = '1';
-                                    addBtn.disabled = true;
-                                }
+
+                                // 체크박스가 체크될 때 해당 column-item 안의 모든 locationCard 태그 조회 및 처리
+                                locationCards.forEach(locationCard => {
+                                    console.log('locationCard:', locationCard);
+
+                                    const alignItemsDiv = locationCard.querySelector('.d-flex.align-items-start.gap-1.mt-1');
+                                    const addBtn = alignItemsDiv ? alignItemsDiv.querySelector('#addBtn') : null;
+
+                                    if (addBtn) {
+                                        console.log('addBtn found:', addBtn);
+                                        addBtn.disabled = true;
+
+                                        const addIcon = addBtn.querySelector('i');
+
+                                        addIcon.classList.remove('bi-plus-lg');
+                                        addIcon.classList.add('bi-check-lg');
+                                    } else {
+                                        console.log("조회할 button 태그가 없습니다");
+                                    }
+                                });
+
                             } else {
                                 if (existingMaxPeopleContainerAll && existingMaxPeopleContainerAll.id === 'maxPeopleContainerAll') {
                                     existingMaxPeopleContainerAll.remove();
                                 }
-                                if (addIcon) {
-                                    addIcon.classList.remove('bi-check-lg');
-                                    addIcon.classList.add('bi-plus-lg');
-                                    addBtn.dataset.value = '0';
-                                    addBtn.disabled = false;
-                                }
+                                // 체크박스가 체크 해제 될 때 해당 column-item 안의 모든 locationCard 태그 조회 및 처리
+                                locationCards.forEach(locationCard => {
+                                    console.log('locationCard:', locationCard);
+
+                                    const alignItemsDiv = locationCard.querySelector('.d-flex.align-items-start.gap-1.mt-1');
+                                    const addBtn = alignItemsDiv ? alignItemsDiv.querySelector('#addBtn') : null;
+
+                                    if (addBtn) {
+                                        console.log('addBtn found:', addBtn);
+                                        addBtn.disabled = false;
+
+                                        const addIcon = addBtn.querySelector('i');
+
+                                        addIcon.classList.remove('bi-check-lg');
+                                        addIcon.classList.add('bi-plus-lg');
+                                    } else {
+                                        console.log("조회할 button 태그가 없습니다");
+                                    }
+                                });
                             }
+
+
                         });
 
                         const addedScheduleRoutes = new Set();
@@ -370,33 +411,34 @@
                                     containerDiv.appendChild(addBtn);
 
                                     addBtn.addEventListener('click', function () {
-                                        const addIcon = addBtn.querySelector('i');
-                                        const existingMaxPeopleContainerSelect = columnItem.querySelector('#maxPeopleContainerSelect');
+                                        const existingMaxPeopleContainerSelectDiv = alignItemsDiv.querySelector('#maxPeopleContainerSelectDiv');
 
                                         if (addIcon) {
                                             if (addBtn.dataset.value === '0') {
                                                 addBtn.dataset.value = '1';
                                                 addIcon.classList.remove('bi-plus-lg');
                                                 addIcon.classList.add('bi-check-lg');
+                                                addCheckBox.disabled = true; // 전일정 동행 구함 체크박스 비활성화
 
-                                                // 최대 인원수 추가 생성
-                                                if (!existingMaxPeopleContainerSelect) {
+                                                // 모집 인원 input 태그 추가 생성
+                                                if (!existingMaxPeopleContainerSelectDiv) {
                                                     const maxPeopleContainer = document.createElement('div');
-                                                    maxPeopleContainer.className = 'd-flex flex-column align-items-start mt-2';
-                                                    maxPeopleContainer.id = 'maxPeopleContainerSelect';
+                                                    maxPeopleContainer.className = 'd-flex flex-column';
+                                                    maxPeopleContainer.id = 'maxPeopleContainerSelectDiv';
                                                     maxPeopleContainer.style.display = 'block';
 
                                                     const maxPeopleLabel = document.createElement('label');
                                                     maxPeopleLabel.className = 'form-label me-2';
-                                                    maxPeopleLabel.textContent = '최대 인원수';
+                                                    maxPeopleLabel.id = 'maxPeopleInputSelectLabel';
+                                                    maxPeopleLabel.style.width = '200%';
+                                                    maxPeopleLabel.textContent = '모집인원';
 
                                                     const maxPeopleInput = document.createElement('input');
                                                     maxPeopleInput.className = 'form-control';
-                                                    maxPeopleInput.id = 'maxPeopleInputSelect'
+                                                    maxPeopleInput.id = 'maxPeopleSelectInput';
                                                     maxPeopleInput.type = 'number';
-                                                    maxPeopleInput.style.width = '100px';
-                                                    maxPeopleInput.style.height = '100%';
-                                                    maxPeopleInput.style.display='block';
+                                                    maxPeopleInput.style.width = '55px';
+                                                    maxPeopleInput.style.display = 'block';
                                                     maxPeopleInput.min = 1;
                                                     maxPeopleInput.max = 10;
                                                     maxPeopleInput.value = 1;
@@ -410,10 +452,11 @@
                                                 addIcon.classList.remove('bi-check-lg');
                                                 addIcon.classList.add('bi-plus-lg');
                                                 addBtn.disabled = false;
+                                                addCheckBox.disabled = false; // 전일정 동행 구함 체크박스 활성화
 
-                                                // 최대 인원수 제거
-                                                if (existingMaxPeopleContainerSelect) {
-                                                    existingMaxPeopleContainerSelect.remove();
+                                                // 모집인원 제거
+                                                if (existingMaxPeopleContainerSelectDiv) {
+                                                    existingMaxPeopleContainerSelectDiv.remove();
                                                 }
                                             }
                                         }
@@ -457,106 +500,100 @@
                             }
                         });
 
-                        columnsContainer.appendChild(columnItem);
-
-                        // Add a spacer div to create space between columns
-                        const spacerDiv = document.createElement('div');
-                        spacerDiv.style.height = '20px';
-                        spacerDiv.style.paddingRight = '50px';
-                        columnsContainer.appendChild(spacerDiv);
+                        currentRow.appendChild(columnItem);
+                        itemCount++;
                     }
                 })
                 .catch(error => console.error('Error:', error));
-            });
-        </script>
+        });
+    </script>
 
+    <!-- 데이터 전송 스크립트 코드 -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            document.getElementById('companionForm').addEventListener('submit', function (event) {
+                event.preventDefault();
 
-        <!-- 데이터 전송 스크립트 코드 -->
-        <script>
-            document.addEventListener('DOMContentLoaded', function () {
-                document.getElementById('companionForm').addEventListener('submit', function (event) {
-                    event.preventDefault();
+                // 2. 여행 일정 선택 데이터 수집
+                const tripNo = document.getElementById('tripSelect').value;
 
-                    // 2. 여행 일정 선택 데이터 수집
-                    const tripNo = document.getElementById('tripSelect').value;
+                // 3. 일반 게시판 데이터 수집
+                const boardTitle = document.getElementById('boardTitle').value;
+                const boardContent = document.getElementById('boardContent').value;
+                const boardTag = document.getElementById('boardTag').value;
 
-                    // 3. 일반 게시판 데이터 수집
-                    const boardTitle = document.getElementById('boardTitle').value;
-                    const boardContent = document.getElementById('boardContent').value;
-                    const boardTag = document.getElementById('boardTag').value;
+                // 4. board 객체 생성
+                const board = {
+                    tripNo: tripNo,
+                    boardTitle: boardTitle,
+                    boardContent: boardContent,
+                    boardTag: boardTag
+                };
 
-                    // 4. board 객체 생성
-                    const board = {
-                        tripNo: tripNo,
-                        boardTitle: boardTitle,
-                        boardContent: boardContent,
-                        boardTag: boardTag
-                    };
+                // 5. companionRecruits List 형태의 변수 생성
+                const companionRecruits = [];
 
-                    // 5. companionRecruits List 형태의 변수 생성
-                    const companionRecruits = [];
+                // 6. 동행모집 데이터 수집
+                const scheduleListContainer = document.getElementById('scheduleListContainer');
+                const columnItems = scheduleListContainer.querySelectorAll('.column-item.text-dark.p-1');
 
-                    // 6. 동행모집 데이터 수집
-                    const scheduleListContainer = document.getElementById('scheduleListContainer');
-                    const columnItems = scheduleListContainer.querySelectorAll('.column-item.text-dark.p-1');
+                columnItems.forEach(columnItem => {
+                    const checkBox = columnItem.querySelector('.fw-bold input[type="checkbox"]');
+                    const scheduleNo = columnItem.querySelector('.schedule-no').textContent;
 
-                    columnItems.forEach(columnItem => {
-                        const checkBox = columnItem.querySelector('.fw-bold input[type="checkbox"]');
-                        const scheduleNo = columnItem.querySelector('.schedule-no').textContent;
+                    if (checkBox && checkBox.checked) {
+                        // 5-2-1-1) 체크박스가 체크되어 있을 경우
+                        const recruitMaxNo = columnItem.querySelector('#maxPeopleContainerAll input').value;
 
-                        if (checkBox && checkBox.checked) {
-                            // 5-2-1-1) 체크박스가 체크되어 있을 경우
-                            const recruitMaxNo = columnItem.querySelector('#maxPeopleContainerAll input').value;
+                        companionRecruits.push({
+                            scheduleNo: scheduleNo,
+                            checked: false,
+                            checkedAll: true,
+                            recruitMaxNo: recruitMaxNo
+                        });
+                    } else {
+                        // 5-2-2-1) 체크박스가 체크되어 있지 않을 경우
+                        const locationCards = columnItem.querySelectorAll('#locationCard');
 
-                            companionRecruits.push({
-                                scheduleNo: scheduleNo,
-                                checked: false,
-                                checkedAll: true,
-                                recruitMaxNo: recruitMaxNo
-                            });
-                        } else {
-                            // 5-2-2-1) 체크박스가 체크되어 있지 않을 경우
-                            const locationCards = columnItem.querySelectorAll('#locationCard');
+                        locationCards.forEach(locationCard => {
+                            const addBtn = locationCard.querySelector('#addBtn');
+                            const addIcon = addBtn ? addBtn.querySelector('i') : null;
 
-                            locationCards.forEach(locationCard => {
-                                const addBtn = locationCard.querySelector('#addBtn');
-                                const addIcon = addBtn ? addBtn.querySelector('i') : null;
-
-                                if (addIcon && addIcon.classList.contains('bi-check-lg')) {
-                                    // 버튼이 클릭된 상태일 경우
-                                    const recruitMaxNoInput = columnItem.querySelector('#maxPeopleInputSelect');
-                                    let recruitMaxNo = recruitMaxNoInput.value;
-                                    if (recruitMaxNo <= 0) {
-                                        alert('잘못된 값이 있습니다 재 입력 해주세요');
-                                        recruitMaxNoInput.focus();
-                                        return;
-                                    }
-
-                                    companionRecruits.push({
-                                        scheduleNo: scheduleNo,
-                                        checked: true,
-                                        checkedAll: false,
-                                        recruitMaxNo: recruitMaxNo
-                                    });
+                            if (addIcon && addIcon.classList.contains('bi-check-lg')) {
+                                // 버튼이 클릭된 상태일 경우
+                                const recruitMaxNoInput = columnItem.querySelector('#maxPeopleInputSelect');
+                                let recruitMaxNo = recruitMaxNoInput.value;
+                                if (recruitMaxNo <= 0) {
+                                    alert('잘못된 값이 있습니다 재 입력 해주세요');
+                                    recruitMaxNoInput.focus();
+                                    return;
                                 }
-                            });
-                        }
-                    });
 
-                    // 7. addrequest 객체 생성
-                    const addrequest = {
-                        board: board,
-                        companionRecruits: companionRecruits
-                    };
+                                companionRecruits.push({
+                                    scheduleNo: scheduleNo,
+                                    checked: true,
+                                    checkedAll: false,
+                                    recruitMaxNo: recruitMaxNo
+                                });
+                            }
+                        });
+                    }
+                });
 
-                    // 8. add 메서드로 POST 요청 보내기
-                    fetch('add', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify(addrequest)
-                    })
+                // 7. addrequest 객체 생성
+                const addrequest = {
+                    board: board,
+                    companionRecruits: companionRecruits
+                };
+
+                // 8. add 메서드로 POST 요청 보내기
+                fetch('add', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(addrequest)
+                })
                     .then(response => {
                         if (response.ok) {
                             alert('정상적으로 글 등록 되었습니다');
@@ -569,8 +606,9 @@
                         console.error('Error:', error);
                         alert('글 등록 중 에러가 발생 했습니다');
                     });
-                });
             });
-        </script>
-    </body>
+        });
+    </script>
+</body>
+
 </html>
