@@ -103,6 +103,8 @@ public class SecurityConfig {
     try {
       User user = userService.getByEmail(email);
       if (user != null) {
+        userService.updateLastLogin(user.getUserNo());
+
         HttpSession session = request.getSession();
         session.setAttribute("loginUser", user);
 
