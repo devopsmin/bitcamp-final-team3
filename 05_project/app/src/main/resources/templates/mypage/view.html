@@ -48,9 +48,27 @@
 </div>
 
 <div class="container my-3 " style="position: relative; margin-left: 400px;">
-    <h4 class="mb-2" style="margin-left: 10px; font-size: 1.5rem;">전체 일정</h4>
     <div data-th-each="trip : ${trip}">
-        <p class="text-muted mb-3" style="margin-left: 10px; font-size: 0.9rem;"
+        <div class="d-flex align-items-center justify-content-between">
+        <div class="d-flex align-items-center">
+        <h5 class="mb-4" data-th-text="${trip.tripTitle}" style="margin-left: 15px; font-weight: bold; font-size: 2.5rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis; ">
+            제목
+        </h5>
+            <span style="margin-left: 20px; font-size: 1.4rem; color: gray;" data-th-text="${trip != null and trip.city != null and trip.city.state != null ? trip.city.state.stateName : '정보 없음'}
+                +' '
+                +${trip != null and trip.city != null ? trip.city.cityName : '정보 없음'}">도시명</span><br>
+        </div>
+            <div class="d-flex align-items-center">
+                <button style="margin-right: 15px; font-weight: bold; font-size: 1rem; border: none; background: none;">
+                    일정 공유하기
+                </button>
+                <button style="margin-right: 30px; font-weight: bold; font-size: 1rem; border: none; background: none;">
+                    일정 편집
+                </button>
+            </div>
+        </div>
+        <h4 class="mb-2" style="margin-left: 20px; font-size: 1.5rem;">전체 일정</h4>
+        <p class="text-muted mb-3" style="margin-left: 20px; font-size: 1rem;"
            data-th-text="${trip.startDate != null && trip.endDate != null ? #dates.format(trip.startDate, 'yyyy.MM.dd(E)') + ' ~ ' + #dates.format(trip.endDate, 'yyyy.MM.dd(E)') : '날짜 정보 없음'}">
         </p>
 
@@ -71,7 +89,7 @@
 
 
                 <div class="timeline">
-                    <div id="question-location" class="timeline-item mb-1" data-th-each="schedule, iter : ${entry.value}" data-th-object="${schedule}">
+                    <div id="location" class="timeline-item mb-1" data-th-each="schedule, iter : ${entry.value}" data-th-object="${schedule}">
                         <div class="location">
                             <span class="location-x" data-th-text="*{location.locationX}" style="display: none;"></span>
                             <span class="location-y" data-th-text="*{location.locationY}" style="display: none;"></span>
@@ -113,16 +131,15 @@
         </div>
     </div>
     <p style="display: none;">State: <span data-th-text="${trip.city.state.stateName}"></span>
-        City: <span data-th-text="${trip.city.cityName}"></span></p>
+        City: <span data-th-text="${trip.city.cityName}"></span></p><br>
 
-    <h5 class="mb-2" style="margin-left: 10px; font-size: 1.5rem;">이동 경로</h5>
+    <h5 class="mb-3" style="margin-left: 15px; font-size: 1.5rem;">이동 경로</h5>
 
-    <div id="map" style="width: 1175px; height: 600px; margin-bottom: 50px;"></div>
+    <div id="map" style="width: 1300px; height: 700px; margin-bottom: 50px;"></div>
 </div>
 
 <script data-th-inline="javascript">
     document.addEventListener('DOMContentLoaded', async () => {
-      console.log(document.querySelectorAll('#question-location').length);
 
       const stateName = /*[[${trip.city.state.stateName}]]*/ "defaultState";
       const cityName = /*[[${trip.city.cityName}]]*/ "defaultCity";
@@ -132,7 +149,7 @@
       try {
         await initializeMap("map", stateName, cityName, { zoom: 15 });
 
-        const locationInfos = document.querySelectorAll('#question-location');
+        const locationInfos = document.querySelectorAll('#location');
         console.log(locationInfos);
 
         locationInfos.forEach(locationInfo => {
