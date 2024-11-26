@@ -1,7 +1,7 @@
 package project.tripMaker.controller;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import dto.LocationDTO;
+import project.tripMaker.dto.LocationDTO;
 import lombok.Data;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;

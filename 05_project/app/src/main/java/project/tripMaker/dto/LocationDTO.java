@@ -1,4 +1,4 @@
-package dto;
+package project.tripMaker.dto;
 
 import lombok.Data;
 import project.tripMaker.vo.Location;
