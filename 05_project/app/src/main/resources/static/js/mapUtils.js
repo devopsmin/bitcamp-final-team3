@@ -188,3 +188,34 @@ function updatePolylineStyle(index, options) {
 }
 
 
+function addMarkerWithPopover(locationX, locationY, index, textColor, locationName, locationAddr, locationPhoto) {
+    const marker = addMarker(locationX, locationY, index, textColor);
+
+    const markerElement = marker.getElement();
+    if (markerElement) {
+        markerElement.setAttribute('data-marker-index', index);
+        markerElement.setAttribute('data-location-name', locationName);
+        markerElement.setAttribute('data-location-addr', locationAddr);
+        markerElement.setAttribute('data-location-photo', locationPhoto || 'https://via.placeholder.com/70x70');
+
+        // 팝오버 설정
+        const popoverContent = `
+            <div>
+                <strong>${locationName}</strong><br>
+                ${locationAddr}<br>
+                <img src="${locationPhoto || 'https://via.placeholder.com/70x70'}" alt="${locationName}" style="width: 70px; height: 70px; object-fit: cover; margin-top: 5px; !important;">
+            </div>
+        `;
+
+        markerElement.setAttribute('data-bs-toggle', 'popover');
+        markerElement.setAttribute('data-bs-html', 'true');
+        markerElement.setAttribute('data-bs-content', popoverContent);
+
+        new bootstrap.Popover(markerElement, {
+            container: 'body', // 팝오버가 body에 추가되도록 설정
+            customClass: 'custom-popover', // 커스텀 클래스를 추가
+            });
+    }
+
+    return marker;
+}

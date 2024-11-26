@@ -18,6 +18,8 @@
         <result property="boardTag" column="board_tag"/>
         <result property="boardLike" column="like_count"/>
         <result property="boardFavor" column="favor_count"/>
+        <result property="boardFavor" column="favor_count"/>
+        <result property="firstImageName" column="boardimage_name"/>
 
         <!-- Trip 및 City 정보 매핑 -->
         <association property="trip" javaType="project.tripMaker.vo.Trip">
