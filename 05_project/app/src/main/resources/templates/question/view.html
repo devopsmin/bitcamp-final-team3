@@ -85,69 +85,78 @@
                 </p>
 
 
-            <div class="d-flex" style="overflow-x: auto; overflow-y: auto; white-space: nowrap;"> <!-- 가로 스크롤 -->
-                <div class="col-md-4 mb-3 d-inline-block" style="width: 300px; margin-right: 20px;" data-th-each="entry : ${groupedSchedules}">
-                    <div class="d-flex justify-content-between align-items-center mb-1">
-                        <h5 class="text-start"
-                            style="font-size: 1.2rem; font-weight: bold;"
-                            data-th-text="${entry.key} + '일차'">
-                            일차
-                        </h5>
-                        <span class="text-muted text-end"
-                              style="font-size: 1rem;"
-                              data-th-text="${dayDates[entry.key]}">날짜
+                <div class="d-flex align-items-center" style="width: 1250px; margin-left: -50px;">
+
+                    <button id="scrollLeftButton" style="border: none; background: none; font-size: 2rem; cursor: pointer;">
+                        <i class="bi bi-chevron-left"></i>
+                    </button>
+
+                    <div id="scheduleContainer" class="d-flex overflow-hidden" style="flex: 1; scroll-behavior: smooth; white-space: nowrap;">
+                        <div class="col-md-4 mb-3 d-inline-block" style="width: 300px; margin-right: 20px;" data-th-each="entry : ${groupedSchedules}">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <h5 class="text-start"
+                                    style="font-size: 1.2rem; font-weight: bold;"
+                                    data-th-text="${entry.key} + '일차'">
+                                    일차
+                                </h5>
+                                <span class="text-muted text-end"
+                                      style="font-size: 1rem;"
+                                      data-th-text="${dayDates[entry.key]}">날짜
                         </span>
-                    </div>
-
-
-                    <div class="timeline">
-                        <div id="question-location" class="timeline-item mb-1" data-th-each="schedule, iter : ${entry.value}" data-th-object="${schedule}">
-                          <div class="location">
-                            <span class="location-x" data-th-text="*{location.locationX}" style="display: none;"></span>
-                            <span class="location-y" data-th-text="*{location.locationY}" style="display: none;"></span>
-                            <span class="scheduleRoute" data-th-text="*{scheduleRoute}" style="display: none;"></span>
-                            <span class="scheduleDay" data-th-text="*{scheduleDay}" style="display: none;"></span>
-                          </div>
-
-                            <div class="p-3 border rounded shadow-sm d-flex justify-content-between align-items-center" style="position: relative;">
-                                <div class="me-2" style="flex-grow: 1;">
-                                <div class="me-2 align-items-start">
-                                    <div class="d-flex">
-                                        <div class="badge text-white"
-                                             data-th-classappend="'bg-' + ${entry.key % 6 == 1 ? 'primary' : entry.key % 6 == 2 ? 'warning' : entry.key % 6 == 3 ? 'danger' : entry.key % 6 == 4 ? 'info' : entry.key % 6 == 5 ? 'secondary' : 'success'}"
-                                             style="font-size: 1rem; border-radius: 50%; width: 25px; height: 25px; display: flex; align-items: center; justify-content: center;"
-                                             data-th-text="${iter.index}">일정순서</div>
-                                        <div class="ms-2">
-                                            <p class="mb-1" style="font-size: 0.9rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 150px; font-weight: bold;" data-th-text="*{location.locationName}">지역</p>
-                                            <p class="mb-1 two-line-ellipsis"
-                                               style="font-size: 0.8rem; max-width: 150px; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; white-space: normal; line-height: 1.2rem; min-height: 2.4rem;"
-                                               data-th-text="*{location.locationAddr}">주소</p>
-                                        </div>
-                                    </div>
-                                </div>
-                                </div>
-                                <div>
-                                    <img data-th-src="${schedule.location.locationPhoto != null ? schedule.location.locationPhoto : 'https://via.placeholder.com/70x70'}"
-                                         alt="Location Photo" class="img-thumbnail" style="position: absolute; width: 70px; height: 70px; object-fit: cover; border-radius: 5px; top: 50%; transform: translateY(-50%); right: 15px;">
-                                </div>
                             </div>
 
-                            <div class="d-flex align-items-center random-time" style="height: 20px;">
-                                <div class="timeline-line mt-2" style="border-left: 2px dotted #ddd; height: 70%; margin-left: 15px;"></div>
-                                <div class="text-muted small ms-2 random-time-text" style="font-size: 0.8rem; margin-top: 6px;">
+                            <div class="timeline">
+                                <div id="question-location" class="timeline-item mb-1" data-th-each="schedule, iter : ${entry.value}" data-th-object="${schedule}">
+                                    <div class="location">
+                                        <span class="location-x" data-th-text="*{location.locationX}" style="display: none;"></span>
+                                        <span class="location-y" data-th-text="*{location.locationY}" style="display: none;"></span>
+                                        <span class="scheduleRoute" data-th-text="*{scheduleRoute}" style="display: none;"></span>
+                                        <span class="scheduleDay" data-th-text="*{scheduleDay}" style="display: none;"></span>
+                                    </div>
+
+                                    <div class="p-3 border rounded shadow-sm d-flex justify-content-between align-items-center" style="position: relative;">
+                                        <div class="me-2" style="flex-grow: 1;">
+                                            <div class="me-2 align-items-start">
+                                                <div class="d-flex">
+                                                    <div class="badge text-white"
+                                                         data-th-classappend="'bg-' + ${entry.key % 6 == 1 ? 'primary' : entry.key % 6 == 2 ? 'warning' : entry.key % 6 == 3 ? 'danger' : entry.key % 6 == 4 ? 'info' : entry.key % 6 == 5 ? 'secondary' : 'success'}"
+                                                         style="font-size: 1rem; border-radius: 50%; width: 25px; height: 25px; display: flex; align-items: center; justify-content: center;"
+                                                         data-th-text="${iter.index}">일정순서</div>
+                                                    <div class="ms-2">
+                                                        <p class="mb-1" style="font-size: 0.9rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 150px; font-weight: bold;" data-th-text="*{location.locationName}">지역</p>
+                                                        <p class="mb-1 two-line-ellipsis"
+                                                           style="font-size: 0.8rem; max-width: 150px; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; white-space: normal; line-height: 1.2rem; min-height: 2.4rem;"
+                                                           data-th-text="*{location.locationAddr}">주소</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <img data-th-src="${schedule.location.locationPhoto != null ? schedule.location.locationPhoto : 'https://via.placeholder.com/70x70'}"
+                                                 alt="Location Photo" class="img-thumbnail" style="position: absolute; width: 70px; height: 70px; object-fit: cover; border-radius: 5px; top: 50%; transform: translateY(-50%); right: 15px;">
+                                        </div>
+                                    </div>
+
+                                    <div class="d-flex align-items-center random-time" style="height: 20px;">
+                                        <div class="timeline-line mt-2" style="border-left: 2px dotted #ddd; height: 70%; margin-left: 15px;"></div>
+                                        <div class="text-muted small ms-2 random-time-text" style="font-size: 0.8rem; margin-top: 6px;">
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
+                    <button id="scrollRightButton" style="border: none; background: none; font-size: 2rem; cursor: pointer;">
+                        <i class="bi bi-chevron-right"></i>
+                    </button>
                 </div>
             </div>
-        </div>
         </div>
 
         <p style="display: none;">State: <span data-th-text="${board.trip.city.state.stateName}"></span>
             City: <span data-th-text="${board.trip.city.cityName}"></span></p>
 
-            <div id="map" style="width: 1175px; height: 600px;"></div>
+        <div id="map" style="width: 1175px; height: 600px;"></div>
 
         <div class="mb-2">
             <textarea readonly class="form-control border-0 p-2" style="resize: none; overflow: hidden; font-size: 1rem;" data-th-text="${board.boardContent}" oninput="this.style.height = ''; this.style.height = this.scrollHeight + 'px';">내용</textarea>
@@ -270,53 +279,53 @@
 </script>
 
 <script>
-   function scrollToTop() {
-       window.scrollTo({ top: 0, behavior: 'smooth' });
-   }
+    function scrollToTop() {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
 
-   window.addEventListener('scroll', function() {
-       const scrollTopButton = document.getElementById('scrollTopButton');
-       if (window.scrollY > 500) {
-           scrollTopButton.style.visibility = "visible";
-       } else {
-           scrollTopButton.style.visibility = "hidden";
-       }
-   });
+    window.addEventListener('scroll', function() {
+        const scrollTopButton = document.getElementById('scrollTopButton');
+        if (window.scrollY > 500) {
+            scrollTopButton.style.visibility = "visible";
+        } else {
+            scrollTopButton.style.visibility = "hidden";
+        }
+    });
 </script>
 
 <script data-th-inline="javascript">
-  document.addEventListener('DOMContentLoaded', async () => {
-    console.log(document.querySelectorAll('#question-location').length);
+    document.addEventListener('DOMContentLoaded', async () => {
+      console.log(document.querySelectorAll('#question-location').length);
 
-    const stateName = /*[[${board.trip.city.state.stateName}]]*/ "defaultState";
-    const cityName = /*[[${board.trip.city.cityName}]]*/ "defaultCity";
+      const stateName = /*[[${board.trip.city.state.stateName}]]*/ "defaultState";
+      const cityName = /*[[${board.trip.city.cityName}]]*/ "defaultCity";
 
-    const colors = ["primary", "warning", "danger", "info", "secondary", "success"];
+      const colors = ["primary", "warning", "danger", "info", "secondary", "success"];
 
-    try {
-      await initializeMap("map", stateName, cityName, { zoom: 15 });
+      try {
+        await initializeMap("map", stateName, cityName, { zoom: 15 });
 
-      const locationInfos = document.querySelectorAll('#question-location');
-      console.log(locationInfos);
+        const locationInfos = document.querySelectorAll('#question-location');
+        console.log(locationInfos);
 
-      locationInfos.forEach(locationInfo => {
-        const locationX = locationInfo.querySelector('.location-x').textContent.trim();
-        const locationY = locationInfo.querySelector('.location-y').textContent.trim();
-        const scheduleRoute = locationInfo.querySelector('.scheduleRoute').textContent.trim();
-        const scheduleDay = locationInfo.querySelector('.scheduleDay').textContent.trim();
+        locationInfos.forEach(locationInfo => {
+          const locationX = locationInfo.querySelector('.location-x').textContent.trim();
+          const locationY = locationInfo.querySelector('.location-y').textContent.trim();
+          const scheduleRoute = locationInfo.querySelector('.scheduleRoute').textContent.trim();
+          const scheduleDay = locationInfo.querySelector('.scheduleDay').textContent.trim();
 
-        const color = colors[(scheduleDay - 1) % colors.length];
+          const color = colors[(scheduleDay - 1) % colors.length];
 
-        console.log(`Location X: ${locationX}, Location Y: ${locationY}`);
+          console.log(`Location X: ${locationX}, Location Y: ${locationY}`);
 
-        if (locationX && locationY) {
-          addMarker(parseFloat(locationX), parseFloat(locationY), parseInt(scheduleRoute), `text-${color}`);
-        }
-      });
-    } catch (error) {
-      console.error('실행 중 오류 발생:', error);
-    }
-  });
+          if (locationX && locationY) {
+            addMarker(parseFloat(locationX), parseFloat(locationY), parseInt(scheduleRoute), `text-${color}`);
+          }
+        });
+      } catch (error) {
+        console.error('실행 중 오류 발생:', error);
+      }
+    });
 
 </script>
 <script>
@@ -345,6 +354,32 @@
                     timelineLineElement.style.display = 'none';
                 }
             }
+        });
+    });
+});
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+    const scrollContainer = document.getElementById('scheduleContainer');
+    const scrollLeftButton = document.getElementById('scrollLeftButton');
+    const scrollRightButton = document.getElementById('scrollRightButton');
+
+    const scrollAmount = 300;
+
+    scrollLeftButton.addEventListener('click', (event) => {
+        event.preventDefault();
+        scrollContainer.scrollBy({
+            left: -scrollAmount,
+            behavior: 'smooth',
+        });
+    });
+
+    scrollRightButton.addEventListener('click', (event) => {
+        event.preventDefault();
+        scrollContainer.scrollBy({
+            left: scrollAmount,
+            behavior: 'smooth',
         });
     });
 });
