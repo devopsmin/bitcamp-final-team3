@@ -28,7 +28,10 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
 @SpringBootApplication
-@PropertySource("file:${user.home}/config/ncp.properties")
+@PropertySource(value = {
+    "file:/root/config/ncp.properties",
+    "file:${user.home}/config/ncp.properties"
+}, ignoreResourceNotFound = true)
 @EnableTransactionManagement
 @EnableScheduling
 public class ServerApp implements WebMvcConfigurer {
