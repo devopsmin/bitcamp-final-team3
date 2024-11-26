@@ -20,6 +20,15 @@
 <script src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=0zojwabqn9&submodules=geocoder"></script>
 <script data-th-src="@{/js/mapUtils.js}"></script>
 
+<style>
+    .popover img {
+        width: 200px !important;
+        height: 200px !important;
+        object-fit: cover !important;
+        margin-top: 5px !important;
+    }
+</style>
+
 <!-- 게시글이 없는 경우 -->
 <p data-th-unless="${board}">없는 게시글입니다.</p>
 
@@ -173,12 +182,16 @@
                     </div>
                     <div class="timeline">
                         <div id="review-location" class="timeline-item mb-1" data-th-each="schedule, iter : ${entry.value}" data-th-object="${schedule}">
-                            <div class="location">
-                                <span class="location-x" data-th-text="*{location.locationX}" style="display: none;"></span>
-                                <span class="location-y" data-th-text="*{location.locationY}" style="display: none;"></span>
-                                <span class="scheduleRoute" data-th-text="*{scheduleRoute}" style="display: none;"></span>
-                                <span class="scheduleDay" data-th-text="*{scheduleDay}" style="display: none;"></span>
-                            </div>
+                            <span class="location-x" data-th-text="*{location.locationX}" style="display: none;"></span>
+                            <span class="location-y" data-th-text="*{location.locationY}" style="display: none;"></span>
+                            <span class="location-name" data-th-text="*{location.locationName}" style="display: none;"></span>
+                            <span class="location-addr" data-th-text="*{location.locationAddr}" style="display: none;"></span>
+                            <span class="location-photo" data-th-text="${schedule.location.locationPhoto != null ? schedule.location.locationPhoto : 'https://via.placeholder.com/70x70'}" style="display: none;"></span>
+
+                            <!-- 추가된 부분: scheduleRoute와 Day -->
+                            <span class="schedule-route" data-th-text="*{scheduleRoute}" style="display: none;"></span>
+                            <span class="schedule-day" data-th-text="*{scheduleDay}" style="display: none;"></span>
+
                             <!-- 카드와 textarea를 감싸는 wrapper -->
                             <div class="d-flex gap-3 mx-auto md-5">
                                 <!-- 카드 부분 -->
@@ -483,29 +496,51 @@
             const locationInfos = document.querySelectorAll('#review-location');
             console.log(locationInfos);
 
-            locationInfos.forEach(locationInfo => {
-                // card 내부의 x와 y 좌표 추출
-                const locationX = locationInfo.querySelector('.location-x').textContent.trim();
-                const locationY = locationInfo.querySelector('.location-y').textContent.trim();
-                const scheduleRoute = locationInfo.querySelector('.scheduleRoute').textContent.trim();
-                const scheduleDay = locationInfo.querySelector('.scheduleDay').textContent.trim();
+            locationInfos.forEach((locationInfo) => {
+                const locationX = locationInfo.querySelector('.location-x')?.textContent?.trim();
+                const locationY = locationInfo.querySelector('.location-y')?.textContent?.trim();
+                const scheduleRoute = locationInfo.querySelector('.schedule-route')?.textContent?.trim();
+                const scheduleDay = locationInfo.querySelector('.schedule-day')?.textContent?.trim();
+
+                const locationName = locationInfo.querySelector('.location-name')?.textContent?.trim();
+                const locationAddr = locationInfo.querySelector('.location-addr')?.textContent?.trim();
+                const locationPhoto = locationInfo.querySelector('.location-photo')
+                    ? locationInfo.querySelector('.location-photo').textContent.trim()
+                    : null;
 
                 const color = colors[(scheduleDay - 1) % colors.length];
+
+                // 디버깅: 값 확인
+                console.log({
+                    locationX,
+                    locationY,
+                    locationName,
+                    locationAddr,
+                    locationPhoto,
+                    scheduleRoute,
+                    scheduleDay,
+                });
 
                 // x, y 좌표가 잘 가져와졌는지 출력합니다.
                 console.log(`Location X: ${locationX}, Location Y: ${locationY}`);
 
                 // 유효한 x, y 좌표가 있는 경우 addMarker 함수 호출
                 if (locationX && locationY) {
-                    addMarker(parseFloat(locationX), parseFloat(locationY), parseInt(scheduleRoute), `text-${color}`);
-
+                    addMarkerWithPopover(
+                        parseFloat(locationX),
+                        parseFloat(locationY),
+                        parseInt(scheduleRoute),
+                        `text-${color}`,
+                        locationName,
+                        locationAddr,
+                        locationPhoto
+                    );
                 }
             });
         } catch (error) {
-            console.error('실행 중 오류 발생:', error);
+            console.error('오류 발생:', error);
         }
     });
-
 </script>
 </body>
 </html>

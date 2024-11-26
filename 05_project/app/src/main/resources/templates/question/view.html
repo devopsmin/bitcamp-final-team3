@@ -6,6 +6,16 @@
 <h1 class="text-center  my-5 mb-4">일정 질문 게시판</h1>
 
 <body>
+
+<style>
+    .popover img {
+        width: 200px !important;
+        height: 200px !important;
+        object-fit: cover !important;
+        margin-top: 5px !important;
+    }
+</style>
+
 <div class="container my-5" style="max-width: 1200px; margin: 0 auto;">
 
     <form id="myForm" action="modify" method="post" enctype="multipart/form-data">
@@ -107,12 +117,14 @@
 
                             <div class="timeline">
                                 <div id="question-location" class="timeline-item mb-1" data-th-each="schedule, iter : ${entry.value}" data-th-object="${schedule}">
-                                    <div class="location">
-                                        <span class="location-x" data-th-text="*{location.locationX}" style="display: none;"></span>
-                                        <span class="location-y" data-th-text="*{location.locationY}" style="display: none;"></span>
-                                        <span class="scheduleRoute" data-th-text="*{scheduleRoute}" style="display: none;"></span>
-                                        <span class="scheduleDay" data-th-text="*{scheduleDay}" style="display: none;"></span>
-                                    </div>
+                                    <span class="location-x" data-th-text="*{location.locationX}" style="display: none;"></span>
+                                    <span class="location-y" data-th-text="*{location.locationY}" style="display: none;"></span>
+                                    <span class="location-name" data-th-text="*{location.locationName}" style="display: none;"></span>
+                                    <span class="location-addr" data-th-text="*{location.locationAddr}" style="display: none;"></span>
+                                    <span class="location-photo" data-th-text="${schedule.location.locationPhoto != null ? schedule.location.locationPhoto : 'https://via.placeholder.com/70x70'}" style="display: none;"></span>
+
+                                    <span class="schedule-route" data-th-text="*{scheduleRoute}" style="display: none;"></span>
+                                    <span class="schedule-day" data-th-text="*{scheduleDay}" style="display: none;"></span>
 
                                     <div class="p-3 border rounded shadow-sm d-flex justify-content-between align-items-center" style="position: relative;">
                                         <div class="me-2" style="flex-grow: 1;">
@@ -309,18 +321,32 @@
         console.log(locationInfos);
 
         locationInfos.forEach(locationInfo => {
-          const locationX = locationInfo.querySelector('.location-x').textContent.trim();
-          const locationY = locationInfo.querySelector('.location-y').textContent.trim();
-          const scheduleRoute = locationInfo.querySelector('.scheduleRoute').textContent.trim();
-          const scheduleDay = locationInfo.querySelector('.scheduleDay').textContent.trim();
+            const locationX = locationInfo.querySelector('.location-x').textContent.trim();
+            const locationY = locationInfo.querySelector('.location-y').textContent.trim();
+            const scheduleRoute = locationInfo.querySelector('.schedule-route')?.textContent?.trim();
+            const scheduleDay = locationInfo.querySelector('.schedule-day')?.textContent?.trim();
 
-          const color = colors[(scheduleDay - 1) % colors.length];
+            const locationName = locationInfo.querySelector('.location-name')?.textContent?.trim();
+            const locationAddr = locationInfo.querySelector('.location-addr')?.textContent?.trim();
+            const locationPhoto = locationInfo.querySelector('.location-photo')
+                ? locationInfo.querySelector('.location-photo').textContent.trim()
+                : null;
+
+            const color = colors[(scheduleDay - 1) % colors.length];
 
           console.log(`Location X: ${locationX}, Location Y: ${locationY}`);
 
-          if (locationX && locationY) {
-            addMarker(parseFloat(locationX), parseFloat(locationY), parseInt(scheduleRoute), `text-${color}`);
-          }
+            if (locationX && locationY) {
+                addMarkerWithPopover(
+                    parseFloat(locationX),
+                    parseFloat(locationY),
+                    parseInt(scheduleRoute),
+                    `text-${color}`,
+                    locationName,
+                    locationAddr,
+                    locationPhoto
+                );
+            }
         });
       } catch (error) {
         console.error('실행 중 오류 발생:', error);
