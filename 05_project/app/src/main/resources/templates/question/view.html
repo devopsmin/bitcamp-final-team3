@@ -21,7 +21,7 @@
     <form id="myForm" action="modify" method="post" enctype="multipart/form-data">
         <input type="hidden" name="boardNo" data-th-value='${board.boardNo}'>
 
-        <div class="mb-3">
+        <div id="top" class="mb-3">
             <h2 class="form-title" style="margin-left: 10px; font-size: 1.8rem; font-weight: bold;" data-th-text="${board.boardTitle}">제목</h2>
         </div>
 
@@ -87,7 +87,7 @@
             </div>
         </div>
 
-        <div class="container my-3">
+        <div id="trip" class="container my-3">
             <h4 class="mb-2" style="margin-left: 10px; font-size: 1.5rem;">전체 경로</h4>
             <div data-th-each="trip : ${trips}">
                 <p class="text-muted mb-3" style="margin-left: 10px; font-size: 0.9rem;"
@@ -184,11 +184,25 @@
     </form>
 </div>
 
+<br id="comments" >
 <div data-th-replace="~{question/comment}"></div>
 
-<button id="scrollTopButton" onclick="scrollToTop()" class="btn btn-secondary btn-sm" style="position: fixed; bottom: 20px; left: 80%; transform: translateX(-50%); visibility: hidden; padding: 7px 10px;">
-    <i class="bi bi-arrow-up"></i> 상단으로 이동
-</button>
+<!--<button id="scrollTopButton" onclick="scrollToTop()" class="btn btn-secondary btn-sm" style="position: fixed; bottom: 20px; left: 80%; transform: translateX(-50%); visibility: hidden; padding: 7px 10px;">-->
+<!--    <i class="bi bi-arrow-up"></i> 상단으로 이동-->
+<!--</button>-->
+
+<!-- 네비게이션 버튼 -->
+<div id="navButtons" class="btn-group-vertical" style="position: fixed; bottom: 20px; right: 20px; z-index: 1000;">
+    <button id="scrollTopButton" class="btn btn-secondary btn-sm">
+        <i class="bi bi-arrow-up"></i> 상단으로 이동
+    </button>
+    <button id="scrollToCommentsButton" class="btn btn-secondary btn-sm mt-2">
+        <i class="bi bi-chat-dots"></i> 댓글로 이동
+    </button>
+    <button id="scrollToTripButton" class="btn btn-secondary btn-sm mt-2">
+        <i class="bi bi-map"></i> 여행으로 이동
+    </button>
+</div>
 
 <script>
     function toggleLike(boardNo) {
@@ -291,10 +305,22 @@
 </script>
 
 <script>
-    function scrollToTop() {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+    // 스크롤 이동 함수
+    function scrollToSection(sectionId) {
+        let target;
+
+        if (sectionId === 'top') {
+            target = document.body; // 상단으로 이동
+        } else {
+            target = document.getElementById(sectionId); // 특정 섹션으로 이동
+        }
+
+        if (target) {
+            target.scrollIntoView({ behavior: 'smooth' });
+        }
     }
 
+    // 스크롤 이벤트 감지하여 버튼 표시
     window.addEventListener('scroll', function() {
         const scrollTopButton = document.getElementById('scrollTopButton');
         if (window.scrollY > 500) {
@@ -303,6 +329,15 @@
             scrollTopButton.style.visibility = "hidden";
         }
     });
+
+    // DOM 로드 후 이벤트 설정
+    document.addEventListener('DOMContentLoaded', () => {
+        // 버튼 클릭 이벤트 추가
+        document.getElementById('scrollTopButton').onclick = () => scrollToSection('top');
+        document.getElementById('scrollToCommentsButton').onclick = () => scrollToSection('comments');
+        document.getElementById('scrollToTripButton').onclick = () => scrollToSection('trip');
+    });
+
 </script>
 
 <script data-th-inline="javascript">

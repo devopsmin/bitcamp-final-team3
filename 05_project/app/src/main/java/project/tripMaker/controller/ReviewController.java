@@ -584,17 +584,8 @@ public class ReviewController {
     return "review/list"; // 게시글 목록을 출력하는 Thymeleaf 템플릿 파일 이름
   }
 
-  // @GetMapping("api/list")
-  // public ResponseEntity<List<ReviewDto>> getReviewList(@RequestParam int page) {
-  //   try {
-  //     List<ReviewDto> reviews = reviewService.getReviews(page);
-  //     return new ResponseEntity<>(reviews, HttpStatus.OK);
-  //   } catch (Exception e) {
-  //     e.printStackTrace();
-  //     return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-  //   }
-  // }
 
+  // 베스트 후기 리스트 가져오기
   @GetMapping("api/list")
   public ResponseEntity<List<ReviewDto>> getTopRecommendedBoards(@RequestParam int page) {
     try {

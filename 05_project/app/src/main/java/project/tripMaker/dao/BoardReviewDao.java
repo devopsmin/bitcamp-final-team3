@@ -78,18 +78,16 @@ public interface BoardReviewDao extends BoardDao{
   // 2. 가져오기
   // 3. 삭제
   // 4. 전체삭제
+  // 5. 이미지 리스트(게시판 번호로 찾기)
   void insertFiles(Board board) throws Exception;
-
   BoardImage getFile(int fileNo) throws Exception;
-
   boolean deleteFile(int fileNo) throws Exception;
-
   boolean deleteFiles(int boardNo) throws Exception;
-
   List<BoardImage> findImagesByBoardNo(int boardNo);
 
   // 전체 게시물 수 조회
   List<Board> listBoard(@Param("boardtypeNo") int boardtypeNo) throws Exception;
-
+  
+  // 마이페이지용 유저의 게시글 리스트
   List<Board> listUser(Long userNo) throws Exception;
 }

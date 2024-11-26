@@ -591,7 +591,7 @@
     b.boardtype_no = 3
     AND u.user_nickname LIKE CONCAT('%', #{writer}, '%')
     ORDER BY
-    b.board_created_date DESC, b.board_no DESC,
+    b.board_created_date DESC, b.board_no DESC
   </select>
 
   <!--태그검색-->
