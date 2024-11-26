@@ -112,3 +112,39 @@
   font-size: 18px;
   color: #333;
 }
+
+ h1.custom-title {
+   position: relative;
+   font-size: 2.5rem; /* 커스텀 크기 */
+   font-weight: bold;
+ }
+
+h1.custom-title span.highlight {
+  position: relative;
+  color: black; /* 후기 부분 색상 */
+  font-size: 1.2em;
+  font-weight: bold;
+}
+
+h1.custom-title span.highlight:before,
+h1.custom-title span.highlight:after {
+  content: '[';
+  display: inline-block;
+  position: relative;
+  top: 2px;
+  font-size: 1.2em;
+  color: #48CFCB;
+  transition: all 0.5s ease;
+}
+
+h1.custom-title span.highlight:after {
+  content: ']';
+}
+
+h1.custom-title span.highlight:hover:before {
+  transform: translateX(-5px);
+}
+
+h1.custom-title span.highlight:hover:after {
+  transform: translateX(5px);
+}

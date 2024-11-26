@@ -5,7 +5,11 @@
 <link data-th-href="@{/css/question.css}" rel="stylesheet">
 <body>
 <div class="container my-5">
-    <h1 class="text-center mb-4">일정 질문 게시판</h1>
+    <div class="container text-center my-4">
+        <h1 class="custom-title">
+            <span class="highlight">여행질문</span> 게시판
+        </h1>
+    </div>
 
     <div class="d-flex align-items-center gap-3 my-3" style="margin-left: 400px;">
         <form data-th-action="@{/question/list}" method="get" class="input-group" style="width: 500px;">
