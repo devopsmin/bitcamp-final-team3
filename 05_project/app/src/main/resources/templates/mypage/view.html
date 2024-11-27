@@ -125,12 +125,6 @@
                                      alt="Location Photo" class="img-thumbnail" style="position: absolute; width: 70px; height: 70px; object-fit: cover; border-radius: 5px; top: 50%; transform: translateY(-50%); right: 15px;">
                             </div>
                         </div>
-
-                        <div class="d-flex align-items-center random-time" style="height: 20px;">
-                            <div class="timeline-line mt-2" style="border-left: 2px dotted #ddd; height: 70%; margin-left: 15px;"></div>
-                            <div class="text-muted small ms-2 random-time-text" style="font-size: 0.8rem; margin-top: 6px;">
-                            </div>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -181,36 +175,6 @@
       }
     });
 
-</script>
-<script>
-    document.addEventListener('DOMContentLoaded', () => {
-    const timelines = document.querySelectorAll('.timeline');
-
-    timelines.forEach(timeline => {
-        const timelineItems = timeline.querySelectorAll('.timeline-item');
-
-        timelineItems.forEach((item, index) => {
-            const isLastElement = index === timelineItems.length - 1;
-
-            if (!isLastElement) {
-                const randomTime = Math.floor(Math.random() * 16) + 5;
-                const timeElement = item.querySelector('.random-time-text');
-                if (timeElement) {
-                    timeElement.textContent = `🚗 ${randomTime}분`;
-                }
-            } else {
-                const randomTimeElement = item.querySelector('.random-time');
-                if (randomTimeElement) {
-                    randomTimeElement.style.display = 'none';
-                }
-                const timelineLineElement = item.querySelector('.timeline-line');
-                if (timelineLineElement) {
-                    timelineLineElement.style.display = 'none';
-                }
-            }
-        });
-    });
-});
 </script>
 
 <script>
